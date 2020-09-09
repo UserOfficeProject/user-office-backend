@@ -9,7 +9,7 @@ export enum LEVEL {
 
 function stringify(obj: Record<string, any>) {
   let cache: string[] = [];
-  JSON.stringify(obj, (key, value) => {
+  const value = JSON.stringify(obj, (key, value) => {
     if (typeof value === 'object' && value !== null) {
       if (cache.includes(value)) return;
 
@@ -18,7 +18,7 @@ function stringify(obj: Record<string, any>) {
 
     return value;
   });
-  cache = [];
+  return value;
 }
 
 class GrayLogLogger implements Logger {
