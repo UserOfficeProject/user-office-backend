@@ -95,7 +95,7 @@ export default class AdminMutations {
   }
 
   async addClientLog(error: string) {
-    logger.logError('Log received from:', { error });
+    logger.logError('Log received from client:', { error });
 
     return true;
   }
