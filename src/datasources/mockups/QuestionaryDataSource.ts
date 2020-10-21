@@ -175,6 +175,13 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   ): Promise<Questionary | null> {
     return createDummyQuestionary();
   }
+
+  async getBlankQuestionarySteps(
+    template_id: number
+  ): Promise<QuestionaryStep[]> {
+    return dummyQuestionarySteps;
+  }
+
   async delete(questionaryId: number): Promise<Questionary> {
     return createDummyQuestionary({ questionaryId });
   }
@@ -216,11 +223,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   async deleteFiles(proposalId: number, questionId: string): Promise<string[]> {
     return ['file_id_012345'];
   }
-  async getBlankQuestionarySteps(
-    template_id: number
-  ): Promise<QuestionaryStep[]> {
-    return dummyQuestionarySteps;
-  }
+
   async getQuestionary(questionary_id: number): Promise<Questionary | null> {
     return questionary_id === dummyQuestionary.questionaryId
       ? dummyQuestionary

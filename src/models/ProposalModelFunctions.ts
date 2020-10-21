@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {
   BooleanConfig,
-  ConfigBase,
   DateConfig,
   EmbellishmentConfig,
   FieldConfigType,
@@ -220,7 +219,7 @@ defaultConfigs.set('TextInputConfig', {
 });
 
 defaultConfigs.set('SampleBasisConfig', {
-  placeholder: 'Title',
+  titlePlaceholder: 'Title',
   ...baseDefaultConfig,
 });
 
@@ -258,6 +257,7 @@ export function createConfigByType(dataType: DataType, init: object | string) {
     logger.logError('ConfigCreator not implemented', { dataType });
     throw new Error('ConfigCreator not implemented');
   }
+
   return createConfig(configCreator(), init);
 }
 

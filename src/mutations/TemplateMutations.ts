@@ -63,20 +63,37 @@ export default class TemplateMutations {
 
     switch (args.categoryId) {
       case TemplateCategoryId.PROPOSAL_QUESTIONARY:
-        await this.createFirstTopic(newTemplate.templateId, 'proposal_basis');
+        await this.createInitialTopic(
+          newTemplate.templateId,
+          0,
+          'New proposal',
+          'proposal_basis'
+        );
         break;
       case TemplateCategoryId.SAMPLE_DECLARATION:
-        await this.createFirstTopic(newTemplate.templateId, 'sample_basis');
+        await this.createInitialTopic(
+          newTemplate.templateId,
+          0,
+          'New sample',
+          'sample_basis'
+        );
         break;
     }
+
     return newTemplate;
   }
 
   /** cretes first topic, so that template is not empty to begin with */
-  private async createFirstTopic(templateId: number, firstQuestionId?: string) {
+  private async createInitialTopic(
+    templateId: number,
+    sortOrder: number,
+    title: string,
+    firstQuestionId?: string
+  ) {
     const newTopic = await this.dataSource.createTopic({
-      sortOrder: 0,
-      templateId: templateId,
+      sortOrder,
+      templateId,
+      title,
     });
 
     if (firstQuestionId) {
