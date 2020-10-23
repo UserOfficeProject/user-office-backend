@@ -73,7 +73,7 @@
     "graphql-tools": "^4.0.8",
     "hummus": "^1.0.110",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.16.5",
+    "knex": "^0.21.6",
     "multer": "^1.4.2",
     "pdfkit": "^0.10.0",
     "pg": "^7.18.2",
