@@ -135,7 +135,7 @@ const writeAnswer = async (answer: Answer, doc: PDFDocument) => {
     writeDate(answer, doc);
   } else if (answer.question.dataType === DataType.BOOLEAN) {
     writeBoolean(answer, doc);
-  } else if (answer.question.dataType === DataType.SUBTEMPLATE) {
+  } else if (answer.question.dataType === DataType.SAMPLE_DECLARATION) {
     await writeSubtemplate(answer, doc);
   } else {
     writeBold(answer.question.question, doc);
