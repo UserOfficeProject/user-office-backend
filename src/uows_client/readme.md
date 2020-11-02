@@ -8,8 +8,7 @@ details of the SOAP implementation from the user and exposing only the functiona
 ## Setup
 
 This project requires [node.js](https://nodejs.org/en/download/), [this soap library](https://www.npmjs.com/package/soap) and [TypeScript](https://www.typescriptlang.org/download)
-\n
-\n
+
 Run the following command to enable node.js to work with TypeScript
 `npm install @types/node --save`
 
