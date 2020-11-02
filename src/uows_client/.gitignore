@@ -4,4 +4,5 @@ package-lock.json
 UOWSSoapInterface.js
 UOWSSoapInterface.ts
 SoapInterfaceGenerator.js
+test.ts
 test.js
