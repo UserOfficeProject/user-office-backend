@@ -16,7 +16,8 @@ export class SampleDataSourceMock implements SampleDataSource {
         1,
         SampleStatus.LOW_RISK,
         'safety comment',
-        new Date()
+        new Date(),
+        null
       ),
     ];
   }
@@ -45,7 +46,8 @@ export class SampleDataSourceMock implements SampleDataSource {
       questionaryId,
       SampleStatus.PENDING_EVALUTATION,
       '',
-      new Date()
+      new Date(),
+      null
     );
   }
 

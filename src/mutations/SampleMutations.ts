@@ -1,3 +1,4 @@
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
@@ -6,11 +7,11 @@ import { Roles } from '../models/Role';
 import { TemplateCategoryId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { rejection } from '../rejection';
-import { CreateSampleArgs } from '../resolvers/mutations/CreateSampleMutations';
+import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleSafetyReviewArgs } from '../resolvers/mutations/UpdateSampleSafetyReviewMutation';
 import { UpdateSampleStatusArgs } from '../resolvers/mutations/UpdateSampleStatusMutation';
 import { UpdateSampleTitleArgs } from '../resolvers/mutations/UpdateSampleTitleMutation';
-import { Logger, logger } from '../utils/Logger';
+import { logger } from '../utils/Logger';
 import { sampleAuthorization } from '../utils/SampleAuthorization';
 
 export default class SampleMutations {
@@ -18,7 +19,7 @@ export default class SampleMutations {
     private dataSource: SampleDataSource,
     private questionaryDataSource: QuestionaryDataSource,
     private templateDataSource: TemplateDataSource,
-    private logger: Logger
+    private proposalDataSource: ProposalDataSource
   ) {}
 
   @Authorized([Roles.USER_OFFICER, Roles.SAMPLE_SAFETY_REVIEWER])
@@ -35,10 +36,11 @@ export default class SampleMutations {
   }
 
   @Authorized()
-  async createSample(agent: UserWithRole | null, args: CreateSampleArgs) {
+  async createSample(agent: UserWithRole | null, args: CreateSampleInput) {
     if (!agent) {
       return rejection('NOT_AUTHORIZED');
     }
+
     const template = await this.templateDataSource.getTemplate(args.templateId);
     if (template?.categoryId !== TemplateCategoryId.SAMPLE_DECLARATION) {
       logger.logError('Cant create sample with this template', {
@@ -47,6 +49,12 @@ export default class SampleMutations {
       });
 
       return rejection('INTERNAL_ERROR');
+    }
+
+    const proposal = await this.proposalDataSource.get(args.proposalId);
+
+    if (!proposal || proposal.proposerId !== agent.id) {
+      return rejection('NOT_ALLOWED');
     }
 
     return this.questionaryDataSource

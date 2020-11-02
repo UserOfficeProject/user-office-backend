@@ -311,6 +311,7 @@ export interface SampleRecord {
   readonly safety_status: number;
   readonly safety_comment: string;
   readonly created_at: Date;
+  readonly proposal_id: number | null;
 }
 
 export interface ProposalStatusRecord {
@@ -579,7 +580,8 @@ export const createSampleObject = (sample: SampleRecord) => {
     sample.questionary_id,
     sample.safety_status,
     sample.safety_comment,
-    sample.created_at
+    sample.created_at,
+    sample.proposal_id
   );
 };
 

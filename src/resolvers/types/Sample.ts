@@ -34,6 +34,9 @@ export class Sample implements Partial<SampleOrigin> {
 
   @Field(() => Date)
   public created: Date;
+
+  @Field(() => Int, { nullable: true })
+  public proposalId: number | null;
 }
 
 @Resolver(() => Sample)

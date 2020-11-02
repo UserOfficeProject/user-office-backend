@@ -6,7 +6,8 @@ export class Sample {
     public questionaryId: number,
     public safetyStatus: SampleStatus,
     public safetyComment: string,
-    public created: Date
+    public created: Date,
+    public proposalId: number | null
   ) {}
 }
 
