@@ -1,0 +1,7 @@
+.vs/
+.node_modules/
+package-lock.json
+UOWSSoapInterface.js
+UOWSSoapInterface.ts
+SoapInterfaceGenerator.js
+test.js
