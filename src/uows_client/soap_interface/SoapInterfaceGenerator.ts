@@ -1,7 +1,6 @@
 import * as soap from "soap";
 import * as fs from "fs";
 
-//const wsdlUrl: string = 'http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL';
 const wsdlUrl: string = 'https://api.facilities.rl.ac.uk/ws/UserOfficeWebService?wsdl';
 const filePath: string = './UOWSSoapInterface.ts';
 let wsdlDesc: any;
