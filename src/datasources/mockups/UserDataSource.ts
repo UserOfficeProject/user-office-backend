@@ -42,8 +42,8 @@ export const dummyUserOfficer = new User(
   'Producer',
   'Dorris83@gmail.com',
   true,
-  '(012) 325-1151',
-  '1-316-182-3694',
+  '+46700568256',
+  '',
   false,
   '2019-07-17 08:25:12.23043+00',
   '2019-07-17 08:25:12.23043+00'
@@ -56,9 +56,9 @@ export const dummyUserOfficerWithRole: UserWithRole = {
 
 export const dummyUser = new User(
   2,
-  '',
+  'Dr.',
   'Jane',
-  null,
+  '',
   'Doe',
   'JaDa',
   'Meta',
@@ -72,8 +72,8 @@ export const dummyUser = new User(
   'Architect',
   'Cleve30@yahoo.com',
   true,
-  '045-272-7984 x34539',
-  '028-065-8228 x08367',
+  '+38978414058',
+  '+46700568256',
   false,
   '2019-07-17 08:25:12.23043+00',
   '2019-07-17 08:25:12.23043+00'
@@ -95,9 +95,9 @@ export const dummySampleReviewer: UserWithRole = {
 
 export const dummyPlaceHolderUser = new User(
   2,
-  '',
+  'Dr.',
   'Jane',
-  null,
+  '',
   'Doe',
   'JaDa',
   'Meta',
@@ -111,8 +111,8 @@ export const dummyPlaceHolderUser = new User(
   'Architect',
   'placeholder@ess.se',
   true,
-  '045-272-7984 x34539',
-  '028-065-8228 x08367',
+  '+46700568256',
+  '',
   true,
   '2019-07-17 08:25:12.23043+00',
   '2019-07-17 08:25:12.23043+00'
@@ -122,7 +122,7 @@ export const dummyUserNotOnProposal = new User(
   3,
   'Dr.',
   'Noel',
-  null,
+  '',
   'Doe',
   'NoDO',
   'Damion',
@@ -136,8 +136,8 @@ export const dummyUserNotOnProposal = new User(
   'Facilitator',
   'Tyrique41@hotmail.com',
   true,
-  '1-272-760-1466 x03877',
-  '174-603-1024',
+  '+46700568256',
+  '',
   false,
   '2019-07-17 08:25:12.23043+00',
   '2019-07-17 08:25:12.23043+00'
