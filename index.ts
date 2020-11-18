@@ -1,6 +1,5 @@
-import 'dotenv/config';
-
 import cookieParser from 'cookie-parser';
+import 'dotenv/config';
 import express from 'express';
 
 import 'reflect-metadata';
@@ -9,7 +8,9 @@ import authorization from './src/middlewares/authorization';
 import exceptionHandler from './src/middlewares/exceptionHandler';
 import files from './src/middlewares/files';
 import apolloServer from './src/middlewares/graphql';
+import healthCheck from './src/middlewares/healthCheck';
 import pdfFactory from './src/middlewares/pdfFactory';
+import readinessCheck from './src/middlewares/readinessCheck';
 import { logger } from './src/utils/Logger';
 
 async function bootstrap() {
@@ -21,6 +22,8 @@ async function bootstrap() {
     .use(authorization())
     .use(files())
     .use(pdfFactory())
+    .use(healthCheck())
+    .use(readinessCheck())
     .use(exceptionHandler());
 
   await apolloServer(app);

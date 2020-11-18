@@ -5,15 +5,16 @@ import {
   callDataSource,
   eventLogsDataSource,
   fileDataSource,
+  instrumentDatasource,
   proposalDataSource,
+  proposalSettingsDataSource,
+  questionaryDataSource,
   reviewDataSource,
+  sampleDataSource,
   sepDataSource,
+  systemDataSource,
   templateDataSource,
   userDataSource,
-  instrumentDatasource,
-  questionaryDataSource,
-  sampleDataSource,
-  proposalSettingsDataSource,
 } from './datasources';
 import AdminMutations from './mutations/AdminMutations';
 import CallMutations from './mutations/CallMutations';
@@ -38,6 +39,7 @@ import QuestionaryQueries from './queries/QuestionaryQueries';
 import ReviewQueries from './queries/ReviewQueries';
 import SampleQueries from './queries/SampleQueries';
 import SEPQueries from './queries/SEPQueries';
+import SystemQueries from './queries/SystemQueries';
 import TemplateQueries from './queries/TemplateQueries';
 import UserQueries from './queries/UserQueries';
 import { logger } from './utils/Logger';
@@ -83,6 +85,8 @@ const eventLogQueries = new EventLogQueries(eventLogsDataSource);
 
 const sepQueries = new SEPQueries(sepDataSource);
 const sepMutations = new SEPMutations(sepDataSource, userAuthorization);
+
+const systemQueries = new SystemQueries(systemDataSource);
 
 const instrumentQueries = new InstrumentQueries(
   instrumentDatasource,
@@ -141,6 +145,7 @@ const context: BasicResolverContext = {
     questionary: questionaryQueries,
     sample: sampleQueries,
     proposalSettings: proposalSettingsQueries,
+    system: systemQueries,
   },
   mutations: {
     user: userMutations,
