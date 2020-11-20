@@ -63,7 +63,7 @@ jobs:
             --write-out '%{http_code}' \
             ${{ secrets.GITLAB_TRIGGER_URL }})
 
-            if [[ $RESULT != "201" ]]; then
-              echo "Failed to trigger Gitlab pipeline: $RESULT"
-              exit 1
-            fi
+          if [[ $RESULT != "201" ]]; then
+            echo "Failed to trigger Gitlab pipeline: $RESULT"
+            exit 1
+          fi
