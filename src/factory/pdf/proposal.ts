@@ -1,15 +1,15 @@
-import baseContext from '../../../buildContext';
-import { questionaryDataSource } from '../../../datasources';
-import { Proposal } from '../../../models/Proposal';
+import baseContext from '../../buildContext';
+import { questionaryDataSource } from '../../datasources';
+import { Proposal } from '../../models/Proposal';
 import {
   areDependenciesSatisfied,
   getQuestionaryStepByTopicId,
-} from '../../../models/ProposalModelFunctions';
-import { Answer, QuestionaryStep } from '../../../models/Questionary';
-import { TechnicalReview } from '../../../models/TechnicalReview';
-import { DataType } from '../../../models/Template';
-import { BasicUserDetails, UserWithRole } from '../../../models/User';
-import { isRejection } from '../../../rejection';
+} from '../../models/ProposalModelFunctions';
+import { Answer, QuestionaryStep } from '../../models/Questionary';
+import { TechnicalReview } from '../../models/TechnicalReview';
+import { DataType } from '../../models/Template';
+import { BasicUserDetails, UserWithRole } from '../../models/User';
+import { isRejection } from '../../rejection';
 import { getFileAttachmentIds } from '../util';
 import { collectSamplePDFData, SamplePDFData } from './sample';
 
@@ -78,7 +78,7 @@ const collectSubtemplateData = async (answer: Answer) => {
 export const collectProposalPDFData = async (
   proposalId: number,
   user: UserWithRole,
-  notify: CallableFunction
+  notify?: CallableFunction
 ): Promise<ProposalPDFData> => {
   const userAuthorization = baseContext.userAuthorization;
   const proposal = await baseContext.queries.proposal.get(user, proposalId);
@@ -129,7 +129,7 @@ export const collectProposalPDFData = async (
     return { sample, sampleQuestionaryFields };
   });
 
-  notify(
+  notify?.(
     `${proposal.created.getUTCFullYear()}_${principalInvestigator.lastname}_${
       proposal.shortCode
     }.pdf`

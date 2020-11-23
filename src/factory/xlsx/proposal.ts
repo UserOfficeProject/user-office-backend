@@ -1,14 +1,14 @@
 import { getTranslation, ResourceId } from '@esss-swap/duo-localisation';
 
-import baseContext from '../../../buildContext';
-import { ProposalEndStatus } from '../../../models/Proposal';
-import { TechnicalReviewStatus } from '../../../models/TechnicalReview';
-import { UserWithRole } from '../../../models/User';
+import baseContext from '../../buildContext';
+import { ProposalEndStatus } from '../../models/Proposal';
+import { TechnicalReviewStatus } from '../../models/TechnicalReview';
+import { UserWithRole } from '../../models/User';
 import {
   absoluteDifference,
   average,
   getGrades,
-} from '../../../utils/mathFunctions';
+} from '../../utils/mathFunctions';
 
 type ProposalXLSData = Array<string | number>;
 
@@ -31,7 +31,7 @@ export const defaultProposalDataColumns = [
 export const collectProposalXLSXData = async (
   proposalId: number,
   user: UserWithRole,
-  notify: CallableFunction
+  notify?: CallableFunction
 ): Promise<ProposalXLSData> => {
   const proposal = await baseContext.queries.proposal.get(user, proposalId);
 
@@ -41,7 +41,7 @@ export const collectProposalXLSXData = async (
     );
   }
 
-  notify(
+  notify?.(
     `proposal_${proposal.created.getUTCFullYear()}_${proposal.shortCode}.xlsx`
   );
 

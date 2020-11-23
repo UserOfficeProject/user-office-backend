@@ -1,11 +1,11 @@
-import baseContext from '../../../buildContext';
+import baseContext from '../../buildContext';
 import {
   getAllFields,
   areDependenciesSatisfied,
-} from '../../../models/ProposalModelFunctions';
-import { Answer } from '../../../models/Questionary';
-import { Sample, SampleStatus } from '../../../models/Sample';
-import { UserWithRole } from '../../../models/User';
+} from '../../models/ProposalModelFunctions';
+import { Answer } from '../../models/Questionary';
+import { Sample, SampleStatus } from '../../models/Sample';
+import { UserWithRole } from '../../models/User';
 import { getFileAttachmentIds } from '../util';
 
 export type SamplePDFData = {
