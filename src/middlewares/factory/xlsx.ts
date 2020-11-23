@@ -11,6 +11,10 @@ import {
   collectProposalXLSXData,
   defaultProposalDataColumns,
 } from '../../factory/xlsx/proposal';
+import {
+  collectSEPlXLSXData,
+  defaultSEPDataColumns,
+} from '../../factory/xlsx/sep';
 import { logger } from '../../utils/Logger';
 import { RequestWithUser } from '../factory';
 
@@ -53,6 +57,45 @@ router.get(`/${XLSXType.PROPOSAL}/:proposal_ids`, async (req, res) => {
       { data, meta },
       res
     );
+  } catch (e) {
+    logger.logException('Could not download generated XLSX', e);
+    res.status(500).send('Could not download generated XLSX');
+  }
+});
+
+router.get(`/${XLSXType.SEP}/:sep_id/call/:call_id`, async (req, res) => {
+  try {
+    const userWithRole = (req as RequestWithUser).user;
+
+    const sepId = parseInt(req.params.sep_id);
+    const callId = parseInt(req.params.call_id);
+
+    if (isNaN(+sepId) || isNaN(+callId)) {
+      throw new Error(
+        `Invalid SEP or call ID: SEP ${req.params.sep_id}, Call ${req.params.call_id}`
+      );
+    }
+
+    const userAuthorization = baseContext.userAuthorization;
+
+    if (!userAuthorization.isUserOfficer(userWithRole)) {
+      throw new Error('User has insufficient rights');
+    }
+    const meta: XLSXMetaBase = {
+      singleFilename: '',
+      collectionFilename: '', // not used
+      columns: defaultSEPDataColumns,
+    };
+
+    const { data, filename } = await collectSEPlXLSXData(
+      sepId,
+      callId,
+      userWithRole
+    );
+
+    meta.singleFilename = filename;
+
+    callFactoryService(DownloadType.XLSX, XLSXType.SEP, { data, meta }, res);
   } catch (e) {
     logger.logException('Could not download generated XLSX', e);
     res.status(500).send('Could not download generated XLSX');

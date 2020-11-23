@@ -12,6 +12,7 @@ export enum DownloadType {
 
 export enum XLSXType {
   PROPOSAL = 'proposal',
+  SEP = 'sep',
 }
 
 export enum PDFType {
@@ -56,14 +57,12 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
           res.setHeader('content-type', pdfResp.headers['content-type']);
         }
 
-        res.setHeader(
-          'Content-Disposition',
-          contentDisposition(
-            properties.data.length > 1
-              ? properties.meta.collectionFilename
-              : properties.meta.singleFilename
-          )
-        );
+        const filename =
+          properties.data.length > 1
+            ? properties.meta.collectionFilename
+            : properties.meta.singleFilename;
+
+        res.setHeader('Content-Disposition', contentDisposition(filename));
 
         pdfResp.pipe(res);
       }
