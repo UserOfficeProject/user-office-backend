@@ -32,11 +32,11 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
   properties: { data: TData[]; meta: TMeta },
   res: Response
 ) {
-  const pdfReq = request
+  const factoryReq = request
     .post(`${ENDPOINT}/${downloadType}/${type}`, { json: properties })
-    .on('response', pdfResp => {
-      if (pdfResp.statusCode !== 200) {
-        bufferRequestBody(pdfReq)
+    .on('response', factoryResp => {
+      if (factoryResp.statusCode !== 200) {
+        bufferRequestBody(factoryReq)
           .then(body => {
             logger.logError(`Failed to generate ${downloadType}/${type}`, {
               response: body,
@@ -53,8 +53,8 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
 
         res.status(500).send(`Failed to generate ${downloadType}/${type}`);
       } else {
-        if (pdfResp.headers['content-type']) {
-          res.setHeader('content-type', pdfResp.headers['content-type']);
+        if (factoryResp.headers['content-type']) {
+          res.setHeader('content-type', factoryResp.headers['content-type']);
         }
 
         const filename =
@@ -64,7 +64,7 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
 
         res.setHeader('Content-Disposition', contentDisposition(filename));
 
-        pdfResp.pipe(res);
+        factoryResp.pipe(res);
       }
     })
     .on('error', err => {
