@@ -1,5 +1,5 @@
 import contentDisposition from 'content-disposition';
-import { Response } from 'express';
+import { Response, NextFunction } from 'express';
 import request from 'request';
 
 import { logger } from '../utils/Logger';
@@ -30,7 +30,8 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
   downloadType: DownloadType,
   type: PDFType | XLSXType,
   properties: { data: TData[]; meta: TMeta },
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   const factoryReq = request
     .post(`${ENDPOINT}/${downloadType}/${type}`, { json: properties })
@@ -51,7 +52,7 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
             );
           });
 
-        res.status(500).send(`Failed to generate ${downloadType}/${type}`);
+        next(`Failed to generate ${downloadType}/${type}`);
       } else {
         if (factoryResp.headers['content-type']) {
           res.setHeader('content-type', factoryResp.headers['content-type']);
@@ -68,12 +69,9 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
       }
     })
     .on('error', err => {
-      logger.logException(
-        `Could not download generated ${downloadType}/${type}`,
-        err
-      );
-      res
-        .status(500)
-        .send(`Could not download generated ${downloadType}/${type}`);
+      next({
+        error: err,
+        message: `Could not download generated ${downloadType}/${type}`,
+      });
     });
 }

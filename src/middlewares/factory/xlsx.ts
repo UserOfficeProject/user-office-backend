@@ -15,12 +15,11 @@ import {
   collectSEPlXLSXData,
   defaultSEPDataColumns,
 } from '../../factory/xlsx/sep';
-import { logger } from '../../utils/Logger';
 import { RequestWithUser } from '../factory';
 
 const router = express.Router();
 
-router.get(`/${XLSXType.PROPOSAL}/:proposal_ids`, async (req, res) => {
+router.get(`/${XLSXType.PROPOSAL}/:proposal_ids`, async (req, res, next) => {
   try {
     const userWithRole = (req as RequestWithUser).user;
     const proposalIds: number[] = req.params.proposal_ids
@@ -55,15 +54,15 @@ router.get(`/${XLSXType.PROPOSAL}/:proposal_ids`, async (req, res) => {
       DownloadType.XLSX,
       XLSXType.PROPOSAL,
       { data, meta },
-      res
+      res,
+      next
     );
   } catch (e) {
-    logger.logException('Could not download generated XLSX', e);
-    res.status(500).send('Could not download generated XLSX');
+    next(e);
   }
 });
 
-router.get(`/${XLSXType.SEP}/:sep_id/call/:call_id`, async (req, res) => {
+router.get(`/${XLSXType.SEP}/:sep_id/call/:call_id`, async (req, res, next) => {
   try {
     const userWithRole = (req as RequestWithUser).user;
 
@@ -90,10 +89,15 @@ router.get(`/${XLSXType.SEP}/:sep_id/call/:call_id`, async (req, res) => {
 
     meta.singleFilename = filename;
 
-    callFactoryService(DownloadType.XLSX, XLSXType.SEP, { data, meta }, res);
+    callFactoryService(
+      DownloadType.XLSX,
+      XLSXType.SEP,
+      { data, meta },
+      res,
+      next
+    );
   } catch (e) {
-    logger.logException('Could not download generated XLSX', e);
-    res.status(500).send('Could not download generated XLSX');
+    next(e);
   }
 });
 
