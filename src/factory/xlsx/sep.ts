@@ -1,5 +1,6 @@
 import baseContext from '../../buildContext';
 import { UserWithRole } from '../../models/User';
+import { average, getGrades } from '../../utils/mathFunctions';
 import { getCurrentTimestamp } from '../util';
 
 type SEPXLSXData = Array<{
@@ -7,14 +8,60 @@ type SEPXLSXData = Array<{
   rows: Array<Array<string | number>>;
 }>;
 
+type RowObj = {
+  propShortCode?: string;
+  propTitle?: string;
+  principalInv: string;
+  instrAvailTime?: number;
+  techReviewTimeAllocation?: number;
+  propReviewAvgScore?: number;
+  propSEPRankOrder: number | null;
+  inAvailZone?: string | null;
+};
+
 export const defaultSEPDataColumns = [
   'Proposal Short Code',
+  'Proposal Title',
   'Principal Investigator',
   'Instrument available time',
   'Technical review allocated time',
+  'Average Score',
   'Current rank',
-  'TODO',
+  'Is in availability zone',
 ];
+
+const sortByRankOrder = (a: RowObj, b: RowObj) => {
+  if (a.propSEPRankOrder === b.propSEPRankOrder) {
+    return -1;
+  } else if (a.propSEPRankOrder === null) {
+    return 1;
+  } else if (b.propSEPRankOrder === null) {
+    return -1;
+  } else {
+    return a.propSEPRankOrder > b.propSEPRankOrder ? 1 : -1;
+  }
+};
+
+const sortByRankOrAverageScore = (data: RowObj[]) => {
+  let allocationTimeSum = 0;
+
+  return data
+    .sort((a, b) =>
+      (a.propReviewAvgScore || 0) > (b.propReviewAvgScore || 0) ? 1 : -1
+    )
+    .sort(sortByRankOrder)
+    .map(row => {
+      const proposalAllocationTime = row.techReviewTimeAllocation || 0;
+
+      const isInAvailabilityZone =
+        allocationTimeSum + proposalAllocationTime > (row.instrAvailTime || 0);
+      allocationTimeSum = allocationTimeSum + proposalAllocationTime;
+
+      row.inAvailZone = isInAvailabilityZone ? 'yes' : 'no';
+
+      return row;
+    });
+};
 
 export const collectSEPlXLSXData = async (
   sepId: number,
@@ -59,17 +106,17 @@ export const collectSEPlXLSXData = async (
     })
   );
 
-  // const proposalsReviews = await Promise.all(
-  //   instrumentsProposals.map(proposals => {
-  //     return Promise.all(
-  //       proposals.map(proposal =>
-  //         proposal
-  //           ? baseContext.queries.review.reviewsForProposal(user, proposal.id)
-  //           : null
-  //       )
-  //     );
-  //   })
-  // );
+  const proposalsReviews = await Promise.all(
+    instrumentsProposals.map(proposals => {
+      return Promise.all(
+        proposals.map(proposal =>
+          proposal
+            ? baseContext.queries.review.reviewsForProposal(user, proposal.id)
+            : null
+        )
+      );
+    })
+  );
 
   const proposalsTechnicalReviews = await Promise.all(
     instrumentsProposals.map(proposals => {
@@ -102,7 +149,7 @@ export const collectSEPlXLSXData = async (
 
   instruments.forEach((instrument, indx) => {
     const proposals = instrumentsProposals[indx];
-    // const reviews = proposalsReviews[indx];
+    const proposalReviews = proposalsReviews[indx];
     const proposalPrincipalInvestigators =
       proposalsPrincipalInvestigators[indx];
     const technicalReviews = proposalsTechnicalReviews[indx];
@@ -111,20 +158,34 @@ export const collectSEPlXLSXData = async (
       const { firstname = '<missing>', lastname = '<missing>' } =
         proposalPrincipalInvestigators[pIndx] ?? {};
       const technicalReview = technicalReviews[pIndx];
+      const reviews = proposalReviews[pIndx];
 
-      return [
-        proposal?.shortCode ?? '<missing>', // Proposal Short Code
-        `${firstname} ${lastname}`, // Principal Investigator
-        instrument.availabilityTime ?? '<missing>', // Instrument available time
-        technicalReview?.timeAllocation ?? '<missing>', // Technical review allocated time
-        proposal?.rankOrder ?? '<missing>', // Current rank
-        '<TODO>', // hmm
-      ];
+      const proposalAverageScore = average(getGrades(reviews)) || 0;
+
+      return {
+        propShortCode: proposal?.shortCode,
+        propTitle: proposal?.title,
+        principalInv: `${firstname} ${lastname}`,
+        instrAvailTime: instrument.availabilityTime,
+        techReviewTimeAllocation: technicalReview?.timeAllocation,
+        propReviewAvgScore: proposalAverageScore,
+        propSEPRankOrder: proposal?.rankOrder ?? null,
+        inAvailZone: null,
+      };
     });
 
     out.push({
       sheetName: instrument.name,
-      rows,
+      rows: sortByRankOrAverageScore(rows).map(row => [
+        row.propShortCode ?? '<missing>',
+        row.propTitle ?? '<missing>',
+        row.principalInv,
+        row.instrAvailTime ?? '<missing>',
+        row.techReviewTimeAllocation ?? '<missing>',
+        row.propReviewAvgScore ?? '<missing>',
+        row.propSEPRankOrder ?? '<missing>',
+        row.inAvailZone ?? '<missing>',
+      ]),
     });
   });
 
