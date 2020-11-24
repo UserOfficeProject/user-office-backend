@@ -80,7 +80,7 @@ export const collectProposalXLSXData = async (
     absoluteDifference(getGrades(reviews)) || 'NA',
     average(getGrades(reviews)) || 'NA',
     proposal.commentForManagement ?? '<missing>',
-    ProposalEndStatus[proposal.finalStatus],
+    ProposalEndStatus[proposal.finalStatus] ?? '<missing>',
     proposal.rankOrder ?? '<missing>',
   ];
 };

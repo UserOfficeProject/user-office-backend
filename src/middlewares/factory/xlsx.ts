@@ -76,11 +76,6 @@ router.get(`/${XLSXType.SEP}/:sep_id/call/:call_id`, async (req, res) => {
       );
     }
 
-    const userAuthorization = baseContext.userAuthorization;
-
-    if (!userAuthorization.isUserOfficer(userWithRole)) {
-      throw new Error('User has insufficient rights');
-    }
     const meta: XLSXMetaBase = {
       singleFilename: '',
       collectionFilename: '', // not used
