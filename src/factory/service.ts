@@ -23,8 +23,12 @@ export enum PDFType {
 export type MetaBase = { collectionFilename: string; singleFilename: string };
 export type XLSXMetaBase = MetaBase & { columns: string[] };
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const ENDPOINT = process.env.USER_OFFICE_FACTORY_ENDPOINT!;
+const ENDPOINT = process.env.USER_OFFICE_FACTORY_ENDPOINT;
+
+if (!ENDPOINT) {
+  console.error('`USER_OFFICE_FACTORY_ENDPOINT` is missing');
+  process.exit(1);
+}
 
 export default function callFactoryService<TData, TMeta extends MetaBase>(
   downloadType: DownloadType,
