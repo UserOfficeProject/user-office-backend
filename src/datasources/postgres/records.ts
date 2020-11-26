@@ -114,14 +114,19 @@ export interface AnswerRecord {
   readonly created_at: Date;
 }
 
-interface DependencyCondition {
+export interface Dependency {
+  condition: DependencyCondition;
+  dependencyId: string;
+}
+
+export interface DependencyCondition {
   condition: EvaluatorOperator;
   params: string | boolean | number;
 }
 export interface QuestionTemplateRelRecord {
   readonly id: number;
   readonly question_id: string;
-  readonly template_id: string;
+  readonly template_id: number;
   readonly topic_id: number;
   readonly sort_order: number;
   readonly config: string;
@@ -292,6 +297,13 @@ export interface InstrumentRecord {
   readonly full_count: number;
 }
 
+export interface CallHasInstrumentRecord {
+  readonly call_id: number;
+  readonly instrument_id: number;
+  readonly availability_time: number;
+  readonly submitted: boolean;
+}
+
 export interface InstrumentWithAvailabilityTimeRecord {
   readonly instrument_id: number;
   readonly name: string;
@@ -312,7 +324,9 @@ export interface SampleRecord {
   readonly sample_id: number;
   readonly title: string;
   readonly creator_id: number;
+  readonly proposal_id: number;
   readonly questionary_id: number;
+  readonly question_id: string;
   readonly safety_status: number;
   readonly safety_comment: string;
   readonly created_at: Date;
@@ -589,7 +603,9 @@ export const createSampleObject = (sample: SampleRecord) => {
     sample.sample_id,
     sample.title,
     sample.creator_id,
+    sample.proposal_id,
     sample.questionary_id,
+    sample.question_id,
     sample.safety_status,
     sample.safety_comment,
     sample.created_at

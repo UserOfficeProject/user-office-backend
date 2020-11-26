@@ -118,7 +118,7 @@ const sampleMutations = new SampleMutations(
   sampleDataSource,
   questionaryDataSource,
   templateDataSource,
-  logger
+  proposalDataSource
 );
 
 const proposalSettingsQueries = new ProposalSettingsQueries(
