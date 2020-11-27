@@ -175,7 +175,10 @@ export const collectSEPlXLSXData = async (
     });
 
     out.push({
-      sheetName: instrument.name,
+      sheetName:
+        // Sheet names can't exceed 31 characters
+        // use the short code and cut everything after 30 chars
+        instrument.shortCode.substr(0, 30),
       rows: sortByRankOrAverageScore(rows).map(row => [
         row.propShortCode ?? '<missing>',
         row.propTitle ?? '<missing>',
