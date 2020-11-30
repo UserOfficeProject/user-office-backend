@@ -263,6 +263,10 @@ export default class UserMutations {
     if (!user) {
       return rejection('INTERNAL_ERROR');
     }
+
+    delete args.orcid;
+    delete args.refreshToken;
+
     user = {
       ...user,
       ...args,
