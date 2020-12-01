@@ -95,7 +95,13 @@ export const collectSEPlXLSXData = async (
   const instrumentsProposals = await Promise.all(
     instrumentsSepsProposalIds.map(sepProposalIds => {
       if (!sepProposalIds) {
-        throw new Error('todo');
+        const instrumentIds = instruments.map(({ id }) => id).join(', ');
+
+        throw new Error(
+          `SEP with ID '${sepId}'/` +
+            `Call with ID '${callId}/'` +
+            `Instruments with IDs '${instrumentIds}' not found, or the user has insufficient rights`
+        );
       }
 
       return Promise.all(

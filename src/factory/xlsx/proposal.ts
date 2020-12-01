@@ -52,7 +52,7 @@ export const collectProposalXLSXData = async (
 
   if (!proposer) {
     throw new Error(
-      `Proposal with ID '${proposalId}' not found, or the user has insufficient rights`
+      `Proposer with ID '${proposal.proposerId}' not found, or the user has insufficient rights`
     );
   }
 
