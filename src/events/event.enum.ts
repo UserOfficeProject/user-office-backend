@@ -62,7 +62,10 @@ export const EventLabel = new Map<Event, string>([
     Event.PROPOSAL_SAMPLE_SAFE,
     'Event occurs when proposal sample review gets submitted with value of low risk',
   ],
-  [Event.PROPOSAL_ALL_SEP_REVIEWERS_SELECTED, ''],
+  [
+    Event.PROPOSAL_ALL_SEP_REVIEWERS_SELECTED,
+    'Event occurs when all SEP reviewers are selected on a proposal',
+  ],
   [
     Event.PROPOSAL_SEP_REVIEW_SUBMITTED,
     'Event occurs when SEP review is submitted',

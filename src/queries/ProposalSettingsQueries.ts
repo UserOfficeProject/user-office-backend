@@ -110,7 +110,7 @@ export default class ProposalSettingsQueries {
     const allProposalEvents = allEventsArray
       .filter(
         eventItem =>
-          eventItem.startsWith('PROPOSAL_') || eventItem.startsWith('CALL')
+          eventItem.startsWith('PROPOSAL_') || eventItem.startsWith('CALL_')
       )
       .map(eventItem => ({
         name: eventItem,
