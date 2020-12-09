@@ -95,7 +95,6 @@ const instrumentMutations = new InstrumentMutations(
 
 const questionaryQueries = new QuestionaryQueries(
   questionaryDataSource,
-  templateDataSource,
   questionaryAuthorization
 );
 const questionaryMutations = new QuestionaryMutations(
