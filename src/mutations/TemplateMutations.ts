@@ -68,6 +68,14 @@ export default class TemplateMutations {
           'sample_basis'
         );
         break;
+      case TemplateCategoryId.SHIPMENT_DECLARATION:
+        await this.createInitialTopic(
+          newTemplate.templateId,
+          0,
+          'New shipment',
+          'shipment_basis'
+        );
+        break;
     }
 
     return newTemplate;
