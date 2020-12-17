@@ -39,42 +39,6 @@ const getTopicActiveAnswers = (
     : [];
 };
 
-const collectSubtemplateData = async (answer: Answer) => {
-  const subQuestionaryIds = answer.value;
-  const attachmentIds: string[] = [];
-
-  const questionaryAnswers: Array<{ fields: Answer[] }> = [];
-
-  for (const subQuestionaryId of subQuestionaryIds) {
-    const subQuestionarySteps = await questionaryDataSource.getQuestionarySteps(
-      subQuestionaryId
-    );
-
-    const stepAnswers: Answer[] = [];
-
-    subQuestionarySteps.forEach(questionaryStep => {
-      const answers = getTopicActiveAnswers(
-        subQuestionarySteps,
-        questionaryStep.topic.id
-      );
-
-      for (const answer of answers) {
-        stepAnswers.push(answer);
-        attachmentIds.push(...getFileAttachmentIds(answer));
-      }
-    });
-
-    questionaryAnswers.push({
-      fields: stepAnswers,
-    });
-  }
-
-  return {
-    questionaryAnswers,
-    attachmentIds,
-  };
-};
-
 export const collectProposalPDFData = async (
   proposalId: number,
   user: UserWithRole,
@@ -152,7 +116,16 @@ export const collectProposalPDFData = async (
     }
 
     const topic = step.topic;
-    const answers = getTopicActiveAnswers(questionarySteps, topic.id);
+    const answers = getTopicActiveAnswers(questionarySteps, topic.id).filter(
+      // skip `PROPOSAL_BASIS` types
+      answer => answer.question.dataType !== DataType.PROPOSAL_BASIS
+    );
+
+    // if the questionary step has nothing else but `PROPOSAL_BASIS` question
+    // skip the whole step because the first page already has every related information
+    if (answers.length === 0) {
+      continue;
+    }
 
     const questionaryAttachmentIds = [];
 
@@ -162,13 +135,15 @@ export const collectProposalPDFData = async (
       questionaryAttachmentIds.push(...getFileAttachmentIds(answer));
 
       if (answer.question.dataType === DataType.SAMPLE_DECLARATION) {
-        const {
-          attachmentIds,
-          questionaryAnswers,
-        } = await collectSubtemplateData(answer);
+        if (!answer.value) {
+          continue;
+        }
 
-        answers[i].value = questionaryAnswers;
-        questionaryAttachmentIds.push(...attachmentIds);
+        answer.value = samples
+          .filter(
+            sample => sample.questionId === answer.question.proposalQuestionId
+          )
+          .map(sample => sample);
       }
     }
 
