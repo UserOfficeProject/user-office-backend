@@ -135,10 +135,6 @@ export const collectProposalPDFData = async (
       questionaryAttachmentIds.push(...getFileAttachmentIds(answer));
 
       if (answer.question.dataType === DataType.SAMPLE_DECLARATION) {
-        if (!answer.value) {
-          continue;
-        }
-
         answer.value = samples
           .filter(
             sample => sample.questionId === answer.question.proposalQuestionId
