@@ -297,10 +297,9 @@ export interface InstrumentRecord {
   readonly full_count: number;
 }
 
-export interface CallHasInstrumentRecord {
-  readonly call_id: number;
+export interface InstrumentHasProposalsRecord {
   readonly instrument_id: number;
-  readonly availability_time: number;
+  readonly proposal_id: number;
   readonly submitted: boolean;
 }
 

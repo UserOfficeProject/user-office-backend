@@ -14,7 +14,7 @@ import {
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { CallHasInstrument, Instrument } from '../models/Instrument';
+import { Instrument, InstrumentHasProposals } from '../models/Instrument';
 import { ProposalIds } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
@@ -260,7 +260,7 @@ export default class InstrumentMutations {
   async submitInstrument(
     agent: UserWithRole | null,
     args: InstrumentSubmitArgs
-  ): Promise<CallHasInstrument | Rejection> {
+  ): Promise<InstrumentHasProposals | Rejection> {
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
       !(await this.userAuth.isChairOrSecretaryOfSEP(
@@ -271,14 +271,8 @@ export default class InstrumentMutations {
       return rejection('NOT_ALLOWED');
     }
 
-    /**
-     * TODO:
-     * Maybe we need the sepId here as well because like this instrument is submitted for all SEPs.
-     * For example if we have proposals on different SEPs but same instrument and call and we submit the instrument for that call it gets submitted for all SEPs.
-     * Also maybe we should check first if all proposals under this instrument in the SEP have rankings and then submit the instrument.
-     */
     return this.dataSource
-      .submitInstrument(args.callId, args.instrumentId)
+      .submitInstrument(args.proposalIds, args.instrumentId)
       .then(result => result)
       .catch(error => {
         logger.logException('Could not submit instrument', error, {

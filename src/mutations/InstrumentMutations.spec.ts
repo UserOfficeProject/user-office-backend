@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {
   InstrumentDataSourceMock,
   dummyInstrument,
-  dummyCallHasInstrument,
+  dummyInstrumentHasProposals,
 } from '../datasources/mockups/InstrumentDataSource';
 import { ReviewDataSourceMock } from '../datasources/mockups/ReviewDataSource';
 import { SEPDataSourceMock } from '../datasources/mockups/SEPDataSource';
@@ -159,10 +159,10 @@ describe('Test Instrument Mutations', () => {
   test('A logged in user officer can submit instrument attached to a call from a SEP', () => {
     return expect(
       instrumentMutations.submitInstrument(dummyUserOfficerWithRole, {
-        callId: 1,
         instrumentId: 1,
+        proposalIds: [1, 2],
         sepId: 1,
       })
-    ).resolves.toBe(dummyCallHasInstrument);
+    ).resolves.toBe(dummyInstrumentHasProposals);
   });
 });

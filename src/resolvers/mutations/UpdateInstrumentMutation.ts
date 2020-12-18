@@ -49,7 +49,7 @@ export class InstrumentSubmitArgs {
   public instrumentId: number;
 
   @Field(() => Int)
-  public callId: number;
+  public proposalIds: number[];
 
   @Field(() => Int)
   public sepId: number;
