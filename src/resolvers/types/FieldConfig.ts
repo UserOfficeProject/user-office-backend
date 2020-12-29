@@ -89,8 +89,8 @@ export class SubtemplateConfig {
   @Field(() => Int, { nullable: true })
   maxEntries: number | null;
 
-  @Field(() => Int)
-  templateId: number;
+  @Field(() => Int, { nullable: true })
+  templateId: number | null;
 
   @Field(() => String)
   templateCategory: string;

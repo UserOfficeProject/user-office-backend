@@ -11,7 +11,7 @@ export const sampleDeclarationDefinition: Question = {
     config.maxEntries = 0;
     config.templateCategory =
       TemplateCategoryId[TemplateCategoryId.SAMPLE_DECLARATION];
-    config.templateId = 0;
+    config.templateId = null;
     config.small_label = '';
     config.required = false;
 

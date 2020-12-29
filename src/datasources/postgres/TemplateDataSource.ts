@@ -472,6 +472,24 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       });
   }
 
+  async getActiveTemplateId(categoryId: TemplateCategoryId): Promise<number> {
+    return database('active_templates')
+      .select('template_id')
+      .where('category_id', categoryId)
+      .first()
+      .then((result: { template_id: number }) => {
+        if (!result) {
+          logger.logError('No active template found for specified category', {
+            categoryId,
+          });
+
+          throw new Error('No active template found for specified category');
+        }
+
+        return result.template_id;
+      });
+  }
+
   async deleteQuestion(questionId: string): Promise<Question> {
     const [error, row] = await to(
       database('questions')

@@ -2,11 +2,13 @@ import {
   proposalDataSource,
   questionaryDataSource,
   sampleDataSource,
+  shipmentDataSource,
   templateDataSource,
 } from '../datasources';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
+import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { TemplateCategoryId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
@@ -45,7 +47,6 @@ class ProposalQuestionaryAuthorizer implements QuestionaryAuthorizer {
 class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
   constructor(
     private proposalDataSource: ProposalDataSource,
-    private questionaryDataSource: QuestionaryDataSource,
     private sampleDataSource: SampleDataSource
   ) {}
   async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
@@ -79,7 +80,58 @@ class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
 
     const sample = queryResult[0];
 
-    const proposal = await proposalDataSource.get(sample.proposalId);
+    const proposal = await this.proposalDataSource.get(sample.proposalId);
+
+    if (!proposal) {
+      logger.logError('Could not find proposal for questionary', {
+        questionaryId,
+      });
+
+      return false;
+    }
+
+    return userAuthorization.hasAccessRights(agent, proposal);
+  }
+}
+
+class ShipmentDeclarationQuestionaryAuthorizer
+  implements QuestionaryAuthorizer {
+  constructor(
+    private proposalDataSource: ProposalDataSource,
+    private shipmentDataSource: ShipmentDataSource
+  ) {}
+  async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
+    return this.hasRights(agent, questionaryId);
+  }
+  async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
+    return this.hasRights(agent, questionaryId);
+  }
+
+  private async hasRights(agent: UserWithRole | null, questionaryId: number) {
+    if (!agent) {
+      return false;
+    }
+
+    if (await userAuthorization.isUserOfficer(agent)) {
+      return true;
+    }
+
+    const queryResult = await this.shipmentDataSource.getAll({
+      filter: { questionaryId },
+    });
+
+    if (queryResult.length !== 1) {
+      logger.logError(
+        'Expected to find exactly one sample with questionaryId',
+        { questionaryId }
+      );
+
+      return false;
+    }
+
+    const shipment = queryResult[0];
+
+    const proposal = await this.proposalDataSource.get(shipment.proposalId);
 
     if (!proposal) {
       logger.logError('Could not find proposal for questionary', {
@@ -98,7 +150,9 @@ export class QuestionaryAuthorization {
   constructor(
     private proposalDataSource: ProposalDataSource,
     private questionaryDataSource: QuestionaryDataSource,
-    private templateDataSource: TemplateDataSource
+    private templateDataSource: TemplateDataSource,
+    private sampleDataSource: SampleDataSource,
+    private shipmentDataSource: ShipmentDataSource
   ) {
     this.authorizers.set(
       TemplateCategoryId.PROPOSAL_QUESTIONARY,
@@ -107,9 +161,15 @@ export class QuestionaryAuthorization {
     this.authorizers.set(
       TemplateCategoryId.SAMPLE_DECLARATION,
       new SampleDeclarationQuestionaryAuthorizer(
-        proposalDataSource,
-        questionaryDataSource,
-        sampleDataSource
+        this.proposalDataSource,
+        this.sampleDataSource
+      )
+    );
+    this.authorizers.set(
+      TemplateCategoryId.SHIPMENT_DECLARATION,
+      new ShipmentDeclarationQuestionaryAuthorizer(
+        this.proposalDataSource,
+        this.shipmentDataSource
       )
     );
   }
@@ -158,5 +218,7 @@ export class QuestionaryAuthorization {
 export const questionaryAuthorization = new QuestionaryAuthorization(
   proposalDataSource,
   questionaryDataSource,
-  templateDataSource
+  templateDataSource,
+  sampleDataSource,
+  shipmentDataSource
 );

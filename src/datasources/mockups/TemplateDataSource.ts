@@ -8,9 +8,9 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
+  TemplatesHasQuestions,
   TemplateStep,
   Topic,
-  TemplatesHasQuestions,
 } from '../../models/Template';
 import { CreateTemplateArgs } from '../../resolvers/mutations/CreateTemplateMutation';
 import { CreateTopicArgs } from '../../resolvers/mutations/CreateTopicMutation';
@@ -318,5 +318,9 @@ export class TemplateDataSourceMock implements TemplateDataSource {
 
   async getTemplateCategories(): Promise<TemplateCategory[]> {
     return [new TemplateCategory(1, 'Proposal Questionaries')];
+  }
+
+  async getActiveTemplateId(categoryId: TemplateCategoryId): Promise<number> {
+    return 1;
   }
 }
