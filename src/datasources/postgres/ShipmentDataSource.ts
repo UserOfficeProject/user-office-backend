@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { logger } from '@esss-swap/duo-logger';
+
 import { Shipment } from '../../models/Shipment';
 import { AddSamplesToShipmentArgs } from '../../resolvers/mutations/AddSamplesShipmentMutation';
 import { UpdateShipmentArgs } from '../../resolvers/mutations/UpdateShipmentMutation';
 import { ShipmentsArgs } from '../../resolvers/queries/ShipmentsQuery';
-import { logger } from '../../utils/Logger';
 import { ShipmentDataSource } from '../ShipmentDataSource';
 import database from './database';
 import { createShipmentObject, ShipmentRecord } from './records';

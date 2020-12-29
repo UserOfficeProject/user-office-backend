@@ -1,10 +1,11 @@
+import { logger } from '@esss-swap/duo-logger';
+
 import { shipmentDataSource } from '../datasources';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { ShipmentsArgs } from '../resolvers/queries/ShipmentsQuery';
-import { logger } from '../utils/Logger';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 
 export default class ShipmentQueries {

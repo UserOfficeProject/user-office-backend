@@ -1,3 +1,5 @@
+import { logger } from '@esss-swap/duo-logger';
+
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
@@ -11,7 +13,6 @@ import { rejection } from '../rejection';
 import { AddSamplesToShipmentArgs } from '../resolvers/mutations/AddSamplesShipmentMutation';
 import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
-import { logger } from '../utils/Logger';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { userAuthorization } from '../utils/UserAuthorization';
