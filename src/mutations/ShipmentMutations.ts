@@ -42,6 +42,15 @@ export default class ShipmentMutations {
       TemplateCategoryId.SHIPMENT_DECLARATION
     );
 
+    if (!templateId) {
+      logger.logError('Cant create shipment, no active template has been set', {
+        args,
+        agent,
+      });
+
+      return rejection('INTERNAL_ERROR');
+    }
+
     const template = await this.templateDataSource.getTemplate(templateId);
     if (template?.categoryId !== TemplateCategoryId.SHIPMENT_DECLARATION) {
       logger.logError('Cant create shipment with this template', {

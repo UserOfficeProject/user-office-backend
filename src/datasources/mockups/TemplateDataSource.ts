@@ -320,7 +320,13 @@ export class TemplateDataSourceMock implements TemplateDataSource {
     return [new TemplateCategory(1, 'Proposal Questionaries')];
   }
 
-  async getActiveTemplateId(categoryId: TemplateCategoryId): Promise<number> {
+  async setActiveTemplate(args: any): Promise<boolean> {
+    return true;
+  }
+
+  async getActiveTemplateId(
+    categoryId: TemplateCategoryId
+  ): Promise<number | null> {
     return 1;
   }
 }

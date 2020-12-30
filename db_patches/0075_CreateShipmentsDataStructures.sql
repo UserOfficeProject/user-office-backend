@@ -52,8 +52,8 @@ BEGIN
       ); 
 
       CREATE TABLE shipments_has_samples (
-            shipment_id INT NOT NULL REFERENCES shipments(shipment_id)
-          , sample_id INT NOT NULL REFERENCES samples(sample_id)
+            shipment_id INT NOT NULL REFERENCES shipments(shipment_id) ON DELETE CASCADE
+          , sample_id INT NOT NULL REFERENCES samples(sample_id) ON DELETE CASCADE
       ); 
     END;
 	END IF;
