@@ -46,11 +46,17 @@ import ShipmentQueries from './queries/ShipmentQueries';
 import TemplateQueries from './queries/TemplateQueries';
 import UserQueries from './queries/UserQueries';
 import { questionaryAuthorization } from './utils/QuestionaryAuthorization';
-import { sampleAuthorization } from './utils/SampleAuthorization';
+import { SampleAuthorization } from './utils/SampleAuthorization';
 import { shipmentAuthorization } from './utils/ShipmentAuthorization';
 import { userAuthorization } from './utils/UserAuthorization';
 
 // From this point nothing is site-specific
+
+const sampleAuthorization = new SampleAuthorization(
+  sampleDataSource,
+  proposalDataSource
+);
+
 const userQueries = new UserQueries(userDataSource);
 const userMutations = new UserMutations(userDataSource, userAuthorization);
 
@@ -110,16 +116,14 @@ const questionaryMutations = new QuestionaryMutations(
   logger
 );
 
-const sampleQueries = new SampleQueries(
-  sampleDataSource,
-  questionaryDataSource
-);
+const sampleQueries = new SampleQueries(sampleDataSource, sampleAuthorization);
 
 const sampleMutations = new SampleMutations(
   sampleDataSource,
   questionaryDataSource,
   templateDataSource,
-  proposalDataSource
+  proposalDataSource,
+  sampleAuthorization
 );
 
 const proposalSettingsQueries = new ProposalSettingsQueries(
