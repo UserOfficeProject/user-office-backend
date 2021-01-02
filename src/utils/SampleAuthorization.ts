@@ -1,8 +1,9 @@
+import { logger } from '@esss-swap/duo-logger';
+
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { UserWithRole } from '../models/User';
 import { userAuthorization } from '../utils/UserAuthorization';
-import { logger } from './Logger';
 
 export class SampleAuthorization {
   constructor(

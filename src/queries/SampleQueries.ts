@@ -1,10 +1,11 @@
+import { logger } from '@esss-swap/duo-logger';
+
 import { sampleDataSource } from '../datasources';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { SamplesArgs } from '../resolvers/queries/SamplesQuery';
-import { logger } from '../utils/Logger';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 
 export default class SampleQueries {

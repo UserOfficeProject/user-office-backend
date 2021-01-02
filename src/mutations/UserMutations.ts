@@ -1,3 +1,4 @@
+import { logger } from '@esss-swap/duo-logger';
 import {
   deleteUserValidationSchema,
   createUserByEmailInviteValidationSchema,
@@ -37,7 +38,6 @@ import {
   UpdateUserRolesArgs,
 } from '../resolvers/mutations/UpdateUserMutation';
 import { signToken, verifyToken } from '../utils/jwt';
-import { logger } from '../utils/Logger';
 import { UserAuthorization } from '../utils/UserAuthorization';
 
 export default class UserMutations {
@@ -544,5 +544,21 @@ export default class UserMutations {
 
       return rejection('INTERNAL_ERROR');
     }
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  setUserEmailVerified(
+    _: UserWithRole | null,
+    id: number
+  ): Promise<User | null> {
+    return this.dataSource.setUserEmailVerified(id);
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  setUserNotPlaceholder(
+    _: UserWithRole | null,
+    id: number
+  ): Promise<User | null> {
+    return this.dataSource.setUserNotPlaceholder(id);
   }
 }
