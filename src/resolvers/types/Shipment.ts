@@ -61,6 +61,9 @@ export class ShipmentResolver {
     @Root() shipment: Shipment,
     @Ctx() context: ResolverContext
   ): Promise<Sample[] | null> {
-    return [];
+    return context.queries.sample.getSamplesByShipmentId(
+      context.user,
+      shipment.id
+    );
   }
 }

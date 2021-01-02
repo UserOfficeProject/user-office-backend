@@ -1,6 +1,5 @@
-import { Logger, logger } from '@esss-swap/duo-logger';
+import { logger } from '@esss-swap/duo-logger';
 
-import { proposalDataSource, shipmentDataSource } from '../datasources';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { UserWithRole } from '../models/User';
@@ -9,29 +8,51 @@ import { userAuthorization } from './UserAuthorization';
 export class ShipmentAuthorization {
   constructor(
     private shipmentDataSource: ShipmentDataSource,
-    private proposalDataSource: ProposalDataSource,
-    private logger: Logger
+    private proposalDataSource: ProposalDataSource
   ) {}
 
-  async hasReadRights(agent: UserWithRole | null, shipmentId: number) {
+  async hasReadRights(
+    agent: UserWithRole | null,
+    shipmentId: number | number[]
+  ) {
     return this.hasAccessRights(agent, shipmentId);
   }
 
-  async hasWriteRights(agent: UserWithRole | null, shipmentId: number) {
-    return this.hasAccessRights(agent, shipmentId);
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    shipmentId: number | number[]
+  ) {
+    return await this.hasAccessRights(agent, shipmentId);
   }
 
   private async hasAccessRights(
     agent: UserWithRole | null,
-    shipmentId: number
+    shipmentId: number | number[]
   ) {
     if (await userAuthorization.isUserOfficer(agent)) {
       return true;
     }
 
+    if (typeof shipmentId === 'number') {
+      return this.hasAccessToShipment(agent, shipmentId);
+    }
+
+    if (Array.isArray(shipmentId)) {
+      return Promise.all(
+        shipmentId.map(id => this.hasAccessToShipment(agent, id))
+      );
+    }
+
+    throw new Error('Unsupported datatype');
+  }
+
+  private async hasAccessToShipment(
+    agent: UserWithRole | null,
+    shipmentId: number
+  ) {
     const shipment = await this.shipmentDataSource.get(shipmentId);
     if (!shipment) {
-      this.logger.logError('Could not find shipment', {
+      logger.logError('Could not find shipment', {
         shipmentId,
       });
 
@@ -41,7 +62,7 @@ export class ShipmentAuthorization {
     const proposal = await this.proposalDataSource.get(shipment.proposalId);
 
     if (!proposal) {
-      this.logger.logError('Could not find proposal for shipment', {
+      logger.logError('Could not find proposal for shipment', {
         shipmentId,
       });
 
@@ -51,9 +72,3 @@ export class ShipmentAuthorization {
     return userAuthorization.hasAccessRights(agent, proposal);
   }
 }
-
-export const shipmentAuthorization = new ShipmentAuthorization(
-  shipmentDataSource,
-  proposalDataSource,
-  logger
-);

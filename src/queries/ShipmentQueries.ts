@@ -1,6 +1,5 @@
 import { logger } from '@esss-swap/duo-logger';
 
-import { shipmentDataSource } from '../datasources';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
@@ -15,13 +14,16 @@ export default class ShipmentQueries {
   ) {}
 
   async getShipment(agent: UserWithRole | null, shipmentId: number) {
-    if (!this.shipmentAuthorization.hasReadRights(agent, shipmentId)) {
+    if (
+      (await this.shipmentAuthorization.hasReadRights(agent, shipmentId)) !==
+      true
+    ) {
       logger.logWarn('Unauthorized getShipment access', { agent, shipmentId });
 
       return null;
     }
 
-    return shipmentDataSource.get(shipmentId);
+    return this.dataSource.get(shipmentId);
   }
 
   async getShipments(agent: UserWithRole | null, args: ShipmentsArgs) {
