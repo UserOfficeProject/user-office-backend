@@ -270,6 +270,7 @@ export interface SEPProposalRecord {
   readonly proposal_id: number;
   readonly sep_id: number;
   readonly date_assigned: Date;
+  readonly instrument_submitted?: boolean;
 }
 
 export interface SEPAssignmentRecord {

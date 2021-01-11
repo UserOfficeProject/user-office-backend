@@ -98,6 +98,7 @@ const instrumentQueries = new InstrumentQueries(
 );
 const instrumentMutations = new InstrumentMutations(
   instrumentDatasource,
+  sepDataSource,
   userAuthorization
 );
 

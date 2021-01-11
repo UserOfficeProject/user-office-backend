@@ -22,6 +22,7 @@ const userAuthorization = new UserAuthorization(
 
 const instrumentMutations = new InstrumentMutations(
   new InstrumentDataSourceMock(),
+  new SEPDataSourceMock(),
   userAuthorization
 );
 
@@ -160,7 +161,7 @@ describe('Test Instrument Mutations', () => {
     return expect(
       instrumentMutations.submitInstrument(dummyUserOfficerWithRole, {
         instrumentId: 1,
-        proposalIds: [1, 2],
+        callId: 1,
         sepId: 1,
       })
     ).resolves.toBe(dummyInstrumentHasProposals);

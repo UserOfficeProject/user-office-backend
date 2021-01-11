@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { sepDataSource } from '..';
 import {
   Instrument,
   InstrumentHasProposals,
@@ -268,6 +269,34 @@ export default class PostgresInstrumentDataSource
       });
   }
 
+  async checkIfAllProposalsOnInstrumentSubmitted(
+    instruments: InstrumentWithAvailabilityTimeRecord[],
+    sepId: number,
+    callId: number
+  ): Promise<InstrumentWithAvailabilityTimeRecord[]> {
+    const instrumentsWithSubmittedFlag: InstrumentWithAvailabilityTimeRecord[] = [];
+
+    for (const instrument of instruments) {
+      const allProposalsOnInstrument = await sepDataSource.getSEPProposalsByInstrument(
+        sepId,
+        instrument.instrument_id,
+        callId
+      );
+
+      const allProposalsOnInstrumentSubmitted = allProposalsOnInstrument.reduce(
+        (sum, next) => sum && (next.instrumentSubmitted as boolean),
+        true
+      );
+
+      instrumentsWithSubmittedFlag.push({
+        ...instrument,
+        submitted: allProposalsOnInstrumentSubmitted || false,
+      });
+    }
+
+    return instrumentsWithSubmittedFlag;
+  }
+
   async getInstrumentsBySepId(
     sepId: number,
     callId: number
@@ -305,7 +334,13 @@ export default class PostgresInstrumentDataSource
         )
       )
       .then(async (instruments: InstrumentWithAvailabilityTimeRecord[]) => {
-        const result = instruments.map(instrument => {
+        const instrumentsWithSubmittedFlag = await this.checkIfAllProposalsOnInstrumentSubmitted(
+          instruments,
+          sepId,
+          callId
+        );
+
+        const result = instrumentsWithSubmittedFlag.map(instrument => {
           const calculatedInstrumentAvailabilityTimePerSEP = Math.round(
             (instrument.proposal_count / instrument.full_count) *
               instrument.availability_time

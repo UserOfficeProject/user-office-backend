@@ -12,6 +12,7 @@ import {
 } from '@esss-swap/duo-validation';
 
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
+import { SEPDataSource } from '../datasources/SEPDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
 import { Instrument, InstrumentHasProposals } from '../models/Instrument';
@@ -38,6 +39,7 @@ import { UserAuthorization } from '../utils/UserAuthorization';
 export default class InstrumentMutations {
   constructor(
     private dataSource: InstrumentDataSource,
+    private sepDataSource: SEPDataSource,
     private userAuth: UserAuthorization
   ) {}
 
@@ -271,8 +273,16 @@ export default class InstrumentMutations {
       return rejection('NOT_ALLOWED');
     }
 
+    const submittedInstrumentProposalIds = (
+      await this.sepDataSource.getSEPProposalsByInstrument(
+        args.sepId,
+        args.instrumentId,
+        args.callId
+      )
+    ).map(sepInstrumentProposal => sepInstrumentProposal.proposalId);
+
     return this.dataSource
-      .submitInstrument(args.proposalIds, args.instrumentId)
+      .submitInstrument(submittedInstrumentProposalIds, args.instrumentId)
       .then(result => result)
       .catch(error => {
         logger.logException('Could not submit instrument', error, {
