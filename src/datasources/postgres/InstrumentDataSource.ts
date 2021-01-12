@@ -283,14 +283,13 @@ export default class PostgresInstrumentDataSource
         callId
       );
 
-      const allProposalsOnInstrumentSubmitted = allProposalsOnInstrument.reduce(
-        (sum, next) => sum && (next.instrumentSubmitted as boolean),
-        true
+      const allProposalsOnInstrumentSubmitted = allProposalsOnInstrument.every(
+        item => item.instrumentSubmitted
       );
 
       instrumentsWithSubmittedFlag.push({
         ...instrument,
-        submitted: allProposalsOnInstrumentSubmitted || false,
+        submitted: allProposalsOnInstrumentSubmitted,
       });
     }
 
