@@ -147,25 +147,41 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     const questionRecords: Array<QuestionRecord &
       QuestionTemplateRelRecord & { dependency_natural_key: string }> = (
       await database.raw(`
-      SELECT 
-        templates_has_questions.*, questions.*, dependency.natural_key as dependency_natural_key
-      FROM 
-        templates_has_questions
-      LEFT JOIN
-        questions 
-      ON 
-        templates_has_questions.question_id = 
-        questions.question_id
-      LEFT JOIN
-        questions dependency
-      ON 
-        dependency.question_id = 
-        templates_has_questions.dependency_question_id
-      WHERE
-        templates_has_questions.template_id = ${templateId}
-      ORDER BY
-       templates_has_questions.sort_order`)
+        SELECT
+          templates_has_questions.*,
+          templates_has_questions.question_id,
+          templates_has_questions.template_id,
+          templates_has_questions.topic_id,
+          templates_has_questions.sort_order,
+          templates_has_questions.config,
+          questions.*,
+          question_dependencies.dependency_question_id,
+          question_dependencies.dependency_condition,
+          dependency.natural_key as dependency_natural_key
+        FROM
+          templates_has_questions
+        LEFT JOIN
+          questions
+        ON
+          templates_has_questions.question_id =
+          questions.question_id
+        LEFT JOIN
+          question_dependencies
+        ON
+          question_dependencies.templates_has_questions_id =
+          templates_has_questions.id
+        LEFT JOIN
+            questions dependency
+        ON 
+          dependency.question_id = 
+          templates_has_questions.dependency_question_id
+        WHERE
+          templates_has_questions.template_id = ${templateId}
+        ORDER BY
+         templates_has_questions.sort_order`)
     ).rows;
+
+    console.log(questionRecords);
 
     const fields = questionRecords.map(record =>
       createQuestionTemplateRelationObject(record)
