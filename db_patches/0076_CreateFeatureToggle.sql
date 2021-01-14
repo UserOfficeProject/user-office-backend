@@ -11,6 +11,11 @@ BEGIN
           , is_enabled BOOLEAN DEFAULT false 
           , description VARCHAR(500) NOT NULL DEFAULT ''
       ); 
+
+      INSERT INTO 
+        features(feature_id, is_enabled, description)
+      VALUES
+        ('SHIPPING', true, 'Shipping feature');
     END;
 	END IF;
 END;
