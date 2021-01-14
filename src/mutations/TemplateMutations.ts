@@ -38,6 +38,7 @@ import { DeleteQuestionTemplateRelationArgs } from '../resolvers/mutations/Delet
 import { SetActiveTemplateArgs } from '../resolvers/mutations/SetActiveTemplateMutation';
 import { UpdateQuestionArgs } from '../resolvers/mutations/UpdateQuestionMutation';
 import { UpdateQuestionTemplateRelationArgs } from '../resolvers/mutations/UpdateQuestionTemplateRelationMutation';
+import { UpdateQuestionTemplateRelationSettingsArgs } from '../resolvers/mutations/UpdateQuestionTemplateRelationSettingsMutation';
 import { UpdateTemplateArgs } from '../resolvers/mutations/UpdateTemplateMutation';
 import { UpdateTopicArgs } from '../resolvers/mutations/UpdateTopicMutation';
 
@@ -341,16 +342,36 @@ export default class TemplateMutations {
     agent: UserWithRole | null,
     args: UpdateQuestionTemplateRelationArgs
   ): Promise<Template | Rejection | null> {
-    // const dataToUpsert = await this.getQuestionsDataToUpsert(args);
+    const dataToUpsert = await this.getQuestionsDataToUpsert(args);
 
-    return this.dataSource.updateQuestionTemplateRelation(args).catch(err => {
-      logger.logException('Could not update question rel', err, {
-        agent,
-        args,
+    return this.dataSource
+      .upsertQuestionTemplateRelations(dataToUpsert)
+      .catch(err => {
+        logger.logException('Could not update question rel', err, {
+          agent,
+          args,
+        });
+
+        return rejection('INTERNAL_ERROR');
       });
+  }
 
-      return rejection('INTERNAL_ERROR');
-    });
+  // @ValidateArgs(updateQuestionTemplateRelationValidationSchema)
+  @Authorized([Roles.USER_OFFICER])
+  async updateQuestionTemplateRelationSettings(
+    agent: UserWithRole | null,
+    args: UpdateQuestionTemplateRelationSettingsArgs
+  ): Promise<Template | Rejection | null> {
+    return this.dataSource
+      .updateQuestionTemplateRelationSettings(args)
+      .catch(err => {
+        logger.logException('Could not update question rel', err, {
+          agent,
+          args,
+        });
+
+        return rejection('INTERNAL_ERROR');
+      });
   }
 
   @ValidateArgs(deleteQuestionTemplateRelationValidationSchema)
@@ -415,7 +436,7 @@ export default class TemplateMutations {
     const dataToUpsert = await this.getQuestionsDataToUpsert({
       ...args,
       config: JSON.stringify(question?.config),
-    });
+    } as CreateQuestionTemplateRelationArgs);
 
     return this.dataSource
       .upsertQuestionTemplateRelations(dataToUpsert)

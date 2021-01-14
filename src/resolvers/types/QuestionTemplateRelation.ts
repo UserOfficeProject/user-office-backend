@@ -20,9 +20,6 @@ export class QuestionTemplateRelation
   @Field(() => FieldConfigType)
   public config: typeof FieldConfigType;
 
-  @Field(() => FieldDependency, { nullable: true })
-  public dependency?: FieldDependency;
-
-  @Field(() => [FieldDependency], { nullable: true })
-  public dependencies?: FieldDependency[];
+  @Field(() => [FieldDependency], { defaultValue: [] })
+  public dependencies: FieldDependency[];
 }

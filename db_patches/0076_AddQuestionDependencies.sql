@@ -10,8 +10,8 @@ BEGIN
 					dependency_condition jsonb
 			);
 
-			-- ALTER TABLE templates_has_questions DROP COLUMN dependency_question_id;
-			-- ALTER TABLE templates_has_questions DROP COLUMN dependency_condition;
+			ALTER TABLE templates_has_questions DROP COLUMN dependency_question_id;
+			ALTER TABLE templates_has_questions DROP COLUMN dependency_condition;
     END;
 	END IF;
 END;

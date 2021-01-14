@@ -18,7 +18,7 @@ import { CreateTemplateArgs } from '../../resolvers/mutations/CreateTemplateMuta
 import { CreateTopicArgs } from '../../resolvers/mutations/CreateTopicMutation';
 import { DeleteQuestionTemplateRelationArgs } from '../../resolvers/mutations/DeleteQuestionTemplateRelationMutation';
 import { SetActiveTemplateArgs } from '../../resolvers/mutations/SetActiveTemplateMutation';
-import { UpdateQuestionTemplateRelationArgs } from '../../resolvers/mutations/UpdateQuestionTemplateRelationMutation';
+import { UpdateQuestionTemplateRelationSettingsArgs } from '../../resolvers/mutations/UpdateQuestionTemplateRelationSettingsMutation';
 import { UpdateTemplateArgs } from '../../resolvers/mutations/UpdateTemplateMutation';
 import { TemplatesArgs } from '../../resolvers/queries/TemplatesQuery';
 import { TemplateDataSource } from '../TemplateDataSource';
@@ -200,7 +200,11 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     const dependencies = await this.getQuestionsDependencies(questionRecords);
 
     const fields = questionRecords.map(record => {
-      return createQuestionTemplateRelationObject(record, dependencies);
+      const questionDependencies = dependencies.filter(
+        dependency => dependency.questionId === record.question_id
+      );
+
+      return createQuestionTemplateRelationObject(record, questionDependencies);
     });
 
     const steps = Array<TemplateStep>();
@@ -326,8 +330,8 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     return question;
   }
 
-  async updateQuestionTemplateRelation(
-    args: UpdateQuestionTemplateRelationArgs
+  async updateQuestionTemplateRelationSettings(
+    args: UpdateQuestionTemplateRelationSettingsArgs
   ): Promise<Template> {
     const { templateId, questionId, dependencies, config } = args;
     await database('templates_has_questions')
@@ -335,8 +339,6 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         config: config,
       })
       .where({ question_id: questionId, template_id: templateId });
-
-    console.log(dependencies);
 
     if (dependencies?.length) {
       await database('question_dependencies')
@@ -380,8 +382,6 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         config: item.config,
       });
     }
-
-    console.log(dataToUpsert, collection);
 
     const result = await database.raw(
       `? ON CONFLICT (template_id, question_id)
@@ -463,7 +463,10 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     questionId: string,
     templateId: number
   ): Promise<QuestionTemplateRelation | null> {
-    return database({ templates_has_questions: 'templates_has_questions' })
+    const [questionRecord]: Array<QuestionTemplateRelRecord &
+      QuestionRecord & { dependency_natural_key: string }> = await database({
+      templates_has_questions: 'templates_has_questions',
+    })
       .where({
         'templates_has_questions.question_id': questionId,
       })
@@ -485,21 +488,19 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         'templates_has_questions.*',
         'questions.*',
         'dependency.natural_key as dependency_natural_key'
-      )
-      .then(
-        (
-          resultSet: Array<
-            QuestionTemplateRelRecord &
-              QuestionRecord & { dependency_natural_key: string }
-          >
-        ) => {
-          if (!resultSet || resultSet.length !== 1) {
-            return null;
-          }
-
-          return createQuestionTemplateRelationObject(resultSet[0]);
-        }
       );
+
+    if (!questionRecord) {
+      return null;
+    }
+
+    console.log(questionRecord);
+
+    const dependencies = await this.getQuestionsDependencies([questionRecord]);
+
+    console.log(dependencies);
+
+    return createQuestionTemplateRelationObject(questionRecord, dependencies);
   }
 
   async getQuestionTemplateRelations(
@@ -525,14 +526,6 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           topicId: resultItem.topic_id,
           sortOrder: resultItem.sort_order,
           dependencies: [],
-          // resultItem.dependency_question_id && resultItem.dependency_condition
-          //   ? [
-          //       {
-          //         dependencyId: resultItem.dependency_question_id,
-          //         condition: resultItem.dependency_condition,
-          //       },
-          //     ]
-          //   : null,
           config: resultItem.config,
         }));
       });

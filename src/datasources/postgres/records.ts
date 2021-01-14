@@ -505,7 +505,7 @@ export const createFileMetadata = (record: FileRecord) => {
 export const createQuestionTemplateRelationObject = (
   record: QuestionRecord &
     QuestionTemplateRelRecord & { dependency_natural_key: string },
-  dependencies?: FieldDependency[]
+  dependencies: FieldDependency[]
 ) => {
   return new QuestionTemplateRelation(
     new Question(
@@ -519,9 +519,7 @@ export const createQuestionTemplateRelationObject = (
     record.topic_id,
     record.sort_order,
     createConfig<any>(record.data_type as DataType, record.config),
-    // TODO: Remove this undefined from here when dependency is removed!
-    undefined,
-    dependencies ? dependencies : undefined
+    dependencies
   );
 };
 

@@ -8,6 +8,7 @@ import {
   QuestionaryStep,
 } from '../../models/Questionary';
 import { getDefaultAnswerValue } from '../../models/questionTypes/QuestionRegistry';
+import { FieldDependency } from '../../models/Template';
 import { QuestionaryDataSource } from '../QuestionaryDataSource';
 import database from './database';
 import {
@@ -195,6 +196,35 @@ export default class PostgresQuestionaryDataSource
     });
   }
 
+  // TODO: This is repeated in template datasource
+  async getQuestionsDependencies(
+    questionRecords: Array<
+      QuestionRecord &
+        QuestionTemplateRelRecord & { dependency_natural_key: string }
+    >
+  ): Promise<FieldDependency[]> {
+    const questionDependencies = await database
+      .select('*')
+      .from('question_dependencies')
+      .whereIn(
+        'question_id',
+        questionRecords.map(questionRecord => questionRecord.question_id)
+      );
+
+    return questionDependencies.map((questionDependency: any) => {
+      const question = questionRecords.find(
+        field => field.question_id === questionDependency.dependency_question_id
+      );
+
+      return new FieldDependency(
+        questionDependency.question_id,
+        questionDependency.dependency_question_id,
+        question?.natural_key as string,
+        questionDependency.dependency_condition
+      );
+    });
+  }
+
   private async getQuestionaryStepsWithTemplateId(
     questionary_id: number,
     template_id: number
@@ -248,9 +278,16 @@ export default class PostgresQuestionaryDataSource
                  templates_has_questions.sort_order`)
     ).rows;
 
+    const dependencies = await this.getQuestionsDependencies(answerRecords);
+
     const fields = answerRecords.map(record => {
+      const questionDependencies = dependencies.filter(
+        dependency => dependency.questionId === record.question_id
+      );
+
       const questionTemplateRelation = createQuestionTemplateRelationObject(
-        record
+        record,
+        questionDependencies
       );
       const value =
         record.value?.value || getDefaultAnswerValue(questionTemplateRelation);
