@@ -14,6 +14,7 @@ import { CreateTemplateArgs } from '../resolvers/mutations/CreateTemplateMutatio
 import { CreateTopicArgs } from '../resolvers/mutations/CreateTopicMutation';
 import { DeleteQuestionTemplateRelationArgs } from '../resolvers/mutations/DeleteQuestionTemplateRelationMutation';
 import { SetActiveTemplateArgs } from '../resolvers/mutations/SetActiveTemplateMutation';
+import { UpdateQuestionTemplateRelationArgs } from '../resolvers/mutations/UpdateQuestionTemplateRelationMutation';
 import { UpdateTemplateArgs } from '../resolvers/mutations/UpdateTemplateMutation';
 import { TemplatesArgs } from '../resolvers/queries/TemplatesQuery';
 
@@ -64,6 +65,10 @@ export interface TemplateDataSource {
 
   upsertQuestionTemplateRelations(
     collection: TemplatesHasQuestions[]
+  ): Promise<Template>;
+
+  updateQuestionTemplateRelation(
+    args: UpdateQuestionTemplateRelationArgs
   ): Promise<Template>;
 
   deleteQuestionTemplateRelation(

@@ -51,8 +51,12 @@ export class UpdateQuestionTemplateRelationArgs {
   @Field({ nullable: true })
   public config?: string;
 
+  // TODO: Remove this when we switch to dependencies
   @Field(() => FieldDependencyInput, { nullable: true })
   public dependency?: FieldDependencyInput;
+
+  @Field(() => [FieldDependencyInput], { nullable: 'itemsAndList' })
+  public dependencies?: FieldDependencyInput[];
 }
 
 @Resolver()

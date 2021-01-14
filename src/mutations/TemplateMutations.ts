@@ -341,18 +341,16 @@ export default class TemplateMutations {
     agent: UserWithRole | null,
     args: UpdateQuestionTemplateRelationArgs
   ): Promise<Template | Rejection | null> {
-    const dataToUpsert = await this.getQuestionsDataToUpsert(args);
+    // const dataToUpsert = await this.getQuestionsDataToUpsert(args);
 
-    return this.dataSource
-      .upsertQuestionTemplateRelations(dataToUpsert)
-      .catch(err => {
-        logger.logException('Could not update question rel', err, {
-          agent,
-          args,
-        });
-
-        return rejection('INTERNAL_ERROR');
+    return this.dataSource.updateQuestionTemplateRelation(args).catch(err => {
+      logger.logException('Could not update question rel', err, {
+        agent,
+        args,
       });
+
+      return rejection('INTERNAL_ERROR');
+    });
   }
 
   @ValidateArgs(deleteQuestionTemplateRelationValidationSchema)

@@ -5,7 +5,7 @@ BEGIN
 	  BEGIN
 			CREATE TABLE IF NOT EXISTS question_dependencies (
 					question_dependency_id SERIAL PRIMARY KEY,
-					templates_has_questions_id INTEGER NOT NULL REFERENCES templates_has_questions(id) ON DELETE CASCADE,
+					question_id VARCHAR(64) NOT NULL REFERENCES questions(question_id),
 					dependency_question_id VARCHAR(64) REFERENCES questions(question_id),
 					dependency_condition jsonb
 			);

@@ -54,7 +54,7 @@ export class TemplatesHasQuestions {
     public topicId: number,
     public sortOrder: number,
     public config: string,
-    public dependency: Dependency | null
+    public dependencies: Dependency[] | null
   ) {}
 }
 
@@ -64,7 +64,8 @@ export class QuestionTemplateRelation {
     public topicId: number,
     public sortOrder: number,
     public config: typeof FieldConfigType,
-    public dependency?: FieldDependency
+    public dependency?: FieldDependency,
+    public dependencies?: FieldDependency[]
   ) {}
 }
 

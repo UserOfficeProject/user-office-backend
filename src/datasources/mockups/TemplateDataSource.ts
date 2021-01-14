@@ -15,6 +15,7 @@ import {
 import { CreateTemplateArgs } from '../../resolvers/mutations/CreateTemplateMutation';
 import { CreateTopicArgs } from '../../resolvers/mutations/CreateTopicMutation';
 import { DeleteQuestionTemplateRelationArgs } from '../../resolvers/mutations/DeleteQuestionTemplateRelationMutation';
+import { UpdateQuestionTemplateRelationArgs } from '../../resolvers/mutations/UpdateQuestionTemplateRelationMutation';
 import { UpdateTemplateArgs } from '../../resolvers/mutations/UpdateTemplateMutation';
 import { TemplatesArgs } from '../../resolvers/queries/TemplatesQuery';
 import { TemplateDataSource } from '../TemplateDataSource';
@@ -282,6 +283,12 @@ export class TemplateDataSourceMock implements TemplateDataSource {
     Object.assign(topic, { title });
 
     return topic;
+  }
+
+  async updateQuestionTemplateRelation(
+    args: UpdateQuestionTemplateRelationArgs
+  ): Promise<Template> {
+    return dummyProposalTemplate;
   }
 
   async upsertQuestionTemplateRelations(

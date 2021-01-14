@@ -1,13 +1,13 @@
 import { Field, Int, ObjectType } from 'type-graphql';
 
-import { QuestionTemplateRelation as QuestionTemplateRelationOrign } from '../../models/Template';
+import { QuestionTemplateRelation as QuestionTemplateRelationOrigin } from '../../models/Template';
 import { FieldConfigType } from './FieldConfig';
 import { FieldDependency } from './FieldDependency';
 import { Question } from './Question';
 
 @ObjectType()
 export class QuestionTemplateRelation
-  implements Partial<QuestionTemplateRelationOrign> {
+  implements Partial<QuestionTemplateRelationOrigin> {
   @Field(() => Question)
   public question: Question;
 
@@ -22,4 +22,7 @@ export class QuestionTemplateRelation
 
   @Field(() => FieldDependency, { nullable: true })
   public dependency?: FieldDependency;
+
+  @Field(() => [FieldDependency], { nullable: true })
+  public dependencies?: FieldDependency[];
 }
