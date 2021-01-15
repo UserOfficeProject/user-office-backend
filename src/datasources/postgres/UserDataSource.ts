@@ -13,6 +13,7 @@ import {
   createUserObject,
   createBasicUserObject,
   RoleRecord,
+  RoleUserRecord,
 } from './records';
 
 export default class PostgresUserDataSource implements UserDataSource {
@@ -185,11 +186,21 @@ export default class PostgresUserDataSource implements UserDataSource {
         .from('role_user')
         .where('user_id', id)
         .del()
+        .returning('*')
         .transacting(trx)
-        .then(() => {
+        .then((data: RoleUserRecord[]) => {
           return BluePromise.map(roles, (role_id: number) => {
+            // NOTE: If some removed roles have had sep_id we need to keep that info.
+            const foundRoleSepId = data.find(
+              roleItem => roleItem.role_id === role_id
+            )?.sep_id;
+
             return database
-              .insert({ user_id: id, role_id: role_id })
+              .insert({
+                user_id: id,
+                role_id: role_id,
+                sep_id: foundRoleSepId,
+              })
               .into('role_user')
               .transacting(trx);
           });
@@ -224,7 +235,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .from('users')
       .where('user_id', id)
       .first()
-      .then((user: UserRecord) => createUserObject(user));
+      .then((user: UserRecord) => (!user ? null : createUserObject(user)));
   }
 
   async get(id: number): Promise<User | null> {
@@ -233,7 +244,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .from('users')
       .where('user_id', id)
       .first()
-      .then((user: UserRecord) => createUserObject(user));
+      .then((user: UserRecord) => (!user ? null : createUserObject(user)));
   }
 
   getBasicUserInfo(id: number): Promise<BasicUserDetails | null> {
@@ -252,13 +263,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .from('users')
       .where('username', username)
       .first()
-      .then((user: UserRecord) => {
-        if (!user) {
-          return null;
-        }
-
-        return createUserObject(user);
-      });
+      .then((user: UserRecord) => (!user ? null : createUserObject(user)));
   }
 
   async getByOrcID(orcID: string): Promise<User | null> {
@@ -267,13 +272,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .from('users')
       .where('orcid', orcID)
       .first()
-      .then((user: UserRecord) => {
-        if (!user) {
-          return null;
-        }
-
-        return createUserObject(user);
-      });
+      .then((user: UserRecord) => (!user ? null : createUserObject(user)));
   }
 
   async getByEmail(email: string): Promise<User | null> {
@@ -282,13 +281,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .from('users')
       .where('email', 'ilike', email)
       .first()
-      .then((user: UserRecord) => {
-        if (!user) {
-          return null;
-        }
-
-        return createUserObject(user);
-      });
+      .then((user: UserRecord) => (!user ? null : createUserObject(user)));
   }
 
   async create(
@@ -340,9 +333,40 @@ export default class PostgresUserDataSource implements UserDataSource {
         }
 
         return createUserObject(user[0]);
+      });
+  }
+
+  async createDummyUser(userId: number): Promise<User> {
+    return database
+      .insert({
+        user_id: userId,
+        user_title: '',
+        firstname: '',
+        middlename: '',
+        lastname: '',
+        username: userId.toString(),
+        password: '',
+        preferredname: '',
+        orcid: '',
+        orcid_refreshtoken: '',
+        gender: '',
+        nationality: 1,
+        birthdate: '2000-01-01',
+        organisation: 1,
+        department: '',
+        position: '',
+        email: userId.toString(),
+        telephone: '',
+        telephone_alt: '',
       })
-      .then((user: User) => {
-        return user;
+      .returning(['*'])
+      .into('users')
+      .then((user: UserRecord[]) => {
+        if (!user || user.length == 0) {
+          throw new Error('Could not create user');
+        }
+
+        return createUserObject(user[0]);
       });
   }
 
@@ -393,14 +417,31 @@ export default class PostgresUserDataSource implements UserDataSource {
         };
       });
   }
-  async setUserEmailVerified(id: number): Promise<void> {
-    return database
+
+  async setUserEmailVerified(id: number): Promise<User | null> {
+    const [userRecord]: [UserRecord] = await database
       .update({
         email_verified: true,
       })
       .from('users')
-      .where('user_id', id);
+      .where('user_id', id)
+      .returning('*');
+
+    return userRecord ? createUserObject(userRecord) : null;
   }
+
+  async setUserNotPlaceholder(id: number): Promise<User | null> {
+    const [userRecord]: [UserRecord] = await database
+      .update({
+        placeholder: false,
+      })
+      .from('users')
+      .where('user_id', id)
+      .returning('*');
+
+    return userRecord ? createUserObject(userRecord) : null;
+  }
+
   async getProposalUsersFull(proposalId: number): Promise<User[]> {
     return database
       .select()

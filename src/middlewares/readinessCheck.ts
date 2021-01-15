@@ -1,7 +1,7 @@
+import { logger } from '@esss-swap/duo-logger';
 import express, { Request, Response } from 'express';
 
 import baseContext from '../buildContext';
-import { logger } from '../utils/Logger';
 
 const router = express.Router();
 

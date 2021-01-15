@@ -1,3 +1,4 @@
+import { logger } from '@esss-swap/duo-logger';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import express from 'express';
@@ -6,12 +7,11 @@ import 'reflect-metadata';
 import { startAsyncJobs } from './src/asyncJobs/startAsyncJobs';
 import authorization from './src/middlewares/authorization';
 import exceptionHandler from './src/middlewares/exceptionHandler';
+import factory from './src/middlewares/factory';
 import files from './src/middlewares/files';
 import apolloServer from './src/middlewares/graphql';
 import healthCheck from './src/middlewares/healthCheck';
-import pdfFactory from './src/middlewares/pdfFactory';
 import readinessCheck from './src/middlewares/readinessCheck';
-import { logger } from './src/utils/Logger';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
@@ -21,7 +21,7 @@ async function bootstrap() {
     .use(cookieParser())
     .use(authorization())
     .use(files())
-    .use(pdfFactory())
+    .use(factory())
     .use(healthCheck())
     .use(readinessCheck())
     .use(exceptionHandler());
