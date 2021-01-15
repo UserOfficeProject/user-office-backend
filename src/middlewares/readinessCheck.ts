@@ -5,7 +5,7 @@ import baseContext from '../buildContext';
 
 const router = express.Router();
 
-router.get('/readinessz', (req: Request, res: Response) => {
+router.get('/readiness', (req: Request, res: Response) => {
   baseContext.queries.system
     .connectivityCheck()
     .then(success => {
