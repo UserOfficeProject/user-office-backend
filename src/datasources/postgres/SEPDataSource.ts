@@ -30,7 +30,8 @@ export default class PostgresSEPDataSource implements SEPDataSource {
     return new SEPProposal(
       sepAssignment.proposal_id,
       sepAssignment.sep_id,
-      sepAssignment.date_assigned
+      sepAssignment.date_assigned,
+      sepAssignment.sep_time_allocation
     );
   }
   private createSEPAssignmentObject(sepAssignment: SEPAssignmentRecord) {
@@ -214,13 +215,36 @@ export default class PostgresSEPDataSource implements SEPDataSource {
     );
   }
 
+  async getSEPProposal(
+    sepId: number,
+    proposalId: number
+  ): Promise<SEPProposal | null> {
+    const sepProposal: SEPProposalRecord = await database
+      .select(['sp.*'])
+      .from('SEP_Proposals as sp')
+      .join('proposals as p', {
+        'p.proposal_id': 'sp.proposal_id',
+      })
+      .join('proposal_statuses as ps', {
+        'p.status_id': 'ps.proposal_status_id',
+      })
+      .where(function() {
+        this.where('ps.name', 'ilike', 'SEP_%');
+      })
+      .where('sp.sep_id', sepId)
+      .where('sp.proposal_id', proposalId)
+      .first();
+
+    return sepProposal ? this.createSEPProposalObject(sepProposal) : null;
+  }
+
   async getSEPProposalsByInstrument(
     sepId: number,
     instrumentId: number,
     callId: number
   ): Promise<SEPProposal[]> {
     const sepProposals: SEPProposalRecord[] = await database
-      .select(['sp.proposal_id', 'sp.sep_id'])
+      .select(['sp.proposal_id', 'sp.sep_id', 'sp.sep_time_allocation'])
       .from('SEP_Proposals as sp')
       .join('instrument_has_proposals as ihp', {
         'sp.proposal_id': 'ihp.proposal_id',
@@ -396,5 +420,29 @@ export default class PostgresSEPDataSource implements SEPDataSource {
     }
 
     throw new Error(`SEP not found ${sepId}`);
+  }
+
+  async updateTimeAllocation(
+    sepId: number,
+    proposalId: number,
+    sepTimeAllocation: number | null
+  ): Promise<SEPProposal> {
+    const updatedRecord = await database('SEP_Proposals')
+      .update(
+        {
+          sep_time_allocation: sepTimeAllocation,
+        },
+        ['*']
+      )
+      .where('sep_id', sepId)
+      .where('proposal_id', proposalId);
+
+    if (updatedRecord === undefined || !updatedRecord.length) {
+      throw new Error(
+        `SEP_Proposal not found, sepId: ${sepId}, proposalId: ${proposalId}`
+      );
+    }
+
+    return this.createSEPProposalObject(updatedRecord);
   }
 }

@@ -34,6 +34,10 @@ export interface SEPDataSource {
     proposalId: number
   ): Promise<SEPAssignment[]>;
   getSEPProposals(sepId: number, callId: number): Promise<SEPProposal[]>;
+  getSEPProposal(
+    sepId: number,
+    proposalId: number
+  ): Promise<SEPProposal | null>;
   getSEPProposalsByInstrument(
     sepId: number,
     instrumentId: number,
@@ -55,4 +59,9 @@ export interface SEPDataSource {
     sepId: number,
     memberId: number
   ): Promise<SEP>;
+  updateTimeAllocation(
+    sepId: number,
+    proposalId: number,
+    sepTimeAllocation: number | null
+  ): Promise<SEPProposal>;
 }

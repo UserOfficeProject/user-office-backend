@@ -57,13 +57,15 @@ export const anotherDummySEPAssignment = new SEPAssignment(
 export const dummySEPProposal = new SEPProposal(
   1,
   1,
-  new Date('2020-04-20 08:25:12.23043+00')
+  new Date('2020-04-20 08:25:12.23043+00'),
+  null
 );
 
 export const anotherDummySEPProposal = new SEPProposal(
   2,
   2,
-  new Date('2020-04-20 08:25:12.23043+00')
+  new Date('2020-04-20 08:25:12.23043+00'),
+  null
 );
 
 export const dummySEPAssignments = [
@@ -76,6 +78,19 @@ export const dummySEPProposals = [dummySEPProposal, anotherDummySEPProposal];
 export const dummySEPMembers = [dummySEPMember, anotherDummySEPMember];
 
 export class SEPDataSourceMock implements SEPDataSource {
+  getSEPProposal(
+    sepId: number,
+    proposalId: number
+  ): Promise<SEPProposal | null> {
+    throw new Error('Method not implemented.');
+  }
+  updateTimeAllocation(
+    sepId: number,
+    proposalId: number,
+    sepTimeAllocation: number | null
+  ): Promise<SEPProposal> {
+    throw new Error('Method not implemented.');
+  }
   async isMemberOfSEP(agent: User | null, sepId: number) {
     return true;
   }

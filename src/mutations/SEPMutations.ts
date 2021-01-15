@@ -293,4 +293,36 @@ export default class SEPMutations {
         return rejection('INTERNAL_ERROR');
       });
   }
+
+  @Authorized([Roles.USER_OFFICER, Roles.SEP_SECRETARY, Roles.SEP_CHAIR])
+  async updateTimeAllocation(
+    agent: UserWithRole | null,
+    sepId: number,
+    proposalId: number,
+    sepTimeAllocation: number | null
+  ) {
+    if (
+      !(await this.userAuth.isUserOfficer(agent)) &&
+      !(await this.userAuth.isChairOrSecretaryOfSEP(
+        (agent as UserWithRole).id,
+        sepId
+      ))
+    ) {
+      return rejection('NOT_ALLOWED');
+    }
+
+    return this.dataSource
+      .updateTimeAllocation(sepId, proposalId, sepTimeAllocation)
+      .catch(err => {
+        logger.logException(
+          'Could not update SEP proposal time allocation',
+          err,
+          {
+            agent,
+          }
+        );
+
+        return rejection('INTERNAL_ERROR');
+      });
+  }
 }

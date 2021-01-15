@@ -22,6 +22,9 @@ export class SEPProposal {
 
   @Field(() => Date)
   public dateAssigned: Date;
+
+  @Field(() => Int, { nullable: true })
+  public sepTimeAllocation?: number | null;
 }
 
 @Resolver(() => SEPProposal)

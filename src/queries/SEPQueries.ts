@@ -84,6 +84,26 @@ export default class SEPQueries {
     Roles.SEP_SECRETARY,
     Roles.SEP_REVIEWER,
   ])
+  async getSEPProposal(
+    agent: UserWithRole | null,
+    { sepId, proposalId }: { sepId: number; proposalId: number }
+  ) {
+    if (
+      this.isUserOfficer(agent) ||
+      (await this.dataSource.isMemberOfSEP(agent, sepId))
+    ) {
+      return this.dataSource.getSEPProposal(sepId, proposalId);
+    } else {
+      return null;
+    }
+  }
+
+  @Authorized([
+    Roles.USER_OFFICER,
+    Roles.SEP_CHAIR,
+    Roles.SEP_SECRETARY,
+    Roles.SEP_REVIEWER,
+  ])
   async getSEPProposalsByInstrument(
     agent: UserWithRole | null,
     {
