@@ -24,7 +24,7 @@ BEGIN
 				dependency_question_id,
 				dependency_condition
 			FROM  templates_has_questions
-			WHERE dependency_question_id != null;
+			WHERE dependency_question_id IS NOT NULL;
 
 			ALTER TABLE templates_has_questions DROP COLUMN dependency_question_id;
 			ALTER TABLE templates_has_questions DROP COLUMN dependency_condition;
