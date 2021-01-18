@@ -142,11 +142,13 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     questionRecords: Array<
       QuestionRecord &
         QuestionTemplateRelRecord & { dependency_natural_key: string }
-    >
+    >,
+    templateId: number
   ): Promise<FieldDependency[]> {
     const questionDependencies = await database
       .select('*')
       .from('question_dependencies')
+      .where('template_id', templateId)
       .whereIn(
         'question_id',
         questionRecords.map(questionRecord => questionRecord.question_id)
@@ -178,7 +180,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       QuestionTemplateRelRecord & { dependency_natural_key: string }> = (
       await database.raw(`
         SELECT 
-          templates_has_questions.*, questions.*, dependency.natural_key as dependency_natural_key
+          templates_has_questions.*, questions.*, questions.natural_key as dependency_natural_key
         FROM 
           templates_has_questions
         LEFT JOIN
@@ -186,18 +188,16 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         ON 
           templates_has_questions.question_id = 
           questions.question_id
-        LEFT JOIN
-          questions dependency
-        ON 
-          dependency.question_id = 
-          templates_has_questions.dependency_question_id
         WHERE
           templates_has_questions.template_id = ${templateId}
         ORDER BY
          templates_has_questions.sort_order`)
     ).rows;
 
-    const dependencies = await this.getQuestionsDependencies(questionRecords);
+    const dependencies = await this.getQuestionsDependencies(
+      questionRecords,
+      templateId
+    );
 
     const fields = questionRecords.map(record => {
       const questionDependencies = dependencies.filter(
@@ -342,11 +342,13 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
 
     if (dependencies?.length) {
       await database('question_dependencies')
-        .andWhere({ question_id: questionId })
+        .where({ question_id: questionId })
+        .andWhere({ template_id: templateId })
         .del();
 
       const dataToInsert = dependencies.map(dependency => ({
         question_id: questionId,
+        template_id: templateId,
         dependency_question_id: dependency.dependencyId,
         dependency_condition: dependency.condition,
       }));
@@ -478,12 +480,6 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         'templates_has_questions.question_id',
         'questions.question_id'
       )
-      .leftJoin(
-        { dependency: 'questions' },
-        'templates_has_questions.dependency_question_id',
-        '=',
-        'dependency.question_id'
-      )
       .select(
         'templates_has_questions.*',
         'questions.*',
@@ -494,11 +490,10 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       return null;
     }
 
-    console.log(questionRecord);
-
-    const dependencies = await this.getQuestionsDependencies([questionRecord]);
-
-    console.log(dependencies);
+    const dependencies = await this.getQuestionsDependencies(
+      [questionRecord],
+      templateId
+    );
 
     return createQuestionTemplateRelationObject(questionRecord, dependencies);
   }
@@ -637,47 +632,75 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
 
     // Clone topics
     await database.raw(`
-      INSERT INTO topics(
-            topic_title
-          , is_enabled
-          , sort_order
-          , template_id
+      INSERT INTO topics
+      (
+        topic_title,
+        is_enabled,
+        sort_order,
+        template_id
       )
-      SELECT 
-            topic_title
-          , is_enabled
-          , sort_order
-          , ${newTemplate.templateId}
+      SELECT
+        topic_title,
+        is_enabled,
+        sort_order,
+        ${newTemplate.templateId}
       FROM 
-          topics
+        topics
       WHERE
-          template_id=${sourceTemplate.templateId}
+        template_id = ${sourceTemplate.templateId}
     `);
 
     // Clone templates_has_questions entries
     await database.raw(`
-      INSERT INTO templates_has_questions 
-                  (template_id, 
-                  question_id, 
-                  sort_order, 
-                  dependency_question_id, 
-                  dependency_condition,
-                  config, 
-                  topic_id) 
-      SELECT ${newTemplate.templateId}, 
-            question_id, 
-            sort_order, 
-            dependency_question_id, 
-            dependency_condition,
-            config, 
-            (SELECT topic_id 
-              FROM   topics AS newTopics 
-              WHERE  template_id = ${newTemplate.templateId} 
-                    AND sort_order = (SELECT sort_order 
-                                      FROM   topics 
-                                      WHERE  topic_id = source.topic_id)) 
-      FROM   templates_has_questions AS source  
-      WHERE template_id=${sourceTemplate.templateId}
+      INSERT INTO templates_has_questions
+      (
+        template_id,
+        question_id,
+        sort_order,
+        config,
+        topic_id
+      )
+      SELECT
+        ${newTemplate.templateId},
+        question_id,
+        sort_order,
+        config,
+        (
+          SELECT topic_id
+          FROM   topics AS newTopics
+          WHERE  template_id = ${newTemplate.templateId}
+          AND    sort_order =
+          (
+            SELECT sort_order
+            FROM   topics
+            WHERE  topic_id = source.topic_id
+          )
+        )
+      FROM templates_has_questions AS source
+      WHERE template_id = ${sourceTemplate.templateId}
+    `);
+
+    // Clone question_dependencies entries
+    await database.raw(`
+      INSERT INTO question_dependencies
+      (
+        template_id,
+        question_id,
+        dependency_question_id,
+        dependency_condition
+      )
+      SELECT
+        ${newTemplate.templateId},
+        question_id,
+	      dependency_question_id,
+	      dependency_condition
+      FROM  question_dependencies
+      WHERE question_id IN
+      (
+		    SELECT question_id
+		    FROM   templates_has_questions
+      )
+      AND template_id = ${sourceTemplate.templateId}
     `);
 
     return newTemplate;

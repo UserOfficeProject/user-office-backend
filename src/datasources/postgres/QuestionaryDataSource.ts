@@ -176,9 +176,9 @@ export default class PostgresQuestionaryDataSource
   }
 
   async getBlankQuestionarySteps(
-    template_id: number
+    templateId: number
   ): Promise<QuestionaryStep[]> {
-    return this.getQuestionaryStepsWithTemplateId(0, template_id);
+    return this.getQuestionaryStepsWithTemplateId(0, templateId);
   }
 
   async updateTopicCompleteness(
@@ -201,11 +201,13 @@ export default class PostgresQuestionaryDataSource
     questionRecords: Array<
       QuestionRecord &
         QuestionTemplateRelRecord & { dependency_natural_key: string }
-    >
+    >,
+    templateId: number
   ): Promise<FieldDependency[]> {
     const questionDependencies = await database
       .select('*')
       .from('question_dependencies')
+      .where('template_id', templateId)
       .whereIn(
         'question_id',
         questionRecords.map(questionRecord => questionRecord.question_id)
@@ -226,8 +228,8 @@ export default class PostgresQuestionaryDataSource
   }
 
   private async getQuestionaryStepsWithTemplateId(
-    questionary_id: number,
-    template_id: number
+    questionaryId: number,
+    templateId: number
   ): Promise<QuestionaryStep[]> {
     const topicRecords: (TopicRecord & {
       is_complete: boolean;
@@ -241,9 +243,9 @@ export default class PostgresQuestionaryDataSource
               topic_completenesses
               ON 
                 topics.topic_id = topic_completenesses.topic_id
-                AND topic_completenesses.questionary_id = ${questionary_id}
+                AND topic_completenesses.questionary_id = ${questionaryId}
               WHERE
-                topics.template_id = ${template_id}
+                topics.template_id = ${templateId}
               ORDER BY
                 topics.sort_order`)
     ).rows;
@@ -253,32 +255,30 @@ export default class PostgresQuestionaryDataSource
         dependency_natural_key: string;
       }> = (
       await database.raw(`
-                SELECT 
-                  templates_has_questions.*, questions.*, answers.answer as value, answers.answer_id, dependency.natural_key as dependency_natural_key
-                FROM 
-                  templates_has_questions
-                LEFT JOIN
-                  questions 
-                ON 
-                  templates_has_questions.question_id = 
-                  questions.question_id
-                LEFT JOIN
-                  answers
-                ON
-                  templates_has_questions.question_id = 
-                  answers.question_id
-                AND
-                  answers.questionary_id=${questionary_id}
-                LEFT JOIN
-                  questions dependency
-                ON 
-                  dependency.question_id = 
-                  templates_has_questions.dependency_question_id
-                ORDER BY
-                 templates_has_questions.sort_order`)
+        SELECT 
+          templates_has_questions.*, questions.*, answers.answer as value, answers.answer_id, questions.natural_key as dependency_natural_key
+        FROM 
+          templates_has_questions
+        LEFT JOIN
+          questions 
+        ON 
+          templates_has_questions.question_id = 
+          questions.question_id
+        LEFT JOIN
+          answers
+        ON
+          templates_has_questions.question_id = 
+          answers.question_id
+        AND
+          answers.questionary_id=${questionaryId}
+        ORDER BY
+          templates_has_questions.sort_order`)
     ).rows;
 
-    const dependencies = await this.getQuestionsDependencies(answerRecords);
+    const dependencies = await this.getQuestionsDependencies(
+      answerRecords,
+      templateId
+    );
 
     const fields = answerRecords.map(record => {
       const questionDependencies = dependencies.filter(
