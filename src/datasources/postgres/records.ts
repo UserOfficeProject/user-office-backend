@@ -272,6 +272,7 @@ export interface SEPProposalRecord {
   readonly sep_id: number;
   readonly date_assigned: Date;
   readonly sep_time_allocation: number | null;
+  readonly instrument_submitted?: boolean;
 }
 
 export interface SEPAssignmentRecord {
@@ -299,10 +300,9 @@ export interface InstrumentRecord {
   readonly full_count: number;
 }
 
-export interface CallHasInstrumentRecord {
-  readonly call_id: number;
+export interface InstrumentHasProposalsRecord {
   readonly instrument_id: number;
-  readonly availability_time: number;
+  readonly proposal_id: number;
   readonly submitted: boolean;
 }
 
