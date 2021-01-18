@@ -78,6 +78,12 @@ export const dummySEPProposals = [dummySEPProposal, anotherDummySEPProposal];
 export const dummySEPMembers = [dummySEPMember, anotherDummySEPMember];
 
 export class SEPDataSourceMock implements SEPDataSource {
+  getSEPProposalUserRoles(
+    id: number,
+    proposalId: number
+  ): Promise<import('../../models/Role').Role[]> {
+    throw new Error('Method not implemented.');
+  }
   getSEPProposal(
     sepId: number,
     proposalId: number
