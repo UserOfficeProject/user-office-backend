@@ -38,6 +38,10 @@ export default class ReviewMutations {
       review &&
       !(
         (await this.userAuth.isReviewerOfProposal(agent, review.proposalID)) ||
+        (await this.userAuth.isChairOrSecretaryOfSEP(
+          agent?.id!,
+          review.sepID
+        )) ||
         (await this.userAuth.isUserOfficer(agent))
       )
     ) {

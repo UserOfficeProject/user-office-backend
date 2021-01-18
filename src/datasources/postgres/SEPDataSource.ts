@@ -292,6 +292,23 @@ export default class PostgresSEPDataSource implements SEPDataSource {
       );
   }
 
+  async getSEPProposalUserRoles(
+    id: number,
+    proposalId: number
+  ): Promise<Role[]> {
+    return database
+      .select()
+      .from('roles as r')
+      .join('role_user as rc', { 'r.role_id': 'rc.role_id' })
+      .join('users as u', { 'u.user_id': 'rc.user_id' })
+      .join('SEP_Proposals as sp', { 'sp.sep_id': 'rc.sep_id' })
+      .where('u.user_id', id)
+      .andWhere('sp.proposal_id', proposalId)
+      .then((roles: RoleRecord[]) =>
+        roles.map(role => new Role(role.role_id, role.short_code, role.title))
+      );
+  }
+
   async getSEPByProposalId(proposalId: number): Promise<SEP | null> {
     return database
       .select()

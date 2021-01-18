@@ -168,14 +168,29 @@ export default class SEPMutations {
     agent: UserWithRole | null,
     args: UpdateMemberSEPArgs
   ): Promise<SEP | Rejection> {
+    const isChairOrSecretaryOfSEP = await this.userAuth.isChairOrSecretaryOfSEP(
+      (agent as UserWithRole).id,
+      args.sepId
+    );
+
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(
-        (agent as UserWithRole).id,
-        args.sepId
-      ))
+      !isChairOrSecretaryOfSEP
     ) {
       return rejection('NOT_ALLOWED');
+    }
+
+    // SEP Chair and SEP Secretary can not
+    // modify SEP Chair and SEP Secretary members
+    if (isChairOrSecretaryOfSEP) {
+      const isMemberChairOrSecretaryOfSEP = await this.userAuth.isChairOrSecretaryOfSEP(
+        args.memberId,
+        args.sepId
+      );
+
+      if (isMemberChairOrSecretaryOfSEP) {
+        return rejection('NOT_ALLOWED');
+      }
     }
 
     return this.dataSource

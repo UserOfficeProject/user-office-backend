@@ -103,7 +103,8 @@ export class UserAuthorization {
       (await this.isUserOfficer(agent)) ||
       (await this.isMemberOfProposal(agent, proposal)) ||
       (await this.isReviewerOfProposal(agent, proposal.id)) ||
-      (await this.isScientistToProposal(agent, proposal.id))
+      (await this.isScientistToProposal(agent, proposal.id)) ||
+      (await this.isChairOrSecretaryOfProposal(agent?.id!, proposal.id))
     );
   }
 
@@ -121,6 +122,21 @@ export class UserAuthorization {
           role.id === UserRole.SEP_CHAIR || role.id === UserRole.SEP_SECRETARY
       );
     });
+  }
+
+  async isChairOrSecretaryOfProposal(userId: number, proposalId: number) {
+    if (!userId || !proposalId) {
+      return false;
+    }
+
+    return this.sepDataSource
+      .getSEPProposalUserRoles(userId, proposalId)
+      .then(roles => {
+        return roles.some(
+          role =>
+            role.id === UserRole.SEP_CHAIR || role.id === UserRole.SEP_SECRETARY
+        );
+      });
   }
 }
 
