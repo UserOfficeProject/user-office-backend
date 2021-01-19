@@ -340,12 +340,12 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       })
       .where({ question_id: questionId, template_id: templateId });
 
-    if (dependencies?.length) {
-      await database('question_dependencies')
-        .where({ question_id: questionId })
-        .andWhere({ template_id: templateId })
-        .del();
+    await database('question_dependencies')
+      .where({ question_id: questionId })
+      .andWhere({ template_id: templateId })
+      .del();
 
+    if (dependencies?.length) {
       const dataToInsert = dependencies.map(dependency => ({
         question_id: questionId,
         template_id: templateId,
@@ -483,7 +483,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       .select(
         'templates_has_questions.*',
         'questions.*',
-        'dependency.natural_key as dependency_natural_key'
+        'questions.natural_key as dependency_natural_key'
       );
 
     if (!questionRecord) {
