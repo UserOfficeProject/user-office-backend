@@ -2,9 +2,13 @@ import { SEPDataSource } from '../datasources/SEPDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
+import { UserAuthorization } from '../utils/UserAuthorization';
 
 export default class SEPQueries {
-  constructor(public dataSource: SEPDataSource) {}
+  constructor(
+    public dataSource: SEPDataSource,
+    private userAuth: UserAuthorization
+  ) {}
 
   private isUserOfficer(agent: UserWithRole | null) {
     if (agent == null) {
@@ -124,5 +128,37 @@ export default class SEPQueries {
     } else {
       return null;
     }
+  }
+
+  @Authorized([
+    Roles.USER_OFFICER,
+    Roles.SEP_CHAIR,
+    Roles.SEP_SECRETARY,
+    Roles.SEP_REVIEWER,
+  ])
+  async getSEPProposalAssignments(
+    agent: UserWithRole | null,
+    {
+      sepId,
+      proposalId,
+    }: {
+      sepId: number;
+      proposalId: number;
+    }
+  ) {
+    let reviewerId = null;
+
+    if (
+      !(await this.userAuth.isUserOfficer(agent)) &&
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepId))
+    ) {
+      reviewerId = agent!.id;
+    }
+
+    return this.dataSource.getSEPProposalAssignments(
+      sepId,
+      proposalId,
+      reviewerId
+    );
   }
 }

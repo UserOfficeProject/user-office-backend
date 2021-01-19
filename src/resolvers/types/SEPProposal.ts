@@ -42,9 +42,9 @@ export class SEPUserResolver {
     @Root() sepProposal: SEPProposal,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.sep.dataSource.getSEPProposalAssignments(
-      sepProposal.sepId,
-      sepProposal.proposalId
-    );
+    return context.queries.sep.getSEPProposalAssignments(context.user, {
+      sepId: sepProposal.sepId,
+      proposalId: sepProposal.proposalId,
+    });
   }
 }

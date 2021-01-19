@@ -6,8 +6,6 @@ import {
 import { ReviewDataSourceMock } from '../datasources/mockups/ReviewDataSource';
 import { SEPDataSourceMock } from '../datasources/mockups/SEPDataSource';
 import { UserDataSourceMock } from '../datasources/mockups/UserDataSource';
-import PostgresReviewDataSource from '../datasources/postgres/ReviewDataSource';
-import PostgresSEPDataSource from '../datasources/postgres/SEPDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
@@ -140,14 +138,14 @@ export class UserAuthorization {
   }
 }
 
-let userDataSourceInstance = userDataSource;
-let reviewDataSourceInstance = reviewDataSource;
-let sepDataSourceInstance = sepDataSource;
+let userDataSourceInstance: UserDataSource = userDataSource;
+let reviewDataSourceInstance: ReviewDataSource = reviewDataSource;
+let sepDataSourceInstance: SEPDataSource = sepDataSource;
 
 if (process.env.NODE_ENV === 'test') {
   userDataSourceInstance = new UserDataSourceMock();
-  reviewDataSourceInstance = new ReviewDataSourceMock() as PostgresReviewDataSource;
-  sepDataSourceInstance = new SEPDataSourceMock() as PostgresSEPDataSource;
+  reviewDataSourceInstance = new ReviewDataSourceMock();
+  sepDataSourceInstance = new SEPDataSourceMock();
 }
 
 export const userAuthorization = new UserAuthorization(

@@ -15,7 +15,7 @@ export default class ReviewQueries {
   @Authorized()
   async get(
     agent: UserWithRole | null,
-    { reviewId, sepId }: { reviewId: number; sepId: number | null }
+    { reviewId, sepId }: { reviewId: number; sepId?: number | null }
   ): Promise<Review | null> {
     const review = await this.dataSource.get(reviewId);
     if (!review) {

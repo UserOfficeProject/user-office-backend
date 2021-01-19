@@ -177,10 +177,16 @@ export default class PostgresSEPDataSource implements SEPDataSource {
 
   async getSEPProposalAssignments(
     sepId: number,
-    proposalId: number
+    proposalId: number,
+    reviewerId: number | null
   ): Promise<SEPAssignment[]> {
     const sepAssignments: SEPAssignmentRecord[] = await database
       .from('SEP_Assignments')
+      .modify(query => {
+        if (reviewerId !== null) {
+          query.where('sep_member_user_id', reviewerId);
+        }
+      })
       .where('sep_id', sepId)
       .andWhere('proposal_id', proposalId);
 

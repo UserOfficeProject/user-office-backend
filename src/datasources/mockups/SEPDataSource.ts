@@ -1,4 +1,5 @@
 import { ProposalIds } from '../../models/Proposal';
+import { Role } from '../../models/Role';
 import { SEP, SEPAssignment, SEPMember, SEPProposal } from '../../models/SEP';
 import { User } from '../../models/User';
 import { AddSEPMembersRole } from '../../resolvers/mutations/AddSEPMembersRoleMutation';
@@ -78,13 +79,16 @@ export const dummySEPProposals = [dummySEPProposal, anotherDummySEPProposal];
 export const dummySEPMembers = [dummySEPMember, anotherDummySEPMember];
 
 export class SEPDataSourceMock implements SEPDataSource {
-  getSEPProposalUserRoles(
+  async getSEPProposalUserRoles(
     id: number,
     proposalId: number
-  ): Promise<import('../../models/Role').Role[]> {
-    throw new Error('Method not implemented.');
+  ): Promise<Role[]> {
+    console.warn('getSEPProposalUserRoles: Method not implemented');
+
+    return [];
   }
-  getSEPProposal(
+
+  async getSEPProposal(
     sepId: number,
     proposalId: number
   ): Promise<SEPProposal | null> {
@@ -181,7 +185,11 @@ export class SEPDataSourceMock implements SEPDataSource {
     return dummySEP;
   }
 
-  async getSEPProposalAssignments(sepId: number, proposalId: number) {
+  async getSEPProposalAssignments(
+    sepId: number,
+    proposalId: number,
+    reviewerId: number | null
+  ) {
     return dummySEPAssignments.filter(
       assignment =>
         assignment.sepId === sepId && assignment.proposalId === proposalId
@@ -193,6 +201,10 @@ export class SEPDataSourceMock implements SEPDataSource {
   }
 
   async getSEPUserRoles(id: number, sepId: number) {
+    if (id === 3) {
+      return [];
+    }
+
     return [{ id: 4, shortCode: 'SEP_Chair', title: 'SEP Chair' }];
   }
 

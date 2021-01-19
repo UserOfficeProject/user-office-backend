@@ -31,7 +31,8 @@ export interface SEPDataSource {
   ): Promise<{ totalCount: number; seps: SEP[] }>;
   getSEPProposalAssignments(
     sepId: number,
-    proposalId: number
+    proposalId: number,
+    reviewerId: number | null
   ): Promise<SEPAssignment[]>;
   getSEPProposals(sepId: number, callId: number): Promise<SEPProposal[]>;
   getSEPProposal(
