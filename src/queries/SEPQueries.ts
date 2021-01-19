@@ -10,14 +10,6 @@ export default class SEPQueries {
     private userAuth: UserAuthorization
   ) {}
 
-  private isUserOfficer(agent: UserWithRole | null) {
-    if (agent == null) {
-      return false;
-    }
-
-    return agent?.currentRole?.shortCode === Roles.USER_OFFICER;
-  }
-
   @Authorized([
     Roles.USER_OFFICER,
     Roles.SEP_CHAIR,
@@ -32,7 +24,7 @@ export default class SEPQueries {
     }
 
     if (
-      this.isUserOfficer(agent) ||
+      this.userAuth.isUserOfficer(agent) ||
       (await this.dataSource.isMemberOfSEP(agent, id))
     ) {
       return sep;
@@ -73,7 +65,7 @@ export default class SEPQueries {
     { sepId, callId }: { sepId: number; callId: number }
   ) {
     if (
-      this.isUserOfficer(agent) ||
+      this.userAuth.isUserOfficer(agent) ||
       (await this.dataSource.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposals(sepId, callId);
@@ -93,7 +85,7 @@ export default class SEPQueries {
     { sepId, proposalId }: { sepId: number; proposalId: number }
   ) {
     if (
-      this.isUserOfficer(agent) ||
+      this.userAuth.isUserOfficer(agent) ||
       (await this.dataSource.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposal(sepId, proposalId);
@@ -117,7 +109,7 @@ export default class SEPQueries {
     }: { sepId: number; instrumentId: number; callId: number }
   ) {
     if (
-      this.isUserOfficer(agent) ||
+      this.userAuth.isUserOfficer(agent) ||
       (await this.dataSource.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposalsByInstrument(

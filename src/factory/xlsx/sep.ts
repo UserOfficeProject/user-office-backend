@@ -206,8 +206,6 @@ export const collectSEPlXLSXData = async (
     });
   });
 
-  console.dir(out, { depth: 6 });
-
   //
   return {
     data: out,

@@ -83,8 +83,6 @@ export class SEPDataSourceMock implements SEPDataSource {
     id: number,
     proposalId: number
   ): Promise<Role[]> {
-    console.warn('getSEPProposalUserRoles: Method not implemented');
-
     return [];
   }
 

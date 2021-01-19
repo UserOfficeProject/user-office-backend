@@ -7,7 +7,7 @@ import {
   callDataSource,
   eventLogsDataSource,
   fileDataSource,
-  instrumentDatasource,
+  instrumentDataSource,
   proposalDataSource,
   proposalSettingsDataSource,
   questionaryDataSource,
@@ -76,6 +76,7 @@ const proposalMutations = new ProposalMutations(
   proposalDataSource,
   questionaryDataSource,
   callDataSource,
+  instrumentDataSource,
   userAuthorization,
   logger
 );
@@ -106,11 +107,11 @@ const sepMutations = new SEPMutations(sepDataSource, userAuthorization);
 const systemQueries = new SystemQueries(systemDataSource);
 
 const instrumentQueries = new InstrumentQueries(
-  instrumentDatasource,
+  instrumentDataSource,
   sepDataSource
 );
 const instrumentMutations = new InstrumentMutations(
-  instrumentDatasource,
+  instrumentDataSource,
   sepDataSource,
   userAuthorization
 );
