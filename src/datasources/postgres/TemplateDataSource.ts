@@ -333,10 +333,17 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
   async updateQuestionTemplateRelationSettings(
     args: UpdateQuestionTemplateRelationSettingsArgs
   ): Promise<Template> {
-    const { templateId, questionId, dependencies, config } = args;
+    const {
+      templateId,
+      questionId,
+      dependencies,
+      config,
+      dependenciesOperator,
+    } = args;
     await database('templates_has_questions')
       .update({
         config: config,
+        dependencies_operator: dependenciesOperator,
       })
       .where({ question_id: questionId, template_id: templateId });
 
@@ -522,6 +529,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           sortOrder: resultItem.sort_order,
           dependencies: [],
           config: resultItem.config,
+          dependenciesOperator: resultItem.dependencies_operator,
         }));
       });
   }
