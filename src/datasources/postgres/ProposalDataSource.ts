@@ -187,6 +187,14 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             filter?.proposalStatusId
           );
         }
+
+        if (filter?.shortCode) {
+          query.where(
+            'proposal_table_view.short_code',
+            'like',
+            `%${filter?.shortCode}%`
+          );
+        }
       })
       .then((proposals: ProposalViewRecord[]) => {
         return proposals.map(proposal => createProposalViewObject(proposal));
@@ -230,6 +238,10 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
         if (filter?.proposalStatusId) {
           query.where('proposals.status_id', filter?.proposalStatusId);
+        }
+
+        if (filter?.shortCode) {
+          query.where('proposals.short_code', 'like', `%${filter?.shortCode}%`);
         }
 
         if (first) {
@@ -285,6 +297,10 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
         if (filter?.proposalStatusId) {
           query.where('proposals.status_id', filter?.proposalStatusId);
+        }
+
+        if (filter?.shortCode) {
+          query.where('proposals.short_code', 'like', `%${filter?.shortCode}%`);
         }
 
         if (first) {
