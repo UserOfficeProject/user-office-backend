@@ -9,7 +9,7 @@ import {
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { Review } from '../models/Review';
+import { Review, ReviewStatus } from '../models/Review';
 import { Roles } from '../models/Role';
 import { TechnicalReview } from '../models/TechnicalReview';
 import { UserWithRole } from '../models/User';
@@ -34,8 +34,12 @@ export default class ReviewMutations {
   ): Promise<Review | Rejection> {
     const { reviewID, comment, grade } = args;
     const review = await this.dataSource.get(reviewID);
+
+    if (!review) {
+      return rejection('NOT_FOUND');
+    }
+
     if (
-      review &&
       !(
         (await this.userAuth.isReviewerOfProposal(agent, review.proposalID)) ||
         (await this.userAuth.isChairOrSecretaryOfSEP(
@@ -48,6 +52,10 @@ export default class ReviewMutations {
       logger.logWarn('Blocked submitting review', { agent, args });
 
       return rejection('NOT_REVIEWER_OF_PROPOSAL');
+    }
+
+    if (review.status === ReviewStatus.SUBMITTED) {
+      return rejection('NOT_ALLOWED');
     }
 
     return this.dataSource

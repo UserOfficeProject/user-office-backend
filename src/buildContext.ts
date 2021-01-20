@@ -102,7 +102,11 @@ const templateMutations = new TemplateMutations(templateDataSource);
 const eventLogQueries = new EventLogQueries(eventLogsDataSource);
 
 const sepQueries = new SEPQueries(sepDataSource, userAuthorization);
-const sepMutations = new SEPMutations(sepDataSource, userAuthorization);
+const sepMutations = new SEPMutations(
+  sepDataSource,
+  instrumentDataSource,
+  userAuthorization
+);
 
 const systemQueries = new SystemQueries(systemDataSource);
 

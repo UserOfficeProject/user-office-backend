@@ -9,6 +9,7 @@ import {
   assignSEPMemberToProposalValidationSchema,
 } from '@esss-swap/duo-validation';
 
+import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { EventBus, ValidateArgs, Authorized } from '../decorators';
 import { Event } from '../events/event.enum';
@@ -31,6 +32,7 @@ import { UserAuthorization } from '../utils/UserAuthorization';
 export default class SEPMutations {
   constructor(
     private dataSource: SEPDataSource,
+    private instrumentDataSource: InstrumentDataSource,
     private userAuth: UserAuthorization
   ) {}
 
@@ -314,13 +316,22 @@ export default class SEPMutations {
     proposalId: number,
     sepTimeAllocation: number | null
   ) {
+    const isUserOfficer = await this.userAuth.isUserOfficer(agent);
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
+      !isUserOfficer &&
       !(await this.userAuth.isChairOrSecretaryOfSEP(
         (agent as UserWithRole).id,
         sepId
       ))
     ) {
+      return rejection('NOT_ALLOWED');
+    }
+
+    const isProposalInstrumentSubmitted = await this.instrumentDataSource.isProposalInstrumentSubmitted(
+      proposalId
+    );
+
+    if (isProposalInstrumentSubmitted && !isUserOfficer) {
       return rejection('NOT_ALLOWED');
     }
 
