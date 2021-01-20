@@ -29,6 +29,7 @@ import {
   createQuestionTemplateRelationObject,
   createTemplateCategoryObject,
   createTopicObject,
+  QuestionDependencyRecord,
   QuestionRecord,
   QuestionTemplateRelRecord,
   TemplateCategoryRecord,
@@ -145,7 +146,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     >,
     templateId: number
   ): Promise<FieldDependency[]> {
-    const questionDependencies = await database
+    const questionDependencies: QuestionDependencyRecord[] = await database
       .select('*')
       .from('question_dependencies')
       .where('template_id', templateId)
@@ -154,7 +155,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         questionRecords.map(questionRecord => questionRecord.question_id)
       );
 
-    return questionDependencies.map((questionDependency: any) => {
+    return questionDependencies.map(questionDependency => {
       const question = questionRecords.find(
         field => field.question_id === questionDependency.dependency_question_id
       );
@@ -564,18 +565,16 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
   }
 
   async deleteQuestion(questionId: string): Promise<Question> {
-    const [error, row] = await to(
-      database('questions')
-        .where({ question_id: questionId })
-        .returning('*')
-        .del()
-    );
-    if (error || row?.length !== 1) {
+    const [questionRecord]: QuestionRecord[] = await database('questions')
+      .where({ question_id: questionId })
+      .returning('*')
+      .del();
+    if (!questionRecord) {
       logger.logError('Could not delete question', { fieldId: questionId });
       throw new Error(`Could not delete question ${questionId}`);
     }
 
-    return createQuestionObject(row[0]);
+    return createQuestionObject(questionRecord);
   }
 
   async deleteQuestionTemplateRelation(
@@ -602,23 +601,22 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
   }
 
   async deleteTopic(topicId: number): Promise<Topic> {
-    return database('topics')
+    const [topicRecord]: TopicRecord[] = await database('topics')
       .where({ topic_id: topicId })
-      .del(['*'])
-      .then((result: TopicRecord[]) => {
-        if (!result || result.length !== 1) {
-          throw new Error(`Could not delete topic ${topicId}`);
-        }
+      .del(['*']);
 
-        return createTopicObject(result[0]);
-      });
+    if (!topicRecord) {
+      throw new Error(`Could not delete topic ${topicId}`);
+    }
+
+    return createTopicObject(topicRecord);
   }
 
   async isNaturalKeyPresent(naturalKey: string): Promise<boolean> {
     return database('questions')
       .where({ natural_key: naturalKey })
       .select('natural_key')
-      .then((result: []) => result.length > 0);
+      .then((result: QuestionRecord[]) => result.length > 0);
   }
 
   async cloneTemplate(templateId: number) {

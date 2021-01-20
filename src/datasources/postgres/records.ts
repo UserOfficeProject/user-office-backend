@@ -127,6 +127,15 @@ export interface DependencyCondition {
   condition: EvaluatorOperator;
   params: string | boolean | number;
 }
+
+export interface QuestionDependencyRecord {
+  readonly question_dependency_id: number;
+  readonly question_id: string;
+  readonly template_id: number;
+  readonly dependency_question_id: string;
+  readonly dependency_condition: DependencyCondition;
+}
+
 export interface QuestionTemplateRelRecord {
   readonly id: number;
   readonly question_id: string;
@@ -221,7 +230,7 @@ export interface CallRecord {
   readonly template_id: number;
 }
 
-export interface PagetextRecord {
+export interface PageTextRecord {
   readonly pagetext_id: number;
   readonly content: string;
 }
@@ -399,7 +408,7 @@ export interface ProposalEventsRecord {
   readonly proposal_notified: boolean;
 }
 
-export const createPageObject = (record: PagetextRecord) => {
+export const createPageObject = (record: PageTextRecord) => {
   return new Page(record.pagetext_id, record.content);
 };
 
