@@ -501,7 +501,7 @@ export default class PostgresInstrumentDataSource
       .select()
       .where('proposal_id', proposalId)
       .first()
-      .then((result: null | InstrumentHasProposalsRecord) => {
+      .then((result?: InstrumentHasProposalsRecord) => {
         if (!result) {
           return false;
         }

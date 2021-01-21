@@ -171,7 +171,7 @@ export default class SEPMutations {
     args: UpdateMemberSEPArgs
   ): Promise<SEP | Rejection> {
     const isChairOrSecretaryOfSEP = await this.userAuth.isChairOrSecretaryOfSEP(
-      (agent as UserWithRole).id,
+      agent!.id,
       args.sepId
     );
     const isUserOfficer = await this.userAuth.isUserOfficer(agent);
@@ -319,10 +319,7 @@ export default class SEPMutations {
     const isUserOfficer = await this.userAuth.isUserOfficer(agent);
     if (
       !isUserOfficer &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(
-        (agent as UserWithRole).id,
-        sepId
-      ))
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepId))
     ) {
       return rejection('NOT_ALLOWED');
     }
@@ -343,6 +340,9 @@ export default class SEPMutations {
           err,
           {
             agent,
+            sepId,
+            proposalId,
+            sepTimeAllocation,
           }
         );
 

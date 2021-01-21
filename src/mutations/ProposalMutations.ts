@@ -232,7 +232,7 @@ export default class ProposalMutations {
       commentForUser,
     } = args;
     const isChairOrSecretaryOfProposal = await this.userAuth.isChairOrSecretaryOfProposal(
-      agent?.id!,
+      agent!.id,
       id
     );
     const isUserOfficer = await this.userAuth.isUserOfficer(agent);

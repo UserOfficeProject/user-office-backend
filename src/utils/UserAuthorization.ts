@@ -97,12 +97,16 @@ export class UserAuthorization {
     agent: UserWithRole | null,
     proposal: Proposal
   ): Promise<boolean> {
+    if (!agent) {
+      return false;
+    }
+
     return (
       (await this.isUserOfficer(agent)) ||
       (await this.isMemberOfProposal(agent, proposal)) ||
       (await this.isReviewerOfProposal(agent, proposal.id)) ||
       (await this.isScientistToProposal(agent, proposal.id)) ||
-      (await this.isChairOrSecretaryOfProposal(agent?.id!, proposal.id))
+      (await this.isChairOrSecretaryOfProposal(agent.id, proposal.id))
     );
   }
 

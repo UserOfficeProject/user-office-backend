@@ -43,7 +43,7 @@ export default class ReviewMutations {
       !(
         (await this.userAuth.isReviewerOfProposal(agent, review.proposalID)) ||
         (await this.userAuth.isChairOrSecretaryOfSEP(
-          agent?.id!,
+          agent!.id,
           review.sepID
         )) ||
         (await this.userAuth.isUserOfficer(agent))
@@ -112,10 +112,7 @@ export default class ReviewMutations {
   ): Promise<Review | Rejection> {
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(
-        (agent as UserWithRole).id,
-        sepId
-      ))
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepId))
     ) {
       return rejection('NOT_ALLOWED');
     }
@@ -142,10 +139,7 @@ export default class ReviewMutations {
     const { proposalID, userID, sepID } = args;
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(
-        (agent as UserWithRole).id,
-        sepID
-      ))
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepID))
     ) {
       return rejection('NOT_ALLOWED');
     }

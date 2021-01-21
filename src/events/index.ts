@@ -16,7 +16,7 @@ const eventHandlers = createEventHandlers({
   userDataSource,
   eventLogsDataSource,
   reviewDataSource,
-  instrumentDataSource: instrumentDataSource,
+  instrumentDataSource,
   proposalDataSource,
 });
 
