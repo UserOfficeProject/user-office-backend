@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { logger } from '@esss-swap/duo-logger';
-import to from 'await-to-js';
 
 import {
   DataType,
@@ -341,6 +340,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       config,
       dependenciesOperator,
     } = args;
+
     await database('templates_has_questions')
       .update({
         config: config,
