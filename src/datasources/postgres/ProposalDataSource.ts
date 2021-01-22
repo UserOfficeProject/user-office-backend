@@ -188,11 +188,13 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           );
         }
 
-        if (filter?.shortCode) {
-          query.where(
-            'proposal_table_view.short_code',
-            'like',
-            `%${filter?.shortCode}%`
+        if (filter?.shortCodes) {
+          const filteredAndPreparedShortCodes = filter?.shortCodes
+            .filter(shortCode => shortCode)
+            .join('|');
+
+          query.whereRaw(
+            `proposal_table_view.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
           );
         }
       })
@@ -240,8 +242,14 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           query.where('proposals.status_id', filter?.proposalStatusId);
         }
 
-        if (filter?.shortCode) {
-          query.where('proposals.short_code', 'like', `%${filter?.shortCode}%`);
+        if (filter?.shortCodes) {
+          const filteredAndPreparedShortCodes = filter?.shortCodes
+            .filter(shortCode => shortCode)
+            .join('|');
+
+          query.whereRaw(
+            `proposal_table_view.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
+          );
         }
 
         if (first) {
@@ -299,8 +307,14 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           query.where('proposals.status_id', filter?.proposalStatusId);
         }
 
-        if (filter?.shortCode) {
-          query.where('proposals.short_code', 'like', `%${filter?.shortCode}%`);
+        if (filter?.shortCodes) {
+          const filteredAndPreparedShortCodes = filter?.shortCodes
+            .filter(shortCode => shortCode)
+            .join('|');
+
+          query.whereRaw(
+            `proposal_table_view.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
+          );
         }
 
         if (first) {
