@@ -1,6 +1,7 @@
 import { Page } from '../../models/Admin';
 import { Feature, FeatureId } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
+import { Permissions } from '../../models/Permissions';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 
 export const dummyInstitution = new Institution(1, 'ESS', true);
@@ -62,5 +63,11 @@ export class AdminDataSourceMock implements AdminDataSource {
   }
   async getFeatures(): Promise<Feature[]> {
     return [{ id: FeatureId.SHIPPING, isEnabled: false, description: '' }];
+  }
+
+  async getPermissionsByToken(accessToken: string) {
+    return new Permissions(1, 'testaccesstoken', {
+      ProposalQueries: { getAll: true },
+    });
   }
 }

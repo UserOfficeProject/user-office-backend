@@ -5,6 +5,7 @@ import { logger } from '@esss-swap/duo-logger';
 import { Page } from '../../models/Admin';
 import { Feature } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
+import { Permissions } from '../../models/Permissions';
 import { BasicUserDetails } from '../../models/User';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 import { InstitutionsFilter } from './../../resolvers/queries/InstitutionsQuery';
@@ -229,12 +230,25 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     });
   }
 
-  getFeatures(): Promise<Feature[]> {
+  async getFeatures(): Promise<Feature[]> {
     return database
       .select()
       .from('features')
       .then((features: FeatureRecord[]) =>
         features.map(feature => createFeatureObject(feature))
       );
+  }
+
+  async getPermissionsByToken(accessToken: string): Promise<Permissions> {
+    const [permissions] = await database
+      .select()
+      .from('api_permissions')
+      .where('access_token', accessToken);
+
+    return new Permissions(
+      permissions.api_permission_id,
+      permissions.access_token,
+      permissions.access_permissions
+    );
   }
 }

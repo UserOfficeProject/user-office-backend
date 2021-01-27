@@ -16,6 +16,7 @@ interface Req extends Request {
     user?: User;
     currentRole?: Role;
     roles?: Role[];
+    accessToken?: string;
   };
 }
 
@@ -56,13 +57,42 @@ const apolloServer = async (app: Express) => {
     context: async ({ req }: { req: Req }) => {
       let user = null;
       const userId = req.user?.user?.id as number;
+      const accessToken = req.user?.accessToken;
+
+      console.log(req.user);
 
       if (req.user) {
-        user = {
-          ...(await baseContext.queries.user.getAgent(userId)),
-          currentRole:
-            req.user.currentRole || (req.user.roles ? req.user.roles[0] : null),
-        } as UserWithRole;
+        if (accessToken) {
+          // const accessRules = {
+          //   ProposalQueries: {
+          //     getAll: true,
+          //     getAllView: true,
+          //   },
+          //   UserQueries: {
+          //     getBasic: true,
+          //   },
+          // };
+          const {
+            accessPermissions,
+          } = await baseContext.queries.admin.getPermissionsByToken(
+            accessToken
+          );
+
+          console.log(accessPermissions);
+
+          user = {
+            accessPermissions,
+            isApiAccessToken: true,
+          } as UserWithRole;
+        } else {
+          user = {
+            ...(await baseContext.queries.user.getAgent(userId)),
+            currentRole:
+              req.user.currentRole ||
+              (req.user.roles ? req.user.roles[0] : null),
+            isApiAccessToken: false,
+          } as UserWithRole;
+        }
       }
 
       const context: ResolverContext = { ...baseContext, user };

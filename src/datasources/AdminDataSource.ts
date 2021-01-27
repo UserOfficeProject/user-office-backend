@@ -1,6 +1,7 @@
 import { Page } from '../models/Admin';
 import { Feature } from '../models/Feature';
 import { Institution } from '../models/Institution';
+import { Permissions } from '../models/Permissions';
 import { BasicUserDetails } from '../models/User';
 import { InstitutionsFilter } from './../resolvers/queries/InstitutionsQuery';
 
@@ -18,6 +19,7 @@ export interface AdminDataSource {
   resetDB(): Promise<string>;
   applyPatches(): Promise<string>;
   getFeatures(): Promise<Feature[]>;
+  getPermissionsByToken(accessToken: string): Promise<Permissions>;
 }
 export class Entry {
   constructor(public id: number, public value: string) {}
