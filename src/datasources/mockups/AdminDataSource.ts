@@ -2,6 +2,7 @@ import { Page } from '../../models/Admin';
 import { Feature, FeatureId } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
+import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 
 export const dummyInstitution = new Institution(1, 'ESS', true);
@@ -65,9 +66,39 @@ export class AdminDataSourceMock implements AdminDataSource {
     return [{ id: FeatureId.SHIPPING, isEnabled: false, description: '' }];
   }
 
-  async getPermissionsByToken(accessToken: string) {
-    return new Permissions(1, 'testaccesstoken', {
-      ProposalQueries: { getAll: true },
-    });
+  async getTokenAndPermissionsByKey(
+    accessTokenKey: string
+  ): Promise<Permissions> {
+    return new Permissions(
+      'testaccesstokenkey',
+      'Test token',
+      'testaccesstoken',
+      {
+        ProposalQueries: { getAll: true },
+      }
+    );
+  }
+
+  async getAllTokensAndPermissions(): Promise<Permissions[]> {
+    return [
+      new Permissions('testaccesstokenkey', 'Test token', 'testaccesstoken', {
+        ProposalQueries: { getAll: true },
+      }),
+    ];
+  }
+
+  async createApiAccessToken(
+    args: CreateApiAccessTokenInput,
+    accessTokenKey: string,
+    accessToken: string
+  ): Promise<Permissions> {
+    return new Permissions(
+      'testaccesstokenkey',
+      'Test token',
+      'testaccesstoken',
+      {
+        ProposalQueries: { getAll: true },
+      }
+    );
   }
 }

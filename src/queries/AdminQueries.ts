@@ -1,4 +1,8 @@
+import context from '../buildContext';
 import { AdminDataSource } from '../datasources/AdminDataSource';
+import { Authorized } from '../decorators';
+import { Roles } from '../models/Role';
+import { UserWithRole } from '../models/User';
 import { InstitutionsFilter } from './../resolvers/queries/InstitutionsQuery';
 
 export default class AdminQueries {
@@ -27,6 +31,65 @@ export default class AdminQueries {
   }
 
   async getPermissionsByToken(accessToken: string) {
-    return await this.dataSource.getPermissionsByToken(accessToken);
+    return await this.dataSource.getTokenAndPermissionsByKey(accessToken);
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async getTokenAndPermissionsByKey(
+    agent: UserWithRole | null,
+    accessTokenKey: string
+  ) {
+    return await this.dataSource.getTokenAndPermissionsByKey(accessTokenKey);
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async getAllTokensAndPermissions(agent: UserWithRole | null) {
+    return await this.dataSource.getAllTokensAndPermissions();
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async getAllQueryMethods(agent: UserWithRole | null) {
+    const allQueryMethods: string[] = [];
+    const allMutationMethods: string[] = [];
+
+    for (const queryKey in context.queries) {
+      if (Object.prototype.hasOwnProperty.call(context.queries, queryKey)) {
+        //@ts-expect-error
+        const element = context.queries[queryKey];
+
+        const proto = Object.getPrototypeOf(element);
+        const names = Object.getOwnPropertyNames(proto).filter(item =>
+          item.startsWith('get')
+        );
+
+        const classNamesWithMethod = names.map(
+          item => `${queryKey} => ${item}`
+        );
+
+        allQueryMethods.push(...classNamesWithMethod);
+      }
+    }
+
+    for (const mutationKey in context.mutations) {
+      if (
+        Object.prototype.hasOwnProperty.call(context.mutations, mutationKey)
+      ) {
+        //@ts-expect-error
+        const element = context.mutations[mutationKey];
+
+        const proto = Object.getPrototypeOf(element);
+        const names = Object.getOwnPropertyNames(proto).filter(
+          item => item !== 'constructor'
+        );
+
+        const classNamesWithMethod = names.map(
+          item => `${mutationKey} => ${item}`
+        );
+
+        allMutationMethods.push(...classNamesWithMethod);
+      }
+    }
+
+    return { queries: allQueryMethods, mutations: allMutationMethods };
   }
 }

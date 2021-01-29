@@ -1,7 +1,8 @@
 export class Permissions {
   constructor(
-    public id: number,
+    public accessTokenKey: string,
+    public name: string,
     public accessToken: string,
-    public accessPermissions: object
+    public accessPermissions: any | null
   ) {}
 }

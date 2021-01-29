@@ -3,6 +3,7 @@ import { Feature } from '../models/Feature';
 import { Institution } from '../models/Institution';
 import { Permissions } from '../models/Permissions';
 import { BasicUserDetails } from '../models/User';
+import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
 import { InstitutionsFilter } from './../resolvers/queries/InstitutionsQuery';
 
 export interface AdminDataSource {
@@ -19,7 +20,13 @@ export interface AdminDataSource {
   resetDB(): Promise<string>;
   applyPatches(): Promise<string>;
   getFeatures(): Promise<Feature[]>;
-  getPermissionsByToken(accessToken: string): Promise<Permissions>;
+  createApiAccessToken(
+    args: CreateApiAccessTokenInput,
+    accessTokenKey: string,
+    accessToken: string
+  ): Promise<Permissions>;
+  getTokenAndPermissionsByKey(accessTokenKey: string): Promise<Permissions>;
+  getAllTokensAndPermissions(): Promise<Permissions[]>;
 }
 export class Entry {
   constructor(public id: number, public value: string) {}

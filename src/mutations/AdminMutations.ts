@@ -1,6 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
 import { setPageTextValidationSchema } from '@esss-swap/duo-validation';
 
+import context from '../buildContext';
 import { AdminDataSource } from '../datasources/AdminDataSource';
 import { Authorized, ValidateArgs } from '../decorators';
 import { Page } from '../models/Admin';
@@ -8,8 +9,11 @@ import { Institution } from '../models/Institution';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { Rejection, rejection } from '../rejection';
+import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
 import { CreateInstitutionsArgs } from '../resolvers/mutations/CreateInstitutionsMutation';
 import { UpdateInstitutionsArgs } from '../resolvers/mutations/UpdateInstitutionsMutation';
+import { generateUniqueId } from '../utils/helperFunctions';
+import { signToken } from '../utils/jwt';
 
 export default class AdminMutations {
   constructor(private dataSource: AdminDataSource) {}
@@ -98,5 +102,27 @@ export default class AdminMutations {
     logger.logError('Error received from client', { error });
 
     return true;
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async createApiAccessToken(
+    agent: UserWithRole | null,
+    args: CreateApiAccessTokenInput
+  ) {
+    const accessTokenKey = generateUniqueId();
+    const permissions = JSON.parse(args.permissions);
+    const generatedAccessToken = `Bearer ${signToken({ accessTokenKey })}`;
+
+    const { accessToken } = await this.dataSource.createApiAccessToken(
+      { permissions, name: args.name },
+      accessTokenKey,
+      generatedAccessToken
+    );
+
+    if (generatedAccessToken === accessToken) {
+      return accessToken;
+    } else {
+      return rejection('NOT_ALLOWED');
+    }
   }
 }

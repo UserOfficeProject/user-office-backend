@@ -1,6 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
 import { Response } from '../Decorators';
+import { AccessTokenPermissions } from '../mutations/CreateApiAccessTokenMutation';
 import { Page } from './Admin';
 import { Answer } from './Answer';
 import { AnswerBasic } from './AnswerBasic';
@@ -266,4 +267,13 @@ export class SEPProposalResponseWrap extends ResponseWrapBase<SEPProposal> {
   @Response()
   @Field(() => SEPProposal, { nullable: true })
   public sepProposal: SEPProposal;
+}
+
+@ObjectType()
+export class ApiAccessTokenResponseWrap extends ResponseWrapBase<
+  AccessTokenPermissions
+> {
+  @Response()
+  @Field(() => String, { nullable: true })
+  public apiAccessToken: string;
 }

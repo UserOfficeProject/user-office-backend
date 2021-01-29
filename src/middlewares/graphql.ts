@@ -16,7 +16,7 @@ interface Req extends Request {
     user?: User;
     currentRole?: Role;
     roles?: Role[];
-    accessToken?: string;
+    accessTokenKey?: string;
   };
 }
 
@@ -57,28 +57,15 @@ const apolloServer = async (app: Express) => {
     context: async ({ req }: { req: Req }) => {
       let user = null;
       const userId = req.user?.user?.id as number;
-      const accessToken = req.user?.accessToken;
-
-      console.log(req.user);
+      const accessTokenKey = req.user?.accessTokenKey;
 
       if (req.user) {
-        if (accessToken) {
-          // const accessRules = {
-          //   ProposalQueries: {
-          //     getAll: true,
-          //     getAllView: true,
-          //   },
-          //   UserQueries: {
-          //     getBasic: true,
-          //   },
-          // };
+        if (accessTokenKey) {
           const {
             accessPermissions,
           } = await baseContext.queries.admin.getPermissionsByToken(
-            accessToken
+            accessTokenKey
           );
-
-          console.log(accessPermissions);
 
           user = {
             accessPermissions,
@@ -90,7 +77,6 @@ const apolloServer = async (app: Express) => {
             currentRole:
               req.user.currentRole ||
               (req.user.roles ? req.user.roles[0] : null),
-            isApiAccessToken: false,
           } as UserWithRole;
         }
       }

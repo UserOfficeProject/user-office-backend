@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import * as fs from 'fs';
 
 import { logger } from '@esss-swap/duo-logger';
@@ -7,6 +8,7 @@ import { Feature } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
 import { BasicUserDetails } from '../../models/User';
+import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 import { InstitutionsFilter } from './../../resolvers/queries/InstitutionsQuery';
 import database from './database';
@@ -239,16 +241,64 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       );
   }
 
-  async getPermissionsByToken(accessToken: string): Promise<Permissions> {
-    const [permissions] = await database
+  async getTokenAndPermissionsByKey(
+    accessTokenKey: string
+  ): Promise<Permissions> {
+    const [permissionRules] = await database
       .select()
       .from('api_permissions')
-      .where('access_token', accessToken);
+      .where('access_token_key', accessTokenKey);
 
     return new Permissions(
-      permissions.api_permission_id,
-      permissions.access_token,
-      permissions.access_permissions
+      permissionRules.access_token_key,
+      permissionRules.name,
+      permissionRules.access_token,
+      JSON.stringify(permissionRules.access_permissions)
+    );
+  }
+
+  async getAllTokensAndPermissions(): Promise<Permissions[]> {
+    const accessTokensWithPermissions = await database
+      .select()
+      .from('api_permissions');
+
+    return accessTokensWithPermissions.map(
+      accessTokenWithPermissions =>
+        new Permissions(
+          accessTokenWithPermissions.access_token_key,
+          accessTokenWithPermissions.name,
+          accessTokenWithPermissions.access_token,
+          JSON.stringify(accessTokenWithPermissions.access_permissions)
+        )
+    );
+  }
+
+  async createApiAccessToken(
+    args: CreateApiAccessTokenInput,
+    accessTokenKey: string,
+    accessToken: string
+  ): Promise<Permissions> {
+    const [permissionRules] = await database
+      .insert({
+        access_token_key: accessTokenKey,
+        name: args.name,
+        access_token: accessToken,
+        access_permissions: args.permissions,
+      })
+      .into('api_permissions')
+      .returning('*');
+
+    if (!permissionRules) {
+      throw new Error(
+        `Could not insert permission rules with access token key:${accessTokenKey}`
+      );
+    }
+
+    return new Permissions(
+      permissionRules.access_token_key,
+      permissionRules.name,
+      permissionRules.access_token,
+      permissionRules.access_permissions
     );
   }
 }
