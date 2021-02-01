@@ -1,12 +1,4 @@
-import {
-  Arg,
-  Ctx,
-  Field,
-  InputType,
-  Mutation,
-  ObjectType,
-  Resolver,
-} from 'type-graphql';
+import { Arg, Ctx, Field, InputType, Mutation, Resolver } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
 import { ApiAccessTokenResponseWrap } from '../types/CommonWrappers';
@@ -19,12 +11,6 @@ export class CreateApiAccessTokenInput {
 
   @Field(() => String)
   public permissions: string;
-}
-
-@ObjectType()
-export class AccessTokenPermissions {
-  @Field()
-  public apiAccessToken: string;
 }
 
 @Resolver()

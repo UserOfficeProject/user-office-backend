@@ -16,7 +16,7 @@ interface Req extends Request {
     user?: User;
     currentRole?: Role;
     roles?: Role[];
-    accessTokenKey?: string;
+    accessTokenId?: string;
   };
 }
 
@@ -57,18 +57,18 @@ const apolloServer = async (app: Express) => {
     context: async ({ req }: { req: Req }) => {
       let user = null;
       const userId = req.user?.user?.id as number;
-      const accessTokenKey = req.user?.accessTokenKey;
+      const accessTokenId = req.user?.accessTokenId;
 
       if (req.user) {
-        if (accessTokenKey) {
+        if (accessTokenId) {
           const {
             accessPermissions,
           } = await baseContext.queries.admin.getPermissionsByToken(
-            accessTokenKey
+            accessTokenId
           );
 
           user = {
-            accessPermissions,
+            accessPermissions: JSON.parse(accessPermissions),
             isApiAccessToken: true,
           } as UserWithRole;
         } else {

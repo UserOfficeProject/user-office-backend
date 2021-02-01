@@ -109,18 +109,18 @@ export default class AdminMutations {
     agent: UserWithRole | null,
     args: CreateApiAccessTokenInput
   ) {
-    const accessTokenKey = generateUniqueId();
+    const accessTokenId = generateUniqueId();
     const permissions = JSON.parse(args.permissions);
-    const generatedAccessToken = `Bearer ${signToken({ accessTokenKey })}`;
+    const generatedAccessToken = `Bearer ${signToken({ accessTokenId })}`;
 
-    const { accessToken } = await this.dataSource.createApiAccessToken(
+    const result = await this.dataSource.createApiAccessToken(
       { permissions, name: args.name },
-      accessTokenKey,
+      accessTokenId,
       generatedAccessToken
     );
 
-    if (generatedAccessToken === accessToken) {
-      return accessToken;
+    if (generatedAccessToken === result.accessToken) {
+      return result;
     } else {
       return rejection('NOT_ALLOWED');
     }

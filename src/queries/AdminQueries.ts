@@ -31,15 +31,15 @@ export default class AdminQueries {
   }
 
   async getPermissionsByToken(accessToken: string) {
-    return await this.dataSource.getTokenAndPermissionsByKey(accessToken);
+    return await this.dataSource.getTokenAndPermissionsById(accessToken);
   }
 
   @Authorized([Roles.USER_OFFICER])
-  async getTokenAndPermissionsByKey(
+  async getTokenAndPermissionsById(
     agent: UserWithRole | null,
-    accessTokenKey: string
+    accessTokenId: string
   ) {
-    return await this.dataSource.getTokenAndPermissionsByKey(accessTokenKey);
+    return await this.dataSource.getTokenAndPermissionsById(accessTokenId);
   }
 
   @Authorized([Roles.USER_OFFICER])
@@ -62,8 +62,10 @@ export default class AdminQueries {
           item.startsWith('get')
         );
 
+        console.log(proto.constructor.name, names);
+
         const classNamesWithMethod = names.map(
-          item => `${queryKey} => ${item}`
+          item => `${proto.constructor.name}.${item}`
         );
 
         allQueryMethods.push(...classNamesWithMethod);
@@ -83,7 +85,7 @@ export default class AdminQueries {
         );
 
         const classNamesWithMethod = names.map(
-          item => `${mutationKey} => ${item}`
+          item => `${proto.constructor.name}.${item}`
         );
 
         allMutationMethods.push(...classNamesWithMethod);

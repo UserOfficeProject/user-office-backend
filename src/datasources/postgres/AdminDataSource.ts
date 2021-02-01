@@ -241,16 +241,16 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       );
   }
 
-  async getTokenAndPermissionsByKey(
-    accessTokenKey: string
+  async getTokenAndPermissionsById(
+    accessTokenId: string
   ): Promise<Permissions> {
     const [permissionRules] = await database
       .select()
       .from('api_permissions')
-      .where('access_token_key', accessTokenKey);
+      .where('access_token_id', accessTokenId);
 
     return new Permissions(
-      permissionRules.access_token_key,
+      permissionRules.access_token_id,
       permissionRules.name,
       permissionRules.access_token,
       JSON.stringify(permissionRules.access_permissions)
@@ -265,7 +265,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     return accessTokensWithPermissions.map(
       accessTokenWithPermissions =>
         new Permissions(
-          accessTokenWithPermissions.access_token_key,
+          accessTokenWithPermissions.access_token_id,
           accessTokenWithPermissions.name,
           accessTokenWithPermissions.access_token,
           JSON.stringify(accessTokenWithPermissions.access_permissions)
@@ -275,12 +275,12 @@ export default class PostgresAdminDataSource implements AdminDataSource {
 
   async createApiAccessToken(
     args: CreateApiAccessTokenInput,
-    accessTokenKey: string,
+    accessTokenId: string,
     accessToken: string
   ): Promise<Permissions> {
     const [permissionRules] = await database
       .insert({
-        access_token_key: accessTokenKey,
+        access_token_id: accessTokenId,
         name: args.name,
         access_token: accessToken,
         access_permissions: args.permissions,
@@ -290,15 +290,15 @@ export default class PostgresAdminDataSource implements AdminDataSource {
 
     if (!permissionRules) {
       throw new Error(
-        `Could not insert permission rules with access token key:${accessTokenKey}`
+        `Could not insert permission rules with access token key:${accessTokenId}`
       );
     }
 
     return new Permissions(
-      permissionRules.access_token_key,
+      permissionRules.access_token_id,
       permissionRules.name,
       permissionRules.access_token,
-      permissionRules.access_permissions
+      JSON.stringify(permissionRules.access_permissions)
     );
   }
 }

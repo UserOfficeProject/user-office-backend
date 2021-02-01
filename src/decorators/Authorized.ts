@@ -21,7 +21,7 @@ const Authorized = (roles: Roles[] = []) => {
       const isMutation = target.constructor.name.includes('Mutation');
 
       if (agent?.isApiAccessToken) {
-        if (agent?.accessPermissions?.[target.constructor.name]?.[name]) {
+        if (agent?.accessPermissions?.[`${target.constructor.name}.${name}`]) {
           return await originalMethod?.apply(this, args);
         } else {
           return isMutation ? rejection('INSUFFICIENT_PERMISSIONS') : null;

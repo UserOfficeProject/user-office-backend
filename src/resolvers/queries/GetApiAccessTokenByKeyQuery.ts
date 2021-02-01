@@ -7,12 +7,12 @@ import { PermissionsWithAccessToken } from '../types/PermissionsWithAccessToken'
 export class GetAllQueryAndMutationMethodsQuery {
   @Query(() => PermissionsWithAccessToken, { nullable: true })
   accessTokenAndPermissions(
-    @Arg('accessTokenKey', () => String) accessTokenKey: string,
+    @Arg('accessTokenId', () => String) accessTokenId: string,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.admin.getTokenAndPermissionsByKey(
+    return context.queries.admin.getTokenAndPermissionsById(
       context.user,
-      accessTokenKey
+      accessTokenId
     );
   }
 }

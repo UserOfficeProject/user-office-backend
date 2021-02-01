@@ -22,10 +22,10 @@ export interface AdminDataSource {
   getFeatures(): Promise<Feature[]>;
   createApiAccessToken(
     args: CreateApiAccessTokenInput,
-    accessTokenKey: string,
+    accessTokenId: string,
     accessToken: string
   ): Promise<Permissions>;
-  getTokenAndPermissionsByKey(accessTokenKey: string): Promise<Permissions>;
+  getTokenAndPermissionsById(accessTokenId: string): Promise<Permissions>;
   getAllTokensAndPermissions(): Promise<Permissions[]>;
 }
 export class Entry {

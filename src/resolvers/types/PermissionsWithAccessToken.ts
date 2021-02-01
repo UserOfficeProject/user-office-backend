@@ -5,10 +5,10 @@ import { Permissions } from '../../models/Permissions';
 @ObjectType()
 export class PermissionsWithAccessToken implements Partial<Permissions> {
   @Field()
-  public name: string;
+  public id: string;
 
   @Field()
-  public accessTokenKey: string;
+  public name: string;
 
   @Field()
   public accessToken: string;

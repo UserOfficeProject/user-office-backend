@@ -66,8 +66,8 @@ export class AdminDataSourceMock implements AdminDataSource {
     return [{ id: FeatureId.SHIPPING, isEnabled: false, description: '' }];
   }
 
-  async getTokenAndPermissionsByKey(
-    accessTokenKey: string
+  async getTokenAndPermissionsById(
+    accessTokenId: string
   ): Promise<Permissions> {
     return new Permissions(
       'testaccesstokenkey',
@@ -89,7 +89,7 @@ export class AdminDataSourceMock implements AdminDataSource {
 
   async createApiAccessToken(
     args: CreateApiAccessTokenInput,
-    accessTokenKey: string,
+    accessTokenId: string,
     accessToken: string
   ): Promise<Permissions> {
     return new Permissions(
