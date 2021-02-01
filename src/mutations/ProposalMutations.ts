@@ -1,3 +1,4 @@
+import { ResourceId } from '@esss-swap/duo-localisation';
 import { logger } from '@esss-swap/duo-logger';
 import {
   administrationProposalBEValidationSchema,
@@ -190,11 +191,21 @@ export default class ProposalMutations {
       return rejection('INTERNAL_ERROR');
     }
 
-    const result = await this.proposalDataSource.deleteProposal(proposalId);
+    try {
+      const result = await this.proposalDataSource.deleteProposal(proposalId);
 
-    await this.questionaryDataSource.delete(result.questionaryId);
+      await this.questionaryDataSource.delete(result.questionaryId);
 
-    return result || rejection('INTERNAL_ERROR');
+      return result;
+    } catch (e) {
+      if ('code' in e && e.code === '23503') {
+        return rejection(
+          `Failed to delete proposal with ID "${proposal.shortCode}", it has dependencies which need to be deleted first` as ResourceId
+        );
+      }
+
+      return rejection('INTERNAL_ERROR');
+    }
   }
 
   @ValidateArgs(proposalNotifyValidationSchema)
