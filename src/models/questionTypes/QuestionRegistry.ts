@@ -8,6 +8,7 @@ import { fileUploadDefinition } from './FileUpload';
 import { intervalDefinition } from './Interval';
 import { numberInputDefinition } from './NumberInput';
 import { proposalBasisDefinition } from './ProposalBasis';
+import { richTextInputDefinition } from './RichTextInput';
 import { sampleBasisDefinition } from './SampleBasis';
 import { sampleDeclarationDefinition } from './SampleDeclaration';
 import { selectionFromOptionsDefinition } from './SelectionFromOptions';
@@ -36,6 +37,7 @@ const registry = [
   intervalDefinition,
   numberInputDefinition,
   shipmentBasis,
+  richTextInputDefinition,
 ];
 
 Object.freeze(registry);
