@@ -62,8 +62,6 @@ export default class AdminQueries {
           item.startsWith('get')
         );
 
-        console.log(proto.constructor.name, names);
-
         const classNamesWithMethod = names.map(
           item => `${proto.constructor.name}.${item}`
         );
