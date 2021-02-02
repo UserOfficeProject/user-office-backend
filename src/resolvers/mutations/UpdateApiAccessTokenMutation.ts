@@ -5,7 +5,10 @@ import { ApiAccessTokenResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
 
 @InputType()
-export class CreateApiAccessTokenInput {
+export class UpdateApiAccessTokenInput {
+  @Field(() => String)
+  public accessTokenId: string;
+
   @Field(() => String)
   public name: string;
 
@@ -14,17 +17,17 @@ export class CreateApiAccessTokenInput {
 }
 
 @Resolver()
-export class CreateApiAccessTokenMutation {
+export class UpdateApiAccessTokenMutation {
   @Mutation(() => ApiAccessTokenResponseWrap)
-  createApiAccessToken(
-    @Arg('createApiAccessTokenInput')
-    createApiAccessTokenInput: CreateApiAccessTokenInput,
+  updateApiAccessToken(
+    @Arg('updateApiAccessTokenInput')
+    updateApiAccessTokenInput: UpdateApiAccessTokenInput,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.admin.createApiAccessToken(
+      context.mutations.admin.updateApiAccessToken(
         context.user,
-        createApiAccessTokenInput
+        updateApiAccessTokenInput
       ),
       ApiAccessTokenResponseWrap
     );

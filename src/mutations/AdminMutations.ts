@@ -1,7 +1,10 @@
 import { logger } from '@esss-swap/duo-logger';
-import { setPageTextValidationSchema } from '@esss-swap/duo-validation';
+import {
+  setPageTextValidationSchema,
+  createApiAccessTokenValidationSchema,
+  updateApiAccessTokenValidationSchema,
+} from '@esss-swap/duo-validation';
 
-import context from '../buildContext';
 import { AdminDataSource } from '../datasources/AdminDataSource';
 import { Authorized, ValidateArgs } from '../decorators';
 import { Page } from '../models/Admin';
@@ -11,9 +14,13 @@ import { UserWithRole } from '../models/User';
 import { Rejection, rejection } from '../rejection';
 import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
 import { CreateInstitutionsArgs } from '../resolvers/mutations/CreateInstitutionsMutation';
+import { DeleteApiAccessTokenInput } from '../resolvers/mutations/DeleteApiAccessTokenMutation';
+import { UpdateApiAccessTokenInput } from '../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { UpdateInstitutionsArgs } from '../resolvers/mutations/UpdateInstitutionsMutation';
 import { generateUniqueId } from '../utils/helperFunctions';
 import { signToken } from '../utils/jwt';
+
+const IS_BACKEND_VALIDATION = true;
 
 export default class AdminMutations {
   constructor(private dataSource: AdminDataSource) {}
@@ -104,17 +111,18 @@ export default class AdminMutations {
     return true;
   }
 
+  @ValidateArgs(createApiAccessTokenValidationSchema(IS_BACKEND_VALIDATION))
   @Authorized([Roles.USER_OFFICER])
   async createApiAccessToken(
     agent: UserWithRole | null,
     args: CreateApiAccessTokenInput
   ) {
     const accessTokenId = generateUniqueId();
-    const permissions = JSON.parse(args.permissions);
+    const accessPermissions = JSON.parse(args.accessPermissions);
     const generatedAccessToken = `Bearer ${signToken({ accessTokenId })}`;
 
     const result = await this.dataSource.createApiAccessToken(
-      { permissions, name: args.name },
+      { accessPermissions, name: args.name },
       accessTokenId,
       generatedAccessToken
     );
@@ -123,6 +131,46 @@ export default class AdminMutations {
       return result;
     } else {
       return rejection('NOT_ALLOWED');
+    }
+  }
+
+  @ValidateArgs(updateApiAccessTokenValidationSchema(IS_BACKEND_VALIDATION))
+  @Authorized([Roles.USER_OFFICER])
+  async updateApiAccessToken(
+    agent: UserWithRole | null,
+    args: UpdateApiAccessTokenInput
+  ) {
+    try {
+      const accessPermissions = JSON.parse(args.accessPermissions);
+
+      return await this.dataSource.updateApiAccessToken({
+        ...args,
+        accessPermissions,
+      });
+    } catch (error) {
+      logger.logException('Could not update api access token', error, {
+        agent,
+        args,
+      });
+
+      return rejection('INTERNAL_ERROR');
+    }
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async deleteApiAccessToken(
+    agent: UserWithRole | null,
+    args: DeleteApiAccessTokenInput
+  ) {
+    try {
+      return await this.dataSource.deleteApiAccessToken(args.accessTokenId);
+    } catch (error) {
+      logger.logException('Could not remove api access token', error, {
+        agent,
+        args,
+      });
+
+      return rejection('INTERNAL_ERROR');
     }
   }
 }

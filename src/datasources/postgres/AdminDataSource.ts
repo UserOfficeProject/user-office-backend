@@ -9,6 +9,7 @@ import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
 import { BasicUserDetails } from '../../models/User';
 import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
+import { UpdateApiAccessTokenInput } from '../../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 import { InstitutionsFilter } from './../../resolvers/queries/InstitutionsQuery';
 import database from './database';
@@ -249,6 +250,12 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       .from('api_permissions')
       .where('access_token_id', accessTokenId);
 
+    if (!permissionRules) {
+      throw new Error(
+        `Could not find permission rules for access token key: ${accessTokenId}`
+      );
+    }
+
     return new Permissions(
       permissionRules.access_token_id,
       permissionRules.name,
@@ -283,7 +290,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
         access_token_id: accessTokenId,
         name: args.name,
         access_token: accessToken,
-        access_permissions: args.permissions,
+        access_permissions: args.accessPermissions,
       })
       .into('api_permissions')
       .returning('*');
@@ -300,5 +307,46 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       permissionRules.access_token,
       JSON.stringify(permissionRules.access_permissions)
     );
+  }
+
+  async updateApiAccessToken(
+    args: UpdateApiAccessTokenInput
+  ): Promise<Permissions> {
+    const [permissionRules] = await database('api_permissions')
+      .update({
+        name: args.name,
+        access_permissions: args.accessPermissions,
+      })
+      .where('access_token_id', args.accessTokenId)
+      .returning('*');
+
+    if (!permissionRules) {
+      throw new Error(
+        `Could not update permission rules with access token key: ${args.accessTokenId}`
+      );
+    }
+
+    return new Permissions(
+      permissionRules.access_token_id,
+      permissionRules.name,
+      permissionRules.access_token,
+      JSON.stringify(permissionRules.access_permissions)
+    );
+  }
+
+  async deleteApiAccessToken(accessTokenId: string): Promise<boolean> {
+    const [apiAccessTokenRecord] = await database()
+      .where('access_token_id', accessTokenId)
+      .del()
+      .from('api_permissions')
+      .returning('*');
+
+    if (!apiAccessTokenRecord) {
+      throw new Error(
+        `Could not delete api access token with id: ${accessTokenId}`
+      );
+    }
+
+    return true;
   }
 }

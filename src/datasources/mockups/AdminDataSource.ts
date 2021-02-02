@@ -3,6 +3,7 @@ import { Feature, FeatureId } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
 import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
+import { UpdateApiAccessTokenInput } from '../../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { AdminDataSource, Entry } from '../AdminDataSource';
 
 export const dummyInstitution = new Institution(1, 'ESS', true);
@@ -74,7 +75,7 @@ export class AdminDataSourceMock implements AdminDataSource {
       'Test token',
       'testaccesstoken',
       {
-        ProposalQueries: { getAll: true },
+        'ProposalQueries.getAll': true,
       }
     );
   }
@@ -82,7 +83,7 @@ export class AdminDataSourceMock implements AdminDataSource {
   async getAllTokensAndPermissions(): Promise<Permissions[]> {
     return [
       new Permissions('testaccesstokenkey', 'Test token', 'testaccesstoken', {
-        ProposalQueries: { getAll: true },
+        'ProposalQueries.getAll': true,
       }),
     ];
   }
@@ -97,8 +98,26 @@ export class AdminDataSourceMock implements AdminDataSource {
       'Test token',
       'testaccesstoken',
       {
-        ProposalQueries: { getAll: true },
+        'ProposalQueries.getAll': true,
       }
     );
+  }
+
+  async updateApiAccessToken(
+    args: UpdateApiAccessTokenInput
+  ): Promise<Permissions> {
+    return new Permissions(
+      'testaccesstokenkey',
+      'Test token',
+      'testaccesstoken',
+      {
+        'ProposalQueries.getAll': true,
+        'ProposalQueries.getAllView': true,
+      }
+    );
+  }
+
+  async deleteApiAccessToken(accessTokenId: string): Promise<boolean> {
+    return true;
   }
 }

@@ -68,7 +68,9 @@ const apolloServer = async (app: Express) => {
           );
 
           user = {
-            accessPermissions: JSON.parse(accessPermissions),
+            accessPermissions: accessPermissions
+              ? JSON.parse(accessPermissions)
+              : null,
             isApiAccessToken: true,
           } as UserWithRole;
         } else {
