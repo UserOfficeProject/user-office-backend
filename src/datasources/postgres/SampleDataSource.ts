@@ -71,16 +71,13 @@ export default class PostgresSampleDataSource implements SampleDataSource {
       });
   }
 
-  getSample(sampleId: number): Promise<Sample> {
+  getSample(sampleId: number): Promise<Sample | null> {
     return database('samples')
       .select('*')
       .where('sample_id', sampleId)
-      .then((records: SampleRecord[]) => {
-        if (records.length !== 1) {
-          logger.logError('Sample does not exist', { sampleId });
-        }
-
-        return createSampleObject(records[0]);
+      .first()
+      .then((sample?: SampleRecord) => {
+        return sample ? createSampleObject(sample) : null;
       });
   }
 
@@ -122,6 +119,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
         }
       })
       .select('*')
+      .orderBy('created_at', 'asc')
       .then((records: SampleRecord[]) =>
         records.map(record => createSampleObject(record))
       );
