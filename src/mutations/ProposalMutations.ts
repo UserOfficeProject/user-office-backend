@@ -180,7 +180,7 @@ export default class ProposalMutations {
   }
 
   @ValidateArgs(deleteProposalValidationSchema)
-  @Authorized([Roles.USER_OFFICER])
+  @Authorized()
   async delete(
     agent: UserWithRole | null,
     { proposalId }: { proposalId: number }
@@ -188,7 +188,15 @@ export default class ProposalMutations {
     const proposal = await this.proposalDataSource.get(proposalId);
 
     if (!proposal) {
-      return rejection('INTERNAL_ERROR');
+      return rejection('NOT_FOUND');
+    }
+
+    if (!(await this.userAuth.isUserOfficer(agent))) {
+      if (
+        proposal.submitted ||
+        !this.userAuth.isPrincipalInvestigatorOfProposal(agent, proposal)
+      )
+        return rejection('NOT_ALLOWED');
     }
 
     try {
