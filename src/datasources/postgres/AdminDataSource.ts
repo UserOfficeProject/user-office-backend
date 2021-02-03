@@ -22,6 +22,7 @@ import {
   InstitutionRecord,
   NationalityRecord,
   PageTextRecord,
+  TokensAndPermissionsRecord,
   UserRecord,
 } from './records';
 
@@ -245,7 +246,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   async getTokenAndPermissionsById(
     accessTokenId: string
   ): Promise<Permissions> {
-    const [permissionRules] = await database
+    const [permissionRules]: TokensAndPermissionsRecord[] = await database
       .select()
       .from('api_permissions')
       .where('access_token_id', accessTokenId);
@@ -265,7 +266,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   }
 
   async getAllTokensAndPermissions(): Promise<Permissions[]> {
-    const accessTokensWithPermissions = await database
+    const accessTokensWithPermissions: TokensAndPermissionsRecord[] = await database
       .select()
       .from('api_permissions');
 
@@ -285,7 +286,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     accessTokenId: string,
     accessToken: string
   ): Promise<Permissions> {
-    const [permissionRules] = await database
+    const [permissionRules]: TokensAndPermissionsRecord[] = await database
       .insert({
         access_token_id: accessTokenId,
         name: args.name,
@@ -312,7 +313,9 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   async updateApiAccessToken(
     args: UpdateApiAccessTokenInput
   ): Promise<Permissions> {
-    const [permissionRules] = await database('api_permissions')
+    const [permissionRules]: TokensAndPermissionsRecord[] = await database(
+      'api_permissions'
+    )
       .update({
         name: args.name,
         access_permissions: args.accessPermissions,
@@ -335,7 +338,9 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   }
 
   async deleteApiAccessToken(accessTokenId: string): Promise<boolean> {
-    const [apiAccessTokenRecord] = await database('api_permissions')
+    const [apiAccessTokenRecord]: TokensAndPermissionsRecord[] = await database(
+      'api_permissions'
+    )
       .del()
       .where('access_token_id', accessTokenId)
       .returning('*');
