@@ -53,9 +53,14 @@ const sanitizerConfig: IOptions = {
 export const richTextInputDefinition: Question = {
   dataType: DataType.RICH_TEXT_INPUT,
   validate: (field: QuestionTemplateRelation, value: any) => {
-    // console.log('>>> ', { field, value });
+    if (field.question.dataType !== DataType.RICH_TEXT_INPUT) {
+      throw new Error('DataType should be RICH_TEXT_INPUT');
+    }
+    const config = field.config as RichTextInputConfig;
+    if (config.required && !value) {
+      return false;
+    }
 
-    //fixme
     return true;
   },
   transform: (field: QuestionTemplateRelation, value: any) =>
