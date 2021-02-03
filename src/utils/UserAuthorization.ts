@@ -156,7 +156,7 @@ export class UserAuthorization {
   }
 
   hasGetAccessByToken(agent: UserWithRole) {
-    return agent.accessPermissions?.['ProposalQueries']?.get;
+    return !!agent.accessPermissions?.['ProposalQueries']?.get;
   }
 }
 

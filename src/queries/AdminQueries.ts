@@ -1,4 +1,4 @@
-import context from '../buildContext';
+import { BasicResolverContext } from '../context';
 import { AdminDataSource } from '../datasources/AdminDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
@@ -48,7 +48,10 @@ export default class AdminQueries {
   }
 
   @Authorized([Roles.USER_OFFICER])
-  async getAllQueryMethods(agent: UserWithRole | null) {
+  async getAllQueryAndMutationMethods(
+    agent: UserWithRole | null,
+    context: BasicResolverContext
+  ) {
     const allQueryMethods: string[] = [];
     const allMutationMethods: string[] = [];
 

@@ -335,10 +335,9 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   }
 
   async deleteApiAccessToken(accessTokenId: string): Promise<boolean> {
-    const [apiAccessTokenRecord] = await database()
-      .where('access_token_id', accessTokenId)
+    const [apiAccessTokenRecord] = await database('api_permissions')
       .del()
-      .from('api_permissions')
+      .where('access_token_id', accessTokenId)
       .returning('*');
 
     if (!apiAccessTokenRecord) {

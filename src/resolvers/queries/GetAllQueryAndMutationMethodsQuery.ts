@@ -15,6 +15,9 @@ export class QueriesAndMutations {
 export class GetAllQueryAndMutationMethodsQuery {
   @Query(() => QueriesAndMutations, { nullable: true })
   queriesAndMutations(@Ctx() context: ResolverContext) {
-    return context.queries.admin.getAllQueryMethods(context.user);
+    return context.queries.admin.getAllQueryAndMutationMethods(
+      context.user,
+      context
+    );
   }
 }
