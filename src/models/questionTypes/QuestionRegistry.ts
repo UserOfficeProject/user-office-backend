@@ -21,6 +21,7 @@ export interface Question {
   readonly createBlankConfig: () => any;
   readonly isReadOnly: boolean;
   readonly getDefaultAnswer: (field: QuestionTemplateRelation) => any;
+  readonly transform?: (field: QuestionTemplateRelation, value: any) => any;
 }
 
 // Add new component definitions here
