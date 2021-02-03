@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 import * as Yup from 'yup';
 
 interface Omit {
@@ -32,10 +34,7 @@ export const mergeValidationSchemas = (...schemas: Yup.ObjectSchema[]) => {
 };
 
 export const generateUniqueId = () => {
-  return (
-    Date.now().toString(36) +
-    Math.random()
-      .toString(36)
-      .substring(2)
-  );
+  const numberOfBytes = 16;
+
+  return randomBytes(numberOfBytes).toString('hex');
 };
