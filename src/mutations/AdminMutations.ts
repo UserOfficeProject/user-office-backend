@@ -119,7 +119,7 @@ export default class AdminMutations {
   ) {
     const accessTokenId = generateUniqueId();
     const accessPermissions = JSON.parse(args.accessPermissions);
-    const generatedAccessToken = `Bearer ${signToken({ accessTokenId })}`;
+    const generatedAccessToken = signToken({ accessTokenId });
 
     const result = await this.dataSource.createApiAccessToken(
       { accessPermissions, name: args.name },

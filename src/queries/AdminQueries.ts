@@ -55,43 +55,37 @@ export default class AdminQueries {
     const allQueryMethods: string[] = [];
     const allMutationMethods: string[] = [];
 
-    for (const queryKey in context.queries) {
-      if (Object.prototype.hasOwnProperty.call(context.queries, queryKey)) {
-        //@ts-expect-error
-        const element = context.queries[queryKey];
+    Object.keys(context.queries).forEach(queryKey => {
+      //@ts-expect-error
+      const element = context.queries[queryKey];
 
-        const proto = Object.getPrototypeOf(element);
-        const names = Object.getOwnPropertyNames(proto).filter(item =>
-          item.startsWith('get')
-        );
+      const proto = Object.getPrototypeOf(element);
+      const names = Object.getOwnPropertyNames(proto).filter(item =>
+        item.startsWith('get')
+      );
 
-        const classNamesWithMethod = names.map(
-          item => `${proto.constructor.name}.${item}`
-        );
+      const classNamesWithMethod = names.map(
+        item => `${proto.constructor.name}.${item}`
+      );
 
-        allQueryMethods.push(...classNamesWithMethod);
-      }
-    }
+      allQueryMethods.push(...classNamesWithMethod);
+    });
 
-    for (const mutationKey in context.mutations) {
-      if (
-        Object.prototype.hasOwnProperty.call(context.mutations, mutationKey)
-      ) {
-        //@ts-expect-error
-        const element = context.mutations[mutationKey];
+    Object.keys(context.mutations).forEach(mutationKey => {
+      //@ts-expect-error
+      const element = context.mutations[mutationKey];
 
-        const proto = Object.getPrototypeOf(element);
-        const names = Object.getOwnPropertyNames(proto).filter(
-          item => item !== 'constructor'
-        );
+      const proto = Object.getPrototypeOf(element);
+      const names = Object.getOwnPropertyNames(proto).filter(
+        item => item !== 'constructor'
+      );
 
-        const classNamesWithMethod = names.map(
-          item => `${proto.constructor.name}.${item}`
-        );
+      const classNamesWithMethod = names.map(
+        item => `${proto.constructor.name}.${item}`
+      );
 
-        allMutationMethods.push(...classNamesWithMethod);
-      }
-    }
+      allMutationMethods.push(...classNamesWithMethod);
+    });
 
     return { queries: allQueryMethods, mutations: allMutationMethods };
   }
