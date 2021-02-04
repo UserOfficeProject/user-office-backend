@@ -27,25 +27,25 @@ export const numberInputDefinition: Question = {
 
     const config = field.config as NumberInputConfig;
 
-    let scheme = Yup.number().transform(value =>
+    let valueScheme = Yup.number().transform(value =>
       isNaN(value) ? undefined : value
     );
 
     if (config.required) {
-      scheme = scheme.required();
+      valueScheme = valueScheme.required();
     }
 
     if (config.numberValueConstraint === NumberValueConstraint.ONLY_NEGATIVE) {
-      scheme = scheme.negative();
+      valueScheme = valueScheme.negative();
     }
 
     if (config.numberValueConstraint === NumberValueConstraint.ONLY_POSITIVE) {
-      scheme = scheme.positive();
+      valueScheme = valueScheme.positive();
     }
 
     return Yup.object()
       .shape({
-        value: scheme,
+        value: valueScheme,
         unit:
           config.property !== 'UNITLESS'
             ? Yup.string().required()
