@@ -77,6 +77,10 @@ export default class PostgresSampleDataSource implements SampleDataSource {
       .where('sample_id', sampleId)
       .first()
       .then((sample?: SampleRecord) => {
+        if (!sample) {
+          logger.logError('Sample does not exist', { sampleId });
+        }
+
         return sample ? createSampleObject(sample) : null;
       });
   }
