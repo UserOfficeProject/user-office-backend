@@ -56,8 +56,8 @@ export default class AdminQueries {
     const allMutationMethods: string[] = [];
 
     Object.keys(context.queries).forEach(queryKey => {
-      //@ts-expect-error
-      const element = context.queries[queryKey];
+      const element =
+        context.queries[queryKey as keyof BasicResolverContext['queries']];
 
       const proto = Object.getPrototypeOf(element);
       const names = Object.getOwnPropertyNames(proto).filter(item =>
@@ -72,8 +72,10 @@ export default class AdminQueries {
     });
 
     Object.keys(context.mutations).forEach(mutationKey => {
-      //@ts-expect-error
-      const element = context.mutations[mutationKey];
+      const element =
+        context.mutations[
+          mutationKey as keyof BasicResolverContext['mutations']
+        ];
 
       const proto = Object.getPrototypeOf(element);
       const names = Object.getOwnPropertyNames(proto).filter(
