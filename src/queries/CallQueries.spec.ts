@@ -31,8 +31,6 @@ test('A not logged in user can not get all calls', () => {
 });
 
 test('A instrument scientists can get calls assigned to their instruments', () => {
-  console.log(dummyInstrumentScientist);
-
   return expect(
     callQueries.getCallsByInstrumentScientist(
       dummyInstrumentScientist,
