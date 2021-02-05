@@ -8,6 +8,7 @@ import {
   assignSEPChairOrSecretaryValidationSchema,
   assignSEPMemberToProposalValidationSchema,
 } from '@esss-swap/duo-validation';
+import * as Yup from 'yup';
 
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
@@ -27,7 +28,17 @@ import {
 import { AssignProposalToSEPArgs } from '../resolvers/mutations/AssignProposalToSEP';
 import { CreateSEPArgs } from '../resolvers/mutations/CreateSEPMutation';
 import { UpdateSEPArgs } from '../resolvers/mutations/UpdateSEPMutation';
+import { UpdateSEPTimeAllocationArgs } from '../resolvers/mutations/UpdateSEPProposalMutation';
 import { UserAuthorization } from '../utils/UserAuthorization';
+
+const updateTimeAllocationValidationSchema = Yup.object({
+  sepId: Yup.number().required(),
+  proposalId: Yup.number().required(),
+  sepTimeAllocation: Yup.number()
+    .min(0, ({ min }) => `Must be greater than or equal to ${min}`)
+    .max(1e5, ({ max }) => `Must be less than or equal to ${max}`)
+    .nullable(),
+});
 
 export default class SEPMutations {
   constructor(
@@ -309,12 +320,11 @@ export default class SEPMutations {
       });
   }
 
+  @ValidateArgs(updateTimeAllocationValidationSchema)
   @Authorized([Roles.USER_OFFICER, Roles.SEP_SECRETARY, Roles.SEP_CHAIR])
   async updateTimeAllocation(
     agent: UserWithRole | null,
-    sepId: number,
-    proposalId: number,
-    sepTimeAllocation: number | null
+    { sepId, proposalId, sepTimeAllocation = null }: UpdateSEPTimeAllocationArgs
   ) {
     const isUserOfficer = await this.userAuth.isUserOfficer(agent);
     if (
