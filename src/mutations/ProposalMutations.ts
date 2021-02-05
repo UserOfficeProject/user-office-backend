@@ -212,6 +212,11 @@ export default class ProposalMutations {
         );
       }
 
+      logger.logException('Failed to delete proposal', e, {
+        agent,
+        proposalId,
+      });
+
       return rejection('INTERNAL_ERROR');
     }
   }
