@@ -250,7 +250,6 @@ export default class SEPMutations {
       });
   }
 
-  // @ValidateArgs(assignSEPMemberToProposalValidationSchema)
   @Authorized([Roles.USER_OFFICER, Roles.SEP_SECRETARY, Roles.SEP_CHAIR])
   @EventBus(Event.SEP_MEMBER_ASSIGNED_TO_PROPOSAL)
   async assignSepReviewersToProposal(
