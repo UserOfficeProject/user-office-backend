@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { logger } from '@esss-swap/duo-logger';
 import SparkPost from 'sparkpost';
 
 import { UserDataSource } from '../datasources/UserDataSource';
@@ -6,12 +7,17 @@ import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
 import { ProposalEndStatus } from '../models/Proposal';
 import { UserRole } from '../models/User';
-import { logger } from '../utils/Logger';
 
 const options = {
   endpoint: 'https://api.eu.sparkpost.com:443',
 };
 const client = new SparkPost(process.env.SPARKPOST_TOKEN, options);
+const isDevEnv = process.env.NODE_ENV === 'development';
+
+// in dev env don't try to send email
+if (isDevEnv) {
+  client.transmissions.send = async (...args: any[]): Promise<any> => 'no-op';
+}
 
 export default function createHandler(userDataSource: UserDataSource) {
   // Handler to send email to proposers in accepted proposal
@@ -147,7 +153,7 @@ export default function createHandler(userDataSource: UserDataSource) {
       }
 
       case Event.USER_CREATED: {
-        if (process.env.NODE_ENV === 'development') {
+        if (isDevEnv) {
           await userDataSource.setUserEmailVerified(
             event.userlinkresponse.user.id
           );

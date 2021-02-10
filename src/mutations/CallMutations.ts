@@ -1,6 +1,7 @@
+import { logger } from '@esss-swap/duo-logger';
 import {
-  createCallValidationSchema,
-  updateCallValidationSchema,
+  createCallValidationSchemas,
+  updateCallValidationSchemas,
   assignInstrumentsToCallValidationSchema,
   removeAssignedInstrumentFromCallValidationSchema,
 } from '@esss-swap/duo-validation';
@@ -17,7 +18,14 @@ import {
   AssignInstrumentsToCallInput,
   RemoveAssignedInstrumentFromCallInput,
 } from '../resolvers/mutations/UpdateCallMutation';
-import { logger } from '../utils/Logger';
+import { mergeValidationSchemas } from '../utils/helperFunctions';
+
+const createCallValidationSchema = mergeValidationSchemas(
+  ...createCallValidationSchemas
+);
+const updateCallValidationSchema = mergeValidationSchemas(
+  ...updateCallValidationSchemas
+);
 
 export default class CallMutations {
   constructor(private dataSource: CallDataSource) {}

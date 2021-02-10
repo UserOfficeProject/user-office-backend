@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { logger } from '@esss-swap/duo-logger';
+
 import { proposalDataSource } from '../datasources';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { eventBus } from '../events';
@@ -6,7 +8,6 @@ import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
 import { SampleStatus } from '../models/Sample';
 import { TechnicalReviewStatus } from '../models/TechnicalReview';
-import { logger } from '../utils/Logger';
 import { workflowEngine, WorkflowEngineProposalType } from '../workflowEngine';
 
 export default function createHandler(proposalDatasource: ProposalDataSource) {
@@ -77,7 +78,6 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
       case Event.PROPOSAL_NOTIFIED:
       case Event.PROPOSAL_ACCEPTED:
       case Event.PROPOSAL_REJECTED:
-      case Event.PROPOSAL_INSTRUMENT_SUBMITTED:
       case Event.PROPOSAL_SEP_MEETING_SUBMITTED:
         try {
           await markProposalEventAsDoneAndCallWorkflowEngine(
@@ -105,9 +105,7 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
           }
 
           switch (event.technicalreview.status) {
-            // TODO: Review this if both feasible and partialy feasible should emit PROPOSAL_FEASIBLE
             case TechnicalReviewStatus.FEASIBLE:
-            case TechnicalReviewStatus.PARTIALLY_FEASIBLE:
               eventBus.publish({
                 type: Event.PROPOSAL_FEASIBLE,
                 proposal,
@@ -145,9 +143,7 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
           }
 
           switch (event.sample.safetyStatus) {
-            // TODO: Review this if both LOW_RISK and ELEVATED_RISK should emit PROPOSAL_SAMPLE_SAFE
             case SampleStatus.LOW_RISK:
-            case SampleStatus.ELEVATED_RISK:
               eventBus.publish({
                 type: Event.PROPOSAL_SAMPLE_SAFE,
                 proposal,
@@ -216,6 +212,29 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
         } catch (error) {
           logger.logError(
             `Error while trying to mark ${event.type} event as done and calling workflow engine on proposals with callId = ${event.call.id}: `,
+            error
+          );
+        }
+
+        break;
+
+      case Event.PROPOSAL_INSTRUMENT_SUBMITTED:
+        try {
+          await Promise.all(
+            event.instrumenthasproposals.proposalIds.map(async proposalId => {
+              const proposal = await proposalDataSource.get(proposalId);
+
+              if (proposal?.id) {
+                return await markProposalEventAsDoneAndCallWorkflowEngine(
+                  event.type,
+                  proposal
+                );
+              }
+            })
+          );
+        } catch (error) {
+          logger.logError(
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.instrumenthasproposals.proposalIds}: `,
             error
           );
         }

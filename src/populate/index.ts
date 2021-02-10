@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import {
   adminDataSource,
   callDataSource,
-  instrumentDatasource,
+  instrumentDataSource,
   proposalDataSource,
   questionaryDataSource,
   reviewDataSource,
@@ -150,8 +150,7 @@ const createTemplates = async () => {
       return templateDataSource.createTopic({
         sortOrder: faker.random.number({
           min: 0,
-          max: 1,
-          precision: 0.00000001,
+          max: 100,
         }),
         templateId: template.templateId,
       });
@@ -196,7 +195,7 @@ const createTemplates = async () => {
 
 const createInstruments = async () => {
   const instruments = await execute(() => {
-    return instrumentDatasource.create({
+    return instrumentDataSource.create({
       name: `${dummy.word()}${dummy.positiveNumber(100)}`,
       description: faker.random.words(5),
       shortCode: `${dummy.word()}${dummy.positiveNumber(100)}`.substr(0, 19),
@@ -204,11 +203,11 @@ const createInstruments = async () => {
   }, MAX_INSTRUMENTS);
 
   for (const instrument of instruments) {
-    await instrumentDatasource.assignScientistsToInstrument(
+    await instrumentDataSource.assignScientistsToInstrument(
       createUniqueIntArray(3, MAX_USERS),
       instrument.id
     );
-    await instrumentDatasource.setAvailabilityTimeOnInstrument(
+    await instrumentDataSource.setAvailabilityTimeOnInstrument(
       dummy.positiveNumber(MAX_CALLS),
       instrument.id,
       dummy.positiveNumber(100)
@@ -254,7 +253,7 @@ const createProposals = async () => {
       );
     }
 
-    instrumentDatasource.assignProposalsToInstrument(
+    instrumentDataSource.assignProposalsToInstrument(
       [proposal.id],
       dummy.positiveNumber(MAX_INSTRUMENTS)
     );

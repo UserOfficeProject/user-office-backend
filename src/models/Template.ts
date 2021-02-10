@@ -1,6 +1,9 @@
-import { DependencyCondition } from '../datasources/postgres/records';
+import { Dependency } from '../datasources/postgres/records';
 import { FieldConfigType } from '../resolvers/types/FieldConfig';
-import { EvaluatorOperator } from './ConditionEvaluator';
+import {
+  DependenciesLogicOperator,
+  EvaluatorOperator,
+} from './ConditionEvaluator';
 
 export class FieldDependency {
   constructor(
@@ -21,6 +24,10 @@ export enum DataType {
   SAMPLE_DECLARATION = 'SAMPLE_DECLARATION',
   SAMPLE_BASIS = 'SAMPLE_BASIS',
   PROPOSAL_BASIS = 'PROPOSAL_BASIS',
+  INTERVAL = 'INTERVAL',
+  NUMBER_INPUT = 'NUMBER_INPUT',
+  SHIPMENT_BASIS = 'SHIPMENT_BASIS',
+  RICH_TEXT_INPUT = 'RICH_TEXT_INPUT',
 }
 
 export class Topic {
@@ -52,8 +59,8 @@ export class TemplatesHasQuestions {
     public topicId: number,
     public sortOrder: number,
     public config: string,
-    public dependencyCondition: DependencyCondition | null,
-    public dependencyQuestionId: string | null
+    public dependencies: Dependency[],
+    public dependenciesOperator?: DependenciesLogicOperator
   ) {}
 }
 
@@ -63,7 +70,8 @@ export class QuestionTemplateRelation {
     public topicId: number,
     public sortOrder: number,
     public config: typeof FieldConfigType,
-    public dependency?: FieldDependency
+    public dependencies: FieldDependency[],
+    public dependenciesOperator?: DependenciesLogicOperator
   ) {}
 }
 
@@ -78,6 +86,7 @@ export class TemplateCategory {
 export enum TemplateCategoryId {
   PROPOSAL_QUESTIONARY = 1,
   SAMPLE_DECLARATION,
+  SHIPMENT_DECLARATION,
 }
 
 export class FieldCondition {

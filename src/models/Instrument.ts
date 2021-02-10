@@ -19,3 +19,11 @@ export class InstrumentWithAvailabilityTime extends Instrument {
     super(id, name, shortCode, description);
   }
 }
+
+export class InstrumentHasProposals {
+  constructor(
+    public instrumentId: number,
+    public proposalIds: number[],
+    public submitted: boolean
+  ) {}
+}

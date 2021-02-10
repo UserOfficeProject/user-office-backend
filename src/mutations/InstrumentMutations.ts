@@ -1,3 +1,4 @@
+import { logger } from '@esss-swap/duo-logger';
 import {
   createInstrumentValidationSchema,
   updateInstrumentValidationSchema,
@@ -11,9 +12,10 @@ import {
 } from '@esss-swap/duo-validation';
 
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
+import { SEPDataSource } from '../datasources/SEPDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { Instrument } from '../models/Instrument';
+import { Instrument, InstrumentHasProposals } from '../models/Instrument';
 import { ProposalIds } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
@@ -32,12 +34,12 @@ import {
   InstrumentAvailabilityTimeArgs,
   InstrumentSubmitArgs,
 } from '../resolvers/mutations/UpdateInstrumentMutation';
-import { logger } from '../utils/Logger';
 import { UserAuthorization } from '../utils/UserAuthorization';
 
 export default class InstrumentMutations {
   constructor(
     private dataSource: InstrumentDataSource,
+    private sepDataSource: SEPDataSource,
     private userAuth: UserAuthorization
   ) {}
 
@@ -254,12 +256,13 @@ export default class InstrumentMutations {
       });
   }
 
+  @EventBus(Event.PROPOSAL_INSTRUMENT_SUBMITTED)
   @ValidateArgs(submitInstrumentValidationSchema)
   @Authorized([Roles.USER_OFFICER, Roles.SEP_CHAIR, Roles.SEP_SECRETARY])
   async submitInstrument(
     agent: UserWithRole | null,
     args: InstrumentSubmitArgs
-  ): Promise<boolean | Rejection> {
+  ): Promise<InstrumentHasProposals | Rejection> {
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
       !(await this.userAuth.isChairOrSecretaryOfSEP(
@@ -270,9 +273,16 @@ export default class InstrumentMutations {
       return rejection('NOT_ALLOWED');
     }
 
-    // TODO: Maybe we should check first if all proposals under this instrument in the SEP have rankings and then submit the instrument.
+    const submittedInstrumentProposalIds = (
+      await this.sepDataSource.getSEPProposalsByInstrument(
+        args.sepId,
+        args.instrumentId,
+        args.callId
+      )
+    ).map(sepInstrumentProposal => sepInstrumentProposal.proposalId);
+
     return this.dataSource
-      .submitInstrument(args.callId, args.instrumentId)
+      .submitInstrument(submittedInstrumentProposalIds, args.instrumentId)
       .then(result => result)
       .catch(error => {
         logger.logException('Could not submit instrument', error, {

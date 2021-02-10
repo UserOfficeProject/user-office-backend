@@ -1,11 +1,11 @@
-import { unlink, existsSync } from 'fs';
+import { existsSync, unlink } from 'fs';
 
+import { logger } from '@esss-swap/duo-logger';
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 
 import baseContext from '../buildContext';
 import { isRejection } from '../rejection';
-import { logger } from '../utils/Logger';
 
 const files = () => {
   const router = express.Router();
@@ -49,8 +49,13 @@ const files = () => {
         size,
         path
       );
-      res.status(200).send(result);
+      if (!isRejection(result)) {
+        res.status(200).send(result);
+      } else {
+        res.status(500).send(result);
+      }
     } catch (e) {
+      logger.logException('Could not upload file', e, { req });
       res.status(500).send(e);
     }
   };
