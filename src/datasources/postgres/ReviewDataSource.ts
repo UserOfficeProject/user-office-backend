@@ -2,7 +2,7 @@
 import { Review, ReviewStatus } from '../../models/Review';
 import { TechnicalReview } from '../../models/TechnicalReview';
 import { AddReviewArgs } from '../../resolvers/mutations/AddReviewMutation';
-import { AddTechnicalReviewArgs } from '../../resolvers/mutations/AddTechnicalReviewMutation';
+import { AddTechnicalReviewInput } from '../../resolvers/mutations/AddTechnicalReviewMutation';
 import { AddUserForReviewArgs } from '../../resolvers/mutations/AddUserForReviewMutation';
 import { ReviewDataSource } from '../ReviewDataSource';
 import database from './database';
@@ -28,12 +28,14 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
       technicalReview.comment,
       technicalReview.public_comment,
       technicalReview.time_allocation,
-      technicalReview.status
+      technicalReview.status,
+      technicalReview.submitted
     );
   }
 
   async setTechnicalReview(
-    args: AddTechnicalReviewArgs
+    args: AddTechnicalReviewInput,
+    submitted: boolean = false
   ): Promise<TechnicalReview> {
     const { proposalID, comment, publicComment, timeAllocation, status } = args;
 
@@ -45,6 +47,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
           public_comment: publicComment,
           time_allocation: timeAllocation,
           status,
+          submitted,
         })
         .from('technical_review')
         .where('proposal_id', proposalID)
@@ -61,6 +64,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
         public_comment: publicComment,
         time_allocation: timeAllocation,
         status,
+        submitted,
       })
       .returning('*')
       .into('technical_review')
