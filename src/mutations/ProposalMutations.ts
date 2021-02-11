@@ -1,7 +1,7 @@
 import { ResourceId } from '@esss-swap/duo-localisation';
 import { logger } from '@esss-swap/duo-logger';
 import {
-  // administrationProposalBEValidationSchema,
+  administrationProposalValidationSchema,
   createProposalValidationSchema,
   deleteProposalValidationSchema,
   proposalNotifyValidationSchema,
@@ -9,7 +9,6 @@ import {
   updateProposalValidationSchema,
 } from '@esss-swap/duo-validation';
 import { to } from 'await-to-js';
-import * as Yup from 'yup';
 
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -24,17 +23,6 @@ import { AdministrationProposalArgs } from '../resolvers/mutations/Administratio
 import { UpdateProposalArgs } from '../resolvers/mutations/UpdateProposalMutation';
 import { UserAuthorization } from '../utils/UserAuthorization';
 import { CallDataSource } from './../datasources/CallDataSource';
-
-const administrationProposalValidationSchema = Yup.object().shape({
-  id: Yup.number().required(),
-  statusId: Yup.number(),
-  finalStatus: Yup.string(),
-  commentForUser: Yup.string(),
-  commentForManagement: Yup.string(),
-  rankOrder: Yup.number()
-    .min(0, ({ min }) => `Must be greater than or equal to ${min}`)
-    .max(1e5, ({ max }) => `Must be less than or equal to ${max}`),
-});
 
 export default class ProposalMutations {
   constructor(
