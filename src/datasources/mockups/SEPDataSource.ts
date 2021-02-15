@@ -1,9 +1,12 @@
 import { ProposalIds } from '../../models/Proposal';
 import { Role } from '../../models/Role';
-import { SEP, SEPAssignment, SEPMember, SEPProposal } from '../../models/SEP';
+import { SEP, SEPAssignment, SEPReviewer, SEPProposal } from '../../models/SEP';
 import { User } from '../../models/User';
-import { AddSEPMembersRole } from '../../resolvers/mutations/AddSEPMembersRoleMutation';
-import { UpdateMemberSEPArgs } from '../../resolvers/mutations/AssignMembersToSEP';
+import { AssignChairOrSecretaryToSEPInput } from '../../resolvers/mutations/AddSEPMembersRoleMutation';
+import {
+  UpdateMemberSEPArgs,
+  AssignReviewersToSEPArgs,
+} from '../../resolvers/mutations/AssignMembersToSEP';
 import { SEPDataSource } from '../SEPDataSource';
 
 export const dummySEP = new SEP(
@@ -11,7 +14,9 @@ export const dummySEP = new SEP(
   'SEP 1',
   'Scientific evaluation panel 1',
   2,
-  true
+  true,
+  null,
+  null
 );
 
 export const anotherDummySEP = new SEP(
@@ -19,7 +24,9 @@ export const anotherDummySEP = new SEP(
   'SEP 2',
   'Scientific evaluation panel 2',
   2,
-  false
+  false,
+  null,
+  null
 );
 
 export const dummySEPWithoutCode = new SEP(
@@ -27,13 +34,15 @@ export const dummySEPWithoutCode = new SEP(
   '',
   'Scientific evaluation panel 2',
   2,
-  false
+  false,
+  null,
+  null
 );
 
 export const dummySEPs = [dummySEP, anotherDummySEP];
 
-export const dummySEPMember = new SEPMember(1, 4, 1, 1);
-export const anotherDummySEPMember = new SEPMember(2, 5, 2, 1);
+export const dummySEPMember = new SEPReviewer(0, 0); // 1, 4, 1, 1);
+export const anotherDummySEPMember = new SEPReviewer(0, 0); // 2, 5, 2, 1
 
 export const dummySEPAssignment = new SEPAssignment(
   1,
@@ -79,11 +88,35 @@ export const dummySEPProposals = [dummySEPProposal, anotherDummySEPProposal];
 export const dummySEPMembers = [dummySEPMember, anotherDummySEPMember];
 
 export class SEPDataSourceMock implements SEPDataSource {
-  async getSEPProposalUserRoles(
-    id: number,
+  getMembers(sepId: number): Promise<SEPReviewer[]> {
+    throw new Error('Method not implemented.');
+  }
+  getUserSepBySepId(userId: number, sepId: number): Promise<SEP | null> {
+    throw new Error('Method not implemented.');
+  }
+  assignChairOrSecretaryToSEP(
+    args: AssignChairOrSecretaryToSEPInput,
+    isChairAssignment: boolean
+  ): Promise<SEP> {
+    throw new Error('Method not implemented.');
+  }
+  assignReviewersToSEP(args: AssignReviewersToSEPArgs): Promise<SEP> {
+    throw new Error('Method not implemented.');
+  }
+  removeMemberFromSEP(
+    args: UpdateMemberSEPArgs,
+    isMemberChairOrSecretaryOfSEP: boolean
+  ): Promise<SEP> {
+    throw new Error('Method not implemented.');
+  }
+  isChairOrSecretaryOfSEP(userId: number, sepId: number): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+  isChairOrSecretaryOfProposal(
+    userId: number,
     proposalId: number
-  ): Promise<Role[]> {
-    return [];
+  ): Promise<boolean> {
+    throw new Error('Method not implemented.');
   }
 
   async getSEPProposal(
@@ -111,7 +144,15 @@ export class SEPDataSourceMock implements SEPDataSource {
   ) {
     const id = 2;
 
-    return new SEP(id, code, description, numberRatingsRequired, active);
+    return new SEP(
+      id,
+      code,
+      description,
+      numberRatingsRequired,
+      active,
+      null,
+      null
+    );
   }
 
   async update(
@@ -121,7 +162,15 @@ export class SEPDataSourceMock implements SEPDataSource {
     numberRatingsRequired: number,
     active: boolean
   ) {
-    return new SEP(id, code, description, numberRatingsRequired, active);
+    return new SEP(
+      id,
+      code,
+      description,
+      numberRatingsRequired,
+      active,
+      null,
+      null
+    );
   }
 
   async get(id: number) {
@@ -194,7 +243,7 @@ export class SEPDataSourceMock implements SEPDataSource {
     );
   }
 
-  async getMembers(sepId: number) {
+  async getReviewers(sepId: number) {
     return dummySEPMembers.filter(member => member.sepId === sepId);
   }
 
@@ -206,14 +255,14 @@ export class SEPDataSourceMock implements SEPDataSource {
     return [{ id: 4, shortCode: 'SEP_Chair', title: 'SEP Chair' }];
   }
 
-  async addSEPMembersRole(args: AddSEPMembersRole) {
-    const sep = dummySEPs.find(element => element.id === args.SEPID);
+  async addSEPMembersRole(args: AssignChairOrSecretaryToSEPInput) {
+    const sep = dummySEPs.find(element => element.id === args.sepId);
 
     if (sep) {
       return sep;
     }
 
-    throw new Error(`SEP not found ${args.SEPID}`);
+    throw new Error(`SEP not found ${args.sepId}`);
   }
 
   async removeSEPMemberRole(args: UpdateMemberSEPArgs) {

@@ -9,17 +9,12 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
+import { SEPReviewer as SEPReviewerBase } from '../../models/SEP';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Role } from './Role';
 
 @ObjectType()
-export class SEPMember {
-  @Field(() => Int)
-  public roleUserId: number;
-
-  @Field(() => Int)
-  public roleId: number;
-
+export class SEPReviewer implements Partial<SEPReviewerBase> {
   @Field(() => Int)
   public userId: number;
 
@@ -27,10 +22,10 @@ export class SEPMember {
   public sepId: number;
 }
 
-@Resolver(() => SEPMember)
+@Resolver(() => SEPReviewer)
 export class SEPUserResolver {
   @FieldResolver(() => [Role])
-  async roles(@Root() sepMember: SEPMember, @Ctx() context: ResolverContext) {
+  async roles(@Root() sepMember: SEPReviewer, @Ctx() context: ResolverContext) {
     return context.queries.sep.dataSource.getSEPUserRoles(
       sepMember.userId,
       sepMember.sepId
@@ -38,7 +33,7 @@ export class SEPUserResolver {
   }
 
   @FieldResolver(() => BasicUserDetails)
-  async user(@Root() sepMember: SEPMember, @Ctx() context: ResolverContext) {
+  async user(@Root() sepMember: SEPReviewer, @Ctx() context: ResolverContext) {
     return context.queries.user.dataSource.getBasicUserInfo(sepMember.userId);
   }
 }

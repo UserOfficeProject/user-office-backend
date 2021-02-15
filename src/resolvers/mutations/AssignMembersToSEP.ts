@@ -12,7 +12,7 @@ import { ResolverContext } from '../../context';
 import { UserRole } from '../../models/User';
 import { SEPResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
-import { AddSEPMembersRoleArgs } from './AddSEPMembersRoleMutation';
+import { AssignChairOrSecretaryToSEPArgs } from './AddSEPMembersRoleMutation';
 
 @ArgsType()
 export class UpdateMemberSEPArgs {
@@ -27,7 +27,7 @@ export class UpdateMemberSEPArgs {
 }
 
 @ArgsType()
-export class AssignMembersSEPArgs {
+export class AssignReviewersToSEPArgs {
   @Field(() => [Int])
   public memberIds: number[];
 
@@ -72,7 +72,7 @@ export class AssignSEPChairAndSecretaryArgs {
 export class AssignMembersToSEPMutation {
   @Mutation(() => SEPResponseWrap)
   async assignChairOrSecretary(
-    @Args() args: AddSEPMembersRoleArgs,
+    @Args() args: AssignChairOrSecretaryToSEPArgs,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
@@ -82,18 +82,18 @@ export class AssignMembersToSEPMutation {
   }
 
   @Mutation(() => SEPResponseWrap)
-  async assignMembers(
-    @Args() args: AssignMembersSEPArgs,
+  async assignReviewersToSEP(
+    @Args() args: AssignReviewersToSEPArgs,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.sep.assignMemberToSEP(context.user, args),
+      context.mutations.sep.assignReviewersToSEP(context.user, args),
       SEPResponseWrap
     );
   }
 
   @Mutation(() => SEPResponseWrap)
-  async removeMember(
+  async removeMemberFromSep(
     @Args() args: UpdateMemberSEPArgs,
     @Ctx() context: ResolverContext
   ) {

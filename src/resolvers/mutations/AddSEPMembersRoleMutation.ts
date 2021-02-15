@@ -3,19 +3,19 @@ import { Field, Int, ArgsType, InputType } from 'type-graphql';
 import { UserRole } from '../../models/User';
 
 @InputType()
-export class AddSEPMembersRole {
-  @Field(() => [Int])
-  userIDs: number[];
+export class AssignChairOrSecretaryToSEPInput {
+  @Field(() => Int)
+  userId: number;
 
   @Field(() => UserRole)
-  roleID: UserRole;
+  roleId: UserRole;
 
   @Field(() => Int)
-  SEPID: number;
+  sepId: number;
 }
 
 @ArgsType()
-export class AddSEPMembersRoleArgs {
-  @Field(() => AddSEPMembersRole, { nullable: true })
-  public addSEPMembersRole: AddSEPMembersRole;
+export class AssignChairOrSecretaryToSEPArgs {
+  @Field(() => AssignChairOrSecretaryToSEPInput)
+  public assignChairOrSecretaryToSEPInput: AssignChairOrSecretaryToSEPInput;
 }
