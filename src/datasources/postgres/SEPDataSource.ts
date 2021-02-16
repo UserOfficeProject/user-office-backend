@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { ProposalIds } from '../../models/Proposal';
+import { Event } from '../../events/event.enum';
+import { ProposalIdsWithNextStatus } from '../../models/Proposal';
+import { ProposalStatus } from '../../models/ProposalStatus';
 import { ReviewStatus } from '../../models/Review';
 import { Role } from '../../models/Role';
 import { SEP, SEPAssignment, SEPMember, SEPProposal } from '../../models/SEP';
@@ -15,6 +17,7 @@ import {
   RoleRecord,
   SEPProposalRecord,
   ReviewRecord,
+  ProposalStatusRecord,
 } from './records';
 
 export default class PostgresSEPDataSource implements SEPDataSource {
@@ -385,10 +388,40 @@ export default class PostgresSEPDataSource implements SEPDataSource {
     );
 
     if (result.rows?.length) {
-      return new ProposalIds([proposalId]);
+      return new ProposalIdsWithNextStatus([proposalId]);
     }
 
     throw new Error(`SEP not found ${sepId}`);
+  }
+
+  async getProposalNextStatus(proposalId: number, event: Event) {
+    const nextProposalStatus: ProposalStatusRecord = await database('proposals')
+      .select(['ps.*'])
+      .join('call', {
+        'call.call_id': 'proposals.call_id',
+      })
+      .join('proposal_workflow_connections as pwc', {
+        'pwc.proposal_workflow_id': 'call.proposal_workflow_id',
+        'pwc.proposal_status_id': 'proposals.status_id',
+      })
+      .join('proposal_statuses as ps', {
+        'ps.proposal_status_id': 'pwc.next_proposal_status_id',
+      })
+      .join('next_status_events as nse', {
+        'nse.proposal_workflow_connection_id':
+          'pwc.proposal_workflow_connection_id',
+      })
+      .where('proposal_id', proposalId)
+      .andWhere('nse.next_status_event', event)
+      .first();
+
+    return new ProposalStatus(
+      nextProposalStatus?.proposal_status_id,
+      nextProposalStatus?.short_code,
+      nextProposalStatus?.name,
+      nextProposalStatus?.description,
+      nextProposalStatus?.is_default
+    );
   }
 
   async removeProposalAssignment(proposalId: number, sepId: number) {

@@ -1,4 +1,6 @@
-import { ProposalIds } from '../models/Proposal';
+import { Event } from '../events/event.enum';
+import { ProposalIdsWithNextStatus } from '../models/Proposal';
+import { ProposalStatus } from '../models/ProposalStatus';
 import { Role } from '../models/Role';
 import { SEP, SEPAssignment, SEPMember, SEPProposal } from '../models/SEP';
 import { User } from '../models/User';
@@ -49,7 +51,14 @@ export interface SEPDataSource {
   getSEPProposalUserRoles(id: number, proposalId: number): Promise<Role[]>;
   addSEPMembersRole(args: AddSEPMembersRole): Promise<SEP>;
   removeSEPMemberRole(args: UpdateMemberSEPArgs): Promise<SEP>;
-  assignProposal(proposalId: number, sepId: number): Promise<ProposalIds>;
+  assignProposal(
+    proposalId: number,
+    sepId: number
+  ): Promise<ProposalIdsWithNextStatus>;
+  getProposalNextStatus(
+    proposalId: number,
+    event: Event
+  ): Promise<ProposalStatus>;
   removeMemberFromSepProposal(
     proposalId: number,
     sepId: number,
