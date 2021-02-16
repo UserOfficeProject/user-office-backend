@@ -209,6 +209,7 @@ export interface TechnicalReviewRecord {
   readonly public_comment: string;
   readonly time_allocation: number;
   readonly status: number;
+  readonly submitted: boolean;
 }
 
 export interface CallRecord {
