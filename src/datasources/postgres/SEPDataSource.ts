@@ -354,10 +354,11 @@ export default class PostgresSEPDataSource implements SEPDataSource {
   }
 
   async assignChairOrSecretaryToSEP(
-    args: AssignChairOrSecretaryToSEPInput,
-    isChairAssignment: boolean
+    args: AssignChairOrSecretaryToSEPInput
   ): Promise<SEP> {
     await database.transaction(async trx => {
+      const isChairAssignment = args.roleId === UserRole.SEP_CHAIR;
+
       await trx<SEPRecord>('SEPs')
         .update({
           [isChairAssignment

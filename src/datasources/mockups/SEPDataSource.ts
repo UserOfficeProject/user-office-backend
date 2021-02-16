@@ -1,5 +1,4 @@
 import { ProposalIds } from '../../models/Proposal';
-import { Role } from '../../models/Role';
 import { SEP, SEPAssignment, SEPReviewer, SEPProposal } from '../../models/SEP';
 import { User } from '../../models/User';
 import { AssignChairOrSecretaryToSEPInput } from '../../resolvers/mutations/AddSEPMembersRoleMutation';
@@ -41,8 +40,8 @@ export const dummySEPWithoutCode = new SEP(
 
 export const dummySEPs = [dummySEP, anotherDummySEP];
 
-export const dummySEPMember = new SEPReviewer(0, 0); // 1, 4, 1, 1);
-export const anotherDummySEPMember = new SEPReviewer(0, 0); // 2, 5, 2, 1
+export const dummySEPMember = new SEPReviewer(1, 1);
+export const anotherDummySEPMember = new SEPReviewer(2, 1);
 
 export const dummySEPAssignment = new SEPAssignment(
   1,
@@ -88,35 +87,65 @@ export const dummySEPProposals = [dummySEPProposal, anotherDummySEPProposal];
 export const dummySEPMembers = [dummySEPMember, anotherDummySEPMember];
 
 export class SEPDataSourceMock implements SEPDataSource {
-  getMembers(sepId: number): Promise<SEPReviewer[]> {
-    throw new Error('Method not implemented.');
+  async getMembers(sepId: number): Promise<SEPReviewer[]> {
+    return dummySEPMembers.filter(member => member.sepId === sepId);
   }
+
   getUserSepBySepId(userId: number, sepId: number): Promise<SEP | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented: getUserSepBySepId');
   }
-  assignChairOrSecretaryToSEP(
-    args: AssignChairOrSecretaryToSEPInput,
-    isChairAssignment: boolean
+
+  async assignChairOrSecretaryToSEP(
+    args: AssignChairOrSecretaryToSEPInput
   ): Promise<SEP> {
-    throw new Error('Method not implemented.');
+    const sep = dummySEPs.find(element => element.id === args.sepId);
+
+    if (sep) {
+      return sep;
+    }
+
+    throw new Error(`SEP not found ${args.sepId}`);
   }
-  assignReviewersToSEP(args: AssignReviewersToSEPArgs): Promise<SEP> {
-    throw new Error('Method not implemented.');
+
+  async assignReviewersToSEP(args: AssignReviewersToSEPArgs): Promise<SEP> {
+    const sep = dummySEPs.find(element => element.id === args.sepId);
+
+    if (sep) {
+      return sep;
+    }
+
+    throw new Error(`SEP not found ${args.sepId}`);
   }
-  removeMemberFromSEP(
+
+  async removeMemberFromSEP(
     args: UpdateMemberSEPArgs,
     isMemberChairOrSecretaryOfSEP: boolean
   ): Promise<SEP> {
-    throw new Error('Method not implemented.');
+    const sep = dummySEPs.find(element => element.id === args.sepId);
+
+    if (sep) {
+      return sep;
+    }
+
+    throw new Error(`SEP not found ${args.sepId}`);
   }
-  isChairOrSecretaryOfSEP(userId: number, sepId: number): Promise<boolean> {
-    throw new Error('Method not implemented.');
+
+  async isChairOrSecretaryOfSEP(
+    userId: number,
+    sepId: number
+  ): Promise<boolean> {
+    if (userId === 3) {
+      return false;
+    }
+
+    return true;
   }
-  isChairOrSecretaryOfProposal(
+
+  async isChairOrSecretaryOfProposal(
     userId: number,
     proposalId: number
   ): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    return false;
   }
 
   async getSEPProposal(
@@ -125,13 +154,15 @@ export class SEPDataSourceMock implements SEPDataSource {
   ): Promise<SEPProposal | null> {
     throw new Error('Method not implemented.');
   }
+
   updateTimeAllocation(
     sepId: number,
     proposalId: number,
     sepTimeAllocation: number | null
   ): Promise<SEPProposal> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented: updateTimeAllocation');
   }
+
   async isMemberOfSEP(agent: User | null, sepId: number) {
     return true;
   }
@@ -253,26 +284,6 @@ export class SEPDataSourceMock implements SEPDataSource {
     }
 
     return [{ id: 4, shortCode: 'SEP_Chair', title: 'SEP Chair' }];
-  }
-
-  async addSEPMembersRole(args: AssignChairOrSecretaryToSEPInput) {
-    const sep = dummySEPs.find(element => element.id === args.sepId);
-
-    if (sep) {
-      return sep;
-    }
-
-    throw new Error(`SEP not found ${args.sepId}`);
-  }
-
-  async removeSEPMemberRole(args: UpdateMemberSEPArgs) {
-    const sep = dummySEPs.find(element => element.id === args.sepId);
-
-    if (sep) {
-      return sep;
-    }
-
-    throw new Error(`SEP not found ${args.sepId}`);
   }
 
   async assignProposal(proposalId: number, sepId: number) {

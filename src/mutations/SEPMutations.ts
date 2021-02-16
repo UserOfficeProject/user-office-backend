@@ -100,14 +100,8 @@ export default class SEPMutations {
     agent: UserWithRole | null,
     args: AssignChairOrSecretaryToSEPArgs
   ): Promise<SEP | Rejection> {
-    const isChairAssignment =
-      args.assignChairOrSecretaryToSEPInput.roleId === UserRole.SEP_CHAIR;
-
     return this.dataSource
-      .assignChairOrSecretaryToSEP(
-        args.assignChairOrSecretaryToSEPInput,
-        isChairAssignment
-      )
+      .assignChairOrSecretaryToSEP(args.assignChairOrSecretaryToSEPInput)
       .then(result => result)
       .catch(err => {
         logger.logException(

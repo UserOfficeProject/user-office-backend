@@ -288,22 +288,16 @@ const createSeps = async () => {
     //   roleID: UserRole.INSTRUMENT_SCIENTIST,
     //   userIDs: [dummy.positiveNumber(MAX_USERS)],
     // });
-    await sepDataSource.assignChairOrSecretaryToSEP(
-      {
-        sepId: sep.id,
-        roleId: UserRole.SEP_CHAIR,
-        userId: dummy.positiveNumber(MAX_USERS),
-      },
-      true
-    );
-    await sepDataSource.assignChairOrSecretaryToSEP(
-      {
-        sepId: sep.id,
-        roleId: UserRole.SEP_SECRETARY,
-        userId: dummy.positiveNumber(MAX_USERS),
-      },
-      false
-    );
+    await sepDataSource.assignChairOrSecretaryToSEP({
+      sepId: sep.id,
+      roleId: UserRole.SEP_CHAIR,
+      userId: dummy.positiveNumber(MAX_USERS),
+    });
+    await sepDataSource.assignChairOrSecretaryToSEP({
+      sepId: sep.id,
+      roleId: UserRole.SEP_SECRETARY,
+      userId: dummy.positiveNumber(MAX_USERS),
+    });
     // await sepDataSource.addSEPMembersRole({
     //   sepId: sep.id,
     //   roleId: UserRole.USER,

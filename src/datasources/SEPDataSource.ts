@@ -51,8 +51,7 @@ export interface SEPDataSource {
   getReviewers(sepId: number): Promise<SEPReviewer[]>;
   getSEPUserRoles(id: number, sepId: number): Promise<Role[]>;
   assignChairOrSecretaryToSEP(
-    args: AssignChairOrSecretaryToSEPInput,
-    isChairAssignment: boolean
+    args: AssignChairOrSecretaryToSEPInput
   ): Promise<SEP>;
   assignReviewersToSEP(args: AssignReviewersToSEPArgs): Promise<SEP>;
   removeMemberFromSEP(
