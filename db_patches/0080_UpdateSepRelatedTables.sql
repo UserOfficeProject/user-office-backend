@@ -44,10 +44,8 @@ BEGIN
         WHERE sep_id IS NOT NULL AND short_code = 'SEP_Reviewer'
       );
 
-      -- delete sep related date from `role_user`
-      DELETE FROM role_user WHERE sep_id IS NOT NULL;
+      -- drop sep_id, we no longer need it
       ALTER TABLE role_user DROP COLUMN sep_id;
-      ALTER TABLE role_user ADD CONSTRAINT user_role_unique_idx UNIQUE (user_id, role_id);
 
       -- remove older reviewer role references
       UPDATE role_user SET role_id = (
@@ -60,6 +58,19 @@ BEGIN
         FROM roles
         WHERE short_code = 'reviewer'
       );
+
+      -- remove duplicate rows
+      FOR t_row in (
+        SELECT role_id, user_id FROM role_user
+        GROUP BY (role_id, user_id)
+        HAVING COUNT(*) > 1
+      ) LOOP
+        DELETE FROM role_user WHERE role_id = t_row.role_id AND user_id = t_row.user_id;
+        INSERT INTO role_user (role_id, user_id) VALUES (t_row.role_id, t_row.user_id);
+      END LOOP;
+
+      -- make sure we don't have duplicates int he future
+      ALTER TABLE role_user ADD CONSTRAINT user_role_unique_idx UNIQUE (user_id, role_id);
 
       -- delete `Reviewer` role
       DELETE FROM roles WHERE short_code = 'reviewer';
