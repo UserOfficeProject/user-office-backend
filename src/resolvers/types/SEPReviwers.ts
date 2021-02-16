@@ -24,9 +24,9 @@ export class SEPReviewer implements Partial<SEPReviewerBase> {
 
 @Resolver(() => SEPReviewer)
 export class SEPUserResolver {
-  @FieldResolver(() => [Role])
-  async roles(@Root() sepMember: SEPReviewer, @Ctx() context: ResolverContext) {
-    return context.queries.sep.dataSource.getSEPUserRoles(
+  @FieldResolver(() => Role, { nullable: true })
+  async role(@Root() sepMember: SEPReviewer, @Ctx() context: ResolverContext) {
+    return context.queries.sep.dataSource.getSEPUserRole(
       sepMember.userId,
       sepMember.sepId
     );

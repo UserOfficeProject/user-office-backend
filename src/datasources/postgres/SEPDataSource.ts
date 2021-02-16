@@ -283,58 +283,46 @@ export default class PostgresSEPDataSource implements SEPDataSource {
     return reviewerRecords.map(createSEPReviewerObject);
   }
 
-  async getSEPUserRoles(userId: number, sepId: number): Promise<Role[]> {
-    console.log('called? getSEPUserRoles');
-
+  async getSEPUserRole(userId: number, sepId: number): Promise<Role | null> {
     const sep = await this.get(sepId);
-
-    const findRoleByShortCode = (shortCode: Roles) =>
-      database<RoleRecord>('roles')
-        .where('short_code', shortCode)
-        .first();
 
     if (!sep) {
       throw new Error(`SEP not found ${sepId}`);
     }
 
+    let shortCode: Roles;
+
     if (sep.sepChairUserId === userId) {
-      const role = await findRoleByShortCode(Roles.SEP_CHAIR);
-      if (!role) {
-        throw new Error(
-          `Role with short code ${Roles.SEP_CHAIR} does not exist`
-        );
-      }
-
-      return [createRoleObject(role)];
+      shortCode = Roles.SEP_CHAIR;
     } else if (sep.sepSecretaryUserId === userId) {
-      const role = await findRoleByShortCode(Roles.SEP_SECRETARY);
-      if (!role) {
-        throw new Error(
-          `Role with short code ${Roles.SEP_SECRETARY} does not exist`
-        );
-      }
-
-      return [createRoleObject(role)];
+      shortCode = Roles.SEP_SECRETARY;
+    } else {
+      shortCode = Roles.SEP_REVIEWER;
     }
 
-    const sepReviewerRecord = await database<SEPReviewerRecord>('SEP_Reviewers')
-      .select('*')
-      .where('user_id', userId)
-      .where('sep_id', sepId)
+    const roleRecord = await database<RoleRecord>('roles')
+      .where('short_code', shortCode)
       .first();
 
-    if (!sepReviewerRecord) {
-      return [];
+    if (!roleRecord) {
+      throw new Error(`Role with short code ${shortCode} does not exist`);
     }
 
-    const role = await findRoleByShortCode(Roles.SEP_REVIEWER);
-    if (!role) {
-      throw new Error(
-        `Role with short code ${Roles.SEP_REVIEWER} does not exist`
-      );
+    if (shortCode === Roles.SEP_REVIEWER) {
+      const sepReviewerRecord = await database<SEPReviewerRecord>(
+        'SEP_Reviewers'
+      )
+        .select('*')
+        .where('user_id', userId)
+        .where('sep_id', sepId)
+        .first();
+
+      if (!sepReviewerRecord) {
+        return null;
+      }
     }
 
-    return [createRoleObject(role)];
+    return createRoleObject(roleRecord);
   }
 
   async getSEPByProposalId(proposalId: number): Promise<SEP | null> {

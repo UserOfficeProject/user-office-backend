@@ -49,7 +49,7 @@ export interface SEPDataSource {
   ): Promise<SEPProposal[]>;
   getMembers(sepId: number): Promise<SEPReviewer[]>;
   getReviewers(sepId: number): Promise<SEPReviewer[]>;
-  getSEPUserRoles(id: number, sepId: number): Promise<Role[]>;
+  getSEPUserRole(id: number, sepId: number): Promise<Role | null>;
   assignChairOrSecretaryToSEP(
     args: AssignChairOrSecretaryToSEPInput
   ): Promise<SEP>;

@@ -278,12 +278,12 @@ export class SEPDataSourceMock implements SEPDataSource {
     return dummySEPMembers.filter(member => member.sepId === sepId);
   }
 
-  async getSEPUserRoles(id: number, sepId: number) {
+  async getSEPUserRole(id: number, sepId: number) {
     if (id === 3) {
-      return [];
+      return null;
     }
 
-    return [{ id: 4, shortCode: 'SEP_Chair', title: 'SEP Chair' }];
+    return { id: 4, shortCode: 'SEP_Chair', title: 'SEP Chair' };
   }
 
   async assignProposal(proposalId: number, sepId: number) {
