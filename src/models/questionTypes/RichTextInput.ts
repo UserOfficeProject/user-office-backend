@@ -60,6 +60,9 @@ export const richTextInputDefinition: Question = {
     if (config.required && !value) {
       return false;
     }
+    if (config.max && value && value.length > config.max) {
+      return false;
+    }
 
     return true;
   },
@@ -70,6 +73,7 @@ export const richTextInputDefinition: Question = {
     config.required = false;
     config.small_label = '';
     config.tooltip = '';
+    config.max = null;
 
     return config;
   },
