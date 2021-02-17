@@ -82,7 +82,7 @@ export class CallInstrumentsResolver {
     );
   }
 
-  @FieldResolver(() => Int, { nullable: true })
+  @FieldResolver(() => Int)
   async proposalCount(@Root() call: Call, @Ctx() context: ResolverContext) {
     return context.queries.proposal.dataSource.getCount(call.id);
   }
