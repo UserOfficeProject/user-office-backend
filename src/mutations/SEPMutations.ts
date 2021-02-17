@@ -17,7 +17,7 @@ import { Event } from '../events/event.enum';
 import { ProposalIds } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { SEP } from '../models/SEP';
-import { UserWithRole } from '../models/User';
+import { UserWithRole, UserRole } from '../models/User';
 import { rejection, Rejection } from '../rejection';
 import {
   UpdateMemberSEPArgs,
@@ -92,8 +92,7 @@ export default class SEPMutations {
       });
   }
 
-  // FIXME
-  // @ValidateArgs(assignSEPChairOrSecretaryValidationSchema(UserRole))
+  @ValidateArgs(assignSEPChairOrSecretaryValidationSchema(UserRole))
   @Authorized([Roles.USER_OFFICER])
   @EventBus(Event.SEP_MEMBERS_ASSIGNED)
   async assignChairOrSecretaryToSEP(
