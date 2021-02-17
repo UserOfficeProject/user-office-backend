@@ -1,11 +1,10 @@
 import { ProposalIds } from '../models/Proposal';
 import { Role } from '../models/Role';
 import { SEP, SEPAssignment, SEPReviewer, SEPProposal } from '../models/SEP';
-import { User } from '../models/User';
-import { AssignChairOrSecretaryToSEPInput } from '../resolvers/mutations/AddSEPMembersRoleMutation';
 import {
   UpdateMemberSEPArgs,
   AssignReviewersToSEPArgs,
+  AssignChairOrSecretaryToSEPInput,
 } from '../resolvers/mutations/AssignMembersToSEP';
 
 export interface SEPDataSource {

@@ -69,7 +69,7 @@ BEGIN
         INSERT INTO role_user (role_id, user_id) VALUES (t_row.role_id, t_row.user_id);
       END LOOP;
 
-      -- make sure we don't have duplicates int he future
+      -- make sure we don't have duplicates in the future
       ALTER TABLE role_user ADD CONSTRAINT user_role_unique_idx UNIQUE (user_id, role_id);
 
       -- delete `Reviewer` role

@@ -17,14 +17,14 @@ import { Event } from '../events/event.enum';
 import { ProposalIds } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { SEP } from '../models/SEP';
-import { UserRole, UserWithRole } from '../models/User';
+import { UserWithRole } from '../models/User';
 import { rejection, Rejection } from '../rejection';
-import { AssignChairOrSecretaryToSEPArgs } from '../resolvers/mutations/AddSEPMembersRoleMutation';
 import {
   UpdateMemberSEPArgs,
   AssignSepReviewersToProposalArgs,
   AssignReviewersToSEPArgs,
   RemoveSepReviewerFromProposalArgs,
+  AssignChairOrSecretaryToSEPArgs,
 } from '../resolvers/mutations/AssignMembersToSEP';
 import { AssignProposalToSEPArgs } from '../resolvers/mutations/AssignProposalToSEP';
 import { CreateSEPArgs } from '../resolvers/mutations/CreateSEPMutation';
