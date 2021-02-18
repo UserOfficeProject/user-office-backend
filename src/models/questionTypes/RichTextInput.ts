@@ -50,6 +50,29 @@ const sanitizerConfig: IOptions = {
   allowedSchemesAppliedToAttributes: [],
 };
 
+// options to remove all html tags and get only text characters count
+const sanitizerValidationConfig: IOptions = {
+  allowedTags: [],
+  disallowedTagsMode: 'discard',
+  allowedAttributes: {},
+  allowedStyles: {},
+  selfClosing: [],
+  allowedSchemes: [],
+  allowedSchemesByTag: {},
+  allowedSchemesAppliedToAttributes: [],
+};
+
+const sanitizeAndCleanHtmlTags = (htmlString: string) => {
+  const sanitized = sanitizeHtml(htmlString, sanitizerValidationConfig);
+
+  const sanitizedStripped = sanitized
+    .replace(/(\r\n|\n|\r)/gm, '')
+    .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_')
+    .trim();
+
+  return sanitizedStripped;
+};
+
 export const richTextInputDefinition: Question = {
   dataType: DataType.RICH_TEXT_INPUT,
   validate: (field: QuestionTemplateRelation, value: any) => {
@@ -60,7 +83,12 @@ export const richTextInputDefinition: Question = {
     if (config.required && !value) {
       return false;
     }
-    if (config.max && value && value.length > config.max) {
+
+    if (
+      config.max &&
+      value &&
+      sanitizeAndCleanHtmlTags(value).length > config.max
+    ) {
       return false;
     }
 
