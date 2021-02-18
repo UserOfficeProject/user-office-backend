@@ -6,13 +6,13 @@ import {
   Mutation,
   Resolver,
   Int,
+  InputType,
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
 import { UserRole } from '../../models/User';
 import { SEPResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
-import { AssignChairOrSecretaryToSEPArgs } from './AddSEPMembersRoleMutation';
 
 @ArgsType()
 export class UpdateMemberSEPArgs {
@@ -66,6 +66,24 @@ export class AssignSEPChairAndSecretaryArgs {
 
   @Field(() => Int)
   public sepId: number;
+}
+
+@InputType()
+export class AssignChairOrSecretaryToSEPInput {
+  @Field(() => Int)
+  userId: number;
+
+  @Field(() => UserRole)
+  roleId: UserRole;
+
+  @Field(() => Int)
+  sepId: number;
+}
+
+@ArgsType()
+export class AssignChairOrSecretaryToSEPArgs {
+  @Field(() => AssignChairOrSecretaryToSEPInput)
+  public assignChairOrSecretaryToSEPInput: AssignChairOrSecretaryToSEPInput;
 }
 
 @Resolver()

@@ -6,10 +6,10 @@ import { ReviewStatus } from '../../models/Review';
 import { Role, Roles } from '../../models/Role';
 import { SEP, SEPAssignment, SEPReviewer, SEPProposal } from '../../models/SEP';
 import { UserRole } from '../../models/User';
-import { AssignChairOrSecretaryToSEPInput } from '../../resolvers/mutations/AddSEPMembersRoleMutation';
 import {
   UpdateMemberSEPArgs,
   AssignReviewersToSEPArgs,
+  AssignChairOrSecretaryToSEPInput,
 } from '../../resolvers/mutations/AssignMembersToSEP';
 import { SEPDataSource } from '../SEPDataSource';
 import database from './database';

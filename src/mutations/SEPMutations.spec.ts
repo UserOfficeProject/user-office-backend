@@ -113,21 +113,20 @@ describe('Test SEPMutations', () => {
     return expect(result).toStrictEqual(dummySEP);
   });
 
-  // FIXME
-  // test('A userofficer can not assign other roles using `assignChairOrSecretaryToSEP`', async () => {
-  //   const result = (await SEPMutationsInstance.assignChairOrSecretaryToSEP(
-  //     dummyUserOfficerWithRole,
-  //     {
-  //       assignChairOrSecretaryToSEPInput: {
-  //         sepId: 1,
-  //         roleId: UserRole.USER_OFFICER,
-  //         userId: 2,
-  //       },
-  //     }
-  //   )) as Rejection;
+  test('A userofficer can not assign other roles using `assignChairOrSecretaryToSEP`', async () => {
+    const result = (await SEPMutationsInstance.assignChairOrSecretaryToSEP(
+      dummyUserOfficerWithRole,
+      {
+        assignChairOrSecretaryToSEPInput: {
+          sepId: 1,
+          roleId: UserRole.USER_OFFICER,
+          userId: 2,
+        },
+      }
+    )) as Rejection;
 
-  //   return expect(result.reason).toBe('BAD_REQUEST');
-  // });
+    return expect(result.reason).toBe('BAD_REQUEST');
+  });
 
   test('A user can not assign reviewers to SEP', async () => {
     const result = (await SEPMutationsInstance.assignReviewersToSEP(
