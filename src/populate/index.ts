@@ -308,11 +308,6 @@ const createSeps = async () => {
       sepId: sep.id,
       memberIds: [dummy.positiveNumber(MAX_USERS)],
     });
-    // await sepDataSource.addSEPMembersRole({
-    //   sepId: sep.id,
-    //   roleId: UserRole.USER,
-    //   userIDs: [dummy.positiveNumber(MAX_USERS)],
-    // });
     const proposalIds = createUniqueIntArray(5, MAX_PROPOSALS);
     for (const proposalId of proposalIds) {
       const tmpUserId = dummy.positiveNumber(MAX_USERS);
