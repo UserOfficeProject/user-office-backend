@@ -42,4 +42,10 @@ export interface ProposalDataSource {
     proposalId: number
   ): Promise<ProposalEventsRecord | null>;
   getCount(callId: number): Promise<number>;
+  cloneProposal(
+    clonerId: number,
+    proposalId: number,
+    callId: number,
+    templateId: number
+  ): Promise<Proposal>;
 }
