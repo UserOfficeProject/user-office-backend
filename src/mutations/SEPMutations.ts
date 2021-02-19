@@ -202,9 +202,9 @@ export default class SEPMutations {
 
         return new ProposalIdsWithNextStatus(
           result.proposalIds,
-          nextProposalStatus.id,
-          nextProposalStatus.shortCode,
-          nextProposalStatus.name
+          nextProposalStatus?.id,
+          nextProposalStatus?.shortCode,
+          nextProposalStatus?.name
         );
       })
       .catch(err => {

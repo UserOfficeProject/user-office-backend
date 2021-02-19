@@ -300,7 +300,7 @@ export class SEPDataSourceMock implements SEPDataSource {
   async getProposalNextStatus(
     proposalId: number,
     event: Event
-  ): Promise<ProposalStatus> {
+  ): Promise<ProposalStatus | null> {
     return new ProposalStatus(
       5,
       'SEP_REVIEW',

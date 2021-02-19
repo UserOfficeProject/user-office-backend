@@ -507,12 +507,16 @@ export default class PostgresSEPDataSource implements SEPDataSource {
       .andWhere('nse.next_status_event', event)
       .first();
 
+    if (!nextProposalStatus) {
+      return null;
+    }
+
     return new ProposalStatus(
-      nextProposalStatus?.proposal_status_id,
-      nextProposalStatus?.short_code,
-      nextProposalStatus?.name,
-      nextProposalStatus?.description,
-      nextProposalStatus?.is_default
+      nextProposalStatus.proposal_status_id,
+      nextProposalStatus.short_code,
+      nextProposalStatus.name,
+      nextProposalStatus.description,
+      nextProposalStatus.is_default
     );
   }
 
