@@ -56,6 +56,11 @@ interface ProposalNotifiedEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalClonedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_CLONED;
+  proposal: Proposal;
+}
+
 interface ProposalFeasibilityReviewSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED;
   technicalreview: TechnicalReview;
@@ -189,6 +194,7 @@ export type ApplicationEvent =
   | ProposalSampleSafeEvent
   | ProposalRejectedEvent
   | ProposalCreatedEvent
+  | ProposalClonedEvent
   | UserCreateEvent
   | EmailInvite
   | UserResetPasswordEmailEvent

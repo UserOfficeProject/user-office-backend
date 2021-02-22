@@ -468,7 +468,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         submitted
       )
       SELECT
-        title,
+        'Copy of ${sourceProposal.title}',
         abstract,
         1,
         proposer_id,
