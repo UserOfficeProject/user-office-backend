@@ -125,4 +125,5 @@ export const EventLabel = new Map<Event, string>([
     'Event occurs when SEP member is removed from proposal for review',
   ],
   [Event.PROPOSAL_NOTIFIED, 'Event occurs when proposal is notified'],
+  [Event.PROPOSAL_CLONED, 'Event occurs when proposal is cloned'],
 ]);
