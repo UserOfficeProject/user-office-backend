@@ -66,7 +66,9 @@ const sanitizeAndCleanHtmlTags = (htmlString: string) => {
   const sanitized = sanitizeHtml(htmlString, sanitizerValidationConfig);
 
   const sanitizedStripped = sanitized
+    // NOTE: Remove all newline characters from counting.
     .replace(/(\r\n|\n|\r)/gm, '')
+    // NOTE: We need to replace the surrogate pairs(emojis) with _ and count them as one character instead of two ("😀".length = 2). https://stackoverflow.com/questions/31986614/what-is-a-surrogate-pair
     .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_')
     .trim();
 
