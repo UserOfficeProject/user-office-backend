@@ -65,14 +65,18 @@ const sanitizerValidationConfig: IOptions = {
 const sanitizeAndCleanHtmlTags = (htmlString: string) => {
   const sanitized = sanitizeHtml(htmlString, sanitizerValidationConfig);
 
-  const sanitizedStripped = sanitized
-    // NOTE: Remove all newline characters from counting.
+  /**
+   * NOTE:
+   * 1. Remove all newline characters from counting.
+   * 2. Replace the surrogate pairs(emojis) with _ and count them as one character instead of two ("😀".length = 2).
+   *    https://stackoverflow.com/questions/31986614/what-is-a-surrogate-pair
+   */
+  const sanitizedCleaned = sanitized
     .replace(/(\r\n|\n|\r)/gm, '')
-    // NOTE: We need to replace the surrogate pairs(emojis) with _ and count them as one character instead of two ("😀".length = 2). https://stackoverflow.com/questions/31986614/what-is-a-surrogate-pair
     .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_')
     .trim();
 
-  return sanitizedStripped;
+  return sanitizedCleaned;
 };
 
 export const richTextInputDefinition: Question = {
