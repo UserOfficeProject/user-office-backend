@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { logger } from '@esss-swap/duo-logger';
 
-import { proposalDataSource } from '../datasources';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { eventBus } from '../events';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
+import { ProposalEndStatus } from '../models/Proposal';
 import { SampleStatus } from '../models/Sample';
 import { TechnicalReviewStatus } from '../models/TechnicalReview';
 import { workflowEngine, WorkflowEngineProposalType } from '../workflowEngine';
 
-export default function createHandler(proposalDatasource: ProposalDataSource) {
+export default function createHandler(proposalDataSource: ProposalDataSource) {
   // Handler to align input for workflowEngine
 
   return async function proposalWorkflowHandler(event: ApplicationEvent) {
@@ -24,7 +24,8 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
       eventType: Event,
       proposal: WorkflowEngineProposalType
     ) => {
-      const allProposalEvents = await proposalDatasource.markEventAsDoneOnProposal(
+      console.log(eventType);
+      const allProposalEvents = await proposalDataSource.markEventAsDoneOnProposal(
         eventType,
         proposal.id
       );
@@ -38,7 +39,7 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
     switch (event.type) {
       case Event.PROPOSAL_CREATED:
         try {
-          await proposalDatasource.markEventAsDoneOnProposal(
+          await proposalDataSource.markEventAsDoneOnProposal(
             event.type,
             event.proposal.id
           );
@@ -93,6 +94,43 @@ export default function createHandler(proposalDatasource: ProposalDataSource) {
           );
         }
 
+        break;
+      case Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED:
+        try {
+          switch (event.proposal.finalStatus) {
+            case ProposalEndStatus.ACCEPTED:
+              eventBus.publish({
+                type: Event.PROPOSAL_ACCEPTED,
+                proposal: event.proposal,
+                isRejection: false,
+                key: 'proposal',
+                loggedInUserId: event.loggedInUserId,
+              });
+              break;
+            case ProposalEndStatus.REJECTED:
+              eventBus.publish({
+                type: Event.PROPOSAL_REJECTED,
+                proposal: event.proposal,
+                isRejection: false,
+                reason: event.proposal.commentForUser,
+                key: 'proposal',
+                loggedInUserId: event.loggedInUserId,
+              });
+              break;
+            default:
+              break;
+          }
+
+          await markProposalEventAsDoneAndCallWorkflowEngine(
+            event.type,
+            event.proposal
+          );
+        } catch (error) {
+          logger.logError(
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            error
+          );
+        }
         break;
       case Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED:
         try {

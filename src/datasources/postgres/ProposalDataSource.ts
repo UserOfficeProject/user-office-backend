@@ -375,6 +375,8 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       [event.toLowerCase()]: true,
     };
 
+    console.log(event);
+
     const result = await database.raw(
       `? ON CONFLICT (proposal_id)
         DO UPDATE SET

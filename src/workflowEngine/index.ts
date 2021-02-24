@@ -89,6 +89,13 @@ export const workflowEngine = async (
     currentWorkflowConnection.id
   );
 
+  console.log(
+    nextWorkflowConnection,
+    'nextWorkflowConnection',
+    proposal.proposalEvents,
+    nextStatusEvents
+  );
+
   if (!nextStatusEvents || !nextWorkflowConnection) {
     return;
   }

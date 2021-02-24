@@ -56,6 +56,11 @@ interface ProposalNotifiedEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalManagementDecisionSubmittedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED;
+  proposal: Proposal;
+}
+
 interface ProposalFeasibilityReviewSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED;
   technicalreview: TechnicalReview;
@@ -189,6 +194,7 @@ export type ApplicationEvent =
   | ProposalSampleSafeEvent
   | ProposalRejectedEvent
   | ProposalCreatedEvent
+  | ProposalManagementDecisionSubmittedEvent
   | UserCreateEvent
   | EmailInvite
   | UserResetPasswordEmailEvent
