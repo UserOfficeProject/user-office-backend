@@ -71,6 +71,16 @@ interface ProposalSEPReviewSubmittedEvent extends GeneralEvent {
   review: Review;
 }
 
+interface ProposalSEPReviewUpdatedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_SEP_REVIEW_UPDATED;
+  review: Review;
+}
+
+interface ProposalAllSEPReviewsSubmittedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED;
+  proposal: Proposal;
+}
+
 interface ProposalSampleReviewSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED;
   sample: Sample;
@@ -213,7 +223,9 @@ export type ApplicationEvent =
   | CallReviewEndedEvent
   | CallSEPReviewEndedEvent
   | ProposalFeasibilityReviewSubmittedEvent
+  | ProposalSEPReviewUpdatedEvent
   | ProposalSEPReviewSubmittedEvent
+  | ProposalAllSEPReviewsSubmittedEvent
   | ProposalSampleReviewSubmittedEvent
   | ProposalInstrumentSelectedEvent
   | ProposalSEPSelectedEvent
