@@ -61,8 +61,8 @@ export default class ReviewMutations {
 
     return this.dataSource
       .updateReview(args)
-      .then(review => review)
-      .catch(err => {
+      .then((review) => review)
+      .catch((err) => {
         logger.logException('Could not submit review', err, {
           agent,
           reviewID,
@@ -96,8 +96,8 @@ export default class ReviewMutations {
 
     return this.dataSource
       .setTechnicalReview(args, shouldSubmitTechnicalReview)
-      .then(review => review)
-      .catch(err => {
+      .then((review) => review)
+      .catch((err) => {
         logger.logException('Could not set technicalReview', err, {
           agent,
         });
@@ -122,8 +122,8 @@ export default class ReviewMutations {
 
     return this.dataSource
       .removeUserForReview(reviewId)
-      .then(review => review)
-      .catch(err => {
+      .then((review) => review)
+      .catch((err) => {
         logger.logException('Could not remove user for review', err, {
           agent,
           reviewId,
@@ -149,8 +149,8 @@ export default class ReviewMutations {
 
     return this.dataSource
       .addUserForReview(args)
-      .then(review => review)
-      .catch(err => {
+      .then((review) => review)
+      .catch((err) => {
         logger.logException('Failed to add user for review', err, {
           agent,
           userID,
