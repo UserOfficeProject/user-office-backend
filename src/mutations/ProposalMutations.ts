@@ -63,8 +63,8 @@ export default class ProposalMutations {
 
     return this.proposalDataSource
       .create((agent as UserWithRole).id, callId, questionary.questionaryId)
-      .then(proposal => proposal)
-      .catch(err => {
+      .then((proposal) => proposal)
+      .catch((err) => {
         logger.logException('Could not create proposal', err, { agent });
 
         return rejection('INTERNAL_ERROR');
@@ -136,8 +136,8 @@ export default class ProposalMutations {
 
     return this.proposalDataSource
       .update(proposal)
-      .then(proposal => proposal)
-      .catch(err => {
+      .then((proposal) => proposal)
+      .catch((err) => {
         logger.logException('Could not update proposal', err, {
           agent,
           id,
@@ -169,8 +169,8 @@ export default class ProposalMutations {
 
     return this.proposalDataSource
       .submitProposal(proposalId)
-      .then(proposal => proposal)
-      .catch(e => {
+      .then((proposal) => proposal)
+      .catch((e) => {
         logger.logException('Could not submit proposal', e, {
           agent,
           proposalId,
@@ -332,8 +332,8 @@ export default class ProposalMutations {
         callId,
         call.templateId
       )
-      .then(proposal => proposal)
-      .catch(err => {
+      .then((proposal) => proposal)
+      .catch((err) => {
         logger.logException('Could not clone proposal', err, { agent });
 
         return rejection('INTERNAL_ERROR');
