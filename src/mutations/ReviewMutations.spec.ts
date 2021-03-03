@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { ProposalSettingsDataSourceMock } from '../datasources/mockups/ProposalSettingsDataSource';
 import {
   ReviewDataSourceMock,
   dummyReview,
@@ -21,7 +22,8 @@ const userAuthorization = new UserAuthorization(
 );
 const reviewMutations = new ReviewMutations(
   new ReviewDataSourceMock(),
-  userAuthorization
+  userAuthorization,
+  new ProposalSettingsDataSourceMock()
 );
 
 //Update
