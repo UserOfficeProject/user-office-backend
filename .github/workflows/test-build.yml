@@ -40,7 +40,9 @@ jobs:
       - run: npm run build
       - run: npm test
         env:
+          NODE_ENV: test
           secret: ${{secrets.secret}}
+          tokenLife: 7d
 
   build:
     runs-on: ubuntu-latest
