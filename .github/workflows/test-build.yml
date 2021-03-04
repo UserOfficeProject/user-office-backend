@@ -39,6 +39,8 @@ jobs:
       - run: npm ci --loglevel error --no-fund
       - run: npm run build
       - run: npm test
+        env:
+          secret: ${{secrets.secret}}
 
   build:
     runs-on: ubuntu-latest
