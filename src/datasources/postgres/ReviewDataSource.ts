@@ -187,6 +187,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
       .select()
       .from('SEP_Reviews')
       .modify((qb) => {
+        // sometimes the ID 0 is sent as a equivalent of all
         if (callId) {
           qb.join('proposals', {
             'proposals.proposal_id': 'SEP_Reviews.proposal_id',
@@ -194,6 +195,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
           qb.where('proposals.call_id', callId);
         }
 
+        // sometimes the ID 0 is sent as a equivalent of all
         if (instrumentId) {
           qb.join('instrument_has_proposals', {
             'instrument_has_proposals.proposal_id': 'SEP_Reviews.proposal_id',
@@ -201,7 +203,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
           qb.where('instrument_has_proposals.instrument_id', instrumentId);
         }
 
-        if (status) {
+        if (status !== undefined && status !== null) {
           qb.where('SEP_Reviews.status', status);
         }
       })
