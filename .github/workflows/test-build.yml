@@ -43,6 +43,7 @@ jobs:
           NODE_ENV: test
           secret: ${{secrets.secret}}
           tokenLife: 7d
+          SPARKPOST_TOKEN: wrong_token_for_test
 
   build:
     runs-on: ubuntu-latest
