@@ -25,7 +25,7 @@ export class ReviewDataSourceMock implements ReviewDataSource {
   }
   setTechnicalReview(
     args: AddTechnicalReviewInput,
-    submitted: boolean = false
+    shouldUpdateReview: boolean
   ): Promise<TechnicalReview> {
     throw new Error('Method not implemented.');
   }
