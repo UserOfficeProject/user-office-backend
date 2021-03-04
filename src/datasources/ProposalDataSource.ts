@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Event } from '../events/event.enum';
 import { Proposal } from '../models/Proposal';
 import { ProposalView } from '../models/ProposalView';
@@ -42,4 +41,10 @@ export interface ProposalDataSource {
     proposalId: number
   ): Promise<ProposalEventsRecord | null>;
   getCount(callId: number): Promise<number>;
+  cloneProposal(
+    clonerId: number,
+    proposalId: number,
+    callId: number,
+    templateId: number
+  ): Promise<Proposal>;
 }

@@ -56,6 +56,16 @@ interface ProposalNotifiedEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalClonedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_CLONED;
+  proposal: Proposal;
+}
+
+interface ProposalManagementDecisionSubmittedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED;
+  proposal: Proposal;
+}
+
 interface ProposalFeasibilityReviewSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED;
   technicalreview: TechnicalReview;
@@ -64,6 +74,16 @@ interface ProposalFeasibilityReviewSubmittedEvent extends GeneralEvent {
 interface ProposalSEPReviewSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_SEP_REVIEW_SUBMITTED;
   review: Review;
+}
+
+interface ProposalSEPReviewUpdatedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_SEP_REVIEW_UPDATED;
+  review: Review;
+}
+
+interface ProposalAllSEPReviewsSubmittedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED;
+  proposal: Proposal;
 }
 
 interface ProposalSampleReviewSubmittedEvent extends GeneralEvent {
@@ -189,6 +209,8 @@ export type ApplicationEvent =
   | ProposalSampleSafeEvent
   | ProposalRejectedEvent
   | ProposalCreatedEvent
+  | ProposalClonedEvent
+  | ProposalManagementDecisionSubmittedEvent
   | UserCreateEvent
   | EmailInvite
   | UserResetPasswordEmailEvent
@@ -207,7 +229,9 @@ export type ApplicationEvent =
   | CallReviewEndedEvent
   | CallSEPReviewEndedEvent
   | ProposalFeasibilityReviewSubmittedEvent
+  | ProposalSEPReviewUpdatedEvent
   | ProposalSEPReviewSubmittedEvent
+  | ProposalAllSEPReviewsSubmittedEvent
   | ProposalSampleReviewSubmittedEvent
   | ProposalInstrumentSelectedEvent
   | ProposalSEPSelectedEvent

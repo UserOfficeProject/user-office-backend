@@ -10,8 +10,11 @@ export enum Event {
   PROPOSAL_SAMPLE_REVIEW_SUBMITTED = 'PROPOSAL_SAMPLE_REVIEW_SUBMITTED',
   PROPOSAL_SAMPLE_SAFE = 'PROPOSAL_SAMPLE_SAFE',
   PROPOSAL_ALL_SEP_REVIEWERS_SELECTED = 'PROPOSAL_ALL_SEP_REVIEWERS_SELECTED',
+  PROPOSAL_SEP_REVIEW_UPDATED = 'PROPOSAL_SEP_REVIEW_UPDATED',
   PROPOSAL_SEP_REVIEW_SUBMITTED = 'PROPOSAL_SEP_REVIEW_SUBMITTED',
+  PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED = 'PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED',
   PROPOSAL_SEP_MEETING_SUBMITTED = 'PROPOSAL_SEP_MEETING_SUBMITTED',
+  PROPOSAL_MANAGEMENT_DECISION_SUBMITTED = 'PROPOSAL_MANAGEMENT_DECISION_SUBMITTED',
   PROPOSAL_INSTRUMENT_SUBMITTED = 'PROPOSAL_INSTRUMENT_SUBMITTED',
   PROPOSAL_ACCEPTED = 'PROPOSAL_ACCEPTED',
   PROPOSAL_REJECTED = 'PROPOSAL_REJECTED',
@@ -32,6 +35,7 @@ export enum Event {
   SEP_MEMBER_ASSIGNED_TO_PROPOSAL = 'SEP_MEMBER_ASSIGNED_TO_PROPOSAL',
   SEP_MEMBER_REMOVED_FROM_PROPOSAL = 'SEP_MEMBER_REMOVED_FROM_PROPOSAL',
   PROPOSAL_NOTIFIED = 'PROPOSAL_NOTIFIED',
+  PROPOSAL_CLONED = 'PROPOSAL_CLONED',
 }
 
 export const EventLabel = new Map<Event, string>([
@@ -67,8 +71,16 @@ export const EventLabel = new Map<Event, string>([
     'Event occurs when all SEP reviewers are selected on a proposal',
   ],
   [
+    Event.PROPOSAL_SEP_REVIEW_UPDATED,
+    'Event occurs when at least one proposal SEP review is updated',
+  ],
+  [
     Event.PROPOSAL_SEP_REVIEW_SUBMITTED,
-    'Event occurs when SEP review is submitted',
+    'Event occurs when at least one proposal SEP review is submitted',
+  ],
+  [
+    Event.PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED,
+    'Event occurs when all SEP reviews on a proposal are submitted',
   ],
   [
     Event.PROPOSAL_SEP_MEETING_SUBMITTED,
@@ -81,6 +93,10 @@ export const EventLabel = new Map<Event, string>([
   [
     Event.PROPOSAL_ACCEPTED,
     'Event occurs when proposal gets final decision as accepted',
+  ],
+  [
+    Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED,
+    'Event occurs when proposal management decision is submitted',
   ],
   [Event.PROPOSAL_REJECTED, 'Event occurs when proposal gets rejected'],
   [
@@ -124,4 +140,5 @@ export const EventLabel = new Map<Event, string>([
     'Event occurs when SEP member is removed from proposal for review',
   ],
   [Event.PROPOSAL_NOTIFIED, 'Event occurs when proposal is notified'],
+  [Event.PROPOSAL_CLONED, 'Event occurs when proposal is cloned'],
 ]);

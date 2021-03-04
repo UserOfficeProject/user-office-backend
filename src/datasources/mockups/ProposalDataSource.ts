@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import 'reflect-metadata';
 import { Event } from '../../events/event.enum';
 import { Proposal, ProposalEndStatus } from '../../models/Proposal';
@@ -114,7 +113,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async get(id: number) {
-    return allProposals.find(proposal => proposal.id === id) || null;
+    return allProposals.find((proposal) => proposal.id === id) || null;
   }
 
   async create(proposerId: number, callId: number, questionaryId: number) {
@@ -137,7 +136,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async getUserProposals(id: number) {
-    return allProposals.filter(proposal => proposal.proposerId === id);
+    return allProposals.filter((proposal) => proposal.proposerId === id);
   }
 
   async getInstrumentScientistProposals(
@@ -176,5 +175,14 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async getCount(callId: number): Promise<number> {
     return 1;
+  }
+
+  async cloneProposal(
+    clonerId: number,
+    proposalId: number,
+    callId: number,
+    templateId: number
+  ): Promise<Proposal> {
+    return dummyProposal;
   }
 }

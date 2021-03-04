@@ -52,20 +52,15 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
     }
   });
 
-  factoryReq.on('error', err => {
+  factoryReq.on('error', (err) => {
     next({
       error: err.toString(),
       message: `Could not download generated ${downloadType}/${type}`,
     });
   });
 
-  factoryReq.on('response', factoryResp => {
+  factoryReq.on('response', (factoryResp) => {
     gotResponse = true;
-
-    factoryResp.once('error', e => {
-      console.error('got error 1', e);
-      process.exit(1);
-    });
 
     req.once('close', () => {
       if (factoryResp.complete) {
@@ -78,13 +73,13 @@ export default function callFactoryService<TData, TMeta extends MetaBase>(
     if (factoryResp.statusCode !== 200) {
       // FIXME: this looks very ugly
       bufferRequestBody(factoryReq)
-        .then(body => {
+        .then((body) => {
           logger.logError(`Failed to generate ${downloadType}/${type}`, {
             response: body,
             type,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           logger.logException(
             `Failed to generate ${downloadType}/${type} and read response body`,
             err,

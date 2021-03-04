@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+import { logger } from '@esss-swap/duo-logger';
 import BluePromise from 'bluebird';
 import { Transaction } from 'knex';
 
@@ -16,6 +16,7 @@ import {
   ProposalEventsRecord,
   ProposalRecord,
   ProposalViewRecord,
+  QuestionaryRecord,
 } from './records';
 
 export default class PostgresProposalDataSource implements ProposalDataSource {
@@ -68,7 +69,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   }
 
   async setProposalUsers(id: number, users: number[]): Promise<void> {
-    return database.transaction(function(trx: Transaction) {
+    return database.transaction(function (trx: Transaction) {
       return database
         .from('proposal_user')
         .where('proposal_id', id)
@@ -85,7 +86,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         .then(() => {
           trx.commit;
         })
-        .catch(error => {
+        .catch((error) => {
           trx.rollback;
           throw error; // re-throw
         });
@@ -171,7 +172,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     return database
       .select()
       .from('proposal_table_view')
-      .modify(query => {
+      .modify((query) => {
         if (filter?.callId) {
           query.where('proposal_table_view.call_id', filter?.callId);
         }
@@ -191,7 +192,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
         if (filter?.shortCodes) {
           const filteredAndPreparedShortCodes = filter?.shortCodes
-            .filter(shortCode => shortCode)
+            .filter((shortCode) => shortCode)
             .join('|');
 
           query.whereRaw(
@@ -216,7 +217,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         }
       })
       .then((proposals: ProposalViewRecord[]) => {
-        return proposals.map(proposal => createProposalViewObject(proposal));
+        return proposals.map((proposal) => createProposalViewObject(proposal));
       });
   }
 
@@ -229,7 +230,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       .select(['proposals.*', database.raw('count(*) OVER() AS full_count')])
       .from('proposals')
       .orderBy('proposals.proposal_id', 'desc')
-      .modify(query => {
+      .modify((query) => {
         if (filter?.text) {
           query
             .where('title', 'ilike', `%${filter.text}%`)
@@ -261,7 +262,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
         if (filter?.shortCodes) {
           const filteredAndPreparedShortCodes = filter?.shortCodes
-            .filter(shortCode => shortCode)
+            .filter((shortCode) => shortCode)
             .join('|');
 
           query.whereRaw(
@@ -277,7 +278,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         }
       })
       .then((proposals: ProposalRecord[]) => {
-        const props = proposals.map(proposal => createProposalObject(proposal));
+        const props = proposals.map((proposal) =>
+          createProposalObject(proposal)
+        );
 
         return {
           totalCount: proposals[0] ? proposals[0].full_count : 0,
@@ -304,7 +307,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           'instrument_has_scientists.instrument_id',
       })
       .orderBy('proposals.proposal_id', 'desc')
-      .modify(query => {
+      .modify((query) => {
         if (filter?.text) {
           query
             .where('title', 'ilike', `%${filter.text}%`)
@@ -326,7 +329,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
         if (filter?.shortCodes) {
           const filteredAndPreparedShortCodes = filter?.shortCodes
-            .filter(shortCode => shortCode)
+            .filter((shortCode) => shortCode)
             .join('|');
 
           query.whereRaw(
@@ -342,7 +345,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         }
       })
       .then((proposals: ProposalRecord[]) => {
-        const props = proposals.map(proposal => createProposalObject(proposal));
+        const props = proposals.map((proposal) =>
+          createProposalObject(proposal)
+        );
 
         return {
           totalCount: proposals[0] ? proposals[0].full_count : 0,
@@ -362,7 +367,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       .orWhere('p.proposer_id', id)
       .groupBy('p.proposal_id')
       .then((proposals: ProposalRecord[]) =>
-        proposals.map(proposal => createProposalObject(proposal))
+        proposals.map((proposal) => createProposalObject(proposal))
       );
   }
 
@@ -398,5 +403,90 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       .then((result: { count?: string | undefined } | undefined) => {
         return parseInt(result?.count || '0');
       });
+  }
+
+  async cloneProposal(
+    clonerId: number,
+    proposalId: number,
+    callId: number,
+    templateId: number
+  ): Promise<Proposal> {
+    const sourceProposal = await this.get(proposalId);
+
+    if (!sourceProposal) {
+      logger.logError(
+        'Could not clone proposal because source proposal does not exist',
+        { proposalId }
+      );
+
+      throw new Error('Could not clone proposal');
+    }
+
+    const [newQuestionary]: QuestionaryRecord[] = (
+      await database.raw(`
+      INSERT INTO questionaries
+      (
+        template_id,
+        creator_id
+      )
+      SELECT
+        ${templateId},
+        ${clonerId}
+      FROM 
+        questionaries
+      WHERE
+        questionary_id = ${sourceProposal.questionaryId}
+      RETURNING *
+    `)
+    ).rows;
+
+    await database.raw(`
+      INSERT INTO answers
+      (
+        questionary_id,
+        question_id,
+        answer
+      )
+      SELECT
+        ${newQuestionary.questionary_id},
+        question_id,
+        answer
+      FROM 
+        answers
+      WHERE
+        questionary_id = ${sourceProposal.questionaryId}
+    `);
+
+    const [newProposal]: ProposalRecord[] = (
+      await database.raw(`
+      INSERT INTO proposals
+      (
+        title,
+        abstract,
+        status_id,
+        proposer_id,
+        call_id,
+        questionary_id,
+        notified,
+        submitted
+      )
+      SELECT
+        'Copy of ${sourceProposal.title}',
+        abstract,
+        1,
+        proposer_id,
+        ${callId},
+        ${newQuestionary.questionary_id},
+        false,
+        false
+      FROM 
+        proposals
+      WHERE
+        proposal_id = ${sourceProposal.id}
+      RETURNING *
+    `)
+    ).rows;
+
+    return createProposalObject(newProposal);
   }
 }
