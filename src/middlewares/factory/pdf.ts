@@ -113,7 +113,7 @@ router.get(
 
       callFactoryService(
         DownloadType.PDF,
-        PDFType.SAMPLE,
+        PDFType.SHIPMENT_LABEL,
         { data, meta },
         res,
         next
