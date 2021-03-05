@@ -10,6 +10,8 @@ type EnvVars =
   | 'EAM_AUTH_USER'
   | 'EAM_AUTH_PASS';
 
+const isEamDisabled = process.env.UO_FEATURE_DISABLE_EAM === '1';
+
 const getEnvOrThrow = (envVariable: EnvVars): string => {
   const value = process.env[envVariable];
   if (!value) {
@@ -98,6 +100,9 @@ const performApiRequest = async (request: string) => {
 };
 
 const addAssetEquipment = async () => {
+  if (isEamDisabled) {
+    return '';
+  }
   const response = await performApiRequest(addAssetSoapRequest);
 
   const regexFindEquipmentCode = /<ns2:EQUIPMENTCODE>([0-9]*)<\/ns2:EQUIPMENTCODE>/;
