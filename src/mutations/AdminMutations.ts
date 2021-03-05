@@ -30,6 +30,7 @@ export default class AdminMutations {
   @Authorized([Roles.USER_OFFICER])
   async resetDB(agent: UserWithRole | null): Promise<string | Rejection> {
     if (process.env.NODE_ENV === 'development') {
+      logger.logInfo('node_env ', { env: process.env.NODE_ENV });
       logger.logWarn('Resetting database', {});
 
       return this.dataSource.resetDB();
