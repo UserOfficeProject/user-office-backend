@@ -5,7 +5,5 @@ module.exports = {
   },
   testEnvironment: 'node',
   collectCoverage: true,
-  setupFiles: [
-    'dotenv/config'
-  ],
+  setupFiles: ['dotenv/config'],
 };
