@@ -1,4 +1,5 @@
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 import { logger } from '@esss-swap/duo-logger';
 
@@ -26,6 +27,9 @@ import {
   UserRecord,
   UnitRecord,
 } from './records';
+
+const dbPatchesFolderPath = path.join(process.cwd(), 'db_patches');
+const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
 export default class PostgresAdminDataSource implements AdminDataSource {
   async createUnit(unit: Unit): Promise<Unit | null> {
@@ -236,51 +240,87 @@ export default class PostgresAdminDataSource implements AdminDataSource {
    * NB! This will actually wipe the database
    */
   async resetDB() {
-    await database.raw(`
+    try {
+      await database.raw(`
         DROP SCHEMA public CASCADE;
         CREATE SCHEMA public;
         GRANT ALL ON SCHEMA public TO duouser;
         GRANT ALL ON SCHEMA public TO public;
       `);
 
-    return await this.applyPatches();
+      const applyPatchesOutput = await this.applyPatches();
+
+      if (process.env.INCLUDE_SEEDS === '1') {
+        await this.applySeeds();
+      }
+
+      return applyPatchesOutput;
+    } catch (e) {
+      logger.logException('resetDB failed', e);
+
+      throw e;
+    }
   }
 
   async applyPatches(): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
-      const log = [`Upgrade started: ${Date.now()}`];
-      const directoryPath = './db_patches';
-      fs.readdir(directoryPath, async function (err, files) {
-        if (err) {
-          logger.logError(err.message, err);
-          log.push(err.message);
+    const log = [`Upgrade started: ${Date.now()}`];
 
-          return false;
-        }
-        for await (const file of files) {
-          // ignore everything other than sql files
-          if (!/\.sql$/i.test(file)) {
-            continue;
-          }
+    const files = await fs.readdir(dbPatchesFolderPath);
 
-          const contents = fs.readFileSync(`${directoryPath}/${file}`, 'utf8');
-          await database
-            .raw(contents)
-            .then((result) => {
-              const msg = `${file} executed. ${result.command || ''}\n`;
-              log.push(msg);
-            })
-            .catch((err) => {
-              const msg = `${file} failed. ${err}`;
-              log.push(msg);
-              reject(log.join('\n'));
-              throw new Error(msg);
-            });
-        }
+    for (const file of files) {
+      // ignore everything other than sql files
+      if (!/\.sql$/i.test(file)) {
+        continue;
+      }
 
-        resolve(log.join('\n'));
-      });
-    });
+      const contents = await fs.readFile(
+        path.join(dbPatchesFolderPath, file),
+        'utf8'
+      );
+      await database
+        .raw(contents)
+        .then(() => {
+          const msg = `${file} executed.`;
+          log.push(msg);
+        })
+        .catch((err) => {
+          const msg = `${file} failed: ${err}`;
+          log.push(msg);
+
+          throw log.join('\n');
+        });
+    }
+
+    return log.join('\n');
+  }
+
+  private async applySeeds() {
+    const log = ['Applying DB seeds'];
+
+    const files = await fs.readdir(seedsPath);
+
+    for (const file of files) {
+      // ignore everything other than sql files
+      if (!/\.sql$/i.test(file)) {
+        continue;
+      }
+
+      const contents = await fs.readFile(path.join(seedsPath, file), 'utf8');
+      await database
+        .raw(contents)
+        .then(() => {
+          const msg = `${file} executed.`;
+          log.push(msg);
+        })
+        .catch((err) => {
+          const msg = `${file} failed. ${err}`;
+          log.push(msg);
+
+          throw log;
+        });
+    }
+
+    logger.logInfo('Applying seeds finished', { log });
   }
 
   async getFeatures(): Promise<Feature[]> {
