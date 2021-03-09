@@ -1,7 +1,5 @@
 DO
 $$
-DECLARE 
-   t_row role_user%rowtype;
 BEGIN
     IF register_patch('AddSchedulerFeatureId.sql', 'Peter Asztalos', 'Add Scheduler FeatureId', '2021-03-08') THEN
 
