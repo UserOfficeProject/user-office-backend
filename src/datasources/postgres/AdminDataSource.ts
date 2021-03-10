@@ -32,6 +32,10 @@ const dbPatchesFolderPath = path.join(process.cwd(), 'db_patches');
 const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
 export default class PostgresAdminDataSource implements AdminDataSource {
+  constructor() {
+    this.initDb();
+  }
+
   async createUnit(unit: Unit): Promise<Unit | null> {
     const [unitRecord]: UnitRecord[] = await database
       .insert({
@@ -293,7 +297,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
         });
     }
 
-    logger.logInfo('Applying patches finished', { log });
+    logger.logInfo('Applying patches finished', {});
 
     return log.join('\n');
   }
@@ -326,7 +330,32 @@ export default class PostgresAdminDataSource implements AdminDataSource {
         });
     }
 
-    logger.logInfo('Applying seeds finished', { log });
+    logger.logInfo('Applying seeds finished', {});
+  }
+
+  private async initDb() {
+    let initDbFailed = 0;
+
+    const initDb = () => {
+      database('pg_stat_activity')
+        .count('*', { as: 'total' })
+        .select('state')
+        .groupBy(2)
+        .then(() => this.applyPatches())
+        .catch((e) => {
+          initDbFailed++;
+
+          logger.logException('Failed to initialize db', e);
+
+          if (initDbFailed >= 5) {
+            process.exit(1);
+          }
+
+          setTimeout(initDb, 150);
+        });
+    };
+
+    setTimeout(initDb, 150);
   }
 
   async getFeatures(): Promise<Feature[]> {
