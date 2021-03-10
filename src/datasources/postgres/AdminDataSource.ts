@@ -33,6 +33,10 @@ const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
 export default class PostgresAdminDataSource implements AdminDataSource {
   constructor() {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
     this.initDb();
   }
 
