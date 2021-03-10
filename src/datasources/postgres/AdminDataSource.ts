@@ -349,17 +349,17 @@ export default class PostgresAdminDataSource implements AdminDataSource {
         .catch((e) => {
           initDbFailed++;
 
-          logger.logException('Failed to initialize db', e);
+          logger.logException('Failed to initialize db', e, { initDbFailed });
 
           if (initDbFailed >= 5) {
             process.exit(1);
           }
 
-          setTimeout(initDb, 150);
+          setTimeout(initDb, 1000);
         });
     };
 
-    setTimeout(initDb, 150);
+    setTimeout(initDb, 500);
   }
 
   async getFeatures(): Promise<Feature[]> {

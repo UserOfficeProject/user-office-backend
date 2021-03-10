@@ -79,8 +79,6 @@ services:
     labels:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.port=80"
-    environment:
-      - GATEWAY_HOST=gateway:4100
 
   scheduler-backend:
     image: "dmsc/duo-scheduler-backend:SWAP-1306"
