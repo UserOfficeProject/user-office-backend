@@ -50,12 +50,12 @@ services:
     image: dmsc/duo-factory:develop
     init: true
     environment:
-      - NODE_ENV=development
-      - DATABASE_HOSTNAME=db
-      - DATABASE_PORT=5432
-      - DATABASE_USER=duouser
-      - DATABASE_PASSWORD=duopassword
-      - DATABASE_DATABASE=duo
+      NODE_ENV: development
+      DATABASE_HOSTNAME: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: duouser
+      DATABASE_PASSWORD: duopassword
+      DATABASE_DATABASE: duo
     ports:
       - 4500:4500
     cap_add:
@@ -83,16 +83,16 @@ services:
   scheduler-backend:
     image: "dmsc/duo-scheduler-backend:SWAP-1306"
     environment:
-      - NODE_ENV=development
-      - DATABASE_HOSTNAME=scheduler-db
-      - DATABASE_PORT=5432
-      - DATABASE_USER=schedulerUser
-      - DATABASE_PASSWORD=schedulerPassword
-      - DATABASE_DATABASE=scheduler
-      - SCHEDULER_CONFIG_AUTH_REDIRECT=http://localhost:3000/shared-auth
-      - USER_OFFICE_ENDPOINT=http://backend:4000/graphql
-      - RABBITMQ_HOSTNAME=rabbitmq
-      - INCLUDE_SEEDS=1
+      NODE_ENV: development
+      DATABASE_HOSTNAME: scheduler-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: schedulerUser
+      DATABASE_PASSWORD: schedulerPassword
+      DATABASE_DATABASE: scheduler
+      SCHEDULER_CONFIG_AUTH_REDIRECT: http://localhost:3000/shared-auth
+      USER_OFFICE_ENDPOINT: http://backend:4000/graphql
+      RABBITMQ_HOSTNAME: rabbitmq
+      INCLUDE_SEEDS: 1
     depends_on:
       - scheduler-db
     ports:
