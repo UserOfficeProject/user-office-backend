@@ -1,4 +1,3 @@
-# Use postgres/example user/password credentials
 version: "3.1"
 
 services:
@@ -61,6 +60,7 @@ services:
       - SCHEDULER_CONFIG_AUTH_REDIRECT=http://localhost:3000/shared-auth
       - USER_OFFICE_ENDPOINT=http://backend:4000/graphql
       - RABBITMQ_HOSTNAME=rabbitmq
+      - INCLUDE_SEEDS=1
     depends_on:
       - scheduler-db
     ports:
@@ -73,7 +73,6 @@ services:
       POSTGRES_DB: scheduler
       POSTGRES_USER: schedulerUser
       POSTGRES_PASSWORD: schedulerPassword
-      INCLUDE_SEEDS: 1
     ports:
       - 54320:5432 # avoid collision
 
