@@ -1,5 +1,5 @@
 import { Event } from '../events/event.enum';
-import { Proposal } from '../models/Proposal';
+import { Proposal, ProposalIdsWithNextStatus } from '../models/Proposal';
 import { ProposalView } from '../models/ProposalView';
 import { ProposalsFilter } from './../resolvers/queries/ProposalsQuery';
 import { ProposalEventsRecord } from './postgres/records';
@@ -52,4 +52,8 @@ export interface ProposalDataSource {
     callId: number,
     statusId: number
   ): Promise<boolean>;
+  changeProposalsStatus(
+    statusId: number,
+    proposalIds: number[]
+  ): Promise<ProposalIdsWithNextStatus>;
 }

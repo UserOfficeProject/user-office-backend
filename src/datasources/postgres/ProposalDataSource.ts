@@ -3,7 +3,7 @@ import BluePromise from 'bluebird';
 import { Transaction } from 'knex';
 
 import { Event } from '../../events/event.enum';
-import { Proposal } from '../../models/Proposal';
+import { Proposal, ProposalIdsWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
 import { ProposalDataSource } from '../ProposalDataSource';
@@ -558,5 +558,13 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     }
 
     return true;
+  }
+
+  async changeProposalsStatus(
+    statusId: number,
+    proposalIds: number[]
+  ): Promise<ProposalIdsWithNextStatus> {
+    // TODO: Finish this!
+    return { proposalIds: [1] };
   }
 }
