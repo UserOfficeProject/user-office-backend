@@ -349,12 +349,7 @@ export default class ProposalMutations {
     }
 
     return this.proposalDataSource
-      .cloneProposal(
-        (agent as UserWithRole).id,
-        proposalToCloneId,
-        callId,
-        call.templateId
-      )
+      .cloneProposal((agent as UserWithRole).id, proposalToCloneId, call)
       .then((proposal) => proposal)
       .catch((err) => {
         logger.logException('Could not clone proposal', err, { agent });
