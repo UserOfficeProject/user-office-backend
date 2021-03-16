@@ -564,7 +564,28 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     statusId: number,
     proposalIds: number[]
   ): Promise<ProposalIdsWithNextStatus> {
-    // TODO: Finish this!
-    return { proposalIds: [1] };
+    const dataToUpdate: { status_id: number; submitted?: boolean } = {
+      status_id: statusId,
+    };
+
+    // NOTE: If status is DRAFT re-open the proposal for submission
+    if (statusId === 1) {
+      dataToUpdate.submitted = false;
+    }
+
+    const result: ProposalRecord[] = await database
+      .update(dataToUpdate, ['*'])
+      .from('proposals')
+      .whereIn('proposal_id', proposalIds);
+
+    if (result?.length === 0) {
+      logger.logError('Could not change proposals status', { dataToUpdate });
+
+      throw new Error('Could not change proposals status');
+    }
+
+    return new ProposalIdsWithNextStatus(
+      result.map((item) => item.proposal_id)
+    );
   }
 }

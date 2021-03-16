@@ -9,31 +9,43 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
+import { isRejection } from '../../rejection';
 import { SuccessResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
+
+@InputType()
+export class ProposalIdWithCallId {
+  @Field(() => Int)
+  public id: number;
+
+  @Field(() => Int)
+  public callId: number;
+}
 
 @InputType()
 export class ChangeProposalsStatusInput {
   @Field(() => Int)
   public statusId: number;
 
-  @Field(() => [Int])
-  public proposalIds: number[];
+  @Field(() => [ProposalIdWithCallId])
+  public proposals: ProposalIdWithCallId[];
 }
 
 @Resolver()
 export class ChangeProposalsStatusMutation {
   @Mutation(() => SuccessResponseWrap)
-  cloneProposal(
+  async changeProposalsStatus(
     @Arg('changeProposalsStatusInput')
     changeProposalsStatusInput: ChangeProposalsStatusInput,
     @Ctx() context: ResolverContext
   ) {
+    const res = await context.mutations.proposal.changeProposalsStatus(
+      context.user,
+      changeProposalsStatusInput
+    );
+
     return wrapResponse(
-      context.mutations.proposal.changeProposalsStatus(
-        context.user,
-        changeProposalsStatusInput
-      ),
+      isRejection(res) ? Promise.resolve(res) : Promise.resolve(true),
       SuccessResponseWrap
     );
   }

@@ -328,19 +328,28 @@ export default class ProposalMutations {
     return result || rejection('INTERNAL_ERROR');
   }
 
-  // @EventBus(Event.PROPOSAL_STATUS_UPDATED)
-  @ValidateArgs(administrationProposalValidationSchema)
+  @EventBus(Event.PROPOSAL_STATUS_UPDATED)
   @Authorized([Roles.USER_OFFICER])
   async changeProposalsStatus(
     agent: UserWithRole | null,
     args: ChangeProposalsStatusInput
   ): Promise<ProposalIdsWithNextStatus | Rejection> {
-    const { statusId, proposalIds } = args;
+    const { statusId, proposals } = args;
 
     const result = await this.proposalDataSource.changeProposalsStatus(
       statusId,
-      proposalIds
+      proposals.map((proposal) => proposal.id)
     );
+
+    if (result.proposalIds.length === proposals.length) {
+      proposals.forEach(async (proposal) => {
+        await this.proposalDataSource.resetProposalEvents(
+          proposal.id,
+          proposal.callId,
+          statusId
+        );
+      });
+    }
 
     return result || rejection('INTERNAL_ERROR');
   }
