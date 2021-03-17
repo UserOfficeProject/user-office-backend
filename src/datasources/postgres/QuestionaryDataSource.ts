@@ -43,6 +43,25 @@ export default class PostgresQuestionaryDataSource
     return createAnswerBasic(answerRecord);
   }
 
+  async getAnswerCount(questionId: string): Promise<number> {
+    return database('answers')
+      .count({ count: '*' })
+      .where('question_id', questionId)
+      .first()
+      .then((rows) => {
+        return rows?.count as number;
+      });
+  }
+  async getTemplateCount(questionId: string): Promise<number> {
+    return database('templates_has_questions')
+      .count({ count: '*' })
+      .where('question_id', questionId)
+      .first()
+      .then((rows) => {
+        return rows?.count as number;
+      });
+  }
+
   async create(creator_id: number, template_id: number): Promise<Questionary> {
     return database('questionaries')
       .insert({ template_id, creator_id }, '*')

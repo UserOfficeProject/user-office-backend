@@ -1,4 +1,4 @@
-import { Arg, Ctx, Field, InputType, Int, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Field, InputType, Query, Resolver } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
 import { DataType, TemplateCategoryId } from '../../models/Template';

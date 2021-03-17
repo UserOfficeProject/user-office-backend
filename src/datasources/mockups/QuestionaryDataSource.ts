@@ -165,6 +165,12 @@ const create1Topic3FieldWithDependenciesQuestionarySteps = () => {
 };
 
 export class QuestionaryDataSourceMock implements QuestionaryDataSource {
+  async getAnswerCount(questionId: string): Promise<number> {
+    return 1;
+  }
+  async getTemplateCount(questionId: string): Promise<number> {
+    return 1;
+  }
   async getCount(templateId: number): Promise<number> {
     return 1;
   }

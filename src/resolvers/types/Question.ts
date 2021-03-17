@@ -2,6 +2,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Int,
   ObjectType,
   Resolver,
   Root,
@@ -14,7 +15,6 @@ import {
   TemplateCategoryId,
 } from '../../models/Template';
 import { FieldConfigType } from './FieldConfig';
-import { Template } from './Template';
 
 @ObjectType()
 export class Question implements Partial<QuestionOrigin> {
@@ -36,17 +36,22 @@ export class Question implements Partial<QuestionOrigin> {
   @Field(() => FieldConfigType)
   public config: typeof FieldConfigType;
 }
-// TODO implement this
-// @Resolver((of) => Question)
-// export class QuestionaryResolver {
-//   @FieldResolver(() => [Template])
-//   async steps(
-//     @Root() question: Question,
-//     @Ctx() context: ResolverContext
-//   ): Promise<Template[]> {
-//     return context.queries.questionary.getQuestionarySteps(
-//       context.user,
-//       questionary.questionaryId
-//     );
-//   }
-// }
+
+@Resolver((of) => Question)
+export class QuestionaryResolver {
+  @FieldResolver(() => Int)
+  async answerCount(
+    @Root() question: Question,
+    @Ctx() context: ResolverContext
+  ): Promise<number> {
+    return context.queries.questionary.dataSource.getAnswerCount(question.id);
+  }
+
+  @FieldResolver(() => Int)
+  async templateCount(
+    @Root() question: Question,
+    @Ctx() context: ResolverContext
+  ): Promise<number> {
+    return context.queries.questionary.dataSource.getTemplateCount(question.id);
+  }
+}
