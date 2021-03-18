@@ -135,6 +135,9 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         if (args.filter?.category) {
           query.where({ category_id: args.filter?.category || undefined });
         }
+        if (args.filter?.templateIds) {
+          query.where('template_id', 'in', args.filter.templateIds);
+        }
       })
       .then((resultSet: TemplateRecord[]) => {
         if (!resultSet) {
