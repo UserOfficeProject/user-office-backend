@@ -62,12 +62,13 @@ services:
       - SYS_ADMIN
 
   gateway:
-    image: "dmsc/duo-gateway:SWAP-1306"
+    image: "dmsc/duo-gateway:develop"
     environment:
       USER_OFFICE_BACKEND: http://host.docker.internal:4000/graphql
       USER_OFFICE_SCHEDULER_BACKEND: http://scheduler-backend:4000/graphql
       NODE_ENV: development
-      ENABLE_SERVICE_POLLING: 1
+      ENABLE_SERVICE_POLLING: 1 # see gateway
+      KEEP_RETRYING: 1 # see gateway
     ports:
       - 4100:4100
     labels:
@@ -75,13 +76,13 @@ services:
       - "traefik.port=4100"
 
   scheduler-frontend:
-    image: "dmsc/duo-scheduler-frontend:SWAP-1306"
+    image: "dmsc/duo-scheduler-frontend:develop"
     labels:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.port=80"
 
   scheduler-backend:
-    image: "dmsc/duo-scheduler-backend:SWAP-1306"
+    image: "dmsc/duo-scheduler-backend:develop"
     environment:
       NODE_ENV: development
       DATABASE_HOSTNAME: scheduler-db
