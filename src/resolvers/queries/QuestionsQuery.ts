@@ -2,7 +2,7 @@ import { Arg, Ctx, Field, InputType, Query, Resolver } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
 import { DataType, TemplateCategoryId } from '../../models/Template';
-import { Question } from '../types/Question';
+import { QuestionWithUsage } from '../types/QuestionWithUsage';
 
 @InputType()
 export class QuestionsFilter {
@@ -18,7 +18,7 @@ export class QuestionsFilter {
 
 @Resolver()
 export class QuestionsQuery {
-  @Query(() => [Question])
+  @Query(() => [QuestionWithUsage])
   questions(
     @Arg('filter', () => QuestionsFilter, { nullable: true })
     filter: QuestionsFilter | undefined,

@@ -1,14 +1,5 @@
-import {
-  Ctx,
-  Field,
-  FieldResolver,
-  Int,
-  ObjectType,
-  Resolver,
-  Root,
-} from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
-import { ResolverContext } from '../../context';
 import {
   DataType,
   Question as QuestionOrigin,
@@ -35,23 +26,4 @@ export class Question implements Partial<QuestionOrigin> {
 
   @Field(() => FieldConfigType)
   public config: typeof FieldConfigType;
-}
-
-@Resolver((of) => Question)
-export class QuestionaryResolver {
-  @FieldResolver(() => Int)
-  async answerCount(
-    @Root() question: Question,
-    @Ctx() context: ResolverContext
-  ): Promise<number> {
-    return context.queries.questionary.dataSource.getAnswerCount(question.id);
-  }
-
-  @FieldResolver(() => Int)
-  async templateCount(
-    @Root() question: Question,
-    @Ctx() context: ResolverContext
-  ): Promise<number> {
-    return context.queries.questionary.dataSource.getTemplateCount(question.id);
-  }
 }

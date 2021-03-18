@@ -7,12 +7,13 @@ import {
   QuestionaryStep,
 } from '../../models/Questionary';
 import { getDefaultAnswerValue } from '../../models/questionTypes/QuestionRegistry';
-import { FieldDependency } from '../../models/Template';
+import { FieldDependency, Template } from '../../models/Template';
 import { QuestionaryDataSource } from '../QuestionaryDataSource';
 import database from './database';
 import {
   AnswerRecord,
   createAnswerBasic,
+  createProposalTemplateObject,
   createQuestionaryObject,
   createQuestionTemplateRelationObject,
   createTopicObject,
@@ -43,22 +44,24 @@ export default class PostgresQuestionaryDataSource
     return createAnswerBasic(answerRecord);
   }
 
-  async getAnswerCount(questionId: string): Promise<number> {
+  async getAnswers(questionId: string): Promise<AnswerBasic[]> {
     return database('answers')
-      .count({ count: '*' })
       .where('question_id', questionId)
-      .first()
       .then((rows) => {
-        return rows?.count as number;
+        return rows.map((row) => createAnswerBasic(row));
       });
   }
-  async getTemplateCount(questionId: string): Promise<number> {
+  async getTemplates(questionId: string): Promise<Template[]> {
     return database('templates_has_questions')
-      .count({ count: '*' })
+      .leftJoin(
+        'templates',
+        'templates.template_id',
+        '=',
+        'templates_has_questions.template_id'
+      )
       .where('question_id', questionId)
-      .first()
       .then((rows) => {
-        return rows?.count as number;
+        return rows.map((row) => createProposalTemplateObject(row));
       });
   }
 
