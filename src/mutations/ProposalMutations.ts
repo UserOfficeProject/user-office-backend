@@ -347,13 +347,15 @@ export default class ProposalMutations {
     );
 
     if (result.proposalIds.length === proposals.length) {
-      proposals.forEach(async (proposal) => {
-        await this.proposalDataSource.resetProposalEvents(
-          proposal.id,
-          proposal.callId,
-          statusId
-        );
-      });
+      await Promise.all(
+        proposals.map((proposal) => {
+          return this.proposalDataSource.resetProposalEvents(
+            proposal.id,
+            proposal.callId,
+            statusId
+          );
+        })
+      );
     }
 
     return result || rejection('INTERNAL_ERROR');
