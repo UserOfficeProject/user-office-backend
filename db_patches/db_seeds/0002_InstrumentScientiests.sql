@@ -28,7 +28,7 @@ BEGIN
 
   INSERT INTO public.role_user(
     role_id, user_id)
-    VALUES (1, 102), (3, 102), (4, 102), (5, 102), (6, 102), (8, 102);
+    VALUES (1, 102), (4, 102), (5, 102), (6, 102), (8, 102);
 
   INSERT INTO public.instrument_has_scientists(
     instrument_id, user_id)
