@@ -6,6 +6,7 @@ services:
   # API gateway is accessible on localhost:33000/gateway
   scheduler-proxy:
     image: traefik:1.7 # The official Traefik docker image
+    restart: always
     command: --api --docker # Enables the web UI and tells Traefik to listen to docker
     ports:
       - "33000:80" # The HTTP port
@@ -40,6 +41,7 @@ services:
 
   rabbitmq:
     image: "rabbitmq:3-management"
+    restart: always
     ports:
       - "15672:15672"
       - "5672:5672"
@@ -48,6 +50,7 @@ services:
 
   factory:
     image: dmsc/duo-factory:develop
+    restart: always
     init: true
     environment:
       NODE_ENV: development
@@ -63,6 +66,7 @@ services:
 
   gateway:
     image: "dmsc/duo-gateway:develop"
+    restart: always
     environment:
       USER_OFFICE_BACKEND: http://host.docker.internal:4000/graphql
       USER_OFFICE_SCHEDULER_BACKEND: http://scheduler-backend:4000/graphql
@@ -77,12 +81,14 @@ services:
 
   scheduler-frontend:
     image: "dmsc/duo-scheduler-frontend:develop"
+    restart: always
     labels:
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.port=80"
 
   scheduler-backend:
     image: "dmsc/duo-scheduler-backend:develop"
+    restart: always
     environment:
       NODE_ENV: development
       DATABASE_HOSTNAME: scheduler-db

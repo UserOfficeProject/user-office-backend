@@ -50,4 +50,9 @@ export class SystemQuery {
       return '<unknown>';
     }
   }
+
+  @Query(() => String)
+  async testVersionV60() {
+    return 'hello world';
+  }
 }
