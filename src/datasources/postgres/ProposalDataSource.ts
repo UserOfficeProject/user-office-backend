@@ -3,7 +3,8 @@ import BluePromise from 'bluebird';
 import { Transaction } from 'knex';
 
 import { Event } from '../../events/event.enum';
-import { Proposal } from '../../models/Proposal';
+import { Call } from '../../models/Call';
+import { Proposal, ProposalIdsWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
 import { ProposalDataSource } from '../ProposalDataSource';
@@ -17,6 +18,7 @@ import {
   ProposalRecord,
   ProposalViewRecord,
   QuestionaryRecord,
+  StatusChangingEventRecord,
 } from './records';
 
 export default class PostgresProposalDataSource implements ProposalDataSource {
@@ -106,6 +108,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           comment_for_user: proposal.commentForUser,
           comment_for_management: proposal.commentForManagement,
           notified: proposal.notified,
+          submitted: proposal.submitted,
+          management_time_allocation: proposal.managementTimeAllocation,
+          management_decision_submitted: proposal.managementDecisionSubmitted,
         },
         ['*']
       )
@@ -204,16 +209,19 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           const questionFilterQuery = getQuestionDefinition(
             questionFilter.dataType
           ).filterQuery;
-          if (questionFilterQuery) {
-            query
-              .leftJoin(
-                'answers',
-                'answers.questionary_id',
-                'proposal_table_view.questionary_id'
-              )
-              .andWhere('answers.question_id', questionFilter.questionId)
-              .modify(questionFilterQuery, questionFilter);
+          if (!questionFilterQuery) {
+            throw new Error(
+              `Filter query not implemented for ${filter.questionFilter.dataType}`
+            );
           }
+          query
+            .leftJoin(
+              'answers',
+              'answers.questionary_id',
+              'proposal_table_view.questionary_id'
+            )
+            .andWhere('answers.question_id', questionFilter.questionId)
+            .modify(questionFilterQuery, questionFilter);
         }
       })
       .then((proposals: ProposalViewRecord[]) => {
@@ -408,8 +416,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   async cloneProposal(
     clonerId: number,
     proposalId: number,
-    callId: number,
-    templateId: number
+    call: Call
   ): Promise<Proposal> {
     const sourceProposal = await this.get(proposalId);
 
@@ -430,7 +437,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         creator_id
       )
       SELECT
-        ${templateId},
+        ${call.templateId},
         ${clonerId}
       FROM 
         questionaries
@@ -475,7 +482,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         abstract,
         1,
         proposer_id,
-        ${callId},
+        ${call.id},
         ${newQuestionary.questionary_id},
         false,
         false
@@ -487,6 +494,116 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     `)
     ).rows;
 
+    await database.raw(`
+      INSERT INTO proposal_user
+      (
+        proposal_id,
+        user_id
+      )
+      SELECT
+        ${newProposal.proposal_id},
+        user_id
+      FROM 
+        proposal_user
+      WHERE
+        proposal_id = ${sourceProposal.id}
+      RETURNING *
+    `);
+
     return createProposalObject(newProposal);
+  }
+
+  async resetProposalEvents(
+    proposalId: number,
+    callId: number,
+    statusId: number
+  ): Promise<boolean> {
+    const proposalCall: CallRecord = await database('call')
+      .select('*')
+      .where('call_id', callId)
+      .first();
+
+    if (!proposalCall) {
+      logger.logError(
+        'Could not reset proposal events because proposal call does not exist',
+        { callId }
+      );
+
+      throw new Error('Could not reset proposal events');
+    }
+
+    const proposalEventsToReset: StatusChangingEventRecord[] = (
+      await database.raw(`
+        SELECT 
+          *
+        FROM 
+          proposal_workflow_connections AS pwc
+        JOIN
+          status_changing_events
+        ON
+          status_changing_events.proposal_workflow_connection_id = pwc.proposal_workflow_connection_id
+        WHERE pwc.proposal_workflow_connection_id >= (
+          SELECT proposal_workflow_connection_id
+          FROM proposal_workflow_connections
+          WHERE proposal_workflow_id = ${proposalCall.proposal_workflow_id}
+          AND proposal_status_id = ${statusId}
+        )
+        AND pwc.proposal_workflow_id = ${proposalCall.proposal_workflow_id};
+      `)
+    ).rows;
+
+    if (proposalEventsToReset?.length) {
+      const dataToUpdate = proposalEventsToReset
+        .map(
+          (event) =>
+            `${event.status_changing_event.toLocaleLowerCase()} = false`
+        )
+        .join(', ');
+
+      const [updatedProposalEvents]: ProposalEventsRecord[] = (
+        await database.raw(`
+        UPDATE proposal_events SET ${dataToUpdate}
+        WHERE proposal_id = ${proposalId}
+        RETURNING *
+      `)
+      ).rows;
+
+      if (!updatedProposalEvents) {
+        logger.logError('Could not reset proposal events', { dataToUpdate });
+
+        throw new Error('Could not reset proposal events');
+      }
+    }
+
+    return true;
+  }
+
+  async changeProposalsStatus(
+    statusId: number,
+    proposalIds: number[]
+  ): Promise<ProposalIdsWithNextStatus> {
+    const dataToUpdate: { status_id: number; submitted?: boolean } = {
+      status_id: statusId,
+    };
+
+    // NOTE: If status is DRAFT re-open the proposal for submission
+    if (statusId === 1) {
+      dataToUpdate.submitted = false;
+    }
+
+    const result: ProposalRecord[] = await database
+      .update(dataToUpdate, ['*'])
+      .from('proposals')
+      .whereIn('proposal_id', proposalIds);
+
+    if (result?.length === 0) {
+      logger.logError('Could not change proposals status', { dataToUpdate });
+
+      throw new Error('Could not change proposals status');
+    }
+
+    return new ProposalIdsWithNextStatus(
+      result.map((item) => item.proposal_id)
+    );
   }
 }

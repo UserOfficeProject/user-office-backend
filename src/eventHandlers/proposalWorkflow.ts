@@ -6,9 +6,10 @@ import { eventBus } from '../events';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
 import { ProposalEndStatus } from '../models/Proposal';
-import { Review, ReviewStatus } from '../models/Review';
+import { ReviewStatus } from '../models/Review';
 import { SampleStatus } from '../models/Sample';
 import { TechnicalReviewStatus } from '../models/TechnicalReview';
+import { checkAllReviewsSubmittedOnProposal } from '../utils/helperFunctions';
 import { workflowEngine, WorkflowEngineProposalType } from '../workflowEngine';
 
 export default function createHandler(
@@ -40,17 +41,6 @@ export default function createHandler(
       });
     };
 
-    const checkAllReviewsSubmitted = (
-      allReviews: Review[],
-      currentSubmittedReview: Review
-    ) => {
-      const allOtherReviewsSubmitted = allReviews
-        .filter((review) => review.id !== currentSubmittedReview.id)
-        .every((review) => review.status === ReviewStatus.SUBMITTED);
-
-      return allOtherReviewsSubmitted;
-    };
-
     switch (event.type) {
       case Event.PROPOSAL_CREATED:
         try {
@@ -67,6 +57,7 @@ export default function createHandler(
         break;
       case Event.PROPOSAL_INSTRUMENT_SELECTED:
       case Event.PROPOSAL_SEP_SELECTED:
+      case Event.PROPOSAL_STATUS_UPDATED:
         try {
           await Promise.all(
             event.proposalidswithnextstatus.proposalIds.map(
@@ -92,6 +83,7 @@ export default function createHandler(
         break;
       case Event.PROPOSAL_SUBMITTED:
       case Event.PROPOSAL_FEASIBLE:
+      case Event.PROPOSAL_UNFEASIBLE:
       case Event.PROPOSAL_SAMPLE_SAFE:
       case Event.PROPOSAL_NOTIFIED:
       case Event.PROPOSAL_ACCEPTED:
@@ -99,6 +91,30 @@ export default function createHandler(
       case Event.PROPOSAL_SEP_MEETING_SUBMITTED:
       case Event.PROPOSAL_ALL_SEP_REVIEWS_SUBMITTED:
         try {
+          await markProposalEventAsDoneAndCallWorkflowEngine(
+            event.type,
+            event.proposal
+          );
+        } catch (error) {
+          logger.logError(
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            error
+          );
+        }
+
+        break;
+      case Event.PROPOSAL_MANAGEMENT_DECISION_UPDATED:
+        try {
+          if (event.proposal.managementDecisionSubmitted) {
+            eventBus.publish({
+              type: Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED,
+              proposal: event.proposal,
+              isRejection: false,
+              key: 'proposal',
+              loggedInUserId: event.loggedInUserId,
+            });
+          }
+
           await markProposalEventAsDoneAndCallWorkflowEngine(
             event.type,
             event.proposal
@@ -148,6 +164,40 @@ export default function createHandler(
           );
         }
         break;
+      case Event.PROPOSAL_FEASIBILITY_REVIEW_UPDATED:
+        try {
+          const proposal = await proposalDataSource.get(
+            event.technicalreview.proposalID
+          );
+
+          if (!proposal || !proposal.id) {
+            throw new Error(
+              `Proposal with id ${event.technicalreview.proposalID} not found`
+            );
+          }
+
+          if (event.technicalreview.submitted) {
+            eventBus.publish({
+              type: Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED,
+              technicalreview: event.technicalreview,
+              isRejection: false,
+              key: 'technicalreview',
+              loggedInUserId: event.loggedInUserId,
+            });
+          }
+
+          await markProposalEventAsDoneAndCallWorkflowEngine(
+            event.type,
+            proposal
+          );
+        } catch (error) {
+          logger.logError(
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.technicalreview.proposalID}: `,
+            error
+          );
+        }
+
+        break;
       case Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED:
         try {
           const proposal = await proposalDataSource.get(
@@ -164,6 +214,15 @@ export default function createHandler(
             case TechnicalReviewStatus.FEASIBLE:
               eventBus.publish({
                 type: Event.PROPOSAL_FEASIBLE,
+                proposal,
+                isRejection: false,
+                key: 'proposal',
+                loggedInUserId: event.loggedInUserId,
+              });
+              break;
+            case TechnicalReviewStatus.UNFEASIBLE:
+              eventBus.publish({
+                type: Event.PROPOSAL_UNFEASIBLE,
                 proposal,
                 isRejection: false,
                 key: 'proposal',
@@ -226,19 +285,21 @@ export default function createHandler(
       case Event.PROPOSAL_SEP_REVIEW_UPDATED:
         try {
           const proposal = await proposalDataSource.get(
-            event.review.proposalID
+            event.reviewwithnextproposalstatus.proposalID
           );
 
           if (!proposal || !proposal.id) {
             throw new Error(
-              `Proposal with id ${event.review.proposalID} not found`
+              `Proposal with id ${event.reviewwithnextproposalstatus.proposalID} not found`
             );
           }
 
-          if (event.review.status === ReviewStatus.SUBMITTED) {
+          if (
+            event.reviewwithnextproposalstatus.status === ReviewStatus.SUBMITTED
+          ) {
             eventBus.publish({
               type: Event.PROPOSAL_SEP_REVIEW_SUBMITTED,
-              review: event.review,
+              review: event.reviewwithnextproposalstatus,
               isRejection: false,
               key: 'review',
               loggedInUserId: event.loggedInUserId,
@@ -251,7 +312,7 @@ export default function createHandler(
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.review.proposalID}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.reviewwithnextproposalstatus.proposalID}: `,
             error
           );
         }
@@ -272,7 +333,7 @@ export default function createHandler(
             proposal?.id
           );
 
-          const allOtherReviewsSubmitted = checkAllReviewsSubmitted(
+          const allOtherReviewsSubmitted = checkAllReviewsSubmittedOnProposal(
             allProposalReviews,
             event.review
           );
@@ -286,6 +347,11 @@ export default function createHandler(
               loggedInUserId: event.loggedInUserId,
             });
           }
+
+          await markProposalEventAsDoneAndCallWorkflowEngine(
+            event.type,
+            proposal
+          );
         } catch (error) {
           logger.logError(
             `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.review.proposalID}: `,

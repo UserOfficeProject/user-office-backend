@@ -44,15 +44,17 @@ export class Proposal {
     public commentForUser: string,
     public commentForManagement: string,
     public notified: boolean,
-    public submitted: boolean
+    public submitted: boolean,
+    public managementTimeAllocation: number,
+    public managementDecisionSubmitted: boolean
   ) {}
 }
 
 export class ProposalIdsWithNextStatus {
   constructor(
     public proposalIds: number[],
-    public proposalNextStatusId?: number,
-    public proposalNextStatusShortCode?: string,
-    public proposalNextStatusName?: string
+    public id?: number,
+    public shortCode?: string,
+    public name?: string
   ) {}
 }

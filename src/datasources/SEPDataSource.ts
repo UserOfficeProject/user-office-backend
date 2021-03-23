@@ -1,6 +1,4 @@
-import { Event } from '../events/event.enum';
 import { ProposalIdsWithNextStatus } from '../models/Proposal';
-import { ProposalStatus } from '../models/ProposalStatus';
 import { Role } from '../models/Role';
 import { SEP, SEPAssignment, SEPReviewer, SEPProposal } from '../models/SEP';
 import {
@@ -23,12 +21,13 @@ export interface SEPDataSource {
     numberRatingsRequired: number,
     active: boolean
   ): Promise<SEP>;
+  delete(id: number): Promise<SEP>;
   get(id: number): Promise<SEP | null>;
   getUserSepBySepId(userId: number, sepId: number): Promise<SEP | null>;
   getUserSeps(id: number, role: Role): Promise<SEP[]>;
   getSEPByProposalId(proposalId: number): Promise<SEP | null>;
   getAll(
-    active: boolean,
+    active?: boolean,
     filter?: string,
     first?: number,
     offset?: number
@@ -63,10 +62,6 @@ export interface SEPDataSource {
     proposalId: number,
     sepId: number
   ): Promise<ProposalIdsWithNextStatus>;
-  getProposalNextStatus(
-    proposalId: number,
-    event: Event
-  ): Promise<ProposalStatus | null>;
   removeMemberFromSepProposal(
     proposalId: number,
     sepId: number,

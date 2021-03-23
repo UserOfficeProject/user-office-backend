@@ -8,22 +8,22 @@ import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
 import { Institution } from './Institution';
 import { Instrument } from './Instrument';
-import { NextProposalStatus } from './NextProposalStatus';
-import { NextStatusEvent } from './NextStatusEvent';
 import { PermissionsWithAccessToken } from './PermissionsWithAccessToken';
 import { Proposal } from './Proposal';
-import { ProposalStatus } from './ProposalStatus';
+import { NextProposalStatus, ProposalStatus } from './ProposalStatus';
 import { ProposalWorkflow } from './ProposalWorkflow';
 import { ProposalWorkflowConnection } from './ProposalWorkflowConnection';
 import { Question } from './Question';
 import { Questionary } from './Questionary';
 import { QuestionaryStep } from './QuestionaryStep';
 import { QuestionTemplateRelation } from './QuestionTemplateRelation';
+import { ReviewWithNextProposalStatus } from './Review';
 import { Review } from './Review';
 import { Sample } from './Sample';
 import { SEP } from './SEP';
 import { SEPProposal } from './SEPProposal';
 import { Shipment } from './Shipment';
+import { StatusChangingEvent } from './StatusChangingEvent';
 import { TechnicalReview } from './TechnicalReview';
 import { Template } from './Template';
 import { Topic } from './Topic';
@@ -55,6 +55,13 @@ export class ReviewResponseWrap extends ResponseWrapBase<Review> {
   @Response()
   @Field(() => Review, { nullable: true })
   public review: Review;
+}
+
+@ObjectType()
+export class ReviewWithNextStatusResponseWrap extends ResponseWrapBase<ReviewWithNextProposalStatus> {
+  @Response()
+  @Field(() => ReviewWithNextProposalStatus, { nullable: true })
+  public review: ReviewWithNextProposalStatus;
 }
 
 @ObjectType()
@@ -247,10 +254,10 @@ export class ProposalWorkflowConnectionResponseWrap extends ResponseWrapBase<Pro
 }
 
 @ObjectType()
-export class ProposalNextStatusEventResponseWrap extends ResponseWrapBase<NextStatusEvent> {
+export class ProposalStatusChangingEventResponseWrap extends ResponseWrapBase<StatusChangingEvent> {
   @Response()
-  @Field(() => [NextStatusEvent], { nullable: true })
-  public nextStatusEvents: NextStatusEvent[];
+  @Field(() => [StatusChangingEvent], { nullable: true })
+  public statusChangingEvents: StatusChangingEvent[];
 }
 
 @ObjectType()

@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import faker from 'faker';
 
 import 'reflect-metadata';
@@ -190,7 +192,7 @@ const createTemplates = async () => {
       for (const question of questions) {
         await templateDataSource.upsertQuestionTemplateRelations([
           {
-            questionId: question.proposalQuestionId,
+            questionId: question.id,
             sortOrder: faker.random.number({
               min: 0,
               max: 100,
@@ -253,7 +255,7 @@ const createProposals = async () => {
       for (const question of step.fields) {
         await questionaryDataSource.updateAnswer(
           questionary.questionaryId!,
-          question.question.proposalQuestionId,
+          question.question.id,
           JSON.stringify({ value: faker.random.words(5) })
         );
       }
@@ -273,16 +275,20 @@ const createProposals = async () => {
 
 const createReviews = async () => {
   await execute(() => {
-    return reviewDataSource.setTechnicalReview({
-      proposalID: dummy.positiveNumber(MAX_PROPOSALS),
-      comment: faker.random.words(50),
-      publicComment: faker.random.words(25),
-      status:
-        Math.random() > 0.5
-          ? TechnicalReviewStatus.FEASIBLE
-          : TechnicalReviewStatus.UNFEASIBLE,
-      timeAllocation: dummy.positiveNumber(10),
-    });
+    return reviewDataSource.setTechnicalReview(
+      {
+        proposalID: dummy.positiveNumber(MAX_PROPOSALS),
+        comment: faker.random.words(50),
+        publicComment: faker.random.words(25),
+        status:
+          Math.random() > 0.5
+            ? TechnicalReviewStatus.FEASIBLE
+            : TechnicalReviewStatus.UNFEASIBLE,
+        timeAllocation: dummy.positiveNumber(10),
+        submitted: faker.random.boolean(),
+      },
+      false
+    );
   }, MAX_REVIEWS);
 };
 
@@ -326,7 +332,7 @@ const createSeps = async () => {
 
 async function run() {
   console.log('Starting...');
-  await adminDataSource.resetDB();
+  await adminDataSource.resetDB(false);
   await createUsers();
   await createTemplates();
   await createWorkflows();

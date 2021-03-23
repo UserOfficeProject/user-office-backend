@@ -1,6 +1,11 @@
 import 'reflect-metadata';
 import { Event } from '../../events/event.enum';
-import { Proposal, ProposalEndStatus } from '../../models/Proposal';
+import { Call } from '../../models/Call';
+import {
+  Proposal,
+  ProposalEndStatus,
+  ProposalIdsWithNextStatus,
+} from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { ProposalEventsRecord } from '../postgres/records';
 import { ProposalDataSource } from '../ProposalDataSource';
@@ -35,7 +40,9 @@ const dummyProposalFactory = (values?: Partial<Proposal>) => {
     values?.commentForUser || 'comment for user',
     values?.commentForManagement || 'comment for management',
     values?.notified || false,
-    values?.submitted || false
+    values?.submitted || false,
+    values?.managementTimeAllocation || 0,
+    values?.managementDecisionSubmitted || false
   );
 };
 
@@ -157,12 +164,19 @@ export class ProposalDataSourceMock implements ProposalDataSource {
       proposal_created: true,
       proposal_submitted: true,
       proposal_feasible: true,
+      proposal_unfeasible: false,
       call_ended: false,
       call_review_ended: false,
       proposal_sep_selected: false,
       proposal_instrument_selected: false,
       proposal_feasibility_review_submitted: false,
       proposal_sample_review_submitted: false,
+      proposal_all_sep_reviews_submitted: false,
+      proposal_feasibility_review_updated: false,
+      proposal_management_decision_submitted: false,
+      proposal_management_decision_updated: false,
+      proposal_sample_safe: false,
+      proposal_sep_review_updated: false,
       proposal_all_sep_reviewers_selected: false,
       proposal_sep_review_submitted: false,
       proposal_sep_meeting_submitted: false,
@@ -180,9 +194,23 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   async cloneProposal(
     clonerId: number,
     proposalId: number,
-    callId: number,
-    templateId: number
+    call: Call
   ): Promise<Proposal> {
     return dummyProposal;
+  }
+
+  async resetProposalEvents(
+    proposalId: number,
+    callId: number,
+    statusId: number
+  ): Promise<boolean> {
+    return true;
+  }
+
+  async changeProposalsStatus(
+    statusId: number,
+    proposalIds: number[]
+  ): Promise<ProposalIdsWithNextStatus> {
+    return { proposalIds: [1] };
   }
 }

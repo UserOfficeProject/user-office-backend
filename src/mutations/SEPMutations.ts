@@ -1,3 +1,4 @@
+import { ResourceId } from '@esss-swap/duo-localisation';
 import { logger } from '@esss-swap/duo-logger';
 import {
   createSEPValidationSchema,
@@ -11,6 +12,7 @@ import {
 } from '@esss-swap/duo-validation';
 
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
+import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
 import { EventBus, ValidateArgs, Authorized } from '../decorators';
@@ -19,7 +21,7 @@ import { ProposalIdsWithNextStatus } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { SEP } from '../models/SEP';
 import { UserWithRole, UserRole } from '../models/User';
-import { rejection, Rejection } from '../rejection';
+import { rejection, Rejection, isRejection } from '../rejection';
 import {
   UpdateMemberSEPArgs,
   AssignSepReviewersToProposalArgs,
@@ -38,7 +40,8 @@ export default class SEPMutations {
     private dataSource: SEPDataSource,
     private instrumentDataSource: InstrumentDataSource,
     private userAuth: UserAuthorization,
-    private userDataSource: UserDataSource
+    private userDataSource: UserDataSource,
+    private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}
 
   @ValidateArgs(createSEPValidationSchema)
@@ -206,10 +209,24 @@ export default class SEPMutations {
     agent: UserWithRole | null,
     args: AssignProposalToSEPArgs
   ): Promise<ProposalIdsWithNextStatus | Rejection> {
+    const SEP = await this.dataSource.getSEPByProposalId(args.proposalId);
+    if (SEP) {
+      if (
+        isRejection(
+          await this.removeProposalAssignment(agent, {
+            proposalId: args.proposalId,
+            sepId: SEP.id,
+          })
+        )
+      ) {
+        return rejection('INTERNAL_ERROR');
+      }
+    }
+
     return this.dataSource
       .assignProposal(args.proposalId, args.sepId)
       .then(async (result) => {
-        const nextProposalStatus = await this.dataSource.getProposalNextStatus(
+        const nextProposalStatus = await this.proposalSettingsDataSource.getProposalNextStatus(
           args.proposalId,
           Event.PROPOSAL_SEP_SELECTED
         );
@@ -251,6 +268,37 @@ export default class SEPMutations {
 
         return rejection('INTERNAL_ERROR');
       });
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  async delete(
+    agent: UserWithRole | null,
+    { sepId }: { sepId: number }
+  ): Promise<SEP | Rejection> {
+    const sep = await this.dataSource.get(sepId);
+
+    if (!sep) {
+      return rejection('NOT_FOUND');
+    }
+
+    try {
+      const result = await this.dataSource.delete(sepId);
+
+      return result;
+    } catch (e) {
+      if ('code' in e && e.code === '23503') {
+        return rejection(
+          `Failed to delete SEP with ID "${sep.code}", it has dependencies which need to be deleted first` as ResourceId
+        );
+      }
+
+      logger.logException('Failed to delete SEP', e, {
+        agent,
+        sepId,
+      });
+
+      return rejection('INTERNAL_ERROR');
+    }
   }
 
   @Authorized([Roles.USER_OFFICER, Roles.SEP_SECRETARY, Roles.SEP_CHAIR])

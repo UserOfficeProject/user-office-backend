@@ -20,6 +20,7 @@ export enum XLSXType {
 export enum PDFType {
   PROPOSAL = 'proposal',
   SAMPLE = 'sample',
+  SHIPMENT_LABEL = 'shipment-label',
 }
 
 export type MetaBase = { collectionFilename: string; singleFilename: string };

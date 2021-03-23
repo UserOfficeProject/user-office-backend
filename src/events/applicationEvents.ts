@@ -1,7 +1,7 @@
 import { Call } from '../models/Call';
 import { InstrumentHasProposals } from '../models/Instrument';
 import { Proposal, ProposalIdsWithNextStatus } from '../models/Proposal';
-import { Review } from '../models/Review';
+import { Review, ReviewWithNextProposalStatus } from '../models/Review';
 import { Sample } from '../models/Sample';
 import { SEP } from '../models/SEP';
 import { TechnicalReview } from '../models/TechnicalReview';
@@ -27,6 +27,11 @@ interface ProposalSubmittedEvent extends GeneralEvent {
 
 interface ProposalFeasibleEvent extends GeneralEvent {
   type: Event.PROPOSAL_FEASIBLE;
+  proposal: Proposal;
+}
+
+interface ProposalUnfeasibleEvent extends GeneralEvent {
+  type: Event.PROPOSAL_UNFEASIBLE;
   proposal: Proposal;
 }
 
@@ -61,9 +66,19 @@ interface ProposalClonedEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalManagementDecisionUpdatedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_MANAGEMENT_DECISION_UPDATED;
+  proposal: Proposal;
+}
+
 interface ProposalManagementDecisionSubmittedEvent extends GeneralEvent {
   type: Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED;
   proposal: Proposal;
+}
+
+interface ProposalFeasibilityReviewUpdatedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_FEASIBILITY_REVIEW_UPDATED;
+  technicalreview: TechnicalReview;
 }
 
 interface ProposalFeasibilityReviewSubmittedEvent extends GeneralEvent {
@@ -78,7 +93,7 @@ interface ProposalSEPReviewSubmittedEvent extends GeneralEvent {
 
 interface ProposalSEPReviewUpdatedEvent extends GeneralEvent {
   type: Event.PROPOSAL_SEP_REVIEW_UPDATED;
-  review: Review;
+  reviewwithnextproposalstatus: ReviewWithNextProposalStatus;
 }
 
 interface ProposalAllSEPReviewsSubmittedEvent extends GeneralEvent {
@@ -98,6 +113,11 @@ interface ProposalInstrumentSelectedEvent extends GeneralEvent {
 
 interface ProposalSEPSelectedEvent extends GeneralEvent {
   type: Event.PROPOSAL_SEP_SELECTED;
+  proposalidswithnextstatus: ProposalIdsWithNextStatus;
+}
+
+interface ProposalStatusUpdatedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_STATUS_UPDATED;
   proposalidswithnextstatus: ProposalIdsWithNextStatus;
 }
 
@@ -206,11 +226,14 @@ export type ApplicationEvent =
   | ProposalUpdatedEvent
   | ProposalSubmittedEvent
   | ProposalFeasibleEvent
+  | ProposalUnfeasibleEvent
   | ProposalSampleSafeEvent
   | ProposalRejectedEvent
   | ProposalCreatedEvent
   | ProposalClonedEvent
+  | ProposalManagementDecisionUpdatedEvent
   | ProposalManagementDecisionSubmittedEvent
+  | ProposalStatusUpdatedEvent
   | UserCreateEvent
   | EmailInvite
   | UserResetPasswordEmailEvent
@@ -228,6 +251,7 @@ export type ApplicationEvent =
   | CallEndedEvent
   | CallReviewEndedEvent
   | CallSEPReviewEndedEvent
+  | ProposalFeasibilityReviewUpdatedEvent
   | ProposalFeasibilityReviewSubmittedEvent
   | ProposalSEPReviewUpdatedEvent
   | ProposalSEPReviewSubmittedEvent

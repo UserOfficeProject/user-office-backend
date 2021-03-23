@@ -15,11 +15,12 @@ import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { Proposal } from '../models/Proposal';
+import { Proposal, ProposalIdsWithNextStatus } from '../models/Proposal';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { rejection, Rejection } from '../rejection';
 import { AdministrationProposalArgs } from '../resolvers/mutations/AdministrationProposal';
+import { ChangeProposalsStatusInput } from '../resolvers/mutations/ChangeProposalsStatusMutation';
 import { CloneProposalInput } from '../resolvers/mutations/CloneProposalMutation';
 import { UpdateProposalArgs } from '../resolvers/mutations/UpdateProposalMutation';
 import { UserAuthorization } from '../utils/UserAuthorization';
@@ -89,7 +90,7 @@ export default class ProposalMutations {
 
     // Check if the call is open
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
+      !this.userAuth.isUserOfficer(agent) &&
       !(await this.proposalDataSource.checkActiveCall(proposal.callId))
     ) {
       return rejection('NO_ACTIVE_CALL_FOUND');
@@ -101,13 +102,13 @@ export default class ProposalMutations {
     }
 
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
+      !this.userAuth.isUserOfficer(agent) &&
       !(await this.userAuth.isMemberOfProposal(agent, proposal))
     ) {
       return rejection('NOT_ALLOWED');
     }
 
-    if (proposal.submitted && !(await this.userAuth.isUserOfficer(agent))) {
+    if (proposal.submitted && !this.userAuth.isUserOfficer(agent)) {
       return rejection('NOT_ALLOWED_PROPOSAL_SUBMITTED');
     }
 
@@ -161,7 +162,7 @@ export default class ProposalMutations {
     }
 
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
+      !this.userAuth.isUserOfficer(agent) &&
       !(await this.userAuth.isMemberOfProposal(agent, proposal))
     ) {
       return rejection('NOT_ALLOWED');
@@ -192,7 +193,7 @@ export default class ProposalMutations {
       return rejection('NOT_FOUND');
     }
 
-    if (!(await this.userAuth.isUserOfficer(agent))) {
+    if (!this.userAuth.isUserOfficer(agent)) {
       if (
         proposal.submitted ||
         !this.userAuth.isPrincipalInvestigatorOfProposal(agent, proposal)
@@ -240,7 +241,7 @@ export default class ProposalMutations {
     return result || rejection('INTERNAL_ERROR');
   }
 
-  @EventBus(Event.PROPOSAL_MANAGEMENT_DECISION_SUBMITTED)
+  @EventBus(Event.PROPOSAL_MANAGEMENT_DECISION_UPDATED)
   @ValidateArgs(administrationProposalValidationSchema)
   @Authorized([Roles.USER_OFFICER, Roles.SEP_CHAIR, Roles.SEP_SECRETARY])
   async admin(
@@ -254,12 +255,14 @@ export default class ProposalMutations {
       statusId,
       commentForManagement,
       commentForUser,
+      managementTimeAllocation,
+      managementDecisionSubmitted,
     } = args;
     const isChairOrSecretaryOfProposal = await this.userAuth.isChairOrSecretaryOfProposal(
       agent!.id,
       id
     );
-    const isUserOfficer = await this.userAuth.isUserOfficer(agent);
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
 
     if (!isChairOrSecretaryOfProposal && !isUserOfficer) {
       return rejection('NOT_ALLOWED');
@@ -287,6 +290,24 @@ export default class ProposalMutations {
       proposal.finalStatus = finalStatus;
     }
 
+    if (proposal.statusId !== statusId && statusId) {
+      /**
+       * NOTE: Reset proposal events that are coming after given status.
+       * For example if proposal had SEP_REVIEW status and we manually reset to FEASIBILITY_REVIEW then events like:
+       * proposal_feasible, proposal_feasibility_review_submitted and proposal_sep_selected should be reset to false in the proposal_events table
+       */
+      await this.proposalDataSource.resetProposalEvents(
+        proposal.id,
+        proposal.callId,
+        statusId
+      );
+
+      // NOTE: If status Draft re-open proposal for submission.
+      if (statusId === 1) {
+        proposal.submitted = false;
+      }
+    }
+
     if (statusId !== undefined) {
       proposal.statusId = statusId;
     }
@@ -299,7 +320,43 @@ export default class ProposalMutations {
       proposal.commentForManagement = commentForManagement;
     }
 
+    if (managementTimeAllocation !== undefined) {
+      proposal.managementTimeAllocation = managementTimeAllocation;
+    }
+
+    if (managementDecisionSubmitted !== undefined) {
+      proposal.managementDecisionSubmitted = managementDecisionSubmitted;
+    }
+
     const result = await this.proposalDataSource.update(proposal);
+
+    return result || rejection('INTERNAL_ERROR');
+  }
+
+  @EventBus(Event.PROPOSAL_STATUS_UPDATED)
+  @Authorized([Roles.USER_OFFICER])
+  async changeProposalsStatus(
+    agent: UserWithRole | null,
+    args: ChangeProposalsStatusInput
+  ): Promise<ProposalIdsWithNextStatus | Rejection> {
+    const { statusId, proposals } = args;
+
+    const result = await this.proposalDataSource.changeProposalsStatus(
+      statusId,
+      proposals.map((proposal) => proposal.id)
+    );
+
+    if (result.proposalIds.length === proposals.length) {
+      await Promise.all(
+        proposals.map((proposal) => {
+          return this.proposalDataSource.resetProposalEvents(
+            proposal.id,
+            proposal.callId,
+            statusId
+          );
+        })
+      );
+    }
 
     return result || rejection('INTERNAL_ERROR');
   }
@@ -326,12 +383,7 @@ export default class ProposalMutations {
     }
 
     return this.proposalDataSource
-      .cloneProposal(
-        (agent as UserWithRole).id,
-        proposalToCloneId,
-        callId,
-        call.templateId
-      )
+      .cloneProposal((agent as UserWithRole).id, proposalToCloneId, call)
       .then((proposal) => proposal)
       .catch((err) => {
         logger.logException('Could not clone proposal', err, { agent });
