@@ -64,3 +64,5 @@ services:
       - 4500:4500
     cap_add:
       - SYS_ADMIN
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
