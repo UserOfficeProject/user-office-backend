@@ -1,13 +1,13 @@
 # Use postgres/example user/password credentials
-version: "3.1"
+version: '3.1'
 
 services:
   reverse-proxy:
     image: traefik:1.7 # The official Traefik docker image
     command: --api --docker # Enables the web UI and tells Traefik to listen to docker
     ports:
-      - "8081:80" # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
+      - '8081:80' # The HTTP port
+      - '8080:8080' # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   backend:
@@ -20,13 +20,13 @@ services:
       SPARKPOST_TOKEN: dummytoken
       USER_OFFICE_FACTORY_ENDPOINT: http://factory:4500/generate
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api, /graphql, /downloads, /files, /download, /uploads"
-      - "traefik.port=4000"
+      - 'traefik.frontend.rule=PathPrefix:/api, /graphql, /downloads, /files, /download, /uploads'
+      - 'traefik.port=4000'
   frontend:
     image: dmsc/duo-frontend:develop
     labels:
-      - "traefik.frontend.rule=PathPrefix:/"
-      - "traefik.port=80"
+      - 'traefik.frontend.rule=PathPrefix:/'
+      - 'traefik.port=80'
   duo-cron-job:
     image: dmsc/duo-cron-job
   db:
@@ -41,13 +41,13 @@ services:
     volumes:
       - ./db_patches/:/docker-entrypoint-initdb.d/
   rabbitmq:
-    image: "rabbitmq:3-management"
-    hostname: "rabbit"
+    image: 'rabbitmq:3-management'
+    hostname: 'rabbit'
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - '15672:15672'
+      - '5672:5672'
     labels:
-      NAME: "rabbitmq"
+      NAME: 'rabbitmq'
     volumes:
       - ./rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
   factory:
@@ -64,5 +64,3 @@ services:
       - 4500:4500
     cap_add:
       - SYS_ADMIN
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
