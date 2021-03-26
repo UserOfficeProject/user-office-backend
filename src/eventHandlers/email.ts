@@ -1,5 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
+import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { UserDataSource } from '../datasources/UserDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
@@ -26,7 +28,10 @@ if (isDevEnv) {
   mailService.sendMail = async (...args: any[]): Promise<any> => 'no-op';
 }
 
-export default function createHandler(userDataSource: UserDataSource) {
+export default function createHandler() {
+  const userDataSource = container.resolve<UserDataSource>(
+    Tokens.UserDataSource
+  );
   // Handler to send email to proposers in accepted proposal
 
   return async function emailHandler(event: ApplicationEvent) {

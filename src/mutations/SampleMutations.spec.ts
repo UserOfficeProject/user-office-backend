@@ -1,39 +1,18 @@
 import 'reflect-metadata';
-import { ProposalDataSourceMock } from '../datasources/mockups/ProposalDataSource';
-import { QuestionaryDataSourceMock } from '../datasources/mockups/QuestionaryDataSource';
-import { SampleDataSourceMock } from '../datasources/mockups/SampleDataSource';
-import { TemplateDataSourceMock } from '../datasources/mockups/TemplateDataSource';
+import { container } from 'tsyringe';
+
 import {
   dummySampleReviewer,
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
 import { Sample, SampleStatus } from '../models/Sample';
-import { SampleAuthorization } from '../utils/SampleAuthorization';
 import SampleMutations from './SampleMutations';
 
-const dummySampleDataSource = new SampleDataSourceMock();
-const dummyQuestionaryDataSource = new QuestionaryDataSourceMock();
-const dummyTemplateDataSource = new TemplateDataSourceMock();
-const dummyProposalDataSource = new ProposalDataSourceMock();
-const sampleAuthorization = new SampleAuthorization(
-  dummySampleDataSource,
-  dummyProposalDataSource
-);
-
-const sampleMutations = new SampleMutations(
-  dummySampleDataSource,
-  dummyQuestionaryDataSource,
-  dummyTemplateDataSource,
-  dummyProposalDataSource,
-  sampleAuthorization
-);
+let sampleMutations: SampleMutations;
 
 beforeEach(() => {
-  dummySampleDataSource.init();
-  dummyQuestionaryDataSource.init();
-  dummyTemplateDataSource.init();
-  dummyProposalDataSource.init();
+  sampleMutations = container.resolve(SampleMutations);
 });
 
 test('User should be able to clone its sample', () => {

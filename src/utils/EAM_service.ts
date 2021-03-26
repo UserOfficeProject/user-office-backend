@@ -3,14 +3,14 @@ import { logger } from '@esss-swap/duo-logger';
 import axios from 'axios';
 import { ModuleOptions, ResourceOwnerPassword } from 'simple-oauth2';
 
+export type RegisterAssetInExternalService = () => string;
+
 type EnvVars =
   | 'EAM_API_URL'
   | 'EAM_AUTH_URL'
   | 'EAM_AUTH_SECRET'
   | 'EAM_AUTH_USER'
   | 'EAM_AUTH_PASS';
-
-const isEamDisabled = process.env.UO_FEATURE_DISABLE_EAM === '1';
 
 const getEnvOrThrow = (envVariable: EnvVars): string => {
   const value = process.env[envVariable];
@@ -92,17 +92,14 @@ const performApiRequest = async (request: string) => {
   });
 
   if (response.status !== 200) {
-    logger.logError('Failed to execute addAssetEquipment', { response });
-    throw new Error('Failed to execute addAssetEquipment');
+    logger.logError('Failed to execute registerAssetInEAM', { response });
+    throw new Error('Failed to execute registerAssetInEAM');
   }
 
   return response.data as string;
 };
 
-const addAssetEquipment = async () => {
-  if (isEamDisabled) {
-    return '';
-  }
+const registerAssetInEAM = async () => {
   const response = await performApiRequest(addAssetSoapRequest);
 
   const regexFindEquipmentCode = /<ns2:EQUIPMENTCODE>([0-9]*)<\/ns2:EQUIPMENTCODE>/;
@@ -143,4 +140,8 @@ const getToken = async () => {
   }
 };
 
-export default addAssetEquipment;
+const registerAssetStub = () => {
+  return '';
+};
+
+export { registerAssetInEAM, registerAssetStub };

@@ -9,10 +9,10 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "env NODE_ENV=test jest --colors",
+    "test": "env NODE_ENV=test env DEPENDENCY_CONFIG=test jest --colors",
     "test:clear": "jest --clearCache",
-    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
-    "test:windows": "powershell \"$Env:NODE_ENV='test'; $Env:secret='qMyLZALzs229ybdQXNyzYRdju7X784TH'; $Env:tokenLife='7d'; $Env:baseURL='localhost:3000'; $Env:SPARKPOST_TOKEN='insertokenhere'; jest --color\"",
+    "test:debug": "env DEPENDENCY_CONFIG=test node --inspect-brk node_modules/.bin/jest --runInBand",
+    "test:windows": "powershell \"$Env:NODE_ENV='test'; $Env:DEPENDENCY_CONFIG='test'; $Env:secret='qMyLZALzs229ybdQXNyzYRdju7X784TH'; $Env:tokenLife='7d'; $Env:baseURL='localhost:3000'; $Env:SPARKPOST_TOKEN='insertokenhere'; jest --color\"",
     "tsc": "tsc",
     "build": "rm -rf ./build && tsc",
     "dev": "ts-node-dev --respawn -T ./index.ts",
@@ -73,6 +73,7 @@
     "simple-oauth2": "^4.2.0",
     "soap": "^0.36.0",
     "sparkpost": "^2.1.4",
+    "tsyringe": "^4.4.0",
     "type-graphql": "^1.1.1",
     "typedi": "^0.10.0",
     "yup": "^0.31.1"

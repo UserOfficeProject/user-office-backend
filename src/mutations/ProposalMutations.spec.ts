@@ -1,43 +1,21 @@
 /* eslint-disable prettier/prettier */
 import 'reflect-metadata';
-import { InstrumentDataSourceMock } from '../datasources/mockups/InstrumentDataSource';
-import { ProposalDataSourceMock } from '../datasources/mockups/ProposalDataSource';
-import { QuestionaryDataSourceMock } from '../datasources/mockups/QuestionaryDataSource';
-import { ReviewDataSourceMock } from '../datasources/mockups/ReviewDataSource';
-import { SEPDataSourceMock } from '../datasources/mockups/SEPDataSource';
+import { container } from 'tsyringe';
+
 import {
   dummyPrincipalInvestigatorWithRole,
   dummyUserNotOnProposal,
   dummyUserNotOnProposalWithRole,
   dummyUserOfficerWithRole,
   dummyUserWithRole,
-  UserDataSourceMock,
 } from '../datasources/mockups/UserDataSource';
 import { Proposal } from '../models/Proposal';
-import { UserAuthorization } from '../utils/UserAuthorization';
-import { CallDataSourceMock } from './../datasources/mockups/CallDataSource';
 import ProposalMutations from './ProposalMutations';
 
-const dummyProposalDataSource = new ProposalDataSourceMock();
-const dummyQuestionaryDataSource = new QuestionaryDataSourceMock();
-const dummyCallDataSource = new CallDataSourceMock();
-const dummyInstrumentDataSource = new InstrumentDataSourceMock();
-const userAuthorization = new UserAuthorization(
-  new UserDataSourceMock(),
-  new ReviewDataSourceMock(),
-  new SEPDataSourceMock()
-);
-const proposalMutations = new ProposalMutations(
-  dummyProposalDataSource,
-  dummyQuestionaryDataSource,
-  dummyCallDataSource,
-  dummyInstrumentDataSource,
-  userAuthorization
-);
+let proposalMutations: ProposalMutations;
 
 beforeEach(() => {
-  dummyQuestionaryDataSource.init();
-  dummyProposalDataSource.init();
+  proposalMutations = container.resolve(ProposalMutations);
 });
 
 test('A user on the proposal can update its title if it is in edit mode', () => {

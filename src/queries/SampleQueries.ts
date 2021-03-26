@@ -1,5 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { sampleDataSource } from '../datasources';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { Authorized } from '../decorators';
@@ -10,10 +12,16 @@ import { SamplesArgs } from '../resolvers/queries/SamplesQuery';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 
+@injectable()
 export default class SampleQueries {
   constructor(
+    @inject(Tokens.SampleDataSource)
     private dataSource: SampleDataSource,
+
+    @inject(Tokens.SampleAuthorization)
     private sampleAuthorization: SampleAuthorization,
+
+    @inject(Tokens.ShipmentAuthorization)
     private shipmentAuthorization: ShipmentAuthorization
   ) {}
 

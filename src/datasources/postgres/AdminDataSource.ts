@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import { logger } from '@esss-swap/duo-logger';
+import { injectable } from 'tsyringe';
 
 import { Page } from '../../models/Admin';
 import { Feature } from '../../models/Feature';
@@ -31,6 +32,7 @@ import {
 const dbPatchesFolderPath = path.join(process.cwd(), 'db_patches');
 const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
+@injectable()
 export default class PostgresAdminDataSource implements AdminDataSource {
   constructor() {
     if (

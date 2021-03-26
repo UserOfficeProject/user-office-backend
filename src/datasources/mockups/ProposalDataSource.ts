@@ -47,6 +47,9 @@ const dummyProposalFactory = (values?: Partial<Proposal>) => {
 };
 
 export class ProposalDataSourceMock implements ProposalDataSource {
+  constructor() {
+    this.init();
+  }
   async getProposalsFromView(
     filter?: ProposalsFilter | undefined
   ): Promise<ProposalView[]> {

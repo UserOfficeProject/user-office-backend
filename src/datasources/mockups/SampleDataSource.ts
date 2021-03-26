@@ -5,6 +5,10 @@ import { SampleDataSource } from '../SampleDataSource';
 
 export class SampleDataSourceMock implements SampleDataSource {
   samples: Sample[];
+  constructor() {
+    this.init();
+  }
+
   public init() {
     this.samples = [
       new Sample(

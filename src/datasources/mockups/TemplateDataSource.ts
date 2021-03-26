@@ -109,6 +109,9 @@ const dummyTemplateStepsFactory = () => {
 };
 
 export class TemplateDataSourceMock implements TemplateDataSource {
+  constructor() {
+    this.init();
+  }
   public init() {
     dummyProposalTemplate = dummyProposalTemplateFactory();
     dummyTemplateSteps = dummyTemplateStepsFactory();

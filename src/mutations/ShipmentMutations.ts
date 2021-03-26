@@ -1,5 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
+import { container, inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
@@ -14,19 +16,27 @@ import { AddSamplesToShipmentArgs } from '../resolvers/mutations/AddSamplesShipm
 import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutation';
 import { SubmitShipmentArgs } from '../resolvers/mutations/SubmitShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
-import addAssetEquipment from '../utils/EAM_service';
+import { RegisterAssetInExternalService } from '../utils/EAM_service';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
-import { userAuthorization } from '../utils/UserAuthorization';
-
+import { UserAuthorization } from '../utils/UserAuthorization';
+@injectable()
 export default class ShipmentMutations {
   constructor(
+    @inject(Tokens.ShipmentDataSource)
     private shipmentDataSource: ShipmentDataSource,
+    @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource,
+    @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
+    @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
-    private sampleAuthorization: SampleAuthorization,
-    private shipmentAuthorization: ShipmentAuthorization
+    @inject(Tokens.SampleAuthorization)
+    private sampleAuth: SampleAuthorization,
+    @inject(Tokens.ShipmentAuthorization)
+    private shipmentAuth: ShipmentAuthorization,
+    @inject(Tokens.UserAuthorization)
+    private userAuth: UserAuthorization
   ) {}
 
   @Authorized()
@@ -63,7 +73,7 @@ export default class ShipmentMutations {
       return rejection('INTERNAL_ERROR');
     }
 
-    if ((await userAuthorization.hasAccessRights(agent, proposal)) === false) {
+    if ((await this.userAuth.hasAccessRights(agent, proposal)) === false) {
       return rejection('NOT_ALLOWED');
     }
 
@@ -88,11 +98,14 @@ export default class ShipmentMutations {
   }
 
   async submitShipment(agent: UserWithRole | null, args: SubmitShipmentArgs) {
-    if (!this.shipmentAuthorization.hasWriteRights(agent, args.shipmentId)) {
+    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
       return rejection('NOT_AUTHORIZED');
     }
     try {
-      const assetId = await addAssetEquipment(); // calling external service
+      const registerAsset = container.resolve<RegisterAssetInExternalService>(
+        Tokens.RegisterAssetInExternalService
+      );
+      const assetId = await registerAsset();
 
       return this.shipmentDataSource
         .update({
@@ -110,11 +123,11 @@ export default class ShipmentMutations {
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
   async updateShipment(agent: UserWithRole | null, args: UpdateShipmentArgs) {
-    if (!this.shipmentAuthorization.hasWriteRights(agent, args.shipmentId)) {
+    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
       return rejection('NOT_AUTHORIZED');
     }
 
-    const canAdministerShipment = userAuthorization.isUserOfficer(agent);
+    const canAdministerShipment = this.userAuth.isUserOfficer(agent);
     if (canAdministerShipment === false) {
       delete args.status;
       delete args.externalRef;
@@ -134,7 +147,7 @@ export default class ShipmentMutations {
   }
 
   async deleteShipment(agent: UserWithRole | null, shipmentId: number) {
-    if (!this.shipmentAuthorization.hasWriteRights(agent, shipmentId)) {
+    if (!this.shipmentAuth.hasWriteRights(agent, shipmentId)) {
       return rejection('NOT_AUTHORIZED');
     }
 
@@ -156,7 +169,7 @@ export default class ShipmentMutations {
     sampleIds: number[]
   ) => {
     for (const sampleId of sampleIds) {
-      const isAuthorized = await this.sampleAuthorization.hasWriteRights(
+      const isAuthorized = await this.sampleAuth.hasWriteRights(
         agent,
         sampleId
       );
@@ -169,7 +182,7 @@ export default class ShipmentMutations {
   };
 
   async addSamples(agent: UserWithRole | null, args: AddSamplesToShipmentArgs) {
-    if (!this.shipmentAuthorization.hasWriteRights(agent, args.shipmentId)) {
+    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
       return rejection('NOT_AUTHORIZED');
     }
     if (!this.isSamplesAuthorized(agent, args.sampleIds)) {
@@ -180,4 +193,7 @@ export default class ShipmentMutations {
 
     return this.shipmentDataSource.addSamples(args);
   }
+}
+function RegisterAssetInExternalService(RegisterAssetInExternalService: any) {
+  throw new Error('Function not implemented.');
 }

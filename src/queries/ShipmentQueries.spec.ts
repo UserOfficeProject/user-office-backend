@@ -1,29 +1,17 @@
 import 'reflect-metadata';
-import { ProposalDataSourceMock } from '../datasources/mockups/ProposalDataSource';
-import { ShipmentDataSourceMock } from '../datasources/mockups/ShipmentDataSource';
+import { container } from 'tsyringe';
+
 import {
   dummyUserNotOnProposalWithRole,
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
-import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import ShipmentQueries from './ShipmentQueries';
 
-const dummyProposalDataSource = new ProposalDataSourceMock();
-const dummyShipmentDataSource = new ShipmentDataSourceMock();
-
-const shipmentAuthorization = new ShipmentAuthorization(
-  dummyShipmentDataSource,
-  dummyProposalDataSource
-);
-const shipmentQueries = new ShipmentQueries(
-  dummyShipmentDataSource,
-  shipmentAuthorization
-);
+let shipmentQueries: ShipmentQueries;
 
 beforeEach(() => {
-  dummyProposalDataSource.init();
-  dummyShipmentDataSource.init();
+  shipmentQueries = container.resolve(ShipmentQueries);
 });
 
 test('A userofficer can get samples', () => {

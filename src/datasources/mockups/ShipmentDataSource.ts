@@ -5,6 +5,9 @@ import { ShipmentsArgs } from '../../resolvers/queries/ShipmentsQuery';
 import { ShipmentDataSource } from '../ShipmentDataSource';
 
 export class ShipmentDataSourceMock implements ShipmentDataSource {
+  constructor() {
+    this.init();
+  }
   update(args: UpdateShipmentArgs): Promise<Shipment> {
     throw new Error('Method not implemented.');
   }

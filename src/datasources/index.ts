@@ -1,37 +1,63 @@
-import PostgresAdminDataSource from './postgres/AdminDataSource';
-import PostgresCallDataSource from './postgres/CallDataSource';
-import PostgresEventLogsDataSource from './postgres/EventLogsDataSource';
-import PostgresFileDataSource from './postgres/FileDataSource';
-import PostgresInstrumentDataSource from './postgres/InstrumentDataSource';
-import PostgresProposalDataSource from './postgres/ProposalDataSource';
-import PostgresProposalSettingsDataSource from './postgres/ProposalSettingsDataSource';
-import PostgresQuestionaryDataSource from './postgres/QuestionaryDataSource';
-import PostgresReviewDataSource from './postgres/ReviewDataSource';
-import PostgresSampleDataSource from './postgres/SampleDataSource';
-import PostgresSEPDataSource from './postgres/SEPDataSource';
-import PostgresShipmentDataSource from './postgres/ShipmentDataSource';
-import PostgresSystemDataSource from './postgres/SystemDataSource';
-import PostgresTemplateDataSource from './postgres/TemplateDataSource';
-import PostgresUserDataSource from './postgres/UserDataSource';
-import { StfcUserDataSource } from './stfc/StfcUserDataSource';
-import { UserDataSource } from './UserDataSource';
+import { container } from 'tsyringe';
 
-export let userDataSource: UserDataSource;
-userDataSource = new PostgresUserDataSource();
-if (process.env.EXTERNAL_AUTH_PROVIDER === 'stfc') {
-  userDataSource = new StfcUserDataSource();
-}
-export const proposalDataSource = new PostgresProposalDataSource();
-export const reviewDataSource = new PostgresReviewDataSource();
-export const callDataSource = new PostgresCallDataSource();
-export const fileDataSource = new PostgresFileDataSource();
-export const adminDataSource = new PostgresAdminDataSource();
-export const templateDataSource = new PostgresTemplateDataSource();
-export const eventLogsDataSource = new PostgresEventLogsDataSource();
-export const sepDataSource = new PostgresSEPDataSource();
-export const instrumentDataSource = new PostgresInstrumentDataSource();
-export const questionaryDataSource = new PostgresQuestionaryDataSource();
-export const sampleDataSource = new PostgresSampleDataSource();
-export const proposalSettingsDataSource = new PostgresProposalSettingsDataSource();
-export const shipmentDataSource = new PostgresShipmentDataSource();
-export const systemDataSource = new PostgresSystemDataSource();
+import { Tokens } from '../config/Tokens';
+import { AdminDataSource } from './AdminDataSource';
+import { CallDataSource } from './CallDataSource';
+import { EventLogsDataSource } from './EventLogsDataSource';
+import { FileDataSource } from './IFileDataSource';
+import { InstrumentDataSource } from './InstrumentDataSource';
+import { ProposalDataSource } from './ProposalDataSource';
+import { ProposalSettingsDataSource } from './ProposalSettingsDataSource';
+import { QuestionaryDataSource } from './QuestionaryDataSource';
+import { ReviewDataSource } from './ReviewDataSource';
+import { SampleDataSource } from './SampleDataSource';
+import { SEPDataSource } from './SEPDataSource';
+import { ShipmentDataSource } from './ShipmentDataSource';
+import { SystemDataSource } from './SystemDataSource';
+import { TemplateDataSource } from './TemplateDataSource';
+
+export const userDataSource = container.resolve<ProposalDataSource>(
+  Tokens.ProposalDataSource
+);
+export const proposalDataSource = container.resolve<ProposalDataSource>(
+  Tokens.ProposalDataSource
+);
+export const reviewDataSource = container.resolve<ReviewDataSource>(
+  Tokens.ReviewDataSource
+);
+export const callDataSource = container.resolve<CallDataSource>(
+  Tokens.CallDataSource
+);
+export const fileDataSource = container.resolve<FileDataSource>(
+  Tokens.FileDataSource
+);
+export const adminDataSource = container.resolve<AdminDataSource>(
+  Tokens.AdminDataSource
+);
+export const templateDataSource = container.resolve<TemplateDataSource>(
+  Tokens.TemplateDataSource
+);
+export const eventLogsDataSource = container.resolve<EventLogsDataSource>(
+  Tokens.EventLogsDataSource
+);
+export const sepDataSource = container.resolve<SEPDataSource>(
+  Tokens.SEPDataSource
+);
+export const instrumentDataSource = container.resolve<InstrumentDataSource>(
+  Tokens.InstrumentDataSource
+);
+export const questionaryDataSource = container.resolve<QuestionaryDataSource>(
+  Tokens.QuestionaryDataSource
+);
+export const sampleDataSource = container.resolve<SampleDataSource>(
+  Tokens.SampleDataSource
+);
+export const proposalSettingsDataSource = container.resolve<ProposalSettingsDataSource>(
+  Tokens.ProposalSettingsDataSource
+);
+export const shipmentDataSource = container.resolve<ShipmentDataSource>(
+  Tokens.ShipmentDataSource
+);
+export const systemDataSource = container.resolve<SystemDataSource>(
+  Tokens.SystemDataSource
+);

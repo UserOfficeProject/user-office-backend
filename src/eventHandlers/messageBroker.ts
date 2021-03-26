@@ -1,18 +1,21 @@
 import { Queue, RabbitMQMessageBroker } from '@esss-swap/duo-message-broker';
+import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
 import { ProposalEndStatus } from '../models/Proposal';
 
-export default function createHandler({
-  reviewDataSource,
-  instrumentDataSource,
-}: {
-  reviewDataSource: ReviewDataSource;
-  instrumentDataSource: InstrumentDataSource;
-}) {
+export default function createHandler() {
+  const reviewDataSource = container.resolve<ReviewDataSource>(
+    Tokens.ReviewDataSource
+  );
+  const instrumentDataSource = container.resolve<InstrumentDataSource>(
+    Tokens.InstrumentDataSource
+  );
+
   if (process.env.UO_FEATURE_DISABLE_MESSAGE_BROKER === '1') {
     return async () => {
       // no op
