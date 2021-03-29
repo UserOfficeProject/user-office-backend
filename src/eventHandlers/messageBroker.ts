@@ -9,18 +9,18 @@ import { Event } from '../events/event.enum';
 import { ProposalEndStatus } from '../models/Proposal';
 
 export default function createHandler() {
+  if (process.env.UO_FEATURE_DISABLE_MESSAGE_BROKER === '1') {
+    return async () => {
+      // no op
+    };
+  }
+
   const reviewDataSource = container.resolve<ReviewDataSource>(
     Tokens.ReviewDataSource
   );
   const instrumentDataSource = container.resolve<InstrumentDataSource>(
     Tokens.InstrumentDataSource
   );
-
-  if (process.env.UO_FEATURE_DISABLE_MESSAGE_BROKER === '1') {
-    return async () => {
-      // no op
-    };
-  }
 
   const rabbitMQ = new RabbitMQMessageBroker();
 

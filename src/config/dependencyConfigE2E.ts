@@ -13,12 +13,12 @@ import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSour
 import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import PostgresUserDataSource from '../datasources/postgres/UserDataSource';
-import { registerAssetStub } from '../utils/EAM_service';
+import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
-import { mapClass, mapValue } from './mapClass';
+import { mapClass } from './mapClass';
 import { Tokens } from './Tokens';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
@@ -42,4 +42,4 @@ mapClass(Tokens.SystemDataSource, PostgreSystemDataSource);
 mapClass(Tokens.TemplateDataSource, PostgresTemplateDataSource);
 mapClass(Tokens.UserDataSource, PostgresUserDataSource);
 
-mapValue(Tokens.RegisterAssetInExternalService, registerAssetStub);
+mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);

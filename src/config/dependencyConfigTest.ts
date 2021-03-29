@@ -13,12 +13,12 @@ import { ShipmentDataSourceMock } from '../datasources/mockups/ShipmentDataSourc
 import SystemDataSourceMock from '../datasources/mockups/SystemDataSource';
 import { TemplateDataSourceMock } from '../datasources/mockups/TemplateDataSource';
 import { UserDataSourceMock } from '../datasources/mockups/UserDataSource';
-import { registerAssetStub } from '../utils/EAM_service';
+import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
-import { mapClass, mapValue } from './mapClass';
+import { mapClass } from './mapClass';
 import { Tokens } from './Tokens';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
@@ -42,4 +42,4 @@ mapClass(Tokens.TemplateDataSource, TemplateDataSourceMock);
 mapClass(Tokens.UserDataSource, UserDataSourceMock);
 mapClass(Tokens.FileDataSource, FileDataSourceMock);
 
-mapValue(Tokens.RegisterAssetInExternalService, registerAssetStub);
+mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);

@@ -1,5 +1,5 @@
 import { logger } from '@esss-swap/duo-logger';
-import { container, inject, injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -16,7 +16,7 @@ import { AddSamplesToShipmentArgs } from '../resolvers/mutations/AddSamplesShipm
 import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutation';
 import { SubmitShipmentArgs } from '../resolvers/mutations/SubmitShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
-import { RegisterAssetInExternalService } from '../utils/EAM_service';
+import { AssetRegistrar } from '../utils/EAM_service';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
@@ -36,7 +36,9 @@ export default class ShipmentMutations {
     @inject(Tokens.ShipmentAuthorization)
     private shipmentAuth: ShipmentAuthorization,
     @inject(Tokens.UserAuthorization)
-    private userAuth: UserAuthorization
+    private userAuth: UserAuthorization,
+    @inject(Tokens.AssetRegistrar)
+    private assetRegistrarService: AssetRegistrar
   ) {}
 
   @Authorized()
@@ -102,10 +104,7 @@ export default class ShipmentMutations {
       return rejection('NOT_AUTHORIZED');
     }
     try {
-      const registerAsset = container.resolve<RegisterAssetInExternalService>(
-        Tokens.RegisterAssetInExternalService
-      );
-      const assetId = await registerAsset();
+      const assetId = await this.assetRegistrarService.register();
 
       return this.shipmentDataSource
         .update({

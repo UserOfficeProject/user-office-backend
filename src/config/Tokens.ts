@@ -19,5 +19,5 @@ export const Tokens = {
   TemplateDataSource: Symbol('TemplateDataSource'),
   UserAuthorization: Symbol('UserAuthorization'),
   UserDataSource: Symbol('UserDataSource'),
-  RegisterAssetInExternalService: Symbol('RegisterAssetInExternalService'),
+  AssetRegistrar: Symbol('AssetRegistrar'),
 };
