@@ -28,11 +28,11 @@ export class SampleDataSourceMock implements SampleDataSource {
     return this.samples.find((sample) => sample.id === sampleId)!;
   }
 
-  async getSamples(args: SamplesArgs): Promise<Sample[]> {
+  async getSamples(_args: SamplesArgs): Promise<Sample[]> {
     return this.samples;
   }
 
-  async getSamplesByCallId(callId: number): Promise<Sample[]> {
+  async getSamplesByCallId(_callId: number): Promise<Sample[]> {
     return this.samples;
   }
   async create(
@@ -77,7 +77,7 @@ export class SampleDataSourceMock implements SampleDataSource {
     return { ...sample, id: sample.id++ };
   }
 
-  async getSamplesByShipmentId(shipmentId: number): Promise<Sample[]> {
+  async getSamplesByShipmentId(_shipmentId: number): Promise<Sample[]> {
     return this.samples;
   }
 }

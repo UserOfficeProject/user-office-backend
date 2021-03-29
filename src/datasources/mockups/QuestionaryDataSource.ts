@@ -169,7 +169,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
     this.init();
   }
 
-  async getCount(templateId: number): Promise<number> {
+  async getCount(_templateId: number): Promise<number> {
     return 1;
   }
 
@@ -185,7 +185,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
 
   async getBlankQuestionarySteps(
-    templateId: number
+    _templateId: number
   ): Promise<QuestionaryStep[]> {
     return dummyQuestionarySteps;
   }
@@ -199,7 +199,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
 
   async updateAnswer(
-    proposalId: number,
+    _proposalId: number,
     questionId: string,
     answer: string
   ): Promise<string> {
@@ -221,14 +221,17 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
     return questionId;
   }
   async insertFiles(
-    proposalId: number,
-    questionId: string,
+    _proposalId: number,
+    _questionId: string,
     files: string[]
   ): Promise<string[]> {
     return files;
   }
 
-  async deleteFiles(proposalId: number, questionId: string): Promise<string[]> {
+  async deleteFiles(
+    _proposalId: number,
+    _questionId: string
+  ): Promise<string[]> {
     return ['file_id_012345'];
   }
 
@@ -239,7 +242,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
 
   async getQuestionarySteps(
-    questionary_id: number
+    _questionary_id: number
   ): Promise<QuestionaryStep[]> {
     return dummyQuestionarySteps;
   }

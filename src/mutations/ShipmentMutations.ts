@@ -194,6 +194,3 @@ export default class ShipmentMutations {
     return this.shipmentDataSource.addSamples(args);
   }
 }
-function RegisterAssetInExternalService(RegisterAssetInExternalService: any) {
-  throw new Error('Function not implemented.');
-}

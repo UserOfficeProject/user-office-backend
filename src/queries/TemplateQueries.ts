@@ -46,13 +46,13 @@ export default class TemplateQueries {
   }
 
   @Authorized([Roles.USER_OFFICER])
-  getTemplateCategories(user: UserWithRole | null) {
+  getTemplateCategories(_user: UserWithRole | null) {
     return this.dataSource.getTemplateCategories();
   }
 
   @Authorized()
   getActiveTemplateId(
-    user: UserWithRole | null,
+    _user: UserWithRole | null,
     templateCategoryId: TemplateCategoryId
   ) {
     return this.dataSource.getActiveTemplateId(templateCategoryId);

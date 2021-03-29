@@ -63,10 +63,6 @@ const createUniqueIntArray = (size: number, max: number) => {
   return array.slice(0, size);
 };
 
-const createIntArray = (size: number, max: number) => {
-  return new Array(size).fill(0).map((el) => dummy.positiveNumber(max));
-};
-
 const createUsers = async () => {
   return execute(async () => {
     const user = await userDataSource.create(

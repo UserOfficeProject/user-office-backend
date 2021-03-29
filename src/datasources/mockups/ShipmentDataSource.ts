@@ -8,7 +8,7 @@ export class ShipmentDataSourceMock implements ShipmentDataSource {
   constructor() {
     this.init();
   }
-  update(args: UpdateShipmentArgs): Promise<Shipment> {
+  update(_args: UpdateShipmentArgs): Promise<Shipment> {
     throw new Error('Method not implemented.');
   }
   shipments: Shipment[];
@@ -30,11 +30,11 @@ export class ShipmentDataSourceMock implements ShipmentDataSource {
     return this.shipments.find((shipment) => shipment.id === shipmentId)!;
   }
 
-  async getAll(args: ShipmentsArgs): Promise<Shipment[]> {
+  async getAll(_args: ShipmentsArgs): Promise<Shipment[]> {
     return this.shipments;
   }
 
-  async getShipmentsByCallId(callId: number): Promise<Shipment[]> {
+  async getShipmentsByCallId(_callId: number): Promise<Shipment[]> {
     return this.shipments;
   }
 
@@ -71,7 +71,7 @@ export class ShipmentDataSourceMock implements ShipmentDataSource {
     return shipment;
   }
 
-  async addSamples(args: AddSamplesToShipmentArgs): Promise<Shipment> {
+  async addSamples(_args: AddSamplesToShipmentArgs): Promise<Shipment> {
     return this.shipments[0];
   }
 }

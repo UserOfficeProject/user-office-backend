@@ -53,11 +53,7 @@ it('User should answer topic questions', async () => {
 
 it('User should update question', async () => {
   const NEW_ANSWER = 'NEW_ANSWER';
-  const {
-    firstAnswer,
-    firstStep,
-    questionaryId,
-  } = await getDummyUsersProposal();
+  const { firstAnswer, questionaryId } = await getDummyUsersProposal();
   const result = await mutations.updateAnswer(dummyUser, {
     questionaryId,
     answer: {
