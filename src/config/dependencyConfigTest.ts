@@ -13,13 +13,14 @@ import { ShipmentDataSourceMock } from '../datasources/mockups/ShipmentDataSourc
 import SystemDataSourceMock from '../datasources/mockups/SystemDataSource';
 import { TemplateDataSourceMock } from '../datasources/mockups/TemplateDataSource';
 import { UserDataSourceMock } from '../datasources/mockups/UserDataSource';
+import { createShipPostToMessageQueue as createShipPostToMQ } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
 import { Tokens } from './Tokens';
-import { mapClass } from './utils';
+import { mapClass, mapValue } from './utils';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
 mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
@@ -43,3 +44,5 @@ mapClass(Tokens.UserDataSource, UserDataSourceMock);
 mapClass(Tokens.FileDataSource, FileDataSourceMock);
 
 mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
+
+mapValue(Tokens.PostToMessageQueue, createShipPostToMQ());

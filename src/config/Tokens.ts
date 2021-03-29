@@ -20,4 +20,5 @@ export const Tokens = {
   UserAuthorization: Symbol('UserAuthorization'),
   UserDataSource: Symbol('UserDataSource'),
   AssetRegistrar: Symbol('AssetRegistrar'),
+  PostToMessageQueue: Symbol('PostToMessageQueue'),
 };

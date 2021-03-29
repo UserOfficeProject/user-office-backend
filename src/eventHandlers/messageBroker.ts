@@ -8,13 +8,7 @@ import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
 import { ProposalEndStatus } from '../models/Proposal';
 
-export default function createHandler() {
-  if (process.env.UO_FEATURE_DISABLE_MESSAGE_BROKER === '1') {
-    return async () => {
-      // no op
-    };
-  }
-
+export function createPostToRabbitMQ() {
   const reviewDataSource = container.resolve<ReviewDataSource>(
     Tokens.ReviewDataSource
   );
@@ -24,17 +18,13 @@ export default function createHandler() {
 
   const rabbitMQ = new RabbitMQMessageBroker();
 
-  // don't try to initialize during testing
-  // causes infinite loop
-  if (process.env.NODE_ENV !== 'test') {
-    rabbitMQ.setup({
-      hostname: process.env.RABBITMQ_HOSTNAME,
-      username: process.env.RABBITMQ_USERNAME,
-      password: process.env.RABBITMQ_PASSWORD,
-    });
-  }
+  rabbitMQ.setup({
+    hostname: process.env.RABBITMQ_HOSTNAME,
+    username: process.env.RABBITMQ_USERNAME,
+    password: process.env.RABBITMQ_PASSWORD,
+  });
 
-  return async function messageBrokerHandler(event: ApplicationEvent) {
+  return async (event: ApplicationEvent) => {
     // if the original method failed
     // there is no point of publishing any event
     if (event.isRejection) {
@@ -42,19 +32,6 @@ export default function createHandler() {
     }
 
     switch (event.type) {
-      // case Event.PROPOSAL_ACCEPTED: {
-      //   const { proposal } = event;
-      //   const message = [proposal.id, proposal.statusId];a
-      //   const json = JSON.stringify(message);
-      //   rabbitMQ.sendMessage(json);
-      // }
-      // case Event.PROPOSAL_CREATED: {
-      //   const { proposal } = event;
-      //   const message = [proposal.id, proposal.statusId];
-      //   const json = JSON.stringify(message);
-      //   rabbitMQ.sendMessage(json);
-      // }
-
       // TODO: maybe put it behind a feature flag, may only be relevant for ESS
       case Event.PROPOSAL_NOTIFIED: {
         const { proposal } = event;
@@ -97,5 +74,11 @@ export default function createHandler() {
         await rabbitMQ.sendMessage(Queue.PROPOSAL, event.type, json);
       }
     }
+  };
+}
+
+export function createShipPostToMessageQueue() {
+  return async (event: ApplicationEvent) => {
+    // no op
   };
 }

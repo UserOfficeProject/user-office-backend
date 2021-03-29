@@ -13,13 +13,14 @@ import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSour
 import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import PostgresUserDataSource from '../datasources/postgres/UserDataSource';
+import { createShipPostToMessageQueue } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
 import { Tokens } from './Tokens';
-import { mapClass } from './utils';
+import { mapClass, mapValue } from './utils';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
 mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
@@ -43,3 +44,5 @@ mapClass(Tokens.TemplateDataSource, PostgresTemplateDataSource);
 mapClass(Tokens.UserDataSource, PostgresUserDataSource);
 
 mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
+
+mapValue(Tokens.PostToMessageQueue, createShipPostToMessageQueue());
