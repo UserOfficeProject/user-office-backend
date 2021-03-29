@@ -40,10 +40,7 @@ const updateProposalStatus = (
   proposalId: number,
   nextProposalStatusId: number
 ) => {
-  return proposalDataSource.updateProposalStatus(
-    proposalId,
-    nextProposalStatusId
-  );
+  proposalDataSource.updateProposalStatus(proposalId, nextProposalStatusId);
 };
 
 export type WorkflowEngineProposalType = {

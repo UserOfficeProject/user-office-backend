@@ -9,9 +9,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "env NODE_ENV=test env DEPENDENCY_CONFIG=test jest --colors",
+    "test": "env DEPENDENCY_CONFIG=test jest --colors",
     "test:clear": "jest --clearCache",
-    "test:debug": "env DEPENDENCY_CONFIG=test node --inspect-brk node_modules/.bin/jest --runInBand",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:windows": "powershell \"$Env:NODE_ENV='test'; $Env:DEPENDENCY_CONFIG='test'; $Env:secret='qMyLZALzs229ybdQXNyzYRdju7X784TH'; $Env:tokenLife='7d'; $Env:baseURL='localhost:3000'; $Env:SPARKPOST_TOKEN='insertokenhere'; jest --color\"",
     "tsc": "tsc",
     "build": "rm -rf ./build && tsc",

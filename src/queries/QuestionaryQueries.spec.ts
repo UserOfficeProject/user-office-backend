@@ -1,13 +1,17 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
+import { QuestionaryDataSourceMock } from '../datasources/mockups/QuestionaryDataSource';
 import { dummyUserWithRole } from '../datasources/mockups/UserDataSource';
 import QuestionaryQueries from './QuestionaryQueries';
 
-let questionaryQueries: QuestionaryQueries;
+const questionaryQueries = container.resolve(QuestionaryQueries);
 
 beforeEach(() => {
-  questionaryQueries = container.resolve(QuestionaryQueries);
+  container
+    .resolve<QuestionaryDataSourceMock>(Tokens.QuestionaryDataSource)
+    .init();
 });
 
 test('Get questionary should succeed for authorized user', () => {

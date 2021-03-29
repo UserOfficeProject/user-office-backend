@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
+import { QuestionaryDataSourceMock } from '../datasources/mockups/QuestionaryDataSource';
 import {
   dummyUser,
   dummyUserWithRole,
@@ -9,8 +11,8 @@ import QuestionaryQueries from '../queries/QuestionaryQueries';
 import { isRejection } from '../rejection';
 import QuestionaryMutations from './QuestionaryMutations';
 
-let mutations: QuestionaryMutations;
-let queries: QuestionaryQueries;
+const mutations = container.resolve(QuestionaryMutations);
+const queries = container.resolve(QuestionaryQueries);
 
 const getDummyUsersProposal = async () => {
   const USER_QUESTIONARY_ID = 1;
@@ -25,8 +27,9 @@ const getDummyUsersProposal = async () => {
 };
 
 beforeEach(() => {
-  mutations = container.resolve(QuestionaryMutations);
-  queries = container.resolve(QuestionaryQueries);
+  container
+    .resolve<QuestionaryDataSourceMock>(Tokens.QuestionaryDataSource)
+    .init();
 });
 
 it('User should answer topic questions', async () => {

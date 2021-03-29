@@ -2,6 +2,8 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
+import { ProposalDataSourceMock } from '../datasources/mockups/ProposalDataSource';
 import {
   dummyPrincipalInvestigatorWithRole,
   dummyUserNotOnProposal,
@@ -12,10 +14,10 @@ import {
 import { Proposal } from '../models/Proposal';
 import ProposalMutations from './ProposalMutations';
 
-let proposalMutations: ProposalMutations;
+const proposalMutations = container.resolve(ProposalMutations);
 
 beforeEach(() => {
-  proposalMutations = container.resolve(ProposalMutations);
+  container.resolve<ProposalDataSourceMock>(Tokens.ProposalDataSource).init();
 });
 
 test('A user on the proposal can update its title if it is in edit mode', () => {

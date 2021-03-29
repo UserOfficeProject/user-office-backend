@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
+import { SampleDataSourceMock } from '../datasources/mockups/SampleDataSource';
 import {
   dummySampleReviewer,
   dummyUserOfficerWithRole,
@@ -9,10 +11,10 @@ import {
 import { Sample, SampleStatus } from '../models/Sample';
 import SampleMutations from './SampleMutations';
 
-let sampleMutations: SampleMutations;
+const sampleMutations = container.resolve(SampleMutations);
 
 beforeEach(() => {
-  sampleMutations = container.resolve(SampleMutations);
+  container.resolve<SampleDataSourceMock>(Tokens.SampleDataSource).init();
 });
 
 test('User should be able to clone its sample', () => {

@@ -1,7 +1,11 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
-import { dummyProposal } from '../datasources/mockups/ProposalDataSource';
+import { Tokens } from '../config/Tokens';
+import {
+  dummyProposal,
+  ProposalDataSourceMock,
+} from '../datasources/mockups/ProposalDataSource';
 import {
   dummyUserNotOnProposalWithRole,
   dummyUserOfficerWithRole,
@@ -11,10 +15,10 @@ import { ProposalPublicStatus } from '../models/Proposal';
 import { omit } from '../utils/helperFunctions';
 import ProposalQueries from './ProposalQueries';
 
-let proposalQueries: ProposalQueries;
+const proposalQueries = container.resolve(ProposalQueries);
 
 beforeEach(() => {
-  proposalQueries = container.resolve(ProposalQueries);
+  container.resolve<ProposalDataSourceMock>(Tokens.ProposalDataSource).init();
 });
 
 test('A user on the proposal can get a proposal it belongs to', () => {
