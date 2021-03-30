@@ -480,6 +480,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   }
 }
 
+@singleton()
 export class PostgresAdminDataSourceWithAutoUpgrade extends PostgresAdminDataSource {
   constructor() {
     super();
