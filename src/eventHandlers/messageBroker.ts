@@ -6,9 +6,17 @@ import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
+import { EventHandler } from '../events/eventBus';
 import { ProposalEndStatus } from '../models/Proposal';
 
-export function createPostToRabbitMQ() {
+export function createPostToQueueHandler() {
+  // return the mapped implementation
+  return container.resolve<EventHandler<ApplicationEvent>>(
+    Tokens.PostToMessageQueue
+  );
+}
+
+export function createPostToRabbitMQHandler() {
   const reviewDataSource = container.resolve<ReviewDataSource>(
     Tokens.ReviewDataSource
   );
@@ -77,7 +85,7 @@ export function createPostToRabbitMQ() {
   };
 }
 
-export function createShipPostToMessageQueue() {
+export function createSkipPostingHandler() {
   return async (event: ApplicationEvent) => {
     // no op
   };

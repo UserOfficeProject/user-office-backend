@@ -13,7 +13,7 @@ import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSour
 import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import { StfcUserDataSource } from '../datasources/stfc/StfcUserDataSource';
-import { createPostToRabbitMQ } from '../eventHandlers/messageBroker';
+import { createPostToRabbitMQHandler } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
@@ -45,4 +45,4 @@ mapClass(Tokens.UserDataSource, StfcUserDataSource);
 
 mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
 
-mapValue(Tokens.PostToMessageQueue, createPostToRabbitMQ());
+mapValue(Tokens.PostToMessageQueue, createPostToRabbitMQHandler());
