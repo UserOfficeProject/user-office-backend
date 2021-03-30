@@ -2,7 +2,6 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { sampleDataSource } from '../datasources';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
@@ -34,7 +33,7 @@ export default class SampleQueries {
       return null;
     }
 
-    return sampleDataSource.getSample(sampleId);
+    return this.dataSource.getSample(sampleId);
   }
 
   async getSamples(agent: UserWithRole | null, args: SamplesArgs) {
