@@ -13,6 +13,7 @@ import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSour
 import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import PostgresUserDataSource from '../datasources/postgres/UserDataSource';
+import { SparkPostMailService } from '../eventHandlers/MailService/SparkPostMailService';
 import { createPostToRabbitMQHandler } from '../eventHandlers/messageBroker';
 import { EAMAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
@@ -44,5 +45,7 @@ mapClass(Tokens.TemplateDataSource, PostgresTemplateDataSource);
 mapClass(Tokens.UserDataSource, PostgresUserDataSource);
 
 mapClass(Tokens.AssetRegistrar, EAMAssetRegistrar);
+
+mapClass(Tokens.MailService, SparkPostMailService);
 
 mapValue(Tokens.PostToMessageQueue, createPostToRabbitMQHandler());

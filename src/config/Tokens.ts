@@ -21,4 +21,5 @@ export const Tokens = {
   UserDataSource: Symbol('UserDataSource'),
   AssetRegistrar: Symbol('AssetRegistrar'),
   PostToMessageQueue: Symbol('PostToMessageQueue'),
+  MailService: Symbol('MailService'),
 };

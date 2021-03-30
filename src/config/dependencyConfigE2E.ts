@@ -13,6 +13,7 @@ import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSour
 import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import PostgresUserDataSource from '../datasources/postgres/UserDataSource';
+import { SkipSendMailService } from '../eventHandlers/MailService/SkipSendMailService';
 import { createSkipPostingHandler } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
@@ -44,5 +45,7 @@ mapClass(Tokens.TemplateDataSource, PostgresTemplateDataSource);
 mapClass(Tokens.UserDataSource, PostgresUserDataSource);
 
 mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
+
+mapClass(Tokens.MailService, SkipSendMailService);
 
 mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler);

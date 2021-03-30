@@ -9,32 +9,15 @@ import { ProposalEndStatus } from '../models/Proposal';
 import { UserRole } from '../models/User';
 import EmailSettings from './MailService/EmailSettings';
 import { MailService } from './MailService/MailService';
-import { SMTPMailService } from './MailService/SMTPMailService';
-import { SparkPostMailService } from './MailService/SparkPostMailService';
-
-const options = {
-  endpoint: 'https://api.eu.sparkpost.com:443',
-};
-
-const mailService: MailService =
-  process.env.EMAIL_PROTOCOL === 'SMTP'
-    ? new SMTPMailService()
-    : new SparkPostMailService(options);
-
-const isDevEnv = process.env.NODE_ENV === 'development';
-
-// in dev env don't try to send email
-if (isDevEnv) {
-  mailService.sendMail = async (...args: any[]): Promise<any> => 'no-op';
-}
 
 export default function createHandler() {
+  const mailService = container.resolve<MailService>(Tokens.MailService);
   const userDataSource = container.resolve<UserDataSource>(
     Tokens.UserDataSource
   );
   // Handler to send email to proposers in accepted proposal
 
-  return async function emailHandler(event: ApplicationEvent) {
+  return async (event: ApplicationEvent) => {
     // if the original method failed
     // there is no point of sending any email
     if (event.isRejection) {
@@ -168,7 +151,7 @@ export default function createHandler() {
       }
 
       case Event.USER_CREATED: {
-        if (isDevEnv) {
+        if (process.env.NODE_ENV === 'development') {
           await userDataSource.setUserEmailVerified(
             event.userlinkresponse.user.id
           );
