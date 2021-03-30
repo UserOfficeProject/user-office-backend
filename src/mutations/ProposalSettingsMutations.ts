@@ -451,11 +451,46 @@ export default class ProposalSettingsMutations {
           result.droppableGroupId
         );
 
+        const isSingleColumnWorkflow =
+          [
+            ...new Set(
+              allGroupWorkflowConnections.map((item) => item.droppableGroupId)
+            ),
+          ].length === 1;
+
+        console.log('isMultiColumnWorkflow', isSingleColumnWorkflow);
+
+        console.log('allGroupWorkflowConnections', allGroupWorkflowConnections);
+
+        if (isSingleColumnWorkflow) {
+          const isFirstConnectionInChildGroup = false;
+          const isLastConnectionInParentGroup = false;
+          const isInTheMiddleOfAGroup =
+            result.sortOrder > 0 &&
+            result.sortOrder < allGroupWorkflowConnections.length - 1;
+
+          await this.updateProposalWorkflowConnectionStatuses(
+            allGroupWorkflowConnections,
+            isFirstConnectionInChildGroup,
+            isLastConnectionInParentGroup,
+            isInTheMiddleOfAGroup
+          );
+
+          return true;
+        }
+
         const isFirstConnectionInGroup = result.sortOrder === 0;
         const isLastConnectionInGroupRemoved =
-          result.sortOrder === allGroupWorkflowConnections.length;
+          result.sortOrder + 1 === allGroupWorkflowConnections.length;
         const connectionsLeftInTheGroup =
           allGroupWorkflowConnections.length > 0;
+
+        console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
+        console.log(
+          'isLastConnectionInGroupRemoved',
+          isLastConnectionInGroupRemoved
+        );
+        console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
 
         if (connectionsLeftInTheGroup) {
           if (isLastConnectionInGroupRemoved && result.nextProposalStatusId) {
