@@ -165,6 +165,10 @@ const create1Topic3FieldWithDependenciesQuestionarySteps = () => {
 };
 
 export class QuestionaryDataSourceMock implements QuestionaryDataSource {
+  async deleteAnswers(questionary_id: number, question_id: string[]) {
+    return;
+  }
+
   async getCount(templateId: number): Promise<number> {
     return 1;
   }
