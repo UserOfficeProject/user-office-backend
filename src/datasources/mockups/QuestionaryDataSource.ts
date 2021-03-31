@@ -94,7 +94,7 @@ export const dummyTemplateHasQuestionRelationFactory = (
 const create1Topic3FieldWithDependenciesQuestionarySteps = () => {
   return [
     new QuestionaryStep(
-      new Topic(0, 'General information', 1, 0, true),
+      new Topic(1, 'General information', 1, 0, true),
       false,
       [
         new Answer(
