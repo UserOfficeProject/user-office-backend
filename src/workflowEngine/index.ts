@@ -1,5 +1,6 @@
 import { proposalDataSource, proposalSettingsDataSource } from '../datasources';
 import { ProposalEventsRecord } from '../datasources/postgres/records';
+import { Proposal } from '../models/Proposal';
 import { StatusChangingEvent } from '../models/StatusChangingEvent';
 
 const getProposalWorkflowByCallId = (callId: number) => {
@@ -57,7 +58,7 @@ export const workflowEngine = async (
     proposalEvents: ProposalEventsRecord | null;
     currentEvent: Event;
   }
-) => {
+): Promise<Array<Proposal | void> | void> => {
   const proposalWorkflow = await getProposalWorkflowByCallId(proposal.callId);
 
   if (!proposalWorkflow) {
@@ -81,48 +82,52 @@ export const workflowEngine = async (
    * We store one record of FEASIBILITY_REVIEW with nextProposalStatusId = SEP_SELECTION and another one with nextProposalStatusId = NOT_FEASIBLE.
    * We go through each record and based on the currentEvent we move the proposal into the right direction
    */
-  currentWorkflowConnections.forEach(async (currentWorkflowConnection) => {
-    if (!currentWorkflowConnection.nextProposalStatusId) {
-      return;
-    }
+  return Promise.all(
+    currentWorkflowConnections.map(async (currentWorkflowConnection) => {
+      if (!currentWorkflowConnection.nextProposalStatusId) {
+        return;
+      }
 
-    if (!proposal.proposalEvents) {
-      return;
-    }
+      if (!proposal.proposalEvents) {
+        return;
+      }
 
-    const [
-      nextWorkflowConnection,
-    ] = await getProposalWorkflowConnectionByStatusId(
-      proposalWorkflow.id,
-      currentWorkflowConnection.nextProposalStatusId
-    );
-
-    if (!nextWorkflowConnection) {
-      return;
-    }
-
-    const statusChangingEvents = await proposalSettingsDataSource.getStatusChangingEventsByConnectionId(
-      nextWorkflowConnection.id
-    );
-
-    if (!statusChangingEvents) {
-      return;
-    }
-
-    const eventThatTriggeredStatusChangeIsStatusChangingEvent = statusChangingEvents.find(
-      (statusChangingEvent) =>
-        proposal.currentEvent === statusChangingEvent.statusChangingEvent
-    );
-
-    if (!eventThatTriggeredStatusChangeIsStatusChangingEvent) {
-      return;
-    }
-
-    if (shouldMoveToNextStatus(statusChangingEvents, proposal.proposalEvents)) {
-      await updateProposalStatus(
-        proposal.id,
-        nextWorkflowConnection.proposalStatusId
+      const [
+        nextWorkflowConnection,
+      ] = await getProposalWorkflowConnectionByStatusId(
+        proposalWorkflow.id,
+        currentWorkflowConnection.nextProposalStatusId
       );
-    }
-  });
+
+      if (!nextWorkflowConnection) {
+        return;
+      }
+
+      const statusChangingEvents = await proposalSettingsDataSource.getStatusChangingEventsByConnectionId(
+        nextWorkflowConnection.id
+      );
+
+      if (!statusChangingEvents) {
+        return;
+      }
+
+      const eventThatTriggeredStatusChangeIsStatusChangingEvent = statusChangingEvents.find(
+        (statusChangingEvent) =>
+          proposal.currentEvent === statusChangingEvent.statusChangingEvent
+      );
+
+      if (!eventThatTriggeredStatusChangeIsStatusChangingEvent) {
+        return;
+      }
+
+      if (
+        shouldMoveToNextStatus(statusChangingEvents, proposal.proposalEvents)
+      ) {
+        return updateProposalStatus(
+          proposal.id,
+          nextWorkflowConnection.proposalStatusId
+        );
+      }
+    })
+  );
 };

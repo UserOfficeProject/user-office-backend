@@ -131,6 +131,16 @@ interface ProposalSEPMeetingSubmittedEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalStatusChangedByWorkflowEvent extends GeneralEvent {
+  type: Event.PROPOSAL_STATUS_CHANGED_BY_WORKFLOW;
+  proposal: Proposal;
+}
+
+interface ProposalStatusChangedByUserEvent extends GeneralEvent {
+  type: Event.PROPOSAL_STATUS_CHANGED_BY_USER;
+  proposal: Proposal;
+}
+
 interface UserResetPasswordEmailEvent extends GeneralEvent {
   type: Event.USER_PASSWORD_RESET_EMAIL;
   userlinkresponse: {
@@ -260,4 +270,6 @@ export type ApplicationEvent =
   | ProposalInstrumentSelectedEvent
   | ProposalSEPSelectedEvent
   | ProposalInstrumentSubmittedEvent
-  | ProposalSEPMeetingSubmittedEvent;
+  | ProposalSEPMeetingSubmittedEvent
+  | ProposalStatusChangedByWorkflowEvent
+  | ProposalStatusChangedByUserEvent;

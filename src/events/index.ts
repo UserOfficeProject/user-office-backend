@@ -4,6 +4,7 @@ import {
   reviewDataSource,
   instrumentDataSource,
   proposalDataSource,
+  proposalSettingsDataSource,
 } from '../datasources';
 import createEventHandlers from '../eventHandlers';
 import { ApplicationEvent } from './applicationEvents';
@@ -18,6 +19,7 @@ const eventHandlers = createEventHandlers({
   reviewDataSource,
   instrumentDataSource,
   proposalDataSource,
+  proposalSettingsDataSource,
 });
 
 export const eventBus = new EventBus<ApplicationEvent>(eventHandlers);
