@@ -33,7 +33,14 @@ export interface ProposalSettingsDataSource {
   ): Promise<ProposalWorkflowConnection[]>;
   getProposalWorkflowConnectionsById(
     proposalWorkflowId: number,
-    proposalWorkflowConnectionId: number
+    proposalWorkflowConnectionId: number,
+    {
+      nextProposalStatusId,
+      prevProposalStatusId,
+    }: {
+      nextProposalStatusId?: number | null;
+      prevProposalStatusId?: number | null;
+    }
   ): Promise<ProposalWorkflowConnection[]>;
   addProposalWorkflowStatus(
     newProposalWorkflowStatusInput: AddProposalWorkflowStatusInput

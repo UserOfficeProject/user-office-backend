@@ -312,7 +312,14 @@ export default class PostgresProposalSettingsDataSource
 
   async getProposalWorkflowConnectionsById(
     proposalWorkflowId: number,
-    proposalStatusId: number
+    proposalStatusId: number,
+    {
+      nextProposalStatusId,
+      prevProposalStatusId,
+    }: {
+      nextProposalStatusId?: number | null;
+      prevProposalStatusId?: number | null;
+    }
   ): Promise<ProposalWorkflowConnection[]> {
     const proposalWorkflowConnectionRecords: (ProposalWorkflowConnectionRecord &
       ProposalStatusRecord)[] = await database
@@ -322,7 +329,16 @@ export default class PostgresProposalSettingsDataSource
         'ps.proposal_status_id': 'pwc.proposal_status_id',
       })
       .where('proposal_workflow_id', proposalWorkflowId)
-      .andWhere('pwc.proposal_status_id', proposalStatusId);
+      .andWhere('pwc.proposal_status_id', proposalStatusId)
+      .modify((query) => {
+        if (nextProposalStatusId) {
+          query.andWhere('pwc.next_proposal_status_id', nextProposalStatusId);
+        }
+
+        if (prevProposalStatusId) {
+          query.andWhere('pwc.prev_proposal_status_id', prevProposalStatusId);
+        }
+      });
 
     if (!proposalWorkflowConnectionRecords) {
       throw new Error(

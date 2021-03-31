@@ -12,7 +12,8 @@ const getProposalWorkflowConnectionByStatusId = (
 ) => {
   return proposalSettingsDataSource.getProposalWorkflowConnectionsById(
     proposalWorkflowId,
-    proposalStatusId
+    proposalStatusId,
+    {}
   );
 };
 

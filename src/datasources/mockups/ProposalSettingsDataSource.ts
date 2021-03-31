@@ -146,7 +146,14 @@ export class ProposalSettingsDataSourceMock
 
   async getProposalWorkflowConnectionsById(
     proposalWorkflowId: number,
-    proposalWorkflowConnectionId: number
+    proposalWorkflowConnectionId: number,
+    {
+      nextProposalStatusId,
+      prevProposalStatusId,
+    }: {
+      nextProposalStatusId?: number | null;
+      prevProposalStatusId?: number | null;
+    }
   ): Promise<ProposalWorkflowConnection[]> {
     return [dummyProposalWorkflowConnection];
   }

@@ -199,9 +199,11 @@ export default class ProposalSettingsMutations {
 
   async updateProposalWorkflowConnectionStatuses(
     proposalWorkflowConnections: ProposalWorkflowConnection[],
-    isFirstConnectionInChildGroup: boolean,
-    isLastConnectionInParentGroup: boolean = false,
-    isInTheMiddleOfAGroup: boolean = false
+    {
+      isInTheMiddleOfAGroup = false,
+      isLastConnectionInParentGroup = false,
+      isFirstConnectionInChildGroup = false,
+    }
   ) {
     const updatedWorkflowConnections = this.orderAndConnectAllWorkflowStatusesInSameDroppableGroup(
       proposalWorkflowConnections,
@@ -317,9 +319,11 @@ export default class ProposalSettingsMutations {
     const insertedWorkflowConnection = (
       await this.updateProposalWorkflowConnectionStatuses(
         allWorkflowGroupConnections,
-        isFirstConnectionInChildGroup,
-        isLastConnectionInParentGroup,
-        isInTheMiddleOfAGroup
+        {
+          isInTheMiddleOfAGroup,
+          isFirstConnectionInChildGroup,
+          isLastConnectionInParentGroup,
+        }
       )
     )[newWorkflowConnection.sortOrder];
 
@@ -416,11 +420,11 @@ export default class ProposalSettingsMutations {
         );
       }
 
-      const isFirstConnectionInGroup = args.to.index === 0;
+      const isFirstConnectionInChildGroup = args.to.index === 0;
 
       await this.updateProposalWorkflowConnectionStatuses(
         reorderedWorkflowConnections,
-        isFirstConnectionInGroup
+        { isFirstConnectionInChildGroup }
       );
 
       return reorderedWorkflowConnections[args.to.index];
@@ -432,6 +436,41 @@ export default class ProposalSettingsMutations {
 
       return rejection('INTERNAL_ERROR');
     }
+  }
+
+  async findPreviousAndNextConnections(
+    proposalWorkflowId: number,
+    {
+      currentConnectionId,
+      previousConnectionId,
+      nextConnectionId,
+    }: {
+      currentConnectionId: number;
+      previousConnectionId: number | null;
+      nextConnectionId: number | null;
+    }
+  ) {
+    const [previousConnection] = previousConnectionId
+      ? await this.dataSource.getProposalWorkflowConnectionsById(
+          proposalWorkflowId,
+          previousConnectionId,
+          {
+            nextProposalStatusId: currentConnectionId,
+          }
+        )
+      : [];
+
+    const [nextConnection] = nextConnectionId
+      ? await this.dataSource.getProposalWorkflowConnectionsById(
+          proposalWorkflowId,
+          nextConnectionId,
+          {
+            prevProposalStatusId: currentConnectionId,
+          }
+        )
+      : [];
+
+    return [previousConnection, nextConnection];
   }
 
   @ValidateArgs(deleteProposalWorkflowStatusValidationSchema)
@@ -446,102 +485,184 @@ export default class ProposalSettingsMutations {
         args.proposalWorkflowId
       )
       .then(async (result) => {
-        const allGroupWorkflowConnections = await this.dataSource.getProposalWorkflowConnections(
-          args.proposalWorkflowId,
-          result.droppableGroupId
-        );
+        // NOTE: This should work in most of the cases. Only when removing connection that is last connection in parent group.
+        // Possible solution to that could be: Remove previous connection and change all needed properties for current one. Something like switching the positions with the previous one.
+        // This should happen before delete of the connection.
+        const [
+          previousConnection,
+          nextConnection,
+        ] = await this.findPreviousAndNextConnections(args.proposalWorkflowId, {
+          currentConnectionId: result.proposalStatusId,
+          previousConnectionId: result.prevProposalStatusId,
+          nextConnectionId: result.nextProposalStatusId,
+        });
 
-        const isSingleColumnWorkflow =
-          [
-            ...new Set(
-              allGroupWorkflowConnections.map((item) => item.droppableGroupId)
-            ),
-          ].length === 1;
-
-        console.log('isMultiColumnWorkflow', isSingleColumnWorkflow);
-
-        console.log('allGroupWorkflowConnections', allGroupWorkflowConnections);
-
-        if (isSingleColumnWorkflow) {
-          const isFirstConnectionInChildGroup = false;
-          const isLastConnectionInParentGroup = false;
-          const isInTheMiddleOfAGroup =
-            result.sortOrder > 0 &&
-            result.sortOrder < allGroupWorkflowConnections.length - 1;
-
-          await this.updateProposalWorkflowConnectionStatuses(
-            allGroupWorkflowConnections,
-            isFirstConnectionInChildGroup,
-            isLastConnectionInParentGroup,
-            isInTheMiddleOfAGroup
-          );
-
-          return true;
-        }
-
-        const isFirstConnectionInGroup = result.sortOrder === 0;
-        const isLastConnectionInGroupRemoved =
-          result.sortOrder + 1 === allGroupWorkflowConnections.length;
-        const connectionsLeftInTheGroup =
-          allGroupWorkflowConnections.length > 0;
-
-        console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
         console.log(
-          'isLastConnectionInGroupRemoved',
-          isLastConnectionInGroupRemoved
+          'previousConnection',
+          previousConnection,
+          'nextConnection',
+          nextConnection
         );
-        console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
 
-        if (connectionsLeftInTheGroup) {
-          if (isLastConnectionInGroupRemoved && result.nextProposalStatusId) {
-            await this.dataSource.deleteProposalWorkflowStatus(
-              result.prevProposalStatusId as number,
-              result.proposalWorkflowId,
-              result.proposalStatusId
-            );
+        const connectionsToUpdate = [];
 
-            const newLastParentConnection =
-              allGroupWorkflowConnections[
-                allGroupWorkflowConnections.length - 1
-              ];
-
-            if (newLastParentConnection) {
-              await this.insertNewAndUpdateExistingProposalWorkflowStatuses(
-                omit(newLastParentConnection, 'id')
-              );
-            }
-          } else if (!result.nextProposalStatusId) {
-            await this.updateProposalWorkflowConnectionStatuses(
-              allGroupWorkflowConnections,
-              false,
-              false,
-              false
-            );
-          }
-
-          if (
-            isFirstConnectionInGroup &&
-            result.prevProposalStatusId &&
-            result.nextProposalStatusId
-          ) {
-            await this.dataSource.deleteProposalWorkflowStatus(
-              result.prevProposalStatusId as number,
-              result.proposalWorkflowId,
-              result.proposalStatusId
-            );
-          }
-        } else {
-          if (result.parentDroppableGroupId) {
-            const lastConnectionInPreviousDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
-              result.proposalWorkflowId,
-              result.parentDroppableGroupId as string
-            );
-            lastConnectionInPreviousDroppableGroup.nextProposalStatusId = null;
-            await this.dataSource.updateProposalWorkflowStatuses([
-              lastConnectionInPreviousDroppableGroup,
-            ]);
-          }
+        if (previousConnection) {
+          connectionsToUpdate.push({
+            ...previousConnection,
+            nextProposalStatusId: result.nextProposalStatusId,
+          });
         }
+
+        if (nextConnection) {
+          connectionsToUpdate.push({
+            ...nextConnection,
+            prevProposalStatusId: result.prevProposalStatusId,
+          });
+        }
+
+        await this.dataSource.updateProposalWorkflowStatuses(
+          connectionsToUpdate
+        );
+        // const allWorkflowConnections = await this.dataSource.getProposalWorkflowConnections(
+        //   args.proposalWorkflowId
+        // );
+
+        // const allGroupWorkflowConnections = allWorkflowConnections.filter(
+        //   (item) => item.droppableGroupId === result.droppableGroupId
+        // );
+
+        // const isSingleColumnWorkflow =
+        //   [
+        //     ...new Set(
+        //       allWorkflowConnections.map((item) => item.droppableGroupId)
+        //     ),
+        //   ].length === 1;
+
+        // console.log('isSingleColumnWorkflow', isSingleColumnWorkflow);
+
+        // console.log(
+        //   'allGroupWorkflowConnections',
+        //   allGroupWorkflowConnections,
+        //   allWorkflowConnections
+        // );
+
+        // if (isSingleColumnWorkflow) {
+        //   const isInTheMiddleOfAGroup =
+        //     result.sortOrder > 0 &&
+        //     result.sortOrder < allGroupWorkflowConnections.length - 1;
+
+        //   await this.updateProposalWorkflowConnectionStatuses(
+        //     allGroupWorkflowConnections,
+        //     {
+        //       isInTheMiddleOfAGroup,
+        //     }
+        //   );
+
+        //   return true;
+        // }
+
+        // const connectionsLeftInTheGroup =
+        //   allGroupWorkflowConnections.length > 0;
+        // const isLastConnectionInGroupRemoved =
+        //   result.sortOrder === allGroupWorkflowConnections.length;
+
+        // console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
+        // console.log(
+        //   'isLastConnectionInGroupRemoved',
+        //   isLastConnectionInGroupRemoved
+        // );
+        // console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
+
+        // if (connectionsLeftInTheGroup) {
+        //   if (isLastConnectionInGroupRemoved && result.nextProposalStatusId) {
+        //     await this.dataSource.deleteProposalWorkflowStatus(
+        //       result.prevProposalStatusId as number,
+        //       result.proposalWorkflowId,
+        //       result.proposalStatusId
+        //     );
+
+        //     const newLastParentConnection =
+        //       allGroupWorkflowConnections[
+        //         allGroupWorkflowConnections.length - 1
+        //       ];
+
+        //     if (newLastParentConnection) {
+        //       await this.insertNewAndUpdateExistingProposalWorkflowStatuses(
+        //         omit(newLastParentConnection, 'id')
+        //       );
+        //     }
+        //   } else if (!result.nextProposalStatusId) {
+        //     await this.updateProposalWorkflowConnectionStatuses(
+        //       allGroupWorkflowConnections,
+        //       {}
+        //     );
+        //   }
+
+        //   const isFirstConnectionInGroup =
+        //     result.sortOrder === 0 &&
+        //     result.prevProposalStatusId &&
+        //     result.nextProposalStatusId;
+
+        //   if (isFirstConnectionInGroup) {
+        //     // const lastConnectionInPreviousDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
+        //     //   result.proposalWorkflowId,
+        //     //   result.parentDroppableGroupId as string
+        //     // );
+        //     const [
+        //       previousConnection,
+        //       nextConnection,
+        //     ] = await this.findPreviousAndNextConnections(
+        //       args.proposalWorkflowId,
+        //       {
+        //         currentConnectionId: result.proposalStatusId,
+        //         previousConnectionId: result.prevProposalStatusId,
+        //         nextConnectionId: result.nextProposalStatusId,
+        //       }
+        //     );
+
+        //     console.log(
+        //       'previousConnection',
+        //       previousConnection,
+        //       'nextConnection',
+        //       nextConnection
+        //     );
+
+        //     const connectionsToUpdate = [];
+
+        //     if (previousConnection) {
+        //       connectionsToUpdate.push(
+        //         ...previousConnection.map((item) => ({
+        //           ...item,
+        //           nextProposalStatusId: result.nextProposalStatusId,
+        //         }))
+        //       );
+        //     }
+
+        //     if (nextConnection) {
+        //       connectionsToUpdate.push(
+        //         ...nextConnection.map((item) => ({
+        //           ...item,
+        //           prevProposalStatusId: result.prevProposalStatusId,
+        //         }))
+        //       );
+        //     }
+
+        //     await this.dataSource.updateProposalWorkflowStatuses(
+        //       connectionsToUpdate
+        //     );
+        //   }
+        // } else {
+        //   if (result.parentDroppableGroupId) {
+        //     const lastConnectionInPreviousDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
+        //       result.proposalWorkflowId,
+        //       result.parentDroppableGroupId as string
+        //     );
+        //     lastConnectionInPreviousDroppableGroup.nextProposalStatusId = null;
+        //     await this.dataSource.updateProposalWorkflowStatuses([
+        //       lastConnectionInPreviousDroppableGroup,
+        //     ]);
+        //   }
+        // }
 
         return true;
       })
