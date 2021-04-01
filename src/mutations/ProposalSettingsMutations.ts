@@ -220,7 +220,8 @@ export default class ProposalSettingsMutations {
         proposalWorkflowConnections[0].proposalWorkflowId,
         proposalWorkflowConnections[0].prevProposalStatusId as number,
         {
-          nextProposalStatusId: proposalWorkflowConnections[1].proposalStatusId,
+          nextProposalStatusId:
+            proposalWorkflowConnections[1]?.proposalStatusId,
         }
       );
 
