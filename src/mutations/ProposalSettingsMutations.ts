@@ -221,9 +221,19 @@ export default class ProposalSettingsMutations {
         proposalWorkflowConnections[0].prevProposalStatusId as number,
         {
           nextProposalStatusId:
-            proposalWorkflowConnections[1]?.proposalStatusId,
+            secondConnection && isFirstConnectionInChildGroup
+              ? proposalWorkflowConnections[1]?.proposalStatusId
+              : null,
         }
       );
+
+      if (secondConnection && isFirstConnectionInChildGroup) {
+        updatedWorkflowConnections[0].prevProposalStatusId =
+          proposalWorkflowConnections[1].prevProposalStatusId;
+      } else {
+        updatedWorkflowConnections[0].prevProposalStatusId =
+          lastConnectionInParentDroppableGroup?.proposalStatusId;
+      }
 
       updatedWorkflowConnections[0].prevProposalStatusId =
         lastConnectionInParentDroppableGroup?.proposalStatusId;
@@ -525,9 +535,9 @@ export default class ProposalSettingsMutations {
           return rejection('NOT_FOUND');
         }
 
-        const updatedWorkflowConnections: ProposalWorkflowConnection[] = [];
-
         workflowConnectionsToRemove.forEach(async (connection) => {
+          const updatedWorkflowConnections: ProposalWorkflowConnection[] = [];
+
           if (connection.nextProposalStatusId) {
             const [
               nextConnection,
@@ -553,15 +563,15 @@ export default class ProposalSettingsMutations {
               workflowConnectionToReplaceRemoved.proposalStatusId,
             sortOrder: workflowConnectionToReplaceRemoved.sortOrder,
           });
+
+          await this.dataSource.updateProposalWorkflowStatuses(
+            updatedWorkflowConnections
+          );
         });
 
         await this.dataSource.deleteProposalWorkflowStatus(
           workflowConnectionToReplaceRemoved.proposalStatusId,
           workflowConnectionToReplaceRemoved.proposalWorkflowId
-        );
-
-        await this.dataSource.updateProposalWorkflowStatuses(
-          updatedWorkflowConnections
         );
       } else {
         const result = await this.dataSource.deleteProposalWorkflowStatus(
