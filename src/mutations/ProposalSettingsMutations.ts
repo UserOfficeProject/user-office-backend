@@ -214,13 +214,18 @@ export default class ProposalSettingsMutations {
     const parentDroppableGroupId = firstConnection.parentDroppableGroupId;
 
     if (parentDroppableGroupId) {
-      const lastConnectionInParentDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
-        firstConnection.proposalWorkflowId,
-        parentDroppableGroupId
+      const [
+        lastConnectionInParentDroppableGroup,
+      ] = await this.dataSource.getProposalWorkflowConnectionsById(
+        proposalWorkflowConnections[0].proposalWorkflowId,
+        proposalWorkflowConnections[0].prevProposalStatusId as number,
+        {
+          nextProposalStatusId: proposalWorkflowConnections[1].proposalStatusId,
+        }
       );
 
       updatedWorkflowConnections[0].prevProposalStatusId =
-        lastConnectionInParentDroppableGroup.proposalStatusId;
+        lastConnectionInParentDroppableGroup?.proposalStatusId;
 
       if (isFirstConnectionInChildGroup) {
         if (secondConnection) {
@@ -479,15 +484,90 @@ export default class ProposalSettingsMutations {
     agent: UserWithRole | null,
     args: DeleteProposalWorkflowStatusInput
   ): Promise<boolean | Rejection> {
-    return this.dataSource
-      .deleteProposalWorkflowStatus(
+    try {
+      // NOTE: We can have more than one connection if it is multi-column workflow
+      const workflowConnectionsToRemove = await this.dataSource.getProposalWorkflowConnectionsById(
+        args.proposalWorkflowId,
         args.proposalStatusId,
-        args.proposalWorkflowId
-      )
-      .then(async (result) => {
-        // NOTE: This should work in most of the cases. Only when removing connection that is last connection in parent group.
-        // Possible solution to that could be: Remove previous connection and change all needed properties for current one. Something like switching the positions with the previous one.
-        // This should happen before delete of the connection.
+        {}
+      );
+
+      const [firstWorkflowConnectionToRemove] = workflowConnectionsToRemove;
+
+      if (!firstWorkflowConnectionToRemove) {
+        return rejection('NOT_FOUND');
+      }
+
+      const allGroupWorkflowConnections = await this.dataSource.getProposalWorkflowConnections(
+        args.proposalWorkflowId,
+        firstWorkflowConnectionToRemove.droppableGroupId
+      );
+
+      const isLastConnectionInGroupRemoved =
+        firstWorkflowConnectionToRemove.sortOrder + 1 ===
+        allGroupWorkflowConnections.length;
+      const lastConnectionInParentGroupRemoved =
+        isLastConnectionInGroupRemoved &&
+        firstWorkflowConnectionToRemove.nextProposalStatusId &&
+        firstWorkflowConnectionToRemove.prevProposalStatusId;
+
+      if (lastConnectionInParentGroupRemoved) {
+        const [
+          workflowConnectionToReplaceRemoved,
+        ] = await this.dataSource.getProposalWorkflowConnectionsById(
+          firstWorkflowConnectionToRemove.proposalWorkflowId,
+          firstWorkflowConnectionToRemove.prevProposalStatusId as number,
+          {}
+        );
+
+        if (!workflowConnectionToReplaceRemoved) {
+          return rejection('NOT_FOUND');
+        }
+
+        const updatedWorkflowConnections: ProposalWorkflowConnection[] = [];
+
+        workflowConnectionsToRemove.forEach(async (connection) => {
+          if (connection.nextProposalStatusId) {
+            const [
+              nextConnection,
+            ] = await this.dataSource.getProposalWorkflowConnectionsById(
+              connection.proposalWorkflowId,
+              connection.nextProposalStatusId as number,
+              {}
+            );
+
+            if (nextConnection) {
+              updatedWorkflowConnections.push({
+                ...nextConnection,
+                prevProposalStatusId: connection.prevProposalStatusId,
+              });
+            }
+          }
+
+          updatedWorkflowConnections.push({
+            ...connection,
+            prevProposalStatusId:
+              workflowConnectionToReplaceRemoved.prevProposalStatusId,
+            proposalStatusId:
+              workflowConnectionToReplaceRemoved.proposalStatusId,
+            sortOrder: workflowConnectionToReplaceRemoved.sortOrder,
+          });
+        });
+
+        await this.dataSource.deleteProposalWorkflowStatus(
+          workflowConnectionToReplaceRemoved.proposalStatusId,
+          workflowConnectionToReplaceRemoved.proposalWorkflowId
+        );
+
+        await this.dataSource.updateProposalWorkflowStatuses(
+          updatedWorkflowConnections
+        );
+      } else {
+        const result = await this.dataSource.deleteProposalWorkflowStatus(
+          args.proposalStatusId,
+          args.proposalWorkflowId
+        );
+
         const [
           previousConnection,
           nextConnection,
@@ -496,13 +576,6 @@ export default class ProposalSettingsMutations {
           previousConnectionId: result.prevProposalStatusId,
           nextConnectionId: result.nextProposalStatusId,
         });
-
-        console.log(
-          'previousConnection',
-          previousConnection,
-          'nextConnection',
-          nextConnection
-        );
 
         const connectionsToUpdate = [];
 
@@ -523,160 +596,16 @@ export default class ProposalSettingsMutations {
         await this.dataSource.updateProposalWorkflowStatuses(
           connectionsToUpdate
         );
-        // const allWorkflowConnections = await this.dataSource.getProposalWorkflowConnections(
-        //   args.proposalWorkflowId
-        // );
+      }
 
-        // const allGroupWorkflowConnections = allWorkflowConnections.filter(
-        //   (item) => item.droppableGroupId === result.droppableGroupId
-        // );
-
-        // const isSingleColumnWorkflow =
-        //   [
-        //     ...new Set(
-        //       allWorkflowConnections.map((item) => item.droppableGroupId)
-        //     ),
-        //   ].length === 1;
-
-        // console.log('isSingleColumnWorkflow', isSingleColumnWorkflow);
-
-        // console.log(
-        //   'allGroupWorkflowConnections',
-        //   allGroupWorkflowConnections,
-        //   allWorkflowConnections
-        // );
-
-        // if (isSingleColumnWorkflow) {
-        //   const isInTheMiddleOfAGroup =
-        //     result.sortOrder > 0 &&
-        //     result.sortOrder < allGroupWorkflowConnections.length - 1;
-
-        //   await this.updateProposalWorkflowConnectionStatuses(
-        //     allGroupWorkflowConnections,
-        //     {
-        //       isInTheMiddleOfAGroup,
-        //     }
-        //   );
-
-        //   return true;
-        // }
-
-        // const connectionsLeftInTheGroup =
-        //   allGroupWorkflowConnections.length > 0;
-        // const isLastConnectionInGroupRemoved =
-        //   result.sortOrder === allGroupWorkflowConnections.length;
-
-        // console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
-        // console.log(
-        //   'isLastConnectionInGroupRemoved',
-        //   isLastConnectionInGroupRemoved
-        // );
-        // console.log('connectionsLeftInTheGroup', connectionsLeftInTheGroup);
-
-        // if (connectionsLeftInTheGroup) {
-        //   if (isLastConnectionInGroupRemoved && result.nextProposalStatusId) {
-        //     await this.dataSource.deleteProposalWorkflowStatus(
-        //       result.prevProposalStatusId as number,
-        //       result.proposalWorkflowId,
-        //       result.proposalStatusId
-        //     );
-
-        //     const newLastParentConnection =
-        //       allGroupWorkflowConnections[
-        //         allGroupWorkflowConnections.length - 1
-        //       ];
-
-        //     if (newLastParentConnection) {
-        //       await this.insertNewAndUpdateExistingProposalWorkflowStatuses(
-        //         omit(newLastParentConnection, 'id')
-        //       );
-        //     }
-        //   } else if (!result.nextProposalStatusId) {
-        //     await this.updateProposalWorkflowConnectionStatuses(
-        //       allGroupWorkflowConnections,
-        //       {}
-        //     );
-        //   }
-
-        //   const isFirstConnectionInGroup =
-        //     result.sortOrder === 0 &&
-        //     result.prevProposalStatusId &&
-        //     result.nextProposalStatusId;
-
-        //   if (isFirstConnectionInGroup) {
-        //     // const lastConnectionInPreviousDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
-        //     //   result.proposalWorkflowId,
-        //     //   result.parentDroppableGroupId as string
-        //     // );
-        //     const [
-        //       previousConnection,
-        //       nextConnection,
-        //     ] = await this.findPreviousAndNextConnections(
-        //       args.proposalWorkflowId,
-        //       {
-        //         currentConnectionId: result.proposalStatusId,
-        //         previousConnectionId: result.prevProposalStatusId,
-        //         nextConnectionId: result.nextProposalStatusId,
-        //       }
-        //     );
-
-        //     console.log(
-        //       'previousConnection',
-        //       previousConnection,
-        //       'nextConnection',
-        //       nextConnection
-        //     );
-
-        //     const connectionsToUpdate = [];
-
-        //     if (previousConnection) {
-        //       connectionsToUpdate.push(
-        //         ...previousConnection.map((item) => ({
-        //           ...item,
-        //           nextProposalStatusId: result.nextProposalStatusId,
-        //         }))
-        //       );
-        //     }
-
-        //     if (nextConnection) {
-        //       connectionsToUpdate.push(
-        //         ...nextConnection.map((item) => ({
-        //           ...item,
-        //           prevProposalStatusId: result.prevProposalStatusId,
-        //         }))
-        //       );
-        //     }
-
-        //     await this.dataSource.updateProposalWorkflowStatuses(
-        //       connectionsToUpdate
-        //     );
-        //   }
-        // } else {
-        //   if (result.parentDroppableGroupId) {
-        //     const lastConnectionInPreviousDroppableGroup = await this.getLastConnectionInParentDroppableGroup(
-        //       result.proposalWorkflowId,
-        //       result.parentDroppableGroupId as string
-        //     );
-        //     lastConnectionInPreviousDroppableGroup.nextProposalStatusId = null;
-        //     await this.dataSource.updateProposalWorkflowStatuses([
-        //       lastConnectionInPreviousDroppableGroup,
-        //     ]);
-        //   }
-        // }
-
-        return true;
-      })
-      .catch((error) => {
-        logger.logException(
-          'Could not delete proposal workflow status',
-          error,
-          {
-            agent,
-            args,
-          }
-        );
-
-        return rejection('INTERNAL_ERROR');
+      return true;
+    } catch (error) {
+      logger.logException('Could not delete proposal workflow status', error, {
+        agent,
+        args,
       });
+
+      return rejection('INTERNAL_ERROR');
+    }
   }
 }

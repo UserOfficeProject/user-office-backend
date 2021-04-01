@@ -408,6 +408,7 @@ export default class PostgresProposalSettingsDataSource
     const result = await database.raw(
       `? ON CONFLICT (proposal_workflow_connection_id)
                   DO UPDATE SET
+                  proposal_status_id = EXCLUDED.proposal_status_id,
                   next_proposal_status_id = EXCLUDED.next_proposal_status_id,
                   prev_proposal_status_id = EXCLUDED.prev_proposal_status_id,
                   sort_order = EXCLUDED.sort_order,
