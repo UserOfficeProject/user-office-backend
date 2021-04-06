@@ -264,7 +264,7 @@ export default class InstrumentMutations {
     args: InstrumentSubmitArgs
   ): Promise<InstrumentHasProposals | Rejection> {
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
+      !this.userAuth.isUserOfficer(agent) &&
       !(await this.userAuth.isChairOrSecretaryOfSEP(
         (agent as UserWithRole).id,
         args.sepId

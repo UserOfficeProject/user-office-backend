@@ -525,13 +525,13 @@ export default class PostgresProposalSettingsDataSource
     );
   }
 
-  async getStatusChangingEventsByConnectionId(
-    proposalWorkflowConnectionId: number
+  async getStatusChangingEventsByConnectionIds(
+    proposalWorkflowConnectionIds: number[]
   ): Promise<StatusChangingEvent[]> {
     return database
       .select('*')
       .from('status_changing_events')
-      .where('proposal_workflow_connection_id', proposalWorkflowConnectionId)
+      .whereIn('proposal_workflow_connection_id', proposalWorkflowConnectionIds)
       .then((statusChangingEvents: StatusChangingEventRecord[]) => {
         return statusChangingEvents.map((statusChangingEvent) =>
           this.createStatusChangingEventObject(statusChangingEvent)

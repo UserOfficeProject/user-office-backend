@@ -184,8 +184,8 @@ export class ProposalSettingsDataSourceMock
     return [dummyStatusChangingEvent];
   }
 
-  async getStatusChangingEventsByConnectionId(
-    proposalWorkflowConnectionId: number
+  async getStatusChangingEventsByConnectionIds(
+    proposalWorkflowConnectionIds: number[]
   ): Promise<StatusChangingEvent[]> {
     return [dummyStatusChangingEvent];
   }

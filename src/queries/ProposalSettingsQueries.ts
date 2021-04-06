@@ -97,8 +97,8 @@ export default class ProposalSettingsQueries {
     agent: UserWithRole | null,
     proposalWorkflowConnectionId: number
   ) {
-    const statusChangingEvents = await this.dataSource.getStatusChangingEventsByConnectionId(
-      proposalWorkflowConnectionId
+    const statusChangingEvents = await this.dataSource.getStatusChangingEventsByConnectionIds(
+      [proposalWorkflowConnectionId]
     );
 
     return statusChangingEvents;
