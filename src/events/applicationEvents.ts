@@ -4,6 +4,7 @@ import { Proposal, ProposalIdsWithNextStatus } from '../models/Proposal';
 import { Review, ReviewWithNextProposalStatus } from '../models/Review';
 import { Sample } from '../models/Sample';
 import { SEP } from '../models/SEP';
+import { SepMeetingDecision } from '../models/SepMeetingDecision';
 import { TechnicalReview } from '../models/TechnicalReview';
 import { User, UserRole } from '../models/User';
 import { Event } from './event.enum';
@@ -141,6 +142,16 @@ interface ProposalStatusChangedByUserEvent extends GeneralEvent {
   proposal: Proposal;
 }
 
+interface ProposalSEPMeetingSavedEvent extends GeneralEvent {
+  type: Event.PROPOSAL_SEP_MEETING_SAVED;
+  sepmeetingdecision: SepMeetingDecision;
+}
+
+interface ProposalSEPMeetingRankingOverwrittenEvent extends GeneralEvent {
+  type: Event.PROPOSAL_SEP_MEETING_RANKING_OVERWRITTEN;
+  sepmeetingdecision: SepMeetingDecision;
+}
+
 interface UserResetPasswordEmailEvent extends GeneralEvent {
   type: Event.USER_PASSWORD_RESET_EMAIL;
   userlinkresponse: {
@@ -272,4 +283,6 @@ export type ApplicationEvent =
   | ProposalInstrumentSubmittedEvent
   | ProposalSEPMeetingSubmittedEvent
   | ProposalStatusChangedByWorkflowEvent
-  | ProposalStatusChangedByUserEvent;
+  | ProposalStatusChangedByUserEvent
+  | ProposalSEPMeetingSavedEvent
+  | ProposalSEPMeetingRankingOverwrittenEvent;
