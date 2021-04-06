@@ -256,7 +256,6 @@ export default class ProposalMutations {
   ): Promise<Proposal | Rejection> {
     const {
       id,
-      rankOrder,
       finalStatus,
       statusId,
       commentForManagement,
@@ -286,10 +285,6 @@ export default class ProposalMutations {
 
     if (isProposalInstrumentSubmitted && !isUserOfficer) {
       return rejection('NOT_ALLOWED');
-    }
-
-    if (rankOrder !== undefined) {
-      proposal.rankOrder = rankOrder;
     }
 
     if (finalStatus !== undefined) {
@@ -373,6 +368,21 @@ export default class ProposalMutations {
     agent: UserWithRole | null,
     { callId, proposalToCloneId }: CloneProposalInput
   ): Promise<Proposal | Rejection> {
+    const sourceProposal = await this.proposalDataSource.get(proposalToCloneId);
+
+    if (!sourceProposal) {
+      logger.logError(
+        'Could not clone proposal because source proposal does not exist',
+        { proposalToCloneId }
+      );
+
+      return rejection('NOT_FOUND');
+    }
+
+    if (!(await this.userAuth.hasAccessRights(agent, sourceProposal))) {
+      return rejection('INSUFFICIENT_PERMISSIONS');
+    }
+
     // Check if there is an open call
     if (!(await this.proposalDataSource.checkActiveCall(callId))) {
       return rejection('NO_ACTIVE_CALL_FOUND');
@@ -389,7 +399,7 @@ export default class ProposalMutations {
     }
 
     return this.proposalDataSource
-      .cloneProposal((agent as UserWithRole).id, proposalToCloneId, call)
+      .cloneProposal((agent as UserWithRole).id, sourceProposal, call)
       .then((proposal) => proposal)
       .catch((err) => {
         logger.logException('Could not clone proposal', err, { agent });
