@@ -1,38 +1,39 @@
 import { logger } from '@esss-swap/duo-logger';
 import { Queue, RabbitMQMessageBroker } from '@esss-swap/duo-message-broker';
+import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
+import { EventHandler } from '../events/eventBus';
 import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 
-export default function createHandler({
-  instrumentDataSource,
-  proposalSettingsDataSource,
-}: {
-  instrumentDataSource: InstrumentDataSource;
-  proposalSettingsDataSource: ProposalSettingsDataSource;
-}) {
-  if (process.env.UO_FEATURE_DISABLE_MESSAGE_BROKER === '1') {
-    return async () => {
-      // no op
-    };
-  }
+export function createPostToQueueHandler() {
+  // return the mapped implementation
+  return container.resolve<EventHandler<ApplicationEvent>>(
+    Tokens.PostToMessageQueue
+  );
+}
+
+export function createPostToRabbitMQHandler() {
+  const proposalSettingsDataSource = container.resolve<ProposalSettingsDataSource>(
+    Tokens.ProposalSettingsDataSource
+  );
+  const instrumentDataSource = container.resolve<InstrumentDataSource>(
+    Tokens.InstrumentDataSource
+  );
 
   const rabbitMQ = new RabbitMQMessageBroker();
 
-  // don't try to initialize during testing
-  // causes infinite loop
-  if (process.env.NODE_ENV !== 'test') {
-    rabbitMQ.setup({
-      hostname: process.env.RABBITMQ_HOSTNAME,
-      username: process.env.RABBITMQ_USERNAME,
-      password: process.env.RABBITMQ_PASSWORD,
-    });
-  }
+  rabbitMQ.setup({
+    hostname: process.env.RABBITMQ_HOSTNAME,
+    username: process.env.RABBITMQ_USERNAME,
+    password: process.env.RABBITMQ_PASSWORD,
+  });
 
-  return async function messageBrokerHandler(event: ApplicationEvent) {
+  return async (event: ApplicationEvent) => {
     // if the original method failed
     // there is no point of publishing any event
     if (event.isRejection) {
@@ -92,5 +93,11 @@ export default function createHandler({
 
         break;
     }
+  };
+}
+
+export function createSkipPostingHandler() {
+  return async (event: ApplicationEvent) => {
+    // no op
   };
 }
