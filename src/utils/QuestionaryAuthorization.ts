@@ -1,5 +1,5 @@
 import { logger } from '@esss-swap/duo-logger';
-import { container, inject, injectable, singleton } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -157,7 +157,7 @@ class ShipmentDeclarationQuestionaryAuthorizer
   }
 }
 
-@singleton()
+@injectable()
 export class QuestionaryAuthorization {
   private authorizers = new Map<number, QuestionaryAuthorizer>();
   constructor(

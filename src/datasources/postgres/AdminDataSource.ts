@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import { logger } from '@esss-swap/duo-logger';
-import { injectable, singleton } from 'tsyringe';
+import { injectable } from 'tsyringe';
 
 import { Page } from '../../models/Admin';
 import { Feature } from '../../models/Feature';
@@ -32,7 +32,6 @@ import {
 const dbPatchesFolderPath = path.join(process.cwd(), 'db_patches');
 const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
-@singleton()
 @injectable()
 export default class PostgresAdminDataSource implements AdminDataSource {
   async createUnit(unit: Unit): Promise<Unit | null> {
@@ -480,7 +479,6 @@ export default class PostgresAdminDataSource implements AdminDataSource {
   }
 }
 
-@singleton()
 export class PostgresAdminDataSourceWithAutoUpgrade extends PostgresAdminDataSource {
   constructor() {
     super();
