@@ -47,9 +47,7 @@ const shouldMoveToNextStatus = (
 const updateProposalStatus = (
   proposalId: number,
   nextProposalStatusId: number
-) => {
-  proposalDataSource.updateProposalStatus(proposalId, nextProposalStatusId);
-};
+) => proposalDataSource.updateProposalStatus(proposalId, nextProposalStatusId);
 
 export type WorkflowEngineProposalType = {
   id: number;
