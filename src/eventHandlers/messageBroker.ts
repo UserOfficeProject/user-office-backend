@@ -5,7 +5,6 @@ import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
-import { ProposalEndStatus } from '../models/Proposal';
 import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 
 export default function createHandler({
@@ -56,21 +55,6 @@ export default function createHandler({
           logger.logDebug(
             `Proposal '${proposal.id}' status isn't 'SCHEDULING', skipping`,
             { proposal, proposalStatus }
-          );
-
-          return;
-        }
-
-        // TODO: ask if we still need this or not
-        if (
-          // we only care about accepted and reserved proposals
-          ![ProposalEndStatus.ACCEPTED, ProposalEndStatus.RESERVED].includes(
-            proposal.finalStatus
-          )
-        ) {
-          logger.logWarn(
-            `Proposal '${proposal.id}' status is 'SCHEDULING' but final status isn't 'ACCEPTED or 'RESERVED', skipping`,
-            {}
           );
 
           return;
