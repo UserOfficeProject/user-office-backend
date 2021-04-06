@@ -94,7 +94,7 @@ services:
       DATABASE_PASSWORD: schedulerPassword
       DATABASE_DATABASE: scheduler
       SCHEDULER_CONFIG_AUTH_REDIRECT: http://localhost:3000/shared-auth
-      USER_OFFICE_ENDPOINT: http://backend:4000/graphql
+      USER_OFFICE_ENDPOINT: http://host.docker.internal:4000/graphql
       RABBITMQ_HOSTNAME: rabbitmq
     depends_on:
       - scheduler-db
