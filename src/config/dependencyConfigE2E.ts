@@ -48,4 +48,4 @@ mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
 
 mapClass(Tokens.MailService, SkipSendMailService);
 
-mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler);
+mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
