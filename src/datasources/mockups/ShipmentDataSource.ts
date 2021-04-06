@@ -8,9 +8,7 @@ export class ShipmentDataSourceMock implements ShipmentDataSource {
   constructor() {
     this.init();
   }
-  update(_args: UpdateShipmentArgs): Promise<Shipment> {
-    throw new Error('Method not implemented.');
-  }
+
   shipments: Shipment[];
   public init() {
     this.shipments = [
@@ -63,7 +61,7 @@ export class ShipmentDataSourceMock implements ShipmentDataSource {
     )[0];
   }
 
-  async updateShipment(args: UpdateShipmentArgs): Promise<Shipment> {
+  async update(args: UpdateShipmentArgs): Promise<Shipment> {
     const shipment = await this.get(args.shipmentId);
     shipment.title = args.title || shipment.title;
     shipment.status = args.status || shipment.status;

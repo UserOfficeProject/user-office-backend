@@ -100,9 +100,15 @@ export default class ShipmentMutations {
   }
 
   async submitShipment(agent: UserWithRole | null, args: SubmitShipmentArgs) {
-    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
+    const hasWriteRights = await this.shipmentAuth.hasWriteRights(
+      agent,
+      args.shipmentId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
+
     try {
       const assetId = await this.assetRegistrarService.register();
 
@@ -122,7 +128,12 @@ export default class ShipmentMutations {
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
   async updateShipment(agent: UserWithRole | null, args: UpdateShipmentArgs) {
-    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
+    const hasWriteRights = await this.shipmentAuth.hasWriteRights(
+      agent,
+      args.shipmentId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
 
@@ -146,7 +157,12 @@ export default class ShipmentMutations {
   }
 
   async deleteShipment(agent: UserWithRole | null, shipmentId: number) {
-    if (!this.shipmentAuth.hasWriteRights(agent, shipmentId)) {
+    const hasWriteRights = await this.shipmentAuth.hasWriteRights(
+      agent,
+      shipmentId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
 
@@ -181,9 +197,15 @@ export default class ShipmentMutations {
   };
 
   async addSamples(agent: UserWithRole | null, args: AddSamplesToShipmentArgs) {
-    if (!this.shipmentAuth.hasWriteRights(agent, args.shipmentId)) {
+    const hasWriteRights = await this.shipmentAuth.hasWriteRights(
+      agent,
+      args.shipmentId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
+
     if (!this.isSamplesAuthorized(agent, args.sampleIds)) {
       return rejection('NOT_AUTHORIZED');
     }

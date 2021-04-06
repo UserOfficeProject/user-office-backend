@@ -82,7 +82,12 @@ export default class SampleMutations {
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
   async updateSample(agent: UserWithRole | null, args: UpdateSampleArgs) {
-    if (!this.sampleAuthorization.hasWriteRights(agent, args.sampleId)) {
+    const hasWriteRights = await this.sampleAuthorization.hasWriteRights(
+      agent,
+      args.sampleId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
 
@@ -111,7 +116,12 @@ export default class SampleMutations {
   }
 
   async deleteSample(agent: UserWithRole | null, sampleId: number) {
-    if (!this.sampleAuthorization.hasWriteRights(agent, sampleId)) {
+    const hasWriteRights = await this.sampleAuthorization.hasWriteRights(
+      agent,
+      sampleId
+    );
+
+    if (hasWriteRights === false) {
       return rejection('NOT_AUTHORIZED');
     }
 

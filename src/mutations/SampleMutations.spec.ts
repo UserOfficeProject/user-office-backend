@@ -5,10 +5,12 @@ import { Tokens } from '../config/Tokens';
 import { SampleDataSourceMock } from '../datasources/mockups/SampleDataSource';
 import {
   dummySampleReviewer,
+  dummyUserNotOnProposalWithRole,
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
 import { Sample, SampleStatus } from '../models/Sample';
+import { isRejection } from '../rejection';
 import SampleMutations from './SampleMutations';
 
 const sampleMutations = container.resolve(SampleMutations);
@@ -84,4 +86,34 @@ test('Sample safety reviewer should be able to update the sample safety comment'
       safetyComment: newComment,
     })
   ).resolves.toHaveProperty('safetyComment', newComment);
+});
+
+test('User can delete sample', async () => {
+  const result = await sampleMutations.deleteSample(dummyUserWithRole, 1);
+  expect(isRejection(result)).toBeFalsy();
+});
+
+test('User not on proposal can not delete sample', async () => {
+  const result = await sampleMutations.deleteSample(
+    dummyUserNotOnProposalWithRole,
+    1
+  );
+  expect(isRejection(result)).toBeTruthy();
+});
+
+test('User can update sample', async () => {
+  const updatedTitle = 'Updated title';
+  const result = await sampleMutations.updateSample(dummyUserWithRole, {
+    sampleId: 1,
+    title: updatedTitle,
+  });
+  expect((result as Sample).title).toEqual(updatedTitle);
+});
+
+test('User not on proposal can not update sample', async () => {
+  const result = await sampleMutations.updateSample(
+    dummyUserNotOnProposalWithRole,
+    { sampleId: 1, title: 'Not my sample' }
+  );
+  expect(isRejection(result)).toBeTruthy();
 });
