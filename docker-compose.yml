@@ -1,4 +1,4 @@
-version: "3.1"
+version: '3.1'
 
 services:
   # used to proxy the scheduler UI FE and BE requests to the right container
@@ -8,8 +8,8 @@ services:
     image: traefik:1.7 # The official Traefik docker image
     command: --api --docker # Enables the web UI and tells Traefik to listen to docker
     ports:
-      - "33000:80" # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
+      - '33000:80' # The HTTP port
+      - '8080:8080' # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -39,10 +39,10 @@ services:
       - 54320:5432 # avoid collision
 
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: 'rabbitmq:3-management'
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - '15672:15672'
+      - '5672:5672'
     volumes:
       - ./rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
 
@@ -62,7 +62,7 @@ services:
       - SYS_ADMIN
 
   gateway:
-    image: "dmsc/duo-gateway:develop"
+    image: 'dmsc/duo-gateway:develop'
     environment:
       USER_OFFICE_BACKEND: http://host.docker.internal:4000/graphql
       USER_OFFICE_SCHEDULER_BACKEND: http://scheduler-backend:4000/graphql
@@ -72,17 +72,17 @@ services:
     ports:
       - 4100:4100
     labels:
-      - "traefik.frontend.rule=PathPrefix:/gateway"
-      - "traefik.port=4100"
+      - 'traefik.frontend.rule=PathPrefix:/gateway'
+      - 'traefik.port=4100'
 
   scheduler-frontend:
-    image: "dmsc/duo-scheduler-frontend:develop"
+    image: 'dmsc/duo-scheduler-frontend:develop'
     labels:
-      - "traefik.frontend.rule=PathPrefix:/"
-      - "traefik.port=80"
+      - 'traefik.frontend.rule=PathPrefix:/'
+      - 'traefik.port=80'
 
   scheduler-backend:
-    image: "dmsc/duo-scheduler-backend:develop"
+    image: 'dmsc/duo-scheduler-backend:develop'
     environment:
       NODE_ENV: development
       DATABASE_HOSTNAME: scheduler-db
@@ -91,7 +91,7 @@ services:
       DATABASE_PASSWORD: schedulerPassword
       DATABASE_DATABASE: scheduler
       SCHEDULER_CONFIG_AUTH_REDIRECT: http://localhost:3000/shared-auth
-      USER_OFFICE_ENDPOINT: http://backend:4000/graphql
+      USER_OFFICE_ENDPOINT: http://host.docker.internal:4000/graphql
       RABBITMQ_HOSTNAME: rabbitmq
     depends_on:
       - scheduler-db
