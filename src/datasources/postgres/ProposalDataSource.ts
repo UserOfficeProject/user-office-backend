@@ -103,7 +103,6 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           abstract: proposal.abstract,
           status_id: proposal.statusId,
           proposer_id: proposal.proposerId,
-          rank_order: proposal.rankOrder,
           final_status: proposal.finalStatus,
           comment_for_user: proposal.commentForUser,
           comment_for_management: proposal.commentForManagement,
@@ -304,7 +303,13 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     offset?: number
   ): Promise<{ totalCount: number; proposals: Proposal[] }> {
     return database
-      .select(['*', database.raw('count(*) OVER() AS full_count')])
+      .select([
+        'proposals.*',
+        'instrument_has_scientists.*',
+        'instrument_has_proposals.instrument_id',
+        'instrument_has_proposals.proposal_id',
+        database.raw('count(*) OVER() AS full_count'),
+      ])
       .from('proposals')
       .join('instrument_has_scientists', {
         'instrument_has_scientists.user_id': scientistId,
@@ -343,6 +348,26 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           query.whereRaw(
             `proposals.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
           );
+        }
+
+        if (filter?.questionFilter) {
+          const questionFilter = filter.questionFilter;
+          const questionFilterQuery = getQuestionDefinition(
+            questionFilter.dataType
+          ).filterQuery;
+          if (!questionFilterQuery) {
+            throw new Error(
+              `Filter query not implemented for ${filter.questionFilter.dataType}`
+            );
+          }
+          query
+            .leftJoin(
+              'answers',
+              'answers.questionary_id',
+              'proposals.questionary_id'
+            )
+            .andWhere('answers.question_id', questionFilter.questionId)
+            .modify(questionFilterQuery, questionFilter);
         }
 
         if (first) {
@@ -415,20 +440,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
   async cloneProposal(
     clonerId: number,
-    proposalId: number,
+    sourceProposal: Proposal,
     call: Call
   ): Promise<Proposal> {
-    const sourceProposal = await this.get(proposalId);
-
-    if (!sourceProposal) {
-      logger.logError(
-        'Could not clone proposal because source proposal does not exist',
-        { proposalId }
-      );
-
-      throw new Error('Could not clone proposal');
-    }
-
     const [newQuestionary]: QuestionaryRecord[] = (
       await database.raw(`
       INSERT INTO questionaries

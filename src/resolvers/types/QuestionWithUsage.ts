@@ -8,7 +8,7 @@ import { Template } from './Template';
 @ObjectType()
 export class QuestionWithUsage extends Question {}
 
-@Resolver((of) => QuestionWithUsage)
+@Resolver(() => QuestionWithUsage)
 export class QuestionWithAdminInfoResolver {
   @FieldResolver(() => [AnswerBasic])
   async answers(

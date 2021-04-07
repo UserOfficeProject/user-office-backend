@@ -95,7 +95,7 @@ export const dummyTemplateHasQuestionRelationFactory = (
 const create1Topic3FieldWithDependenciesQuestionarySteps = () => {
   return [
     new QuestionaryStep(
-      new Topic(0, 'General information', 1, 0, true),
+      new Topic(1, 'General information', 1, 0, true),
       false,
       [
         new Answer(
@@ -166,6 +166,19 @@ const create1Topic3FieldWithDependenciesQuestionarySteps = () => {
 };
 
 export class QuestionaryDataSourceMock implements QuestionaryDataSource {
+  constructor() {
+    this.init();
+  }
+
+  public init() {
+    dummyQuestionarySteps = create1Topic3FieldWithDependenciesQuestionarySteps();
+    dummyQuestionary = createDummyQuestionary();
+  }
+
+  async deleteAnswers(questionary_id: number, question_id: string[]) {
+    return;
+  }
+
   async getAnswers(questionId: string): Promise<AnswerBasic[]> {
     return [];
   }
@@ -179,16 +192,13 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   async clone(questionaryId: number): Promise<Questionary> {
     return createDummyQuestionary({ questionaryId: questionaryId + 1 });
   }
-  public init() {
-    dummyQuestionarySteps = create1Topic3FieldWithDependenciesQuestionarySteps();
-    dummyQuestionary = createDummyQuestionary();
-  }
+
   async getAnswer(answer_id: number): Promise<AnswerBasic> {
     return new AnswerBasic(answer_id, 1, 'questionId', '', new Date());
   }
 
   async getBlankQuestionarySteps(
-    templateId: number
+    _templateId: number
   ): Promise<QuestionaryStep[]> {
     return dummyQuestionarySteps;
   }
@@ -202,7 +212,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
 
   async updateAnswer(
-    proposalId: number,
+    _proposalId: number,
     questionId: string,
     answer: string
   ): Promise<string> {
@@ -224,14 +234,17 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
     return questionId;
   }
   async insertFiles(
-    proposalId: number,
-    questionId: string,
+    _proposalId: number,
+    _questionId: string,
     files: string[]
   ): Promise<string[]> {
     return files;
   }
 
-  async deleteFiles(proposalId: number, questionId: string): Promise<string[]> {
+  async deleteFiles(
+    _proposalId: number,
+    _questionId: string
+  ): Promise<string[]> {
     return ['file_id_012345'];
   }
 
@@ -242,13 +255,13 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
 
   async getQuestionarySteps(
-    questionary_id: number
+    _questionary_id: number
   ): Promise<QuestionaryStep[]> {
     return dummyQuestionarySteps;
   }
 
   async updateTopicCompleteness(
-    questionary_id: number, // TODO name this questionary_id
+    questionary_id: number,
     topic_id: number,
     isComplete: boolean
   ): Promise<void> {

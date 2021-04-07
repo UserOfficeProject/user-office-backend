@@ -1,3 +1,6 @@
+import { inject, injectable } from 'tsyringe';
+
+import { Tokens } from '../config/Tokens';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
@@ -6,8 +9,11 @@ import { UserWithRole } from '../models/User';
 import { QuestionsFilter } from '../resolvers/queries/QuestionsQuery';
 import { TemplatesArgs } from '../resolvers/queries/TemplatesQuery';
 
+@injectable()
 export default class TemplateQueries {
-  constructor(private dataSource: TemplateDataSource) {}
+  constructor(
+    @inject(Tokens.TemplateDataSource) private dataSource: TemplateDataSource
+  ) {}
 
   @Authorized()
   async getTemplate(agent: UserWithRole | null, templateId: number) {
@@ -49,13 +55,13 @@ export default class TemplateQueries {
   }
 
   @Authorized([Roles.USER_OFFICER])
-  getTemplateCategories(user: UserWithRole | null) {
+  getTemplateCategories(_user: UserWithRole | null) {
     return this.dataSource.getTemplateCategories();
   }
 
   @Authorized()
   getActiveTemplateId(
-    user: UserWithRole | null,
+    _user: UserWithRole | null,
     templateCategoryId: TemplateCategoryId
   ) {
     return this.dataSource.getActiveTemplateId(templateCategoryId);
