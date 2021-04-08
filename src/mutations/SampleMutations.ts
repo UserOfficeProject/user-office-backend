@@ -148,7 +148,7 @@ export default class SampleMutations {
     }
 
     try {
-      return await this.sampleDataSource.clone(sampleId);
+      return await this.sampleDataSource.cloneSample(sampleId);
     } catch (e) {
       logger.logError('Could not clone sample', e);
 

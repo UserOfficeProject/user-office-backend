@@ -30,7 +30,7 @@ export const sampleDeclarationDefinition: Question = {
     const sampleIds = answer as number[];
     const clonedSampleIds = [];
     for await (const sampleId of sampleIds) {
-      const clonedSample = await sampleDataSource.clone(sampleId);
+      const clonedSample = await sampleDataSource.cloneSample(sampleId);
       if (!isRejection(clonedSample)) {
         clonedSampleIds.push(clonedSample.id);
       }

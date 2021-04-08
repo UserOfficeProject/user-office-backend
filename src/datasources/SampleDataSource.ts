@@ -5,7 +5,7 @@ import { SamplesArgs } from '../resolvers/queries/SamplesQuery';
 
 export interface SampleDataSource {
   delete(sampleId: number): Promise<Sample>;
-  clone(sampleId: number): Promise<Sample | Rejection>;
+  cloneSample(sampleId: number): Promise<Sample | Rejection>;
   updateSample(
     args: UpdateSampleArgs & { proposalId?: number }
   ): Promise<Sample>;

@@ -16,7 +16,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
     @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource
   ) {}
-  async clone(sampleId: number): Promise<Sample> {
+  async cloneSample(sampleId: number): Promise<Sample> {
     const sourceSample = await this.getSample(sampleId);
     if (!sourceSample) {
       logger.logError(

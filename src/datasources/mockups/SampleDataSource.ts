@@ -77,7 +77,7 @@ export class SampleDataSourceMock implements SampleDataSource {
     return sample;
   }
 
-  async clone(sampleId: number): Promise<Sample | Rejection> {
+  async cloneSample(sampleId: number): Promise<Sample | Rejection> {
     const sample = await this.getSample(sampleId);
     if (!sample) {
       return rejection('NOT_FOUND');
