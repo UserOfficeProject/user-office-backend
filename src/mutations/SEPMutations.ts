@@ -12,7 +12,9 @@ import {
   saveSepMeetingDecisionValidationSchema,
   overwriteSepMeetingDecisionRankingValidationSchema,
 } from '@esss-swap/duo-validation';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataSource';
@@ -36,18 +38,25 @@ import {
 import { AssignProposalToSEPArgs } from '../resolvers/mutations/AssignProposalToSEP';
 import { CreateSEPArgs } from '../resolvers/mutations/CreateSEPMutation';
 import { OverwriteSepMeetingDecisionRankingInput } from '../resolvers/mutations/OverwriteSepMeetingDecisionRankingMutation';
+import { ReorderSepMeetingDecisionProposalsInput } from '../resolvers/mutations/ReorderSepMeetingDecisionProposalsMutation';
 import { SaveSEPMeetingDecisionInput } from '../resolvers/mutations/SEPMeetingDecisionMutation';
 import { UpdateSEPArgs } from '../resolvers/mutations/UpdateSEPMutation';
 import { UpdateSEPTimeAllocationArgs } from '../resolvers/mutations/UpdateSEPProposalMutation';
 import { UserAuthorization } from '../utils/UserAuthorization';
-
+@injectable()
 export default class SEPMutations {
   constructor(
+    @inject(Tokens.SEPDataSource)
     private dataSource: SEPDataSource,
+    @inject(Tokens.InstrumentDataSource)
     private instrumentDataSource: InstrumentDataSource,
+    @inject(Tokens.UserAuthorization)
     private userAuth: UserAuthorization,
+    @inject(Tokens.UserDataSource)
     private userDataSource: UserDataSource,
+    @inject(Tokens.ProposalSettingsDataSource)
     private proposalSettingsDataSource: ProposalSettingsDataSource,
+    @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource
   ) {}
 
@@ -471,5 +480,24 @@ export default class SEPMutations {
 
         return rejection('INTERNAL_ERROR');
       });
+  }
+
+  @Authorized([Roles.USER_OFFICER])
+  @EventBus(Event.PROPOSAL_SEP_MEETING_REORDER)
+  async reorderSepMeetingDecisionProposals(
+    agent: UserWithRole | null,
+    args: ReorderSepMeetingDecisionProposalsInput
+  ): Promise<SepMeetingDecision | Rejection> {
+    const allSepDecisions = await Promise.all(
+      args.proposals.map((proposal) => {
+        return this.dataSource.saveSepMeetingDecision(proposal);
+      })
+    );
+
+    if (allSepDecisions.length !== args.proposals.length) {
+      return rejection('NOT_FOUND');
+    }
+
+    return allSepDecisions[0];
   }
 }

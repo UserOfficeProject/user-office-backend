@@ -1,5 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
+import { container } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { eventBus } from '../events';
@@ -12,10 +14,14 @@ import { TechnicalReviewStatus } from '../models/TechnicalReview';
 import { checkAllReviewsSubmittedOnProposal } from '../utils/helperFunctions';
 import { workflowEngine, WorkflowEngineProposalType } from '../workflowEngine';
 
-export default function createHandler(
-  proposalDataSource: ProposalDataSource,
-  reviewDataSource: ReviewDataSource
-) {
+export default function createHandler() {
+  const proposalDataSource = container.resolve<ProposalDataSource>(
+    Tokens.ProposalDataSource
+  );
+  const reviewDataSource = container.resolve<ReviewDataSource>(
+    Tokens.ReviewDataSource
+  );
+
   // Handler to align input for workflowEngine
 
   return async function proposalWorkflowHandler(event: ApplicationEvent) {
@@ -283,6 +289,7 @@ export default function createHandler(
         }
         break;
       case Event.PROPOSAL_SEP_MEETING_RANKING_OVERWRITTEN:
+      case Event.PROPOSAL_SEP_MEETING_REORDER:
         try {
           const proposal = await proposalDataSource.get(
             event.sepmeetingdecision.proposalId
