@@ -6,7 +6,10 @@ import {
   Questionary,
   QuestionaryStep,
 } from '../../models/Questionary';
-import { getDefaultAnswerValue } from '../../models/questionTypes/QuestionRegistry';
+import {
+  getDefaultAnswerValue,
+  getQuestionDefinition,
+} from '../../models/questionTypes/QuestionRegistry';
 import { FieldDependency } from '../../models/Template';
 import { QuestionaryDataSource } from '../QuestionaryDataSource';
 import database from './database';
@@ -338,28 +341,30 @@ export default class PostgresQuestionaryDataSource
       sourceQuestionary.templateId
     );
 
-    // Clone answers
-    await database.raw(
-      `
-      INSERT INTO answers(
-          questionary_id
-        , question_id
-        , answer
-      )
-      SELECT 
-          :clonedQuestionaryId
-        , question_id
-        , answer
-      FROM 
-        answers
-      WHERE
-        questionary_id = :sourceQuestionaryId
-    `,
-      {
-        clonedQuestionaryId: clonedQuestionary.questionaryId,
-        sourceQuestionaryId: sourceQuestionary.questionaryId,
+    const originalAnswers = (
+      await this.getQuestionarySteps(questionaryId)
+    ).flatMap((step) => step.fields);
+
+    for await (const originalAnswer of originalAnswers) {
+      const questionDefinition = getQuestionDefinition(
+        originalAnswer.question.dataType
+      );
+      if (questionDefinition.isReadOnly) {
+        continue;
       }
-    );
+
+      const clonedValue =
+        (await questionDefinition.clone?.(originalAnswer.value)) ??
+        originalAnswer.value;
+
+      await database
+        .insert({
+          questionary_id: clonedQuestionary.questionaryId,
+          question_id: originalAnswer.question.id,
+          answer: JSON.stringify({ value: clonedValue }),
+        })
+        .into('answers');
+    }
 
     await database.raw(
       `

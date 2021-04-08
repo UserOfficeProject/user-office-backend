@@ -1,4 +1,5 @@
 import { Sample, SampleStatus } from '../../models/Sample';
+import { rejection, Rejection } from '../../rejection';
 import { UpdateSampleArgs } from '../../resolvers/mutations/UpdateSampleMutation';
 import { SamplesArgs } from '../../resolvers/queries/SamplesQuery';
 import { SampleDataSource } from '../SampleDataSource';
@@ -24,8 +25,8 @@ export class SampleDataSourceMock implements SampleDataSource {
       ),
     ];
   }
-  async getSample(sampleId: number): Promise<Sample> {
-    return this.samples.find((sample) => sample.id === sampleId)!;
+  async getSample(sampleId: number): Promise<Sample | null> {
+    return this.samples.find((sample) => sample.id === sampleId) || null;
   }
 
   async getSamples(_args: SamplesArgs): Promise<Sample[]> {
@@ -62,8 +63,13 @@ export class SampleDataSourceMock implements SampleDataSource {
     )[0];
   }
 
-  async updateSample(args: UpdateSampleArgs): Promise<Sample> {
+  async updateSample(
+    args: UpdateSampleArgs & { proposalId?: number }
+  ): Promise<Sample> {
     const sample = await this.getSample(args.sampleId);
+    if (!sample) {
+      throw new Error('Sample not found');
+    }
     sample.title = args.title || sample.title;
     sample.safetyComment = args.safetyComment || sample.safetyComment;
     sample.safetyStatus = args.safetyStatus || sample.safetyStatus;
@@ -71,10 +77,13 @@ export class SampleDataSourceMock implements SampleDataSource {
     return sample;
   }
 
-  async cloneSample(sampleId: number): Promise<Sample> {
+  async clone(sampleId: number): Promise<Sample | Rejection> {
     const sample = await this.getSample(sampleId);
+    if (!sample) {
+      return rejection('NOT_FOUND');
+    }
 
-    return { ...sample, id: sample.id++ };
+    return sample;
   }
 
   async getSamplesByShipmentId(_shipmentId: number): Promise<Sample[]> {

@@ -1,13 +1,18 @@
 import { logger } from '@esss-swap/duo-logger';
 import BluePromise from 'bluebird';
 import { Transaction } from 'knex';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../../config/Tokens';
 import { Event } from '../../events/event.enum';
 import { Call } from '../../models/Call';
 import { Proposal, ProposalIdsWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
+import { DataType } from '../../models/Template';
 import { ProposalDataSource } from '../ProposalDataSource';
+import { QuestionaryDataSource } from '../QuestionaryDataSource';
+import { SampleDataSource } from '../SampleDataSource';
 import { ProposalsFilter } from './../../resolvers/queries/ProposalsQuery';
 import database from './database';
 import {
@@ -17,11 +22,17 @@ import {
   ProposalEventsRecord,
   ProposalRecord,
   ProposalViewRecord,
-  QuestionaryRecord,
   StatusChangingEventRecord,
 } from './records';
 
+@injectable()
 export default class PostgresProposalDataSource implements ProposalDataSource {
+  constructor(
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource,
+    @inject(Tokens.SampleDataSource)
+    private sampleDataSource: SampleDataSource
+  ) {}
   // TODO move this function to callDataSource
   public async checkActiveCall(callId: number): Promise<boolean> {
     const currentDate = new Date().toISOString();
@@ -443,40 +454,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     sourceProposal: Proposal,
     call: Call
   ): Promise<Proposal> {
-    const [newQuestionary]: QuestionaryRecord[] = (
-      await database.raw(`
-      INSERT INTO questionaries
-      (
-        template_id,
-        creator_id
-      )
-      SELECT
-        ${call.templateId},
-        ${clonerId}
-      FROM 
-        questionaries
-      WHERE
-        questionary_id = ${sourceProposal.questionaryId}
-      RETURNING *
-    `)
-    ).rows;
-
-    await database.raw(`
-      INSERT INTO answers
-      (
-        questionary_id,
-        question_id,
-        answer
-      )
-      SELECT
-        ${newQuestionary.questionary_id},
-        question_id,
-        answer
-      FROM 
-        answers
-      WHERE
-        questionary_id = ${sourceProposal.questionaryId}
-    `);
+    const newQuestionary = await this.questionaryDataSource.clone(
+      sourceProposal.questionaryId
+    );
 
     const [newProposal]: ProposalRecord[] = (
       await database.raw(`
@@ -495,9 +475,9 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         'Copy of ${sourceProposal.title}',
         abstract,
         1,
-        proposer_id,
+        ${clonerId},
         ${call.id},
-        ${newQuestionary.questionary_id},
+        ${newQuestionary.questionaryId},
         false,
         false
       FROM 
@@ -524,7 +504,32 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       RETURNING *
     `);
 
+    // TODO this will be removed when data duplication task is fixed SWAP-1527
+    await this.assignSamplesToNewProposal(
+      newQuestionary.questionaryId,
+      newProposal.proposal_id
+    );
+
     return createProposalObject(newProposal);
+  }
+
+  async assignSamplesToNewProposal(questionaryId: number, proposalId: number) {
+    const samples = (
+      await this.questionaryDataSource.getQuestionarySteps(questionaryId)
+    ).flatMap((step) =>
+      step.fields.filter(
+        (field) => field.question.dataType === DataType.SAMPLE_DECLARATION
+      )
+    );
+
+    for await (const sample of samples) {
+      for await (const sampleId of sample.value as number[]) {
+        this.sampleDataSource.updateSample({
+          sampleId: sampleId,
+          proposalId: proposalId,
+        });
+      }
+    }
   }
 
   async resetProposalEvents(

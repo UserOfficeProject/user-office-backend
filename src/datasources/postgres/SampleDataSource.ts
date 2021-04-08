@@ -1,13 +1,45 @@
 import { logger } from '@esss-swap/duo-logger';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../../config/Tokens';
 import { Sample } from '../../models/Sample';
 import { UpdateSampleArgs } from '../../resolvers/mutations/UpdateSampleMutation';
 import { SamplesArgs } from '../../resolvers/queries/SamplesQuery';
+import { QuestionaryDataSource } from '../QuestionaryDataSource';
 import { SampleDataSource } from '../SampleDataSource';
 import database from './database';
 import { createSampleObject, SampleRecord } from './records';
 
+@injectable()
 export default class PostgresSampleDataSource implements SampleDataSource {
+  constructor(
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource
+  ) {}
+  async clone(sampleId: number): Promise<Sample> {
+    const sourceSample = await this.getSample(sampleId);
+    if (!sourceSample) {
+      logger.logError(
+        'Could not clone sample because source sample does not exist',
+        { sampleId }
+      );
+      throw new Error('Could not clone sample');
+    }
+
+    const newQuestionary = await this.questionaryDataSource.clone(
+      sourceSample.questionaryId
+    );
+
+    const newSample = await this.create(
+      sourceSample.title,
+      sourceSample.creatorId,
+      sourceSample.proposalId,
+      newQuestionary.questionaryId,
+      sourceSample.questionId
+    );
+
+    return newSample;
+  }
   delete(sampleId: number): Promise<Sample> {
     return database('samples')
       .where({ sample_id: sampleId })
@@ -22,13 +54,16 @@ export default class PostgresSampleDataSource implements SampleDataSource {
       });
   }
 
-  updateSample(args: UpdateSampleArgs): Promise<Sample> {
+  updateSample(
+    args: UpdateSampleArgs & { proposalId?: number }
+  ): Promise<Sample> {
     return database('samples')
       .update(
         {
           title: args.title,
           safety_comment: args.safetyComment,
           safety_status: args.safetyStatus,
+          proposal_id: args.proposalId,
         },
         '*'
       )

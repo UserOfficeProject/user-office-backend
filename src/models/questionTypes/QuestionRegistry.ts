@@ -1,6 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
 import Knex from 'knex';
 
+import { AnswerType } from '../../resolvers/CustomScalars';
 import { QuestionFilterInput } from '../../resolvers/queries/ProposalsQuery';
 import { DataType, QuestionTemplateRelation } from '../Template';
 import { booleanDefinition } from './Boolean';
@@ -28,6 +29,7 @@ export interface Question {
     query: Knex.QueryBuilder<any, any>,
     filter: QuestionFilterInput
   ) => any;
+  readonly clone?: (answer: AnswerType) => Promise<AnswerType>;
 }
 
 // Add new component definitions here
