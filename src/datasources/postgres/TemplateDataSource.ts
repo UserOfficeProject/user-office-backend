@@ -81,10 +81,13 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           query.where('category_id', filter.category);
         }
         if (filter?.dataType !== undefined) {
-          query.andWhere('data_type', filter.dataType);
+          query.whereIn('data_type', filter.dataType);
+        }
+        if (filter?.excludeDataType !== undefined) {
+          query.whereNotIn('data_type', filter.excludeDataType);
         }
         if (filter?.text !== undefined) {
-          query.andWhere('question', 'ilike', `%${filter.text}%`);
+          query.where('question', 'ilike', `%${filter.text}%`);
         }
       })
       .then((rows: QuestionRecord[]) => {

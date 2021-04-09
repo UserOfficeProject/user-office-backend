@@ -12,8 +12,11 @@ export class QuestionsFilter {
   @Field(() => TemplateCategoryId, { nullable: true })
   public category?: TemplateCategoryId;
 
-  @Field(() => DataType, { nullable: true })
-  public dataType?: DataType;
+  @Field(() => [DataType], { nullable: true })
+  public dataType?: DataType[];
+
+  @Field(() => [DataType], { nullable: true })
+  public excludeDataType?: DataType[];
 }
 
 @Resolver()
