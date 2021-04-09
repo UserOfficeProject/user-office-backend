@@ -1,6 +1,9 @@
 import { ProposalStatus } from '../../models/ProposalStatus';
 import { ProposalWorkflow } from '../../models/ProposalWorkflow';
-import { ProposalWorkflowConnection } from '../../models/ProposalWorkflowConnections';
+import {
+  NextAndPreviousProposalStatuses,
+  ProposalWorkflowConnection,
+} from '../../models/ProposalWorkflowConnections';
 import { StatusChangingEvent } from '../../models/StatusChangingEvent';
 import { AddProposalWorkflowStatusInput } from '../../resolvers/mutations/settings/AddProposalWorkflowStatusMutation';
 import { CreateProposalStatusInput } from '../../resolvers/mutations/settings/CreateProposalStatusMutation';
@@ -316,10 +319,7 @@ export default class PostgresProposalSettingsDataSource
     {
       nextProposalStatusId,
       prevProposalStatusId,
-    }: {
-      nextProposalStatusId?: number | null;
-      prevProposalStatusId?: number | null;
-    }
+    }: NextAndPreviousProposalStatuses
   ): Promise<ProposalWorkflowConnection[]> {
     const proposalWorkflowConnectionRecords: (ProposalWorkflowConnectionRecord &
       ProposalStatusRecord)[] = await database
