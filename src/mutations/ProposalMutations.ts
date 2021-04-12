@@ -437,7 +437,7 @@ export default class ProposalMutations {
 
       // if user clones the proposal then it is his/her,
       // but if userofficer, then it will belong to original proposer
-      const proposerId = (await this.userAuth.isUserOfficer(agent))
+      const proposerId = this.userAuth.isUserOfficer(agent)
         ? sourceProposal.proposerId
         : agent!.id;
 
