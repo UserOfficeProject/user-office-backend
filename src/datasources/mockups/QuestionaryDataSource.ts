@@ -169,6 +169,9 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   constructor() {
     this.init();
   }
+  async getIsCompleted(questionaryId: number): Promise<boolean> {
+    return true;
+  }
 
   public init() {
     dummyQuestionarySteps = create1Topic3FieldWithDependenciesQuestionarySteps();
