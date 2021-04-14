@@ -21,7 +21,8 @@ const getProposalWorkflowConnectionByStatusId = (
 ) => {
   return proposalSettingsDataSource.getProposalWorkflowConnectionsById(
     proposalWorkflowId,
-    proposalStatusId
+    proposalStatusId,
+    {}
   );
 };
 
@@ -95,19 +96,17 @@ export const workflowEngine = async (
         return;
       }
 
-      const [
-        nextWorkflowConnection,
-      ] = await getProposalWorkflowConnectionByStatusId(
+      const nextWorkflowConnections = await getProposalWorkflowConnectionByStatusId(
         proposalWorkflow.id,
         currentWorkflowConnection.nextProposalStatusId
       );
 
-      if (!nextWorkflowConnection) {
+      if (!nextWorkflowConnections?.length) {
         return;
       }
 
-      const statusChangingEvents = await proposalSettingsDataSource.getStatusChangingEventsByConnectionId(
-        nextWorkflowConnection.id
+      const statusChangingEvents = await proposalSettingsDataSource.getStatusChangingEventsByConnectionIds(
+        nextWorkflowConnections.map((connection) => connection.id)
       );
 
       if (!statusChangingEvents) {
@@ -128,7 +127,7 @@ export const workflowEngine = async (
       ) {
         return updateProposalStatus(
           proposal.id,
-          nextWorkflowConnection.proposalStatusId
+          currentWorkflowConnection.nextProposalStatusId
         );
       }
     })
