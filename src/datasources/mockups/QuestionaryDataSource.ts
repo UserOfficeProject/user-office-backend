@@ -169,9 +169,6 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   constructor() {
     this.init();
   }
-  async getIsCompleted(questionaryId: number): Promise<boolean> {
-    return true;
-  }
 
   public init() {
     dummyQuestionarySteps = create1Topic3FieldWithDependenciesQuestionarySteps();
@@ -181,7 +178,6 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   async deleteAnswers(questionary_id: number, question_id: string[]) {
     return;
   }
-
   async getAnswers(questionId: string): Promise<AnswerBasic[]> {
     return [];
   }
@@ -190,6 +186,10 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   }
   async getCount(templateId: number): Promise<number> {
     return 1;
+  }
+
+  async getIsCompleted(questionaryId: number): Promise<boolean> {
+    return dummyQuestionarySteps.every((step) => step.isCompleted);
   }
 
   async clone(questionaryId: number): Promise<Questionary> {
