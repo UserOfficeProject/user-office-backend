@@ -119,10 +119,9 @@ export class UserResolver {
     @Arg('instrumentId', () => Int, { nullable: true })
     instrumentId?: number | null
   ) {
-    return context.queries.proposal.dataSource.getUserProposals(
-      user.id,
-      instrumentId
-    );
+    return context.queries.proposal.dataSource.getUserProposals(user.id, {
+      instrumentId,
+    });
   }
 
   @FieldResolver(() => [SEP])

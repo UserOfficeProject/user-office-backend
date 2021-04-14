@@ -23,7 +23,7 @@ export interface ProposalDataSource {
   ): Promise<{ totalCount: number; proposals: Proposal[] }>;
   getUserProposals(
     id: number,
-    instrumentId?: number | null
+    filter?: { instrumentId?: number | null }
   ): Promise<Proposal[]>;
 
   // Write
