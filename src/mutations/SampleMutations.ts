@@ -148,8 +148,8 @@ export default class SampleMutations {
     }
 
     try {
-      const clonedSample = await this.sampleDataSource.cloneSample(sampleId);
-      await this.sampleDataSource.updateSample({
+      let clonedSample = await this.sampleDataSource.cloneSample(sampleId);
+      clonedSample = await this.sampleDataSource.updateSample({
         sampleId: clonedSample.id,
         title: `Copy of ${clonedSample.title}`,
       });

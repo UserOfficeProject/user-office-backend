@@ -426,7 +426,7 @@ export default class ProposalMutations {
     }
 
     try {
-      const clonedProposal = await this.proposalDataSource.cloneProposal(
+      let clonedProposal = await this.proposalDataSource.cloneProposal(
         sourceProposal,
         call
       );
@@ -441,7 +441,7 @@ export default class ProposalMutations {
         ? sourceProposal.proposerId
         : agent!.id;
 
-      await this.proposalDataSource.update({
+      clonedProposal = await this.proposalDataSource.update({
         id: clonedProposal.id,
         title: `Copy of ${clonedProposal.title}`,
         abstract: clonedProposal.abstract,
