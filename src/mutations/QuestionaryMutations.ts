@@ -11,6 +11,7 @@ import {
   isMatchingConstraints,
   transformAnswerValueIfNeeded,
 } from '../models/ProposalModelFunctions';
+import { TemplateCategoryId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
 import { rejection } from '../rejection';
 import { AnswerTopicArgs } from '../resolvers/mutations/AnswerTopicMutation';
@@ -75,14 +76,6 @@ export default class QuestionaryMutations {
       return rejection('NOT_FOUND');
     }
 
-    const isUserOfficer = this.userAuth.isUserOfficer(agent);
-    const hasActiveCall = await this.callDataSource.checkActiveCallByQuestionaryId(
-      questionaryId
-    );
-    if (!isUserOfficer && !hasActiveCall) {
-      return rejection('NO_ACTIVE_CALL_FOUND');
-    }
-
     const template = await this.templateDataSource.getTemplate(
       questionary.templateId
     );
@@ -92,6 +85,18 @@ export default class QuestionaryMutations {
       });
 
       return rejection('NOT_FOUND');
+    }
+
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
+    const hasActiveCall = await this.callDataSource.checkActiveCallByQuestionaryId(
+      questionaryId
+    );
+    if (
+      template.templateId === TemplateCategoryId.PROPOSAL_QUESTIONARY &&
+      !isUserOfficer &&
+      !hasActiveCall
+    ) {
+      return rejection('NO_ACTIVE_CALL_FOUND');
     }
 
     const hasRights = await this.questionaryAuth.hasWriteRights(
