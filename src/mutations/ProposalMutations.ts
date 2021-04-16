@@ -152,17 +152,14 @@ export default class ProposalMutations {
       proposal.proposerId = proposerId;
     }
 
-    return this.proposalDataSource
-      .update(proposal)
-      .then((proposal) => proposal)
-      .catch((err) => {
-        logger.logException('Could not update proposal', err, {
-          agent,
-          id,
-        });
-
-        return rejection('INTERNAL_ERROR');
+    return this.proposalDataSource.update(proposal).catch((err) => {
+      logger.logException('Could not update proposal', err, {
+        agent,
+        id,
       });
+
+      return rejection('INTERNAL_ERROR');
+    });
   }
 
   @ValidateArgs(submitProposalValidationSchema)
@@ -194,17 +191,14 @@ export default class ProposalMutations {
       return rejection('NO_ACTIVE_CALL_FOUND');
     }
 
-    return this.proposalDataSource
-      .submitProposal(proposalId)
-      .then((proposal) => proposal)
-      .catch((e) => {
-        logger.logException('Could not submit proposal', e, {
-          agent,
-          proposalId,
-        });
-
-        return rejection('INTERNAL_ERROR');
+    return this.proposalDataSource.submitProposal(proposalId).catch((e) => {
+      logger.logException('Could not submit proposal', e, {
+        agent,
+        proposalId,
       });
+
+      return rejection('INTERNAL_ERROR');
+    });
   }
 
   @ValidateArgs(deleteProposalValidationSchema)

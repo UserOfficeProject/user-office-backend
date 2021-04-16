@@ -14,6 +14,8 @@ import { ProposalsFilter } from './../../resolvers/queries/ProposalsQuery';
 
 export let dummyProposal: Proposal;
 export let dummyProposalSubmitted: Proposal;
+export let dummyProposalWithNotActiveCall: Proposal;
+
 let allProposals: Proposal[];
 
 export type DeepPartial<T> = {
@@ -60,9 +62,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   constructor() {
     this.init();
   }
-  checkActiveCallByQuestionaryId(questionaryId: number): Promise<boolean> {
-    throw new Error('Method not implemented.');
-  }
+
   async getProposalsFromView(
     filter?: ProposalsFilter | undefined
   ): Promise<ProposalView[]> {
@@ -78,7 +78,17 @@ export class ProposalDataSourceMock implements ProposalDataSource {
       notified: true,
     });
 
-    allProposals = [dummyProposal, dummyProposalSubmitted];
+    dummyProposalWithNotActiveCall = dummyProposalFactory({
+      id: 3,
+      questionaryId: 2,
+      callId: 2,
+    });
+
+    allProposals = [
+      dummyProposal,
+      dummyProposalSubmitted,
+      dummyProposalWithNotActiveCall,
+    ];
   }
 
   async deleteProposal(id: number): Promise<Proposal> {
@@ -89,7 +99,13 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async checkActiveCall(callId: number): Promise<boolean> {
-    return true;
+    return callId === 1;
+  }
+
+  async checkActiveCallByQuestionaryId(
+    questionaryId: number
+  ): Promise<boolean> {
+    return questionaryId === 1;
   }
 
   async rejectProposal(proposalId: number): Promise<Proposal> {
@@ -103,12 +119,13 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async update(proposal: Proposal): Promise<Proposal> {
-    if (proposal.id !== dummyProposal.id) {
+    const foundIndex = allProposals.findIndex(({ id }) => proposal.id === id);
+
+    if (foundIndex === -1) {
       throw new Error('Proposal does not exist');
     }
-    dummyProposal = proposal;
 
-    return dummyProposal;
+    return proposal;
   }
 
   async updateProposalStatus(
@@ -127,12 +144,16 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async submitProposal(id: number): Promise<Proposal> {
-    if (id !== dummyProposal.id) {
+    const found = allProposals.find((proposal) => proposal.id === id);
+
+    if (!found) {
       throw new Error('Wrong ID');
     }
-    dummyProposal.submitted = true;
 
-    return dummyProposal;
+    const newObj = { ...found, submitted: true };
+    Object.setPrototypeOf(newObj, Proposal.prototype);
+
+    return newObj;
   }
 
   async get(id: number) {
