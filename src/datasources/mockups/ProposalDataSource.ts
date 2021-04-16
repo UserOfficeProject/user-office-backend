@@ -98,16 +98,6 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     return dummyProposalRef;
   }
 
-  async checkActiveCall(callId: number): Promise<boolean> {
-    return callId === 1;
-  }
-
-  async checkActiveCallByQuestionaryId(
-    questionaryId: number
-  ): Promise<boolean> {
-    return questionaryId === 1;
-  }
-
   async rejectProposal(proposalId: number): Promise<Proposal> {
     if (dummyProposal.id !== proposalId) {
       throw new Error('Wrong ID');

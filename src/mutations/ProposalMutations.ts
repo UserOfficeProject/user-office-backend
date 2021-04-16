@@ -60,7 +60,7 @@ export default class ProposalMutations {
     { callId }: { callId: number }
   ): Promise<Proposal | Rejection> {
     // Check if there is an open call
-    if (!(await this.proposalDataSource.checkActiveCall(callId))) {
+    if (!(await this.callDataSource.checkActiveCall(callId))) {
       return rejection('NO_ACTIVE_CALL_FOUND');
     }
 
@@ -108,7 +108,7 @@ export default class ProposalMutations {
     // Check if the call is open
     if (
       !this.userAuth.isUserOfficer(agent) &&
-      !(await this.proposalDataSource.checkActiveCall(proposal.callId))
+      !(await this.callDataSource.checkActiveCall(proposal.callId))
     ) {
       return rejection('NO_ACTIVE_CALL_FOUND');
     }
@@ -184,7 +184,7 @@ export default class ProposalMutations {
     }
 
     // Check if there is an open call
-    const hasActiveCall = await this.proposalDataSource.checkActiveCall(
+    const hasActiveCall = await this.callDataSource.checkActiveCall(
       proposal.callId
     );
     if (!isUserOfficer && !hasActiveCall) {
@@ -399,7 +399,7 @@ export default class ProposalMutations {
     }
 
     // Check if there is an open call
-    if (!(await this.proposalDataSource.checkActiveCall(callId))) {
+    if (!(await this.callDataSource.checkActiveCall(callId))) {
       return rejection('NO_ACTIVE_CALL_FOUND');
     }
 

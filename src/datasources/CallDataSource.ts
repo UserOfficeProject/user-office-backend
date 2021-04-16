@@ -18,4 +18,6 @@ export interface CallDataSource {
     args: RemoveAssignedInstrumentFromCallInput
   ): Promise<Call>;
   getCallsByInstrumentScientist(scientistId: number): Promise<Call[]>;
+  checkActiveCall(callId: number): Promise<boolean>;
+  checkActiveCallByQuestionaryId(questionaryId: number): Promise<boolean>;
 }

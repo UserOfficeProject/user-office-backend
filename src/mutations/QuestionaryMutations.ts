@@ -2,6 +2,7 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
@@ -30,7 +31,9 @@ export default class QuestionaryMutations {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.UserAuthorization)
-    private userAuth: UserAuthorization
+    private userAuth: UserAuthorization,
+    @inject(Tokens.CallDataSource)
+    private callDataSource: CallDataSource
   ) {}
 
   async deleteOldAnswers(
@@ -73,7 +76,7 @@ export default class QuestionaryMutations {
     }
 
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
-    const hasActiveCall = await this.proposalDataSource.checkActiveCallByQuestionaryId(
+    const hasActiveCall = await this.callDataSource.checkActiveCallByQuestionaryId(
       questionaryId
     );
     if (!isUserOfficer && !hasActiveCall) {
