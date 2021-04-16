@@ -31,7 +31,6 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     @inject(Tokens.SampleDataSource)
     private sampleDataSource: SampleDataSource
   ) {}
-  // TODO move this function to callDataSource
 
   async submitProposal(id: number): Promise<Proposal> {
     return database
