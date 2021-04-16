@@ -167,11 +167,20 @@ export default class ProposalMutations {
       return rejection('INTERNAL_ERROR');
     }
 
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
     if (
-      !this.userAuth.isUserOfficer(agent) &&
+      !isUserOfficer &&
       !(await this.userAuth.isMemberOfProposal(agent, proposal))
     ) {
       return rejection('NOT_ALLOWED');
+    }
+
+    // Check if there is an open call
+    const hasActiveCall = await this.proposalDataSource.checkActiveCall(
+      proposal.callId
+    );
+    if (!isUserOfficer && !hasActiveCall) {
+      return rejection('NO_ACTIVE_CALL_FOUND');
     }
 
     return this.proposalDataSource

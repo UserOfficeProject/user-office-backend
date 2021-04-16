@@ -60,6 +60,9 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   constructor() {
     this.init();
   }
+  checkActiveCallByQuestionaryId(questionaryId: number): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
   async getProposalsFromView(
     filter?: ProposalsFilter | undefined
   ): Promise<ProposalView[]> {

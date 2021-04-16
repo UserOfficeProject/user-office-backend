@@ -36,6 +36,23 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       .then((call: CallRecord) => (call ? true : false));
   }
 
+  public async checkActiveCallByQuestionaryId(
+    questionaryId: number
+  ): Promise<boolean> {
+    const currentDate = new Date().toISOString();
+
+    const proposal = await database
+      .select()
+      .from('proposals')
+      .where('start_call', '<=', currentDate)
+      .andWhere('end_call', '>=', currentDate)
+      .andWhere('questionary_id', '=', questionaryId)
+      .innerJoin('call', { 'call.call_id': 'proposals.call_id' })
+      .first();
+
+    return proposal ? true : false;
+  }
+
   async submitProposal(id: number): Promise<Proposal> {
     return database
       .update(

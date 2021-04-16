@@ -10,6 +10,7 @@ export interface ProposalDataSource {
   // Read
   get(id: number): Promise<Proposal | null>;
   checkActiveCall(callId: number): Promise<boolean>;
+  checkActiveCallByQuestionaryId(questionaryId: number): Promise<boolean>;
   getProposals(
     filter?: ProposalsFilter,
     first?: number,

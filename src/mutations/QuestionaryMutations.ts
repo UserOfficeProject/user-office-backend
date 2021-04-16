@@ -2,6 +2,7 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { Authorized } from '../decorators';
@@ -9,12 +10,14 @@ import {
   isMatchingConstraints,
   transformAnswerValueIfNeeded,
 } from '../models/ProposalModelFunctions';
-import { User } from '../models/User';
+import { User, UserWithRole } from '../models/User';
 import { rejection } from '../rejection';
 import { AnswerTopicArgs } from '../resolvers/mutations/AnswerTopicMutation';
 import { CreateQuestionaryArgs } from '../resolvers/mutations/CreateQuestionaryMutation';
 import { UpdateAnswerArgs } from '../resolvers/mutations/UpdateAnswerMutation';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
+import { UserAuthorization } from '../utils/UserAuthorization';
+
 @injectable()
 export default class QuestionaryMutations {
   constructor(
@@ -23,7 +26,11 @@ export default class QuestionaryMutations {
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.QuestionaryAuthorization)
-    private questionaryAuth: QuestionaryAuthorization
+    private questionaryAuth: QuestionaryAuthorization,
+    @inject(Tokens.ProposalDataSource)
+    private proposalDataSource: ProposalDataSource,
+    @inject(Tokens.UserAuthorization)
+    private userAuth: UserAuthorization
   ) {}
 
   async deleteOldAnswers(
@@ -53,7 +60,7 @@ export default class QuestionaryMutations {
   }
 
   @Authorized()
-  async answerTopic(agent: User | null, args: AnswerTopicArgs) {
+  async answerTopic(agent: UserWithRole | null, args: AnswerTopicArgs) {
     const { questionaryId, topicId, answers, isPartialSave } = args;
 
     const questionary = await this.dataSource.getQuestionary(questionaryId);
@@ -64,6 +71,15 @@ export default class QuestionaryMutations {
 
       return rejection('NOT_FOUND');
     }
+
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
+    const hasActiveCall = await this.proposalDataSource.checkActiveCallByQuestionaryId(
+      questionaryId
+    );
+    if (!isUserOfficer && !hasActiveCall) {
+      return rejection('NO_ACTIVE_CALL_FOUND');
+    }
+
     const template = await this.templateDataSource.getTemplate(
       questionary.templateId
     );
