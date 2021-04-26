@@ -2,8 +2,6 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { CallDataSource } from '../datasources/CallDataSource';
-import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { Authorized } from '../decorators';
@@ -11,14 +9,12 @@ import {
   isMatchingConstraints,
   transformAnswerValueIfNeeded,
 } from '../models/ProposalModelFunctions';
-import { TemplateCategoryId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
 import { rejection } from '../rejection';
 import { AnswerTopicArgs } from '../resolvers/mutations/AnswerTopicMutation';
 import { CreateQuestionaryArgs } from '../resolvers/mutations/CreateQuestionaryMutation';
 import { UpdateAnswerArgs } from '../resolvers/mutations/UpdateAnswerMutation';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
 
 @injectable()
 export default class QuestionaryMutations {
@@ -28,13 +24,7 @@ export default class QuestionaryMutations {
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.QuestionaryAuthorization)
-    private questionaryAuth: QuestionaryAuthorization,
-    @inject(Tokens.ProposalDataSource)
-    private proposalDataSource: ProposalDataSource,
-    @inject(Tokens.UserAuthorization)
-    private userAuth: UserAuthorization,
-    @inject(Tokens.CallDataSource)
-    private callDataSource: CallDataSource
+    private questionaryAuth: QuestionaryAuthorization
   ) {}
 
   async deleteOldAnswers(
@@ -75,7 +65,6 @@ export default class QuestionaryMutations {
 
       return rejection('NOT_FOUND');
     }
-
     const template = await this.templateDataSource.getTemplate(
       questionary.templateId
     );
@@ -85,18 +74,6 @@ export default class QuestionaryMutations {
       });
 
       return rejection('NOT_FOUND');
-    }
-
-    const isUserOfficer = this.userAuth.isUserOfficer(agent);
-    const hasActiveCall = await this.callDataSource.checkActiveCallByQuestionaryId(
-      questionaryId
-    );
-    if (
-      template.templateId === TemplateCategoryId.PROPOSAL_QUESTIONARY &&
-      !isUserOfficer &&
-      !hasActiveCall
-    ) {
-      return rejection('NO_ACTIVE_CALL_FOUND');
     }
 
     const hasRights = await this.questionaryAuth.hasWriteRights(

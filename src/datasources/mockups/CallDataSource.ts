@@ -111,10 +111,4 @@ export class CallDataSourceMock implements CallDataSource {
   async checkActiveCall(callId: number): Promise<boolean> {
     return callId === 1;
   }
-
-  async checkActiveCallByQuestionaryId(
-    questionaryId: number
-  ): Promise<boolean> {
-    return questionaryId === 1;
-  }
 }

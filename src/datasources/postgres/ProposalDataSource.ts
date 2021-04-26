@@ -1,16 +1,13 @@
 import { logger } from '@esss-swap/duo-logger';
 import BluePromise from 'bluebird';
 import { Transaction } from 'knex';
-import { inject, injectable } from 'tsyringe';
+import { injectable } from 'tsyringe';
 
-import { Tokens } from '../../config/Tokens';
 import { Event } from '../../events/event.enum';
 import { Proposal, ProposalIdsWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
 import { ProposalDataSource } from '../ProposalDataSource';
-import { QuestionaryDataSource } from '../QuestionaryDataSource';
-import { SampleDataSource } from '../SampleDataSource';
 import { ProposalsFilter } from './../../resolvers/queries/ProposalsQuery';
 import database from './database';
 import {
@@ -25,13 +22,6 @@ import {
 
 @injectable()
 export default class PostgresProposalDataSource implements ProposalDataSource {
-  constructor(
-    @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource,
-    @inject(Tokens.SampleDataSource)
-    private sampleDataSource: SampleDataSource
-  ) {}
-
   async submitProposal(id: number): Promise<Proposal> {
     return database
       .update(

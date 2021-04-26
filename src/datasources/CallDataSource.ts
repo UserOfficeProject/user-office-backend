@@ -19,5 +19,4 @@ export interface CallDataSource {
   ): Promise<Call>;
   getCallsByInstrumentScientist(scientistId: number): Promise<Call[]>;
   checkActiveCall(callId: number): Promise<boolean>;
-  checkActiveCallByQuestionaryId(questionaryId: number): Promise<boolean>;
 }

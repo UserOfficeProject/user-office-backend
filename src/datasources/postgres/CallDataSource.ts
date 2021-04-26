@@ -210,21 +210,4 @@ export default class PostgresCallDataSource implements CallDataSource {
       .first()
       .then((call: CallRecord) => (call ? true : false));
   }
-
-  public async checkActiveCallByQuestionaryId(
-    questionaryId: number
-  ): Promise<boolean> {
-    const currentDate = new Date().toISOString();
-
-    const call = await database
-      .select()
-      .from('call')
-      .where('start_call', '<=', currentDate)
-      .andWhere('end_call', '>=', currentDate)
-      .andWhere('proposals.questionary_id', '=', questionaryId)
-      .innerJoin('proposals', { 'proposals.call_id': 'call.call_id' })
-      .first();
-
-    return call ? true : false;
-  }
 }
