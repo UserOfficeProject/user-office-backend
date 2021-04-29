@@ -270,7 +270,8 @@ export default class ProposalSettingsMutations {
       if (secondLastConnection) {
         await this.dataSource.deleteProposalWorkflowStatus(
           secondLastConnection.proposalStatusId,
-          secondLastConnection.proposalWorkflowId
+          secondLastConnection.proposalWorkflowId,
+          secondLastConnection.sortOrder
         );
       }
 
@@ -505,7 +506,7 @@ export default class ProposalSettingsMutations {
       const workflowConnectionsToRemove = await this.dataSource.getProposalWorkflowConnectionsById(
         args.proposalWorkflowId,
         args.proposalStatusId,
-        {}
+        { sortOrder: args.sortOrder }
       );
 
       const [firstWorkflowConnectionToRemove] = workflowConnectionsToRemove;
@@ -576,12 +577,14 @@ export default class ProposalSettingsMutations {
 
         await this.dataSource.deleteProposalWorkflowStatus(
           workflowConnectionToReplaceRemoved.proposalStatusId,
-          workflowConnectionToReplaceRemoved.proposalWorkflowId
+          workflowConnectionToReplaceRemoved.proposalWorkflowId,
+          workflowConnectionToReplaceRemoved.sortOrder
         );
       } else {
         const result = await this.dataSource.deleteProposalWorkflowStatus(
           args.proposalStatusId,
-          args.proposalWorkflowId
+          args.proposalWorkflowId,
+          args.sortOrder
         );
 
         const [
