@@ -31,7 +31,8 @@ export default class PostgresInstrumentDataSource
       instrument.instrument_id,
       instrument.name,
       instrument.short_code,
-      instrument.description
+      instrument.description,
+      instrument.manager_user_id
     );
   }
 
@@ -43,6 +44,7 @@ export default class PostgresInstrumentDataSource
       instrument.name,
       instrument.short_code,
       instrument.description,
+      instrument.manager_user_id,
       instrument.availability_time,
       instrument.submitted
     );
@@ -173,6 +175,7 @@ export default class PostgresInstrumentDataSource
           name: instrument.name,
           short_code: instrument.shortCode,
           description: instrument.description,
+          manager_user_id: instrument.managerUserId,
         },
         ['*']
       )

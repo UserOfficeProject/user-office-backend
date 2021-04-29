@@ -328,6 +328,7 @@ export interface InstrumentRecord {
   readonly name: string;
   readonly short_code: string;
   readonly description: string;
+  readonly manager_user_id: number | null;
   readonly full_count: number;
 }
 
@@ -342,6 +343,7 @@ export interface InstrumentWithAvailabilityTimeRecord {
   readonly name: string;
   readonly short_code: string;
   readonly description: string;
+  readonly manager_user_id: number | null;
   readonly availability_time: number;
   readonly submitted: boolean;
   readonly proposal_count: number;
