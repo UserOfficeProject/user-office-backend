@@ -198,7 +198,7 @@ export default class ProposalSettingsMutations {
     return await this.dataSource.deleteProposalWorkflowStatus(
       lastConnectionInParentDroppableGroup.proposalStatusId,
       lastConnectionInParentDroppableGroup.proposalWorkflowId,
-      lastConnectionInParentDroppableGroup.nextProposalStatusId as number
+      lastConnectionInParentDroppableGroup.sortOrder
     );
   }
 
@@ -268,10 +268,18 @@ export default class ProposalSettingsMutations {
 
       // Delete connection between second last and last connection if there is one.
       if (secondLastConnection) {
+        const secondLastConnectionInitialSortOrder = proposalWorkflowConnections.find(
+          (proposalWorkflowConnection) =>
+            proposalWorkflowConnection.proposalStatusId ===
+              secondLastConnection.proposalStatusId &&
+            proposalWorkflowConnection.prevProposalStatusId ===
+              secondLastConnection.prevProposalStatusId
+        )?.sortOrder;
+
         await this.dataSource.deleteProposalWorkflowStatus(
           secondLastConnection.proposalStatusId,
           secondLastConnection.proposalWorkflowId,
-          secondLastConnection.sortOrder
+          secondLastConnectionInitialSortOrder || secondLastConnection.sortOrder
         );
       }
 

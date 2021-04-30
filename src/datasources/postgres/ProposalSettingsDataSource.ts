@@ -284,7 +284,7 @@ export default class PostgresProposalSettingsDataSource
 
     const getUniqueOrderedProposalWorkflowConnectionsQuery = `
       SELECT * FROM (
-        SELECT DISTINCT ON (pwc.proposal_status_id, pwc.prev_proposal_status_id) *
+        SELECT DISTINCT ON (pwc.proposal_status_id, pwc.sort_order, pwc.droppable_group_id) *
         FROM proposal_workflow_connections as pwc
         LEFT JOIN
           proposal_statuses as ps
