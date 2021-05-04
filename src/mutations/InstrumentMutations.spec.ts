@@ -52,6 +52,7 @@ describe('Test Instrument Mutations', () => {
       name: 'Test Instrument 1',
       shortCode: '2020-06-15',
       description: 'Test instrument description 1',
+      managerUserId: 1,
     };
 
     return expect(

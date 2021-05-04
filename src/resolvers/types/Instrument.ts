@@ -29,8 +29,8 @@ export class Instrument implements Partial<InstrumentOrigin> {
   @Field()
   public description: string;
 
-  @Field(() => Int, { nullable: true })
-  public managerUserId: number | null;
+  @Field(() => Int)
+  public managerUserId: number;
 }
 
 @ObjectType()

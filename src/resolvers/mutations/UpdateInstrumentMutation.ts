@@ -30,8 +30,8 @@ export class UpdateInstrumentArgs {
   @Field(() => String)
   public description: string;
 
-  @Field(() => Int, { nullable: true })
-  public managerUserId: number | null;
+  @Field(() => Int)
+  public managerUserId: number;
 }
 
 @ArgsType()

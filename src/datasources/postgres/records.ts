@@ -65,6 +65,7 @@ export interface ProposalRecord {
   readonly reference_number_sequence: number;
   readonly management_time_allocation: number;
   readonly management_decision_submitted: boolean;
+  readonly technical_review_assignee: number;
 }
 
 export interface ProposalViewRecord {
@@ -328,7 +329,7 @@ export interface InstrumentRecord {
   readonly name: string;
   readonly short_code: string;
   readonly description: string;
-  readonly manager_user_id: number | null;
+  readonly manager_user_id: number;
   readonly full_count: number;
 }
 
@@ -343,7 +344,7 @@ export interface InstrumentWithAvailabilityTimeRecord {
   readonly name: string;
   readonly short_code: string;
   readonly description: string;
-  readonly manager_user_id: number | null;
+  readonly manager_user_id: number;
   readonly availability_time: number;
   readonly submitted: boolean;
   readonly proposal_count: number;
@@ -521,7 +522,8 @@ export const createProposalObject = (proposal: ProposalRecord) => {
     proposal.submitted,
     proposal.reference_number_sequence,
     proposal.management_time_allocation,
-    proposal.management_decision_submitted
+    proposal.management_decision_submitted,
+    proposal.technical_review_assignee
   );
 };
 

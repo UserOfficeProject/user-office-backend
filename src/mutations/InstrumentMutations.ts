@@ -38,12 +38,15 @@ import {
 } from '../resolvers/mutations/UpdateInstrumentMutation';
 import { sortByRankOrAverageScore } from '../utils/mathFunctions';
 import { UserAuthorization } from '../utils/UserAuthorization';
+import { ProposalDataSource } from './../datasources/ProposalDataSource';
 @injectable()
 export default class InstrumentMutations {
   constructor(
     @inject(Tokens.InstrumentDataSource)
     private dataSource: InstrumentDataSource,
     @inject(Tokens.SEPDataSource) private sepDataSource: SEPDataSource,
+    @inject(Tokens.ProposalDataSource)
+    private proposalDataSource: ProposalDataSource,
     @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
@@ -139,14 +142,31 @@ export default class InstrumentMutations {
     );
 
     if (!allProposalsAreOnSameCallAsInstrument) {
+      logger.logError(
+        'Can not assign the proposal to the instrument because proposals call has no such intrument',
+        { agent, args }
+      );
+
       return rejection('NOT_ALLOWED');
     }
 
+    const instrument = await this.dataSource.get(args.instrumentId);
+
+    if (!instrument) {
+      logger.logError('Could not find instrument', { agent, args });
+
+      return rejection('NOT_FOUND');
+    }
+
+    const proposalIds = args.proposals.map((proposal) => proposal.id);
+
+    await this.proposalDataSource.updateProposalTechnicalReviewer({
+      userId: instrument.managerUserId,
+      proposalIds: proposalIds,
+    });
+
     return this.dataSource
-      .assignProposalsToInstrument(
-        args.proposals.map((proposal) => proposal.id),
-        args.instrumentId
-      )
+      .assignProposalsToInstrument(proposalIds, args.instrumentId)
       .then((result) => result)
       .catch((error) => {
         logger.logException(

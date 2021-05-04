@@ -115,6 +115,7 @@ export default class PostgresInstrumentDataSource
         'name',
         'short_code',
         'description',
+        'manager_user_id',
         'chi.availability_time',
       ])
       .from('instruments as i')

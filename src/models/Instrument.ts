@@ -4,7 +4,7 @@ export class Instrument {
     public name: string,
     public shortCode: string,
     public description: string,
-    public managerUserId: number | null
+    public managerUserId: number
   ) {}
 }
 
@@ -14,7 +14,7 @@ export class InstrumentWithAvailabilityTime extends Instrument {
     public name: string,
     public shortCode: string,
     public description: string,
-    public managerUserId: number | null,
+    public managerUserId: number,
     public availabilityTime: number,
     public submitted: boolean
   ) {
