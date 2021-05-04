@@ -214,6 +214,7 @@ export interface TechnicalReviewRecord {
   readonly time_allocation: number;
   readonly status: number;
   readonly submitted: boolean;
+  readonly reviewer_id: number;
 }
 
 export interface CallRecord {

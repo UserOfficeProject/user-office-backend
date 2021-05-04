@@ -157,6 +157,12 @@ export default class ReviewMutations {
       return rejection('NOT_ALLOWED');
     }
 
+    if (args.reviewerId !== undefined && args.reviewerId !== agent?.id) {
+      logger.logError('Request is impersonating another user', { args, agent });
+
+      return rejection('NOT_ALLOWED');
+    }
+
     return this.dataSource
       .setTechnicalReview(args, shouldUpdateReview)
       .then((review) => review)
@@ -210,7 +216,7 @@ export default class ReviewMutations {
     return true;
   }
 
-  @Authorized()
+  @Authorized([Roles.USER_OFFICER, Roles.INSTRUMENT_SCIENTIST])
   async updateTechnicalReviewAssignee(
     agent: UserWithRole | null,
     args: UpdateTechnicalReviewAssigneeInput
