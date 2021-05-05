@@ -124,7 +124,7 @@ export class UserAuthorization {
     agent: User | null,
     sepId: number
   ): Promise<boolean> {
-    if (agent == null || !agent.id || sepId) {
+    if (agent == null || !agent.id || !sepId) {
       return false;
     }
 
