@@ -2,6 +2,7 @@ import {
   ProposalEndStatus,
   ProposalIdsWithNextStatus,
 } from '../../models/Proposal';
+import { Role } from '../../models/Role';
 import {
   SEP,
   SEPAssignment,
@@ -115,8 +116,12 @@ export class SEPDataSourceMock implements SEPDataSource {
     return dummySEPMembers.filter((member) => member.sepId === sepId);
   }
 
-  getUserSepBySepId(userId: number, sepId: number): Promise<SEP | null> {
-    throw new Error('Method not implemented: getUserSepBySepId');
+  getUserSepsBySepId(
+    userId: number,
+    role: Role,
+    sepId?: number
+  ): Promise<SEP[]> {
+    throw new Error('Method not implemented: getUserSepsBySepId');
   }
 
   async assignChairOrSecretaryToSEP(

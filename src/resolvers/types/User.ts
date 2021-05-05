@@ -104,8 +104,17 @@ export class UserResolver {
     @Arg('status', () => ReviewStatus, { nullable: true }) status: number,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.review.dataSource.getUserReviews(
+    if (!context.user || !context.user.currentRole) {
+      return [];
+    }
+
+    const sepsUserIsMemberOf = await context.queries.sep.dataSource.getUserSepsBySepId(
       user.id,
+      context.user.currentRole
+    );
+
+    return context.queries.review.dataSource.getUserReviews(
+      sepsUserIsMemberOf.map((seps) => seps.id),
       callId,
       instrumentId,
       status
