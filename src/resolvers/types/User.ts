@@ -108,7 +108,7 @@ export class UserResolver {
       return [];
     }
 
-    const sepsUserIsMemberOf = await context.queries.sep.dataSource.getUserSepsBySepId(
+    const sepsUserIsMemberOf = await context.queries.sep.dataSource.getUserSepsByRoleAndSepId(
       user.id,
       context.user.currentRole
     );

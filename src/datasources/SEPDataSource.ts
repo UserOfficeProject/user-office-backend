@@ -31,7 +31,7 @@ export interface SEPDataSource {
   ): Promise<SEP>;
   delete(id: number): Promise<SEP>;
   get(id: number): Promise<SEP | null>;
-  getUserSepsBySepId(
+  getUserSepsByRoleAndSepId(
     userId: number,
     role: Role,
     sepId?: number

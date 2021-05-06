@@ -115,7 +115,7 @@ export default class PostgresSEPDataSource implements SEPDataSource {
       });
   }
 
-  async getUserSepsBySepId(
+  async getUserSepsByRoleAndSepId(
     userId: number,
     role: Role,
     sepId?: number

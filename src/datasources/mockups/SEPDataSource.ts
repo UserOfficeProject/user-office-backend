@@ -116,12 +116,16 @@ export class SEPDataSourceMock implements SEPDataSource {
     return dummySEPMembers.filter((member) => member.sepId === sepId);
   }
 
-  getUserSepsBySepId(
+  async getUserSepsByRoleAndSepId(
     userId: number,
     role: Role,
     sepId?: number
   ): Promise<SEP[]> {
-    throw new Error('Method not implemented: getUserSepsBySepId');
+    if (userId && role) {
+      return dummySEPs;
+    }
+
+    return [];
   }
 
   async assignChairOrSecretaryToSEP(

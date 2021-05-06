@@ -77,7 +77,7 @@ export class UserAuthorization {
       return false;
     }
 
-    const sepsUserIsMemberOf = await this.sepDataSource.getUserSepsBySepId(
+    const sepsUserIsMemberOf = await this.sepDataSource.getUserSepsByRoleAndSepId(
       agent.id,
       agent.currentRole
     );
@@ -164,7 +164,7 @@ export class UserAuthorization {
       return false;
     }
 
-    const [sep] = await this.sepDataSource.getUserSepsBySepId(
+    const [sep] = await this.sepDataSource.getUserSepsByRoleAndSepId(
       agent.id,
       agent.currentRole,
       sepId
