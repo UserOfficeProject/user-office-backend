@@ -56,6 +56,7 @@ export default class PostgresInstrumentDataSource
         name: args.name,
         short_code: args.shortCode,
         description: args.description,
+        manager_user_id: args.managerUserId,
       })
       .into('instruments')
       .returning('*');
