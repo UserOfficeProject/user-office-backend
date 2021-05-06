@@ -181,6 +181,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
 
   async getUserReviews(
     sepIds: number[],
+    userId?: number,
     callId?: number,
     instrumentId?: number,
     status?: ReviewStatus
@@ -189,6 +190,10 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
       .select()
       .from('SEP_Reviews')
       .modify((qb) => {
+        if (userId) {
+          qb.where('user_id', userId);
+        }
+
         // sometimes the ID 0 is sent as a equivalent of all
         if (callId) {
           qb.join('proposals', {

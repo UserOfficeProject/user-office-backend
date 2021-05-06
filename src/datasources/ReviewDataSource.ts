@@ -12,6 +12,7 @@ export interface ReviewDataSource {
   getProposalReviews(id: number): Promise<Review[]>;
   getUserReviews(
     sepIds: number[],
+    userId?: number,
     callId?: number,
     instrumentId?: number,
     submitted?: number

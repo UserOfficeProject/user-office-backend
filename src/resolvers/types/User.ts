@@ -11,7 +11,7 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
-import { ReviewStatus } from '../../models/Review';
+import { ReviewerFilter, ReviewStatus } from '../../models/Review';
 import { User as UserOrigin } from '../../models/User';
 import { Instrument } from './Instrument';
 import { Proposal } from './Proposal';
@@ -102,6 +102,8 @@ export class UserResolver {
     @Arg('callId', () => Int, { nullable: true }) callId: number,
     @Arg('instrumentId', () => Int, { nullable: true }) instrumentId: number,
     @Arg('status', () => ReviewStatus, { nullable: true }) status: number,
+    @Arg('reviewer', () => ReviewerFilter, { nullable: true })
+    reviewer: number,
     @Ctx() context: ResolverContext
   ) {
     if (!context.user || !context.user.currentRole) {
@@ -113,8 +115,11 @@ export class UserResolver {
       context.user.currentRole
     );
 
+    const shouldGetOnlyUserReviews = !reviewer;
+
     return context.queries.review.dataSource.getUserReviews(
       sepsUserIsMemberOf.map((seps) => seps.id),
+      shouldGetOnlyUserReviews ? user.id : undefined,
       callId,
       instrumentId,
       status
