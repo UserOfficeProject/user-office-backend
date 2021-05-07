@@ -25,6 +25,7 @@ import { rejection, Rejection } from '../rejection';
 import { AddReviewArgs } from '../resolvers/mutations/AddReviewMutation';
 import { AddTechnicalReviewInput } from '../resolvers/mutations/AddTechnicalReviewMutation';
 import { AddUserForReviewArgs } from '../resolvers/mutations/AddUserForReviewMutation';
+import { ProposalIdWithReviewId } from '../resolvers/mutations/SubmitProposalsReviewMutation';
 import { SubmitTechnicalReviewInput } from '../resolvers/mutations/SubmitTechnicalReviewMutation';
 import { UpdateTechnicalReviewAssigneeInput } from '../resolvers/mutations/UpdateTechnicalReviewAssignee';
 import { checkAllReviewsSubmittedOnProposal } from '../utils/helperFunctions';
@@ -58,10 +59,7 @@ export default class ReviewMutations {
     if (
       !(
         (await this.userAuth.isReviewerOfProposal(agent, review.proposalID)) ||
-        (await this.userAuth.isChairOrSecretaryOfSEP(
-          agent!.id,
-          review.sepID
-        )) ||
+        (await this.userAuth.isChairOrSecretaryOfSEP(agent, review.sepID)) ||
         this.userAuth.isUserOfficer(agent)
       )
     ) {
@@ -129,6 +127,54 @@ export default class ReviewMutations {
       });
   }
 
+  @EventBus(Event.PROPOSAL_SEP_REVIEW_SUBMITTED)
+  @ValidateArgs(proposalGradeValidationSchema, ['comment'])
+  @Authorized()
+  async submitProposalReview(
+    agent: UserWithRole | null,
+    args: ProposalIdWithReviewId
+  ): Promise<Review | Rejection> {
+    const { reviewId } = args;
+    const review = await this.dataSource.get(reviewId);
+
+    if (!review) {
+      return rejection('NOT_FOUND');
+    }
+
+    if (
+      !(
+        (await this.userAuth.isReviewerOfProposal(agent, review.proposalID)) ||
+        (await this.userAuth.isChairOrSecretaryOfSEP(agent, review.sepID)) ||
+        this.userAuth.isUserOfficer(agent)
+      )
+    ) {
+      logger.logWarn('Blocked submitting review', { agent, args });
+
+      return rejection('NOT_REVIEWER_OF_PROPOSAL');
+    }
+
+    if (
+      review.status === ReviewStatus.SUBMITTED &&
+      !this.userAuth.isUserOfficer(agent)
+    ) {
+      return rejection('NOT_ALLOWED');
+    }
+
+    return this.dataSource
+      .updateReview({
+        ...review,
+        reviewID: review.id,
+        status: ReviewStatus.SUBMITTED,
+      })
+      .catch((err) => {
+        logger.logException('Could not submit review', err, {
+          args,
+        });
+
+        return rejection('INTERNAL_ERROR');
+      });
+  }
+
   @EventBus(Event.PROPOSAL_FEASIBILITY_REVIEW_UPDATED)
   @ValidateArgs(proposalTechnicalReviewValidationSchema, [
     'comment',
@@ -184,8 +230,8 @@ export default class ReviewMutations {
     { reviewId, sepId }: { reviewId: number; sepId: number }
   ): Promise<Review | Rejection> {
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepId))
+      !this.userAuth.isUserOfficer(agent) &&
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent, sepId))
     ) {
       return rejection('NOT_ALLOWED');
     }
@@ -243,7 +289,7 @@ export default class ReviewMutations {
     const { proposalID, userID, sepID } = args;
     if (
       !this.userAuth.isUserOfficer(agent) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(agent!.id, sepID))
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent, sepID))
     ) {
       return rejection('NOT_ALLOWED');
     }
