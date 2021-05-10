@@ -1,6 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { Rejection } from '../../rejection';
 import { Response } from '../Decorators';
 import { Page } from './Admin';
 import { Answer } from './Answer';
@@ -18,6 +17,7 @@ import { Question } from './Question';
 import { Questionary } from './Questionary';
 import { QuestionaryStep } from './QuestionaryStep';
 import { QuestionTemplateRelation } from './QuestionTemplateRelation';
+import { Rejection } from './Rejection';
 import { ReviewWithNextProposalStatus } from './Review';
 import { Review } from './Review';
 import { Sample } from './Sample';
@@ -33,9 +33,9 @@ import { Unit } from './Unit';
 import { User } from './User';
 
 @ObjectType()
-export class ResponseWrapBase implements Pick<Rejection, 'error'> {
-  @Field(() => String, { nullable: true })
-  public error: string;
+export class ResponseWrapBase {
+  @Field(() => Rejection, { nullable: true })
+  public rejection: Rejection;
 }
 
 @ObjectType()

@@ -1,4 +1,4 @@
-import { rejection } from '../rejection';
+import { rejection } from '../models/Rejection';
 import { SuccessResponseWrap } from './types/CommonWrappers';
 import { wrapResponse } from './wrapResponse';
 
@@ -22,5 +22,5 @@ test('Should wrap the fail result', async () => {
     SuccessResponseWrap
   )) as SuccessResponseWrap;
 
-  return expect(result.error).toEqual(ERROR_REASON);
+  return expect(result.rejection).not.toBeNull();
 });

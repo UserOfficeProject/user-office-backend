@@ -1,4 +1,4 @@
-import { Rejection, isRejection } from '../rejection';
+import { Rejection, isRejection } from '../models/Rejection';
 import { getResponseField } from './Decorators';
 import { ResponseWrapBase } from './types/CommonWrappers';
 
@@ -14,10 +14,10 @@ export async function wrapResponse(
     throw new Error(`No response fields found in '${ResponseWrapper.name}'`);
   }
   if (isRejection(result)) {
-    return result;
+    wrapper.rejection = result;
   } else {
     (wrapper as any)[responseFieldName] = result;
-
-    return wrapper;
   }
+
+  return wrapper;
 }

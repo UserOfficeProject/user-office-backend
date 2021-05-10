@@ -1,7 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
 import { IMiddlewareResolver } from 'graphql-middleware/dist/types';
 
-import { isRejection, Rejection } from '../rejection';
+import { isRejection } from '../models/Rejection';
 import { ResponseWrapBase } from '../resolvers/types/CommonWrappers';
 
 const rejectionLogger: IMiddlewareResolver = async (
@@ -12,8 +12,8 @@ const rejectionLogger: IMiddlewareResolver = async (
   info
 ) => {
   const result: ResponseWrapBase = await resolve(root, args, context, info);
-  if (isRejection(result)) {
-    const { error, exception, context } = result as Rejection;
+  if (isRejection(result?.rejection)) {
+    const { reason: error, exception, context } = result.rejection;
 
     exception
       ? logger.logException(error, exception, context)

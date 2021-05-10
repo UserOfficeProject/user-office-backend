@@ -10,8 +10,8 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
+import { isRejection } from '../../models/Rejection';
 import { UserRole } from '../../models/User';
-import { isRejection } from '../../rejection';
 import { Response } from '../Decorators';
 import { ResponseWrapBase } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
