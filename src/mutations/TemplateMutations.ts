@@ -411,21 +411,13 @@ export default class TemplateMutations {
     args: SetActiveTemplateArgs
   ) {
     const template = await this.dataSource.getTemplate(args.templateId);
-    if (template?.categoryId !== args.templateCategoryId) {
-      logger.logError('TemplateId and TemplateCategoryId mismatch', {
-        args,
-        user,
-      });
 
-      return rejection('INTERNAL_ERROR');
+    if (template?.categoryId !== args.templateCategoryId) {
+      return rejection('TemplateId and TemplateCategoryId mismatch');
     }
 
-    return this.dataSource.setActiveTemplate(args).catch((err) => {
-      logger.logException('Could not set active template', err, {
-        user,
-      });
-
-      return rejection('INTERNAL_ERROR');
+    return this.dataSource.setActiveTemplate(args).catch((err: Error) => {
+      return rejection('Could not set active template', { user }, err);
     });
   }
 

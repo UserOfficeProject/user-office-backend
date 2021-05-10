@@ -32,7 +32,7 @@ export class CreateUserByEmailInviteArgs {
 }
 
 @ObjectType()
-class CreateUserByEmailInviteResponseWrap extends ResponseWrapBase<number> {
+class CreateUserByEmailInviteResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => Int, { nullable: true })
   public id: number;

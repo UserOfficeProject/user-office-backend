@@ -1,14 +1,28 @@
-import { ResourceId } from '@esss-swap/duo-localisation'; // import
-
 const REJECTION = Symbol('REJECTION');
 
 export interface Rejection {
   [REJECTION]: true;
-  reason: string;
+  error: string;
+  context?: Record<string, unknown>;
+  exception?: Error;
 }
 
-export function rejection(reason: ResourceId): Rejection {
-  return { [REJECTION]: true, reason };
+export function rejection(
+  error: string,
+  context?: Record<string, unknown>
+): Rejection;
+export function rejection(
+  error: string,
+  context?: Record<string, unknown>,
+  exception?: Error
+): Rejection;
+
+export function rejection(
+  error: string,
+  context?: Record<string, unknown>,
+  exception?: Error
+): Rejection {
+  return { [REJECTION]: true, error, context, exception };
 }
 
 export function isRejection(value: any): value is Rejection {
