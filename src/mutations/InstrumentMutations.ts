@@ -1,4 +1,3 @@
-import { logger } from '@esss-swap/duo-logger';
 import {
   createInstrumentValidationSchema,
   updateInstrumentValidationSchema,
@@ -10,16 +9,18 @@ import {
   setAvailabilityTimeOnInstrumentValidationSchema,
   submitInstrumentValidationSchema,
 } from '@esss-swap/duo-validation';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
 import { Instrument, InstrumentHasProposals } from '../models/Instrument';
 import { ProposalIdsWithNextStatus } from '../models/Proposal';
+import { rejection, Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
-import { rejection, Rejection } from '../rejection';
 import {
   AssignProposalsToInstrumentArgs,
   RemoveProposalsFromInstrumentArgs,
@@ -34,13 +35,15 @@ import {
   InstrumentAvailabilityTimeArgs,
   InstrumentSubmitArgs,
 } from '../resolvers/mutations/UpdateInstrumentMutation';
+import { sortByRankOrAverageScore } from '../utils/mathFunctions';
 import { UserAuthorization } from '../utils/UserAuthorization';
-
+@injectable()
 export default class InstrumentMutations {
   constructor(
+    @inject(Tokens.InstrumentDataSource)
     private dataSource: InstrumentDataSource,
-    private sepDataSource: SEPDataSource,
-    private userAuth: UserAuthorization
+    @inject(Tokens.SEPDataSource) private sepDataSource: SEPDataSource,
+    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
   @ValidateArgs(createInstrumentValidationSchema)
@@ -53,12 +56,11 @@ export default class InstrumentMutations {
       .create(args)
       .then((result) => result)
       .catch((error) => {
-        logger.logException('Could not create instrument', error, {
-          agent,
-          shortCode: args.shortCode,
-        });
-
-        return rejection('INTERNAL_ERROR');
+        return rejection(
+          'Could not create instrument',
+          { agent, shortCode: args.shortCode },
+          error
+        );
       });
   }
 
@@ -72,12 +74,11 @@ export default class InstrumentMutations {
       .update(args)
       .then((result) => result)
       .catch((error) => {
-        logger.logException('Could not update instrument', error, {
-          agent,
-          instrumentId: args.id,
-        });
-
-        return rejection('INTERNAL_ERROR');
+        return rejection(
+          'Could not update instrument',
+          { agent, instrumentId: args.id },
+          error
+        );
       });
   }
 
@@ -91,12 +92,11 @@ export default class InstrumentMutations {
       .delete(args.id)
       .then((result) => result)
       .catch((error) => {
-        logger.logException('Could not delete instrument', error, {
-          agent,
-          instrumentId: args.id,
-        });
-
-        return rejection('INTERNAL_ERROR');
+        return rejection(
+          'Could not delete instrument',
+          { agent, instrumentId: args.id },
+          error
+        );
       });
   }
 
@@ -135,7 +135,10 @@ export default class InstrumentMutations {
     );
 
     if (!allProposalsAreOnSameCallAsInstrument) {
-      return rejection('NOT_ALLOWED');
+      return rejection(
+        'One or more proposals can not be assigned to instrument, because instrument is not in the call',
+        { args }
+      );
     }
 
     return this.dataSource
@@ -145,17 +148,11 @@ export default class InstrumentMutations {
       )
       .then((result) => result)
       .catch((error) => {
-        logger.logException(
+        return rejection(
           'Could not assign proposal/s to instrument',
-          error,
-          {
-            agent,
-            instrumentId: args.instrumentId,
-            proposals: args.proposals,
-          }
+          { agent, args },
+          error
         );
-
-        return rejection('INTERNAL_ERROR');
       });
   }
 
@@ -169,17 +166,11 @@ export default class InstrumentMutations {
       .removeProposalFromInstrument(args.proposalId, args.instrumentId)
       .then((result) => result)
       .catch((error) => {
-        logger.logException(
+        return rejection(
           'Could not remove assigned proposal/s from instrument',
-          error,
-          {
-            agent,
-            instrumentId: args.instrumentId,
-            proposalId: args.proposalId,
-          }
+          { agent, args },
+          error
         );
-
-        return rejection('INTERNAL_ERROR');
       });
   }
 
@@ -193,16 +184,11 @@ export default class InstrumentMutations {
       .assignScientistsToInstrument(args.scientistIds, args.instrumentId)
       .then((result) => result)
       .catch((error) => {
-        logger.logException(
+        return rejection(
           'Could not assign scientist/s to instrument',
-          error,
-          {
-            agent,
-            args,
-          }
+          { agent, args },
+          error
         );
-
-        return rejection('INTERNAL_ERROR');
       });
   }
 
@@ -216,16 +202,11 @@ export default class InstrumentMutations {
       .removeScientistFromInstrument(args.scientistId, args.instrumentId)
       .then((result) => result)
       .catch((error) => {
-        logger.logException(
+        return rejection(
           'Could not remove assigned scientist/s from instrument',
-          error,
-          {
-            agent,
-            args,
-          }
+          { agent, args },
+          error
         );
-
-        return rejection('INTERNAL_ERROR');
       });
   }
 
@@ -243,16 +224,11 @@ export default class InstrumentMutations {
       )
       .then((result) => result)
       .catch((error) => {
-        logger.logException(
+        return rejection(
           'Could not set availability time on instrument',
-          error,
-          {
-            agent,
-            args,
-          }
+          { agent, args },
+          error
         );
-
-        return rejection('INTERNAL_ERROR');
       });
   }
 
@@ -264,33 +240,64 @@ export default class InstrumentMutations {
     args: InstrumentSubmitArgs
   ): Promise<InstrumentHasProposals | Rejection> {
     if (
-      !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isChairOrSecretaryOfSEP(
-        (agent as UserWithRole).id,
-        args.sepId
-      ))
+      !this.userAuth.isUserOfficer(agent) &&
+      !(await this.userAuth.isChairOrSecretaryOfSEP(agent, args.sepId))
     ) {
-      return rejection('NOT_ALLOWED');
+      return rejection('Submitting instrument is not permitted', {
+        agent,
+        args,
+      });
     }
 
-    const submittedInstrumentProposalIds = (
-      await this.sepDataSource.getSEPProposalsByInstrument(
-        args.sepId,
-        args.instrumentId,
-        args.callId
-      )
-    ).map((sepInstrumentProposal) => sepInstrumentProposal.proposalId);
+    const allInstrumentProposals = await this.sepDataSource.getSEPProposalsByInstrument(
+      args.sepId,
+      args.instrumentId,
+      args.callId
+    );
+
+    const submittedInstrumentProposalIds = allInstrumentProposals.map(
+      (sepInstrumentProposal) => sepInstrumentProposal.proposalId
+    );
+
+    const sepProposalsWithReviewsAndRanking = await this.sepDataSource.getSepProposalsWithReviewGradesAndRanking(
+      submittedInstrumentProposalIds
+    );
+
+    const allSepMeetingsHasRankings = sepProposalsWithReviewsAndRanking.every(
+      (sepProposalWithReviewsAndRanking) =>
+        !!sepProposalWithReviewsAndRanking.rankOrder
+    );
+
+    if (!allSepMeetingsHasRankings) {
+      const sortedSepProposals = sortByRankOrAverageScore(
+        sepProposalsWithReviewsAndRanking
+      );
+
+      const allProposalsWithRankings = sortedSepProposals.map(
+        (sortedSepProposal, index) => {
+          if (!sortedSepProposal.rankOrder) {
+            sortedSepProposal.rankOrder = index + 1;
+          }
+
+          return sortedSepProposal;
+        }
+      );
+
+      await Promise.all(
+        allProposalsWithRankings.map((proposalWithRanking) => {
+          return this.sepDataSource.saveSepMeetingDecision({
+            proposalId: proposalWithRanking.proposalId,
+            rankOrder: proposalWithRanking.rankOrder,
+          });
+        })
+      );
+    }
 
     return this.dataSource
       .submitInstrument(submittedInstrumentProposalIds, args.instrumentId)
       .then((result) => result)
       .catch((error) => {
-        logger.logException('Could not submit instrument', error, {
-          agent,
-          args,
-        });
-
-        return rejection('INTERNAL_ERROR');
+        return rejection('Could not submit instrument', { agent, args }, error);
       });
   }
 }

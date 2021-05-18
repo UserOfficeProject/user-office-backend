@@ -15,14 +15,16 @@ import {
   ProposalEndStatus,
   ProposalPublicStatus,
 } from '../../models/Proposal';
-import { isRejection } from '../../rejection';
+import { isRejection } from '../../models/Rejection';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
 import { Instrument } from './Instrument';
 import { ProposalStatus } from './ProposalStatus';
 import { Questionary } from './Questionary';
 import { Review } from './Review';
+import { Sample } from './Sample';
 import { SEP } from './SEP';
+import { SepMeetingDecision } from './SepMeetingDecision';
 import { TechnicalReview } from './TechnicalReview';
 
 @ObjectType()
@@ -49,9 +51,6 @@ export class Proposal implements Partial<ProposalOrigin> {
   @Field(() => String)
   public shortCode: string;
 
-  @Field(() => Int, { nullable: true })
-  public rankOrder?: number;
-
   @Field(() => ProposalEndStatus, { nullable: true })
   public finalStatus?: ProposalEndStatus;
 
@@ -72,6 +71,12 @@ export class Proposal implements Partial<ProposalOrigin> {
 
   @Field(() => Boolean)
   public submitted: boolean;
+
+  @Field(() => Int, { nullable: true })
+  public managementTimeAllocation: number;
+
+  @Field(() => Boolean)
+  public managementDecisionSubmitted: boolean;
 
   public proposerId: number;
 }
@@ -178,6 +183,27 @@ export class ProposalResolver {
       context.user,
       proposal.questionaryId
     );
+  }
+
+  @FieldResolver(() => SepMeetingDecision, { nullable: true })
+  async sepMeetingDecision(
+    @Root() proposal: Proposal,
+    @Ctx() context: ResolverContext
+  ): Promise<SepMeetingDecision | null> {
+    return await context.queries.sep.getProposalSepMeetingDecision(
+      context.user,
+      proposal.id
+    );
+  }
+
+  @FieldResolver(() => [Sample], { nullable: true })
+  async samples(
+    @Root() proposal: Proposal,
+    @Ctx() context: ResolverContext
+  ): Promise<Sample[] | null> {
+    return await context.queries.sample.getSamples(context.user, {
+      filter: { proposalId: proposal.id },
+    });
   }
 }
 
