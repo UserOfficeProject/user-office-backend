@@ -31,6 +31,7 @@ import { Template } from './Template';
 import { Topic } from './Topic';
 import { Unit } from './Unit';
 import { User } from './User';
+import { Visitation } from './Visitation';
 
 @ObjectType()
 export class ResponseWrapBase {
@@ -288,4 +289,11 @@ export class ApiAccessTokenResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => PermissionsWithAccessToken, { nullable: true })
   public apiAccessToken: PermissionsWithAccessToken;
+}
+
+@ObjectType()
+export class VisitationResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => Visitation, { nullable: true })
+  public visitation: Visitation;
 }
