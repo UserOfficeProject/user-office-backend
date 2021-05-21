@@ -292,6 +292,13 @@ export class ApiAccessTokenResponseWrap extends ResponseWrapBase {
 }
 
 @ObjectType()
+export class ProposalsResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => [Proposal])
+  public proposals: Proposal[];
+}
+
+@ObjectType()
 export class VisitationResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => Visitation, { nullable: true })
