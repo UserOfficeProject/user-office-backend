@@ -4,7 +4,6 @@ import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { rejection } from '../models/Rejection';
 import { TemplateCategoryId } from '../models/Template';
-import { Visitation } from '../models/Visitation';
 import { CreateVisitationArgs } from '../resolvers/mutations/CreateVisitationMutation';
 import { UpdateVisitationArgs } from '../resolvers/mutations/UpdateVisitationMutation';
 import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
@@ -12,6 +11,7 @@ import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { VisitationDataSource } from './../datasources/VisitationDataSource';
 import { Rejection } from './../models/Rejection';
 import { UserWithRole } from './../models/User';
+import { Visitation, VisitationStatus } from './../models/Visitation';
 import { UserAuthorization } from './../utils/UserAuthorization';
 import { VisitationAuthorization } from './../utils/VisitationAuthorization';
 
@@ -110,6 +110,15 @@ export default class VisitationMutations {
       );
     }
 
+    if (
+      args.status === VisitationStatus.ACCEPTED &&
+      !this.userAuthorization.isUserOfficer(user)
+    ) {
+      return rejection(
+        'Can not update proposal status because of insufficient permissions'
+      );
+    }
+
     return this.dataSource.updateVisitation(args);
   }
 
@@ -117,7 +126,10 @@ export default class VisitationMutations {
     user: UserWithRole | null,
     visitationId: number
   ): Promise<Visitation | Rejection> {
-    const hasRights = await this.hasWriteRights(user, visitationId);
+    const hasRights = await this.visitationAuthorization.hasWriteRights(
+      user,
+      visitationId
+    );
     if (hasRights === false) {
       return rejection(
         'Can not update visitation because of insufficient permissions',
@@ -126,9 +138,5 @@ export default class VisitationMutations {
     }
 
     return this.dataSource.deleteVisitation(visitationId);
-  }
-
-  async hasWriteRights(user: UserWithRole | null, visitationId: number) {
-    return this.visitationAuthorization.hasWriteRights(user, visitationId);
   }
 }

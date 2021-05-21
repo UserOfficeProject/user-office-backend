@@ -5,7 +5,7 @@ import { VisitationsFilter } from './../resolvers/queries/VisitationsQuery';
 
 export interface VisitationDataSource {
   // Read
-  getVisitation(visitationId: number): Promise<Visitation>;
+  getVisitation(visitationId: number): Promise<Visitation | null>;
   getVisitations(filter?: VisitationsFilter): Promise<Visitation[]>;
   getTeam(visitationId: number): Promise<BasicUserDetails[]>;
   // Write

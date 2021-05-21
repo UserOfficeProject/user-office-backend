@@ -33,12 +33,14 @@ class PostgresVisitationDataSource implements VisitationDataSource {
         visitations.map((visitation) => createVisitationObject(visitation))
       );
   }
-  getVisitation(visitationId: number): Promise<Visitation> {
+  getVisitation(visitationId: number): Promise<Visitation | null> {
     return database('visitations')
       .select('*')
       .where({ visitation_id: visitationId })
       .first()
-      .then((visitation) => createVisitationObject(visitation));
+      .then((visitation) =>
+        visitation ? createVisitationObject(visitation) : null
+      );
   }
 
   createVisitation(
@@ -85,8 +87,13 @@ class PostgresVisitationDataSource implements VisitationDataSource {
             .transacting(trx);
         }
       })
-      .then(() => {
-        return this.getVisitation(args.visitationId);
+      .then(async () => {
+        const updatedVisitation = await this.getVisitation(args.visitationId);
+        if (!updatedVisitation) {
+          throw new Error('Updated visitation not found');
+        }
+
+        return updatedVisitation;
       });
   }
 
