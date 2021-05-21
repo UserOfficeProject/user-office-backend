@@ -12,14 +12,6 @@ import {
 
 class PostgresVisitationDataSource implements VisitationDataSource {
   getTeam(visitationId: number): Promise<BasicUserDetails[]> {
-    console.log(
-      database('visitations_has_users')
-        .select('users.*')
-        .where({ visitation_id: visitationId })
-        .leftJoin('users', 'users.user_id', 'visitations_has_users.user_id')
-        .toSQL()
-    );
-
     return database('visitations_has_users')
       .select('users.*')
       .where({ visitation_id: visitationId })
