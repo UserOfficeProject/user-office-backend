@@ -24,9 +24,6 @@ export class UpdateVisitationArgs {
   @Field(() => Int, { nullable: true })
   proposalId?: number;
 
-  @Field(() => Int, { nullable: true })
-  instrumentId?: number;
-
   @Field(() => [Int!], { nullable: true })
   team?: number[];
 }

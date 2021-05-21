@@ -51,14 +51,12 @@ class PostgresVisitationDataSource implements VisitationDataSource {
 
   createVisitation(
     proposalId: number,
-    instrumentId: number,
     visitorId: number,
     questionaryId: number
   ): Promise<Visitation> {
     return database('visitations')
       .insert({
         proposal_id: proposalId,
-        instrument_id: instrumentId,
         visitor_id: visitorId,
         questionary_id: questionaryId,
       })
@@ -85,11 +83,10 @@ class PostgresVisitationDataSource implements VisitationDataSource {
             .transacting(trx);
         }
 
-        if (args.status || args.instrumentId || args.proposalId) {
+        if (args.status || args.proposalId) {
           await database('visitations')
             .update({
               status: args.status,
-              instrument_id: args.instrumentId,
               proposal_id: args.proposalId,
             })
             .where({ visitation_id: args.visitationId })

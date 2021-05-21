@@ -12,7 +12,6 @@ import { ResolverContext } from '../../context';
 import { Visitation as VisitationOrigin } from '../../models/Visitation';
 import { VisitationStatus } from './../../models/Visitation';
 import { BasicUserDetails } from './BasicUserDetails';
-import { Instrument } from './Instrument';
 import { Proposal } from './Proposal';
 import { Questionary } from './Questionary';
 
@@ -45,17 +44,6 @@ export class VisitationResolver {
     @Ctx() context: ResolverContext
   ): Promise<Proposal | null> {
     return context.queries.proposal.get(context.user, visitation.proposalId);
-  }
-
-  @FieldResolver(() => Instrument)
-  async instrument(
-    @Root() visitation: Visitation,
-    @Ctx() context: ResolverContext
-  ): Promise<Instrument | null> {
-    return context.queries.instrument.get(
-      context.user,
-      visitation.instrumentId
-    );
   }
 
   @FieldResolver(() => [BasicUserDetails])

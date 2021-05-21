@@ -4,7 +4,6 @@ export class Visitation {
   constructor(
     public id: number,
     public proposalId: number,
-    public instrumentId: number,
     public status: VisitationStatus,
     public questionaryId: number,
     public visitorId: number,

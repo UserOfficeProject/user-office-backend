@@ -16,7 +16,6 @@ export class VisitationDataSourceMock implements VisitationDataSource {
   }
   createVisitation(
     proposalId: number,
-    instrumentId: number,
     visitorId: number,
     questionaryId: number
   ): Promise<Visitation> {

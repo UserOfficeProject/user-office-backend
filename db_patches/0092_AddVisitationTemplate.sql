@@ -9,7 +9,6 @@ BEGIN
       CREATE TABLE visitations (
         visitation_id serial PRIMARY KEY
         , proposal_id int REFERENCES proposals(proposal_id) ON DELETE CASCADE
-        , instrument_id int REFERENCES instruments(instrument_id)
         , status VARCHAR(20) NOT NULL CHECK (status IN ('DRAFT', 'SUBMITTED', 'ACCEPTED')) DEFAULT 'DRAFT' 
         , questionary_id int REFERENCES questionaries(questionary_id)
         , visitor_id int REFERENCES users (user_id)

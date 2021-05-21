@@ -17,9 +17,6 @@ export class CreateVisitationArgs {
   @Field(() => Int)
   proposalId: number;
 
-  @Field(() => Int)
-  instrumentId: number;
-
   @Field(() => [Int], { nullable: true })
   team?: number[];
 }

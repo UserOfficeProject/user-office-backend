@@ -11,7 +11,6 @@ export interface VisitationDataSource {
   // Write
   createVisitation(
     proposalId: number,
-    instrumentId: number,
     visitorId: number,
     questionaryId: number
   ): Promise<Visitation>;

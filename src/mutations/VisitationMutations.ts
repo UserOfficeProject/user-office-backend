@@ -73,7 +73,6 @@ export default class VisitationMutations {
 
       const visitation = await this.dataSource.createVisitation(
         args.proposalId,
-        args.instrumentId,
         user!.id,
         questionary.questionaryId
       );

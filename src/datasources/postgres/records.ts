@@ -801,7 +801,6 @@ export const createVisitationObject = (visitation: VisitationRecord) => {
   return new Visitation(
     visitation.visitation_id,
     visitation.proposal_id,
-    visitation.instrument_id,
     (visitation.status as any) as VisitationStatus,
     visitation.questionary_id,
     visitation.visitor_id,
