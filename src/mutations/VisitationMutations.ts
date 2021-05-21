@@ -98,15 +98,17 @@ export default class VisitationMutations {
     user: UserWithRole | null,
     args: UpdateVisitationArgs
   ): Promise<Visitation | Rejection> {
-    const hasRights = await this.hasWriteRights(user, args.visitationId);
+    const hasRights = await this.visitationAuthorization.hasWriteRights(
+      user,
+      args.visitationId
+    );
+
     if (hasRights === false) {
       return rejection(
         'Can not update visitation because of insufficient permissions',
         { args, agent: user }
       );
     }
-
-    // TODO make sure user can not update the status of the visitation other than SUBMITTED
 
     return this.dataSource.updateVisitation(args);
   }

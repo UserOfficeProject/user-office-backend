@@ -266,7 +266,7 @@ export default class UserMutations {
   ): Promise<User | Rejection> {
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isUser(agent, args.id))
+      !(await this.userAuth.isUser(agent))
     ) {
       return rejection(
         'Can not update user because of insufficient permissions',
@@ -533,7 +533,7 @@ export default class UserMutations {
   ): Promise<BasicUserDetails | Rejection> {
     if (
       !(await this.userAuth.isUserOfficer(agent)) &&
-      !(await this.userAuth.isUser(agent, id))
+      !(await this.userAuth.isUser(agent))
     ) {
       return rejection(
         'Can not update password because of insufficient permissions',
