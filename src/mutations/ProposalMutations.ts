@@ -61,7 +61,7 @@ export default class ProposalMutations {
       return rejection('Call is not active', { callId, agent });
     }
 
-    const call = await this.callDataSource.get(callId);
+    const call = await this.callDataSource.getCall(callId);
 
     if (!call || !call.templateId) {
       return rejection(
@@ -413,7 +413,7 @@ export default class ProposalMutations {
       );
     }
 
-    const call = await this.callDataSource.get(callId);
+    const call = await this.callDataSource.getCall(callId);
 
     if (!call || !call.templateId) {
       return rejection(
