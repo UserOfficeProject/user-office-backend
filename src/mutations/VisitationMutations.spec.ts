@@ -47,9 +47,9 @@ test('User can update visitation', async () => {
 });
 
 test('User can not update visitation that is already accepted', async () => {
-  await mutations.updateVisitation(dummyUserWithRole, {
+  await mutations.updateVisitation(dummyUserOfficerWithRole, {
     visitationId: 1,
-    status: VisitationStatus.SUBMITTED,
+    status: VisitationStatus.ACCEPTED,
   });
 
   await expect(
