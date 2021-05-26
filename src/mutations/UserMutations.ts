@@ -106,7 +106,7 @@ export default class UserMutations {
 
     if (
       args.userRole === UserRole.SEP_REVIEWER &&
-      (await this.userAuth.isUserOfficer(agent))
+      this.userAuth.isUserOfficer(agent)
     ) {
       userId = await this.dataSource.createInviteUser(args);
       await this.dataSource.setUserRoles(userId, [UserRole.SEP_REVIEWER]);
@@ -117,20 +117,20 @@ export default class UserMutations {
       role = UserRole.USER;
     } else if (
       args.userRole === UserRole.SEP_CHAIR &&
-      (await this.userAuth.isUserOfficer(agent))
+      this.userAuth.isUserOfficer(agent)
     ) {
       // NOTE: For inviting SEP_CHAIR and SEP_SECRETARY we do not setUserRoles because they are set right after in separate call.
       userId = await this.dataSource.createInviteUser(args);
       role = UserRole.SEP_CHAIR;
     } else if (
       args.userRole === UserRole.SEP_SECRETARY &&
-      (await this.userAuth.isUserOfficer(agent))
+      this.userAuth.isUserOfficer(agent)
     ) {
       userId = await this.dataSource.createInviteUser(args);
       role = UserRole.SEP_SECRETARY;
     } else if (
       args.userRole === UserRole.INSTRUMENT_SCIENTIST &&
-      (await this.userAuth.isUserOfficer(agent))
+      this.userAuth.isUserOfficer(agent)
     ) {
       userId = await this.dataSource.createInviteUser(args);
       role = UserRole.INSTRUMENT_SCIENTIST;
@@ -265,14 +265,17 @@ export default class UserMutations {
     args: UpdateUserArgs
   ): Promise<User | Rejection> {
     const isUpdatingOwnUser = agent?.id === args.id;
-    if (!(await this.userAuth.isUserOfficer(agent)) && !isUpdatingOwnUser) {
+    if (
+      !this.userAuth.isUserOfficer(agent) &&
+      !isUpdatingOwnUser
+    ) {
       return rejection(
         'Can not update user because of insufficient permissions',
         { args, agent }
       );
     }
 
-    let user = await this.dataSource.get(args.id); //Hacky
+    let user = await this.dataSource.getUser(args.id); //Hacky
 
     if (!user) {
       return rejection('Can not update user because user does not exist', {
@@ -304,7 +307,7 @@ export default class UserMutations {
     agent: UserWithRole | null,
     args: UpdateUserRolesArgs
   ): Promise<User | Rejection> {
-    const user = await this.dataSource.get(args.id);
+    const user = await this.dataSource.getUser(args.id);
 
     if (!user) {
       return rejection('Can not update role because user does not exist', {
@@ -367,7 +370,7 @@ export default class UserMutations {
     agent: UserWithRole | null,
     { userId }: { userId: number }
   ): Promise<string | Rejection> {
-    const user = await this.dataSource.get(userId);
+    const user = await this.dataSource.getUser(userId);
 
     if (!user) {
       return rejection(
@@ -494,7 +497,7 @@ export default class UserMutations {
     // Check that token is valid
     try {
       const decoded = verifyToken<EmailVerificationJwtPayload>(token);
-      const user = await this.dataSource.get(decoded.id);
+      const user = await this.dataSource.getUser(decoded.id);
       //Check that user exist and that it has not been updated since token creation
       if (
         user &&
@@ -529,8 +532,12 @@ export default class UserMutations {
     agent: UserWithRole | null,
     { id, password }: { id: number; password: string }
   ): Promise<BasicUserDetails | Rejection> {
+
     const isUpdatingOwnUser = agent?.id === id;
-    if (!(await this.userAuth.isUserOfficer(agent)) && !isUpdatingOwnUser) {
+    if (
+      !this.userAuth.isUserOfficer(agent) &&
+      !isUpdatingOwnUser
+    ) {
       return rejection(
         'Can not update password because of insufficient permissions',
         { id, agent }
@@ -539,7 +546,7 @@ export default class UserMutations {
 
     try {
       const hash = this.createHash(password);
-      const user = await this.dataSource.get(id);
+      const user = await this.dataSource.getUser(id);
       if (user) {
         return this.dataSource.setUserPassword(user.id, hash);
       } else {
@@ -562,7 +569,7 @@ export default class UserMutations {
     try {
       const hash = this.createHash(password);
       const decoded = verifyToken<PasswordResetJwtPayload>(token);
-      const user = await this.dataSource.get(decoded.id);
+      const user = await this.dataSource.getUser(decoded.id);
 
       //Check that user exist and that it has not been updated since token creation
       if (
