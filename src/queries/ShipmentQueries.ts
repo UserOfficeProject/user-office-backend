@@ -50,7 +50,7 @@ export default class ShipmentQueries {
 
   @Authorized([Roles.USER])
   async getMyShipments(agent: UserWithRole | null) {
-    let shipments = await this.dataSource.getAll({
+    let shipments = await this.dataSource.getShipments({
       filter: { creatorId: agent!.id },
     });
 
