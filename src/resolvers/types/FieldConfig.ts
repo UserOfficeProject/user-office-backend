@@ -31,6 +31,9 @@ export class DateConfig extends ConfigBase {
 
   @Field(() => String, { nullable: true })
   defaultDate: string | null;
+
+  @Field(() => Boolean)
+  includeTime: boolean;
 }
 
 @ObjectType()
