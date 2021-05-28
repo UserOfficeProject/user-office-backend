@@ -28,4 +28,4 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - "./${USER_OFFICE_BACKEND_DIR}/db_patches/:/docker-entrypoint-initdb.d/"
+      - "./${USER_OFFICE_BACKEND_DIR}/db_patches/:C:/docker-entrypoint-initdb.d/"
