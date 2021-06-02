@@ -19,7 +19,7 @@ services:
       - "./${USER_OFFICE_BACKEND_DIR}/db_patches:C:/app/db_patches"
 
   db:
-    image: stellirin/postgres-windows:11
+    image: stellirin/postgres-windows:12-1809
     restart: always
     environment:
       POSTGRES_PASSWORD: duopassword
