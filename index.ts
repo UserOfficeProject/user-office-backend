@@ -4,6 +4,7 @@ import express from 'express';
 
 import './src/env-loader.js';
 import './src/config';
+import './src/featureConfig.ts';
 import 'reflect-metadata';
 
 import { startAsyncJobs } from './src/asyncJobs/startAsyncJobs';

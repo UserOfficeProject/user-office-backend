@@ -1,0 +1,16 @@
+{
+  "features": [
+    {
+      "feature_id": "SCHEDULER",
+      "enabled": true
+    },
+    {
+      "feature_id": "EXTERNAL_AUTH",
+      "enabled": false
+    },
+    {
+      "feature_id": "SAMPLE",
+      "enabled": true
+    }
+  ]
+}
