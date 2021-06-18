@@ -28,8 +28,8 @@ class PostgresVisitDataSource implements VisitDataSource {
         if (filter?.questionaryId) {
           query.where('questionary_id', filter.questionaryId);
         }
-        if (filter?.proposalId) {
-          query.where('proposal_id', filter.proposalId);
+        if (filter?.proposalPK) {
+          query.where('proposal_pk', filter.proposalPK);
         }
       })
       .then((visits: VisitRecord[]) =>
@@ -45,13 +45,13 @@ class PostgresVisitDataSource implements VisitDataSource {
   }
 
   createVisit(
-    proposalId: number,
+    proposalPK: number,
     visitorId: number,
     questionaryId: number
   ): Promise<Visit> {
     return database('visits')
       .insert({
-        proposal_id: proposalId,
+        proposal_pk: proposalPK,
         visitor_id: visitorId,
         questionary_id: questionaryId,
       })
@@ -78,11 +78,11 @@ class PostgresVisitDataSource implements VisitDataSource {
             .transacting(trx);
         }
 
-        if (args.status || args.proposalId) {
+        if (args.status || args.proposalPK) {
           await database('visits')
             .update({
               status: args.status,
-              proposal_id: args.proposalId,
+              proposal_pk: args.proposalPK,
             })
             .where({ visit_id: args.visitId })
             .transacting(trx);

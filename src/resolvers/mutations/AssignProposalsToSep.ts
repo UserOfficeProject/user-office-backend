@@ -14,12 +14,12 @@ import {
   SEPResponseWrap,
 } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
-import { ProposalIdWithCallId } from './ChangeProposalsStatusMutation';
+import { ProposalPKWithCallId } from './ChangeProposalsStatusMutation';
 
 @ArgsType()
 export class AssignProposalsToSepArgs {
-  @Field(() => [ProposalIdWithCallId])
-  public proposals: ProposalIdWithCallId[];
+  @Field(() => [ProposalPKWithCallId])
+  public proposals: ProposalPKWithCallId[];
 
   @Field(() => Int)
   public sepId: number;
@@ -28,7 +28,7 @@ export class AssignProposalsToSepArgs {
 @ArgsType()
 export class RemoveProposalsFromSepArgs {
   @Field(() => [Int])
-  public proposalIds: number[];
+  public proposalPKs: number[];
 
   @Field(() => Int)
   public sepId: number;

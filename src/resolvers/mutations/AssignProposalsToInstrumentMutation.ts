@@ -12,12 +12,12 @@ import { ResolverContext } from '../../context';
 import { isRejection } from '../../models/Rejection';
 import { SuccessResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
-import { ProposalIdWithCallId } from './ChangeProposalsStatusMutation';
+import { ProposalPKWithCallId } from './ChangeProposalsStatusMutation';
 
 @ArgsType()
 export class AssignProposalsToInstrumentArgs {
-  @Field(() => [ProposalIdWithCallId])
-  public proposals: ProposalIdWithCallId[];
+  @Field(() => [ProposalPKWithCallId])
+  public proposals: ProposalPKWithCallId[];
 
   @Field(() => Int)
   public instrumentId: number;
@@ -26,7 +26,7 @@ export class AssignProposalsToInstrumentArgs {
 @ArgsType()
 export class RemoveProposalsFromInstrumentArgs {
   @Field(() => [Int])
-  public proposalIds: number[];
+  public proposalPKs: number[];
 }
 
 @Resolver()

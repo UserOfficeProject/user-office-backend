@@ -2,7 +2,7 @@ import { ProposalEndStatus } from './Proposal';
 
 export class SepMeetingDecision {
   constructor(
-    public proposalId: number,
+    public proposalPK: number,
     public rankOrder: number,
     public recommendation: ProposalEndStatus,
     public commentForUser: string,

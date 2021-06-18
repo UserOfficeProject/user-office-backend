@@ -14,9 +14,9 @@ export class ProposalQuery {
 
   @Query(() => Boolean, { nullable: true })
   async userHasAccessToProposal(
-    @Arg('proposalId', () => Int) proposalId: number,
+    @Arg('proposalPK', () => Int) proposalPK: number,
     @Ctx() context: ResolverContext
   ): Promise<boolean> {
-    return context.queries.proposal.get(context.user, proposalId) !== null;
+    return context.queries.proposal.get(context.user, proposalPK) !== null;
   }
 }

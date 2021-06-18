@@ -18,7 +18,7 @@ export class AddUserForReviewArgs {
   public userID: number;
 
   @Field(() => Int)
-  public proposalID: number;
+  public proposalPK: number;
 
   @Field(() => Int)
   public sepID: number;

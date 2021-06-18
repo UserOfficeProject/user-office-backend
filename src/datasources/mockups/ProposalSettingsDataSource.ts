@@ -193,7 +193,7 @@ export class ProposalSettingsDataSourceMock
   }
 
   async getProposalNextStatus(
-    proposalId: number,
+    proposalPK: number,
     event: Event
   ): Promise<ProposalStatus | null> {
     return new ProposalStatus(

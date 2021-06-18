@@ -183,8 +183,8 @@ export default class UserQueries {
     return this.dataSource.getUser(id);
   }
 
-  async getProposers(agent: UserWithRole | null, proposalId: number) {
-    return this.dataSource.getProposalUsers(proposalId);
+  async getProposers(agent: UserWithRole | null, proposalPK: number) {
+    return this.dataSource.getProposalUsers(proposalPK);
   }
 
   async checkToken(

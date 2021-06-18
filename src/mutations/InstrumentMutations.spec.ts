@@ -83,7 +83,7 @@ describe('Test Instrument Mutations', () => {
           instrumentId: 1,
         }
       )
-    ).resolves.toStrictEqual({ proposalIds: [1, 2] });
+    ).resolves.toStrictEqual({ proposalPKs: [1, 2] });
   });
 
   test('A logged in user officer can remove assigned proposal from instrument', () => {
@@ -91,7 +91,7 @@ describe('Test Instrument Mutations', () => {
       instrumentMutations.removeProposalsFromInstrument(
         dummyUserOfficerWithRole,
         {
-          proposalIds: [1],
+          proposalPKs: [1],
         }
       )
     ).resolves.toBe(true);

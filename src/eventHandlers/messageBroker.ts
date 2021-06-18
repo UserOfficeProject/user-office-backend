@@ -13,7 +13,7 @@ import { Proposal, ProposalEndStatus } from '../models/Proposal';
 import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 
 type ProposalMessageData = {
-  proposalId: number;
+  proposalPK: number;
   shortCode: string;
   title: string;
   abstract: string;
@@ -36,7 +36,7 @@ const getProposalMessageData = async (proposal: Proposal) => {
   const proposalUsers = await userDataSource.getProposalUsersFull(proposal.id);
 
   const messageData: ProposalMessageData = {
-    proposalId: proposal.id,
+    proposalPK: proposal.id,
     shortCode: proposal.shortCode,
     title: proposal.title,
     abstract: proposal.abstract,
@@ -104,7 +104,7 @@ export function createPostToRabbitMQHandler() {
           return;
         }
 
-        const instrument = await instrumentDataSource.getInstrumentByProposalId(
+        const instrument = await instrumentDataSource.getInstrumentByProposalPK(
           proposal.id
         );
 
@@ -118,7 +118,7 @@ export function createPostToRabbitMQHandler() {
 
         // NOTE: maybe use shared types?
         const message = {
-          proposalId: proposal.id,
+          proposalPK: proposal.id,
           callId: proposal.callId,
           // the UI supports days
           allocatedTime: proposal.managementTimeAllocation * 24 * 60 * 60,

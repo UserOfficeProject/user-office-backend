@@ -1,6 +1,6 @@
 import { Call } from '../models/Call';
 import { InstrumentHasProposals } from '../models/Instrument';
-import { Proposal, ProposalIdsWithNextStatus } from '../models/Proposal';
+import { Proposal, ProposalPKsWithNextStatus } from '../models/Proposal';
 import { Review, ReviewWithNextProposalStatus } from '../models/Review';
 import { Sample } from '../models/Sample';
 import { SEP } from '../models/SEP';
@@ -109,17 +109,17 @@ interface ProposalSampleReviewSubmittedEvent extends GeneralEvent {
 
 interface ProposalInstrumentSelectedEvent extends GeneralEvent {
   type: Event.PROPOSAL_INSTRUMENT_SELECTED;
-  proposalidswithnextstatus: ProposalIdsWithNextStatus;
+  proposalpkswithnextstatus: ProposalPKsWithNextStatus;
 }
 
 interface ProposalSEPSelectedEvent extends GeneralEvent {
   type: Event.PROPOSAL_SEP_SELECTED;
-  proposalidswithnextstatus: ProposalIdsWithNextStatus;
+  proposalpkswithnextstatus: ProposalPKsWithNextStatus;
 }
 
 interface ProposalStatusUpdatedEvent extends GeneralEvent {
   type: Event.PROPOSAL_STATUS_UPDATED;
-  proposalidswithnextstatus: ProposalIdsWithNextStatus;
+  proposalpkswithnextstatus: ProposalPKsWithNextStatus;
 }
 
 interface ProposalInstrumentSubmittedEvent extends GeneralEvent {

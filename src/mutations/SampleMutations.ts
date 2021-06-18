@@ -48,7 +48,7 @@ export default class SampleMutations {
       });
     }
 
-    const proposal = await this.proposalDataSource.get(args.proposalId);
+    const proposal = await this.proposalDataSource.get(args.proposalPK);
     if (!proposal) {
       return rejection('Can not create sample because proposal was not found', {
         agent,
@@ -71,7 +71,7 @@ export default class SampleMutations {
         return this.sampleDataSource.create(
           args.title,
           agent.id,
-          args.proposalId,
+          args.proposalPK,
           questionary.questionaryId,
           args.questionId
         );

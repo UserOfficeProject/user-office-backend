@@ -80,7 +80,7 @@ async function getProposal(id: number): Promise<Proposal> {
   const proposal = await database
     .select()
     .table('proposals')
-    .where('proposal_id', id)
+    .where('proposal_pk', id)
     .first();
 
   return createProposalObject(proposal);

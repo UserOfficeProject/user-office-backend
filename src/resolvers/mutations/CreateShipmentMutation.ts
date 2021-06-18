@@ -18,7 +18,7 @@ export class CreateShipmentInput {
   title: string;
 
   @Field(() => Int)
-  proposalId: number;
+  proposalPK: number;
 }
 
 @Resolver()

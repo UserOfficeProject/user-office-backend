@@ -11,7 +11,7 @@ import {
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
-import { ProposalIdsWithNextStatus } from '../models/Proposal';
+import { ProposalPKsWithNextStatus } from '../models/Proposal';
 import { Rejection } from '../models/Rejection';
 import { UserRole } from '../models/User';
 import SEPMutations from './SEPMutations';
@@ -212,7 +212,7 @@ describe('Test SEPMutations', () => {
         sepId: 1,
       })
     ).resolves.toStrictEqual(
-      new ProposalIdsWithNextStatus([1], 5, 'SEP_REVIEW', 'SEP Review')
+      new ProposalPKsWithNextStatus([1], 5, 'SEP_REVIEW', 'SEP Review')
     );
   });
 
@@ -220,7 +220,7 @@ describe('Test SEPMutations', () => {
     const result = (await SEPMutationsInstance.removeProposalsFromSep(
       dummyUserWithRole,
       {
-        proposalIds: [1],
+        proposalPKs: [1],
         sepId: 1,
       }
     )) as Rejection;
@@ -231,7 +231,7 @@ describe('Test SEPMutations', () => {
   test('A userofficer can remove proposal from SEP', () => {
     return expect(
       SEPMutationsInstance.removeProposalsFromSep(dummyUserOfficerWithRole, {
-        proposalIds: [1],
+        proposalPKs: [1],
         sepId: 1,
       })
     ).resolves.toStrictEqual(dummySEP);
@@ -241,7 +241,7 @@ describe('Test SEPMutations', () => {
     const result = (await SEPMutationsInstance.assignSepReviewersToProposal(
       dummyUserWithRole,
       {
-        proposalId: 1,
+        proposalPK: 1,
         sepId: 1,
         memberIds: [1],
       }
@@ -255,7 +255,7 @@ describe('Test SEPMutations', () => {
       SEPMutationsInstance.assignSepReviewersToProposal(
         dummyUserOfficerWithRole,
         {
-          proposalId: 1,
+          proposalPK: 1,
           sepId: 1,
           memberIds: [1],
         }

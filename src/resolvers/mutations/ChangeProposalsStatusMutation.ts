@@ -14,7 +14,7 @@ import { SuccessResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
 
 @InputType()
-export class ProposalIdWithCallId {
+export class ProposalPKWithCallId {
   @Field(() => Int)
   public id: number;
 
@@ -27,8 +27,8 @@ export class ChangeProposalsStatusInput {
   @Field(() => Int)
   public statusId: number;
 
-  @Field(() => [ProposalIdWithCallId])
-  public proposals: ProposalIdWithCallId[];
+  @Field(() => [ProposalPKWithCallId])
+  public proposals: ProposalPKWithCallId[];
 }
 
 @Resolver()

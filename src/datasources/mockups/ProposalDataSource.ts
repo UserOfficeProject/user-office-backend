@@ -4,7 +4,7 @@ import { Call } from '../../models/Call';
 import {
   Proposal,
   ProposalEndStatus,
-  ProposalIdsWithNextStatus,
+  ProposalPKsWithNextStatus,
 } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
@@ -108,8 +108,8 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     return dummyProposalRef;
   }
 
-  async rejectProposal(proposalId: number): Promise<Proposal> {
-    if (dummyProposal.id !== proposalId) {
+  async rejectProposal(proposalPK: number): Promise<Proposal> {
+    if (dummyProposal.id !== proposalPK) {
       throw new Error('Wrong ID');
     }
 
@@ -129,10 +129,10 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async updateProposalStatus(
-    proposalId: number,
+    proposalPK: number,
     proposalStatusId: number
   ): Promise<Proposal> {
-    if (proposalId !== dummyProposal.id) {
+    if (proposalPK !== dummyProposal.id) {
       throw new Error('Proposal does not exist');
     }
 
@@ -194,10 +194,10 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async markEventAsDoneOnProposal(
     event: Event,
-    proposalId: number
+    proposalPK: number
   ): Promise<ProposalEventsRecord | null> {
     return {
-      proposal_id: 1,
+      proposal_pk: 1,
       proposal_created: true,
       proposal_submitted: true,
       proposal_feasible: true,
@@ -233,7 +233,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async resetProposalEvents(
-    proposalId: number,
+    proposalPK: number,
     callId: number,
     statusId: number
   ): Promise<boolean> {
@@ -242,8 +242,8 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async changeProposalsStatus(
     statusId: number,
-    proposalIds: number[]
-  ): Promise<ProposalIdsWithNextStatus> {
-    return { proposalIds: [1] };
+    proposalPKs: number[]
+  ): Promise<ProposalPKsWithNextStatus> {
+    return { proposalPKs: [1] };
   }
 }
