@@ -4,7 +4,7 @@ import { Transaction } from 'knex';
 import { injectable } from 'tsyringe';
 
 import { Event } from '../../events/event.enum';
-import { Proposal, ProposalPKsWithNextStatus } from '../../models/Proposal';
+import { Proposal, ProposalPksWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
 import { UpdateTechnicalReviewAssigneeInput } from '../../resolvers/mutations/UpdateTechnicalReviewAssignee';
@@ -59,11 +59,11 @@ export async function calculateReferenceNumber(
 export default class PostgresProposalDataSource implements ProposalDataSource {
   async updateProposalTechnicalReviewer({
     userId,
-    proposalPKs,
+    proposalPks,
   }: UpdateTechnicalReviewAssigneeInput): Promise<Proposal[]> {
     const response = await database('proposals')
       .update('technical_review_assignee', userId)
-      .whereIn('proposal_pk', proposalPKs)
+      .whereIn('proposal_pk', proposalPks)
       .returning('*')
       .then((proposals: ProposalRecord[]) => {
         return proposals.map((proposal) => createProposalObject(proposal));
@@ -225,7 +225,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   }
 
   async updateProposalStatus(
-    proposalPK: number,
+    proposalPk: number,
     proposalStatusId: number
   ): Promise<Proposal> {
     return database
@@ -236,10 +236,10 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         ['*']
       )
       .from('proposals')
-      .where('proposal_pk', proposalPK)
+      .where('proposal_pk', proposalPk)
       .then((records: ProposalRecord[]) => {
         if (records === undefined || !records.length) {
-          throw new Error(`Proposal not found ${proposalPK}`);
+          throw new Error(`Proposal not found ${proposalPk}`);
         }
 
         return createProposalObject(records[0]);
@@ -528,10 +528,10 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
   async markEventAsDoneOnProposal(
     event: Event,
-    proposalPK: number
+    proposalPk: number
   ): Promise<ProposalEventsRecord | null> {
     const dataToInsert = {
-      proposal_pk: proposalPK,
+      proposal_pk: proposalPk,
       [event.toLowerCase()]: true,
     };
 
@@ -609,7 +609,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   }
 
   async resetProposalEvents(
-    proposalPK: number,
+    proposalPk: number,
     callId: number,
     statusId: number
   ): Promise<boolean> {
@@ -658,7 +658,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       const [updatedProposalEvents]: ProposalEventsRecord[] = (
         await database.raw(`
         UPDATE proposal_events SET ${dataToUpdate}
-        WHERE proposal_pk = ${proposalPK}
+        WHERE proposal_pk = ${proposalPk}
         RETURNING *
       `)
       ).rows;
@@ -675,8 +675,8 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
   async changeProposalsStatus(
     statusId: number,
-    proposalPKs: number[]
-  ): Promise<ProposalPKsWithNextStatus> {
+    proposalPks: number[]
+  ): Promise<ProposalPksWithNextStatus> {
     const dataToUpdate: { status_id: number; submitted?: boolean } = {
       status_id: statusId,
     };
@@ -689,7 +689,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     const result: ProposalRecord[] = await database
       .update(dataToUpdate, ['*'])
       .from('proposals')
-      .whereIn('proposal_pk', proposalPKs);
+      .whereIn('proposal_pk', proposalPks);
 
     if (result?.length === 0) {
       logger.logError('Could not change proposals status', { dataToUpdate });
@@ -697,7 +697,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       throw new Error('Could not change proposals status');
     }
 
-    return new ProposalPKsWithNextStatus(
+    return new ProposalPksWithNextStatus(
       result.map((item) => item.proposal_pk)
     );
   }

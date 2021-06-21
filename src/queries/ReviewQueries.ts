@@ -30,7 +30,7 @@ export default class ReviewQueries {
       review.userID === agent!.id ||
       this.userAuth.isUserOfficer(agent) ||
       (sepId && (await this.userAuth.isChairOrSecretaryOfSEP(agent, sepId))) ||
-      (await this.userAuth.isReviewerOfProposal(agent, review.proposalPK))
+      (await this.userAuth.isReviewerOfProposal(agent, review.proposalPk))
     ) {
       return review;
     } else {
@@ -41,31 +41,31 @@ export default class ReviewQueries {
   @Authorized([Roles.USER_OFFICER, Roles.SEP_CHAIR, Roles.SEP_SECRETARY])
   async reviewsForProposal(
     agent: UserWithRole | null,
-    proposalPK: number
+    proposalPk: number
   ): Promise<Review[] | null> {
     if (
       !this.userAuth.isUserOfficer(agent) &&
-      !(await this.userAuth.isChairOrSecretaryOfProposal(agent, proposalPK))
+      !(await this.userAuth.isChairOrSecretaryOfProposal(agent, proposalPk))
     ) {
       return null;
     }
 
-    return this.dataSource.getProposalReviews(proposalPK);
+    return this.dataSource.getProposalReviews(proposalPk);
   }
 
   @Authorized()
   async technicalReviewForProposal(
     agent: UserWithRole | null,
-    proposalPK: number
+    proposalPk: number
   ): Promise<TechnicalReview | null> {
     if (
       this.userAuth.isUserOfficer(agent) ||
-      (await this.userAuth.isScientistToProposal(agent, proposalPK)) ||
-      (await this.userAuth.isChairOrSecretaryOfProposal(agent, proposalPK))
+      (await this.userAuth.isScientistToProposal(agent, proposalPk)) ||
+      (await this.userAuth.isChairOrSecretaryOfProposal(agent, proposalPk))
     ) {
-      return this.dataSource.getTechnicalReview(proposalPK);
-    } else if (await this.userAuth.isReviewerOfProposal(agent, proposalPK)) {
-      const review = await this.dataSource.getTechnicalReview(proposalPK);
+      return this.dataSource.getTechnicalReview(proposalPk);
+    } else if (await this.userAuth.isReviewerOfProposal(agent, proposalPk)) {
+      const review = await this.dataSource.getTechnicalReview(proposalPk);
       if (review) {
         review.comment = '';
       }

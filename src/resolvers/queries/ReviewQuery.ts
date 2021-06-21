@@ -16,9 +16,9 @@ export class ReviewQuery {
 
   @Query(() => [Review], { nullable: true })
   proposalReviews(
-    @Arg('proposalPK', () => Int) proposalPK: number,
+    @Arg('proposalPk', () => Int) proposalPk: number,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.review.reviewsForProposal(context.user, proposalPK);
+    return context.queries.review.reviewsForProposal(context.user, proposalPk);
   }
 }

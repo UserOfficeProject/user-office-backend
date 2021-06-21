@@ -22,7 +22,7 @@ const router = express.Router();
 router.get(`/${XLSXType.PROPOSAL}/:proposal_pks`, async (req, res, next) => {
   try {
     const userWithRole = (req as RequestWithUser).user;
-    const proposalPKs: number[] = req.params.proposal_pks
+    const proposalPks: number[] = req.params.proposal_pks
       .split(',')
       .map((n: string) => parseInt(n))
       .filter((id: number) => !isNaN(id));
@@ -39,9 +39,9 @@ router.get(`/${XLSXType.PROPOSAL}/:proposal_pks`, async (req, res, next) => {
     };
 
     const data = await Promise.all(
-      proposalPKs.map((proposalPK, indx) =>
+      proposalPks.map((proposalPk, indx) =>
         collectProposalXLSXData(
-          proposalPK,
+          proposalPk,
           userWithRole,
           indx === 0
             ? (filename: string) => (meta.singleFilename = filename)

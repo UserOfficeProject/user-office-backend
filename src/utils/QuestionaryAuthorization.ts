@@ -111,7 +111,7 @@ class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
 
     const sample = queryResult[0];
 
-    const proposal = await this.proposalDataSource.get(sample.proposalPK);
+    const proposal = await this.proposalDataSource.get(sample.proposalPk);
 
     if (!proposal) {
       logger.logError('Could not find proposal for questionary', {
@@ -167,7 +167,7 @@ class ShipmentDeclarationQuestionaryAuthorizer
 
     const shipment = queryResult[0];
 
-    const proposal = await this.proposalDataSource.get(shipment.proposalPK);
+    const proposal = await this.proposalDataSource.get(shipment.proposalPk);
 
     if (!proposal) {
       logger.logError('Could not find proposal for questionary', {

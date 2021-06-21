@@ -157,7 +157,7 @@ export class ProposalResolver {
     @Root() proposal: Proposal,
     @Ctx() context: ResolverContext
   ): Promise<Instrument | null> {
-    return await context.queries.instrument.dataSource.getInstrumentByProposalPK(
+    return await context.queries.instrument.dataSource.getInstrumentByProposalPk(
       proposal.id
     );
   }
@@ -167,7 +167,7 @@ export class ProposalResolver {
     @Root() proposal: Proposal,
     @Ctx() context: ResolverContext
   ): Promise<SEP | null> {
-    return await context.queries.sep.dataSource.getSEPByProposalPK(proposal.id);
+    return await context.queries.sep.dataSource.getSEPByProposalPk(proposal.id);
   }
 
   @FieldResolver(() => Call, { nullable: true })
@@ -206,7 +206,7 @@ export class ProposalResolver {
     @Ctx() context: ResolverContext
   ): Promise<Sample[] | null> {
     return await context.queries.sample.getSamples(context.user, {
-      filter: { proposalPK: proposal.id },
+      filter: { proposalPk: proposal.id },
     });
   }
 
@@ -216,7 +216,7 @@ export class ProposalResolver {
     @Ctx() context: ResolverContext
   ): Promise<Visit[] | null> {
     return await context.queries.visit.getMyVisits(context.user, {
-      proposalPK: proposal.id,
+      proposalPk: proposal.id,
     });
   }
 }

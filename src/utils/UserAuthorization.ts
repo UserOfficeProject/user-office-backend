@@ -68,7 +68,7 @@ export class UserAuthorization {
     });
   }
 
-  async isReviewerOfProposal(agent: UserWithRole | null, proposalPK: number) {
+  async isReviewerOfProposal(agent: UserWithRole | null, proposalPk: number) {
     if (agent == null || !agent.id || !agent.currentRole) {
       return false;
     }
@@ -87,17 +87,17 @@ export class UserAuthorization {
     return this.reviewDataSource
       .getUserReviews(sepIdsUserIsMemberOf)
       .then((reviews) => {
-        return reviews.some((review) => review.proposalPK === proposalPK);
+        return reviews.some((review) => review.proposalPk === proposalPk);
       });
   }
 
-  async isScientistToProposal(agent: User | null, proposalPK: number) {
+  async isScientistToProposal(agent: User | null, proposalPk: number) {
     if (agent == null || !agent.id) {
       return false;
     }
 
     return this.userDataSource
-      .checkScientistToProposal(agent.id, proposalPK)
+      .checkScientistToProposal(agent.id, proposalPk)
       .then((result) => {
         return result;
       });
@@ -140,14 +140,14 @@ export class UserAuthorization {
     return this.sepDataSource.isChairOrSecretaryOfSEP(agent.id, sepId);
   }
 
-  async isChairOrSecretaryOfProposal(agent: User | null, proposalPK: number) {
-    if (agent == null || !agent.id || !proposalPK) {
+  async isChairOrSecretaryOfProposal(agent: User | null, proposalPk: number) {
+    if (agent == null || !agent.id || !proposalPk) {
       return false;
     }
 
     return this.sepDataSource.isChairOrSecretaryOfProposal(
       agent.id,
-      proposalPK
+      proposalPk
     );
   }
 

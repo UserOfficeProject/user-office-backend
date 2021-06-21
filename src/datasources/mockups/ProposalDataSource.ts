@@ -4,7 +4,7 @@ import { Call } from '../../models/Call';
 import {
   Proposal,
   ProposalEndStatus,
-  ProposalPKsWithNextStatus,
+  ProposalPksWithNextStatus,
 } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
@@ -108,8 +108,8 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     return dummyProposalRef;
   }
 
-  async rejectProposal(proposalPK: number): Promise<Proposal> {
-    if (dummyProposal.id !== proposalPK) {
+  async rejectProposal(proposalPk: number): Promise<Proposal> {
+    if (dummyProposal.id !== proposalPk) {
       throw new Error('Wrong ID');
     }
 
@@ -129,10 +129,10 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async updateProposalStatus(
-    proposalPK: number,
+    proposalPk: number,
     proposalStatusId: number
   ): Promise<Proposal> {
-    if (proposalPK !== dummyProposal.id) {
+    if (proposalPk !== dummyProposal.id) {
       throw new Error('Proposal does not exist');
     }
 
@@ -194,7 +194,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async markEventAsDoneOnProposal(
     event: Event,
-    proposalPK: number
+    proposalPk: number
   ): Promise<ProposalEventsRecord | null> {
     return {
       proposal_pk: 1,
@@ -233,7 +233,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async resetProposalEvents(
-    proposalPK: number,
+    proposalPk: number,
     callId: number,
     statusId: number
   ): Promise<boolean> {
@@ -242,8 +242,8 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async changeProposalsStatus(
     statusId: number,
-    proposalPKs: number[]
-  ): Promise<ProposalPKsWithNextStatus> {
-    return { proposalPKs: [1] };
+    proposalPks: number[]
+  ): Promise<ProposalPksWithNextStatus> {
+    return { proposalPks: [1] };
   }
 }

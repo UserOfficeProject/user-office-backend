@@ -28,7 +28,7 @@ export class UpdateSampleArgs {
   safetyStatus?: SampleStatus;
 
   // do not expose this fields to a user
-  proposalPK?: number;
+  proposalPk?: number;
   questionaryId?: number;
   shipmentId?: number | null;
 }

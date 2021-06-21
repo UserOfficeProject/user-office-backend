@@ -94,9 +94,9 @@ export class StfcUserDataSource implements UserDataSource {
     throw new Error('Method not implemented.');
   }
 
-  async getProposalUsersFull(proposalPK: number): Promise<User[]> {
+  async getProposalUsersFull(proposalPk: number): Promise<User[]> {
     const users: User[] = await postgresUserDataSource.getProposalUsersFull(
-      proposalPK
+      proposalPk
     );
     const userNumbers: string[] = users.map((user) => String(user.id));
 
@@ -277,9 +277,9 @@ export class StfcUserDataSource implements UserDataSource {
     };
   }
 
-  async getProposalUsers(proposalPK: number): Promise<BasicUserDetails[]> {
+  async getProposalUsers(proposalPk: number): Promise<BasicUserDetails[]> {
     const users: BasicUserDetails[] = await postgresUserDataSource.getProposalUsers(
-      proposalPK
+      proposalPk
     );
     const userNumbers: string[] = users.map((user) => String(user.id));
 
@@ -294,11 +294,11 @@ export class StfcUserDataSource implements UserDataSource {
 
   async checkScientistToProposal(
     scientistId: number,
-    proposalPK: number
+    proposalPk: number
   ): Promise<boolean> {
     return await postgresUserDataSource.checkScientistToProposal(
       scientistId,
-      proposalPK
+      proposalPk
     );
   }
 

@@ -294,7 +294,7 @@ const createReviews = async () => {
   await execute(() => {
     return reviewDataSource.setTechnicalReview(
       {
-        proposalPK: dummy.positiveNumber(MAX_PROPOSALS),
+        proposalPk: dummy.positiveNumber(MAX_PROPOSALS),
         comment: faker.random.words(50),
         publicComment: faker.random.words(25),
         status:
@@ -332,18 +332,18 @@ const createSeps = async () => {
       sepId: sep.id,
       memberIds: [dummy.positiveNumber(MAX_USERS)],
     });
-    const proposalPKs = createUniqueIntArray(5, MAX_PROPOSALS);
-    for (const proposalPK of proposalPKs) {
+    const proposalPks = createUniqueIntArray(5, MAX_PROPOSALS);
+    for (const proposalPk of proposalPks) {
       const tmpUserId = dummy.positiveNumber(MAX_USERS);
       await sepDataSource.assignProposalsToSep({
-        proposals: [{ id: proposalPK, callId: 1 }],
+        proposals: [{ id: proposalPk, callId: 1 }],
         sepId: sep.id,
       });
-      await sepDataSource.assignMemberToSEPProposal(proposalPK, sep.id, [
+      await sepDataSource.assignMemberToSEPProposal(proposalPk, sep.id, [
         tmpUserId,
       ]);
       await reviewDataSource.addUserForReview({
-        proposalPK: proposalPK,
+        proposalPk: proposalPk,
         sepID: sep.id,
         userID: tmpUserId,
       });

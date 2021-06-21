@@ -29,15 +29,15 @@ export const defaultProposalDataColumns = [
 // Note: to optimize, we could create a query to collect everything
 // but this may be more flexible than using queries?
 export const collectProposalXLSXData = async (
-  proposalPK: number,
+  proposalPk: number,
   user: UserWithRole,
   notify?: CallableFunction
 ): Promise<ProposalXLSData> => {
-  const proposal = await baseContext.queries.proposal.get(user, proposalPK);
+  const proposal = await baseContext.queries.proposal.get(user, proposalPk);
 
   if (!proposal) {
     throw new Error(
-      `Proposal with ID '${proposalPK}' not found, or the user has insufficient rights`
+      `Proposal with ID '${proposalPk}' not found, or the user has insufficient rights`
     );
   }
 
@@ -63,7 +63,7 @@ export const collectProposalXLSXData = async (
 
   const reviews = await baseContext.queries.review.reviewsForProposal(
     user,
-    proposalPK
+    proposalPk
   );
 
   const sepMeetingDecision = await baseContext.queries.sep.getProposalSepMeetingDecision(

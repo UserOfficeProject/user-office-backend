@@ -39,7 +39,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
     shouldUpdateReview: boolean
   ): Promise<TechnicalReview> {
     const {
-      proposalPK,
+      proposalPk,
       comment,
       publicComment,
       timeAllocation,
@@ -51,7 +51,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
     if (shouldUpdateReview) {
       return database
         .update({
-          proposal_pk: proposalPK,
+          proposal_pk: proposalPk,
           comment,
           public_comment: publicComment,
           time_allocation: timeAllocation,
@@ -60,7 +60,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
           reviewer_id: reviewerId,
         })
         .from('technical_review')
-        .where('proposal_pk', proposalPK)
+        .where('proposal_pk', proposalPk)
         .returning('*')
         .then((records: TechnicalReviewRecord[]) =>
           this.createTechnicalReviewObject(records[0])
@@ -69,7 +69,7 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
 
     return database
       .insert({
-        proposal_pk: proposalPK,
+        proposal_pk: proposalPk,
         comment,
         public_comment: publicComment,
         time_allocation: timeAllocation,
@@ -108,12 +108,12 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
       .then((review: ReviewRecord) => this.createReviewObject(review));
   }
 
-  async getAssignmentReview(sepId: number, proposalPK: number, userId: number) {
+  async getAssignmentReview(sepId: number, proposalPk: number, userId: number) {
     return database
       .select()
       .from('SEP_Reviews')
       .where('sep_id', sepId)
-      .andWhere('proposal_pk', proposalPK)
+      .andWhere('proposal_pk', proposalPk)
       .andWhere('user_id', userId)
       .first()
       .then((review?: ReviewRecord) =>
@@ -169,12 +169,12 @@ export default class PostgresReviewDataSource implements ReviewDataSource {
   }
 
   async addUserForReview(args: AddUserForReviewArgs): Promise<Review> {
-    const { userID, proposalPK, sepID } = args;
+    const { userID, proposalPk, sepID } = args;
 
     return database
       .insert({
         user_id: userID,
-        proposal_pk: proposalPK,
+        proposal_pk: proposalPk,
         status: ReviewStatus.DRAFT,
         sep_id: sepID,
       })

@@ -101,12 +101,12 @@ export default class InstrumentQueries {
   async hasInstrumentScientistAccess(
     agent: UserWithRole | null,
     instrumentId: number,
-    proposalPK: number
+    proposalPk: number
   ) {
     return this.dataSource.hasInstrumentScientistAccess(
       agent?.id as number,
       instrumentId,
-      proposalPK
+      proposalPk
     );
   }
 

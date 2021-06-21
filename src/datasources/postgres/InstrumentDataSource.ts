@@ -6,7 +6,7 @@ import {
   InstrumentHasProposals,
   InstrumentWithAvailabilityTime,
 } from '../../models/Instrument';
-import { ProposalPKsWithNextStatus } from '../../models/Proposal';
+import { ProposalPksWithNextStatus } from '../../models/Proposal';
 import { BasicUserDetails } from '../../models/User';
 import { CreateInstrumentArgs } from '../../resolvers/mutations/CreateInstrumentMutation';
 import { InstrumentDataSource } from '../InstrumentDataSource';
@@ -205,12 +205,12 @@ export default class PostgresInstrumentDataSource
   }
 
   async assignProposalsToInstrument(
-    proposalPKs: number[],
+    proposalPks: number[],
     instrumentId: number
-  ): Promise<ProposalPKsWithNextStatus> {
-    const dataToInsert = proposalPKs.map((proposalPK) => ({
+  ): Promise<ProposalPksWithNextStatus> {
+    const dataToInsert = proposalPks.map((proposalPk) => ({
       instrument_id: instrumentId,
-      proposal_pk: proposalPK,
+      proposal_pk: proposalPk,
     }));
 
     const proposalInstrumentPairs: {
@@ -226,7 +226,7 @@ export default class PostgresInstrumentDataSource
          */
         await database('instrument_has_proposals')
           .del()
-          .whereIn('proposal_pk', proposalPKs)
+          .whereIn('proposal_pk', proposalPks)
           .transacting(trx);
 
         const result = await database('instrument_has_proposals')
@@ -237,31 +237,31 @@ export default class PostgresInstrumentDataSource
         return await trx.commit(result);
       } catch (error) {
         throw new Error(
-          `Could not assign proposals ${proposalPKs} to instrument with id: ${instrumentId}`
+          `Could not assign proposals ${proposalPks} to instrument with id: ${instrumentId}`
         );
       }
     });
 
-    const returnedProposalPKs = proposalInstrumentPairs.map(
+    const returnedProposalPks = proposalInstrumentPairs.map(
       (proposalInstrumentPair) => proposalInstrumentPair.proposal_pk
     );
 
     if (proposalInstrumentPairs?.length) {
       /**
-       * NOTE: We need to return changed proposalPKs because we listen to events and
+       * NOTE: We need to return changed proposalPks because we listen to events and
        * we need to do some changes on proposals based on what is changed.
        */
-      return new ProposalPKsWithNextStatus(returnedProposalPKs);
+      return new ProposalPksWithNextStatus(returnedProposalPks);
     }
 
     throw new Error(
-      `Could not assign proposals ${proposalPKs} to instrument with id: ${instrumentId}`
+      `Could not assign proposals ${proposalPks} to instrument with id: ${instrumentId}`
     );
   }
 
-  async removeProposalsFromInstrument(proposalPKs: number[]): Promise<boolean> {
+  async removeProposalsFromInstrument(proposalPks: number[]): Promise<boolean> {
     const result = await database('instrument_has_proposals')
-      .whereIn('proposal_pk', proposalPKs)
+      .whereIn('proposal_pk', proposalPks)
       .del();
 
     if (result) {
@@ -271,8 +271,8 @@ export default class PostgresInstrumentDataSource
     }
   }
 
-  async getInstrumentByProposalPK(
-    proposalPK: number
+  async getInstrumentByProposalPk(
+    proposalPk: number
   ): Promise<Instrument | null> {
     return database
       .select(['i.instrument_id', 'name', 'short_code', 'description'])
@@ -280,7 +280,7 @@ export default class PostgresInstrumentDataSource
       .join('instrument_has_proposals as ihp', {
         'i.instrument_id': 'ihp.instrument_id',
       })
-      .where('ihp.proposal_pk', proposalPK)
+      .where('ihp.proposal_pk', proposalPk)
       .first()
       .then((instrument: InstrumentRecord) => {
         if (!instrument) {
@@ -454,7 +454,7 @@ export default class PostgresInstrumentDataSource
   }
 
   async submitInstrument(
-    proposalPKs: number[],
+    proposalPks: number[],
     instrumentId: number
   ): Promise<InstrumentHasProposals> {
     const records: InstrumentHasProposalsRecord[] = await database(
@@ -466,16 +466,16 @@ export default class PostgresInstrumentDataSource
         },
         ['*']
       )
-      .whereIn('proposal_pk', proposalPKs)
+      .whereIn('proposal_pk', proposalPks)
       .andWhere('instrument_id', instrumentId);
 
     if (!records?.length) {
       throw new Error(
-        `Some record from instrument_has_proposals not found with proposalPKs: ${proposalPKs} and instrumentId: ${instrumentId}`
+        `Some record from instrument_has_proposals not found with proposalPks: ${proposalPks} and instrumentId: ${instrumentId}`
       );
     }
 
-    return new InstrumentHasProposals(instrumentId, proposalPKs, true);
+    return new InstrumentHasProposals(instrumentId, proposalPks, true);
   }
 
   async hasInstrumentScientistInstrument(
@@ -500,7 +500,7 @@ export default class PostgresInstrumentDataSource
   async hasInstrumentScientistAccess(
     scientistId: number,
     instrumentId: number,
-    proposalPK: number
+    proposalPk: number
   ): Promise<boolean> {
     return database
       .select([database.raw('count(*) OVER() AS count')])
@@ -513,7 +513,7 @@ export default class PostgresInstrumentDataSource
         'instrument_has_proposals.instrument_id':
           'instrument_has_scientists.instrument_id',
       })
-      .where('proposals.proposal_pk', '=', proposalPK)
+      .where('proposals.proposal_pk', '=', proposalPk)
       .where('instrument_has_scientists.instrument_id', '=', instrumentId)
       .first()
       .then((result: undefined | { count: string }) => {
@@ -521,10 +521,10 @@ export default class PostgresInstrumentDataSource
       });
   }
 
-  async isProposalInstrumentSubmitted(proposalPK: number): Promise<boolean> {
+  async isProposalInstrumentSubmitted(proposalPk: number): Promise<boolean> {
     return database('instrument_has_proposals')
       .select()
-      .where('proposal_pk', proposalPK)
+      .where('proposal_pk', proposalPk)
       .first()
       .then((result?: InstrumentHasProposalsRecord) => {
         if (!result) {

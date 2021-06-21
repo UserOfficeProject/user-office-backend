@@ -12,7 +12,7 @@ export class VisitsFilter {
   public questionaryId?: number;
 
   @Field(() => Int, { nullable: true })
-  public proposalPK?: number;
+  public proposalPk?: number;
 }
 
 @Resolver()

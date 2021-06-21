@@ -9,7 +9,7 @@ export interface SampleDataSource {
   create(
     title: string,
     creatorId: number,
-    proposalPK: number,
+    proposalPk: number,
     questionaryId: number,
     questionId: string
   ): Promise<Sample>;

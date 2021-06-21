@@ -33,7 +33,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
     const newSample = await this.create(
       sourceSample.title,
       sourceSample.creatorId,
-      sourceSample.proposalPK,
+      sourceSample.proposalPk,
       newQuestionary.questionaryId,
       sourceSample.questionId
     );
@@ -61,7 +61,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
           title: args.title,
           safety_comment: args.safetyComment,
           safety_status: args.safetyStatus,
-          proposal_pk: args.proposalPK,
+          proposal_pk: args.proposalPk,
           questionary_id: args.questionaryId,
           shipment_id: args.shipmentId,
         },
@@ -149,8 +149,8 @@ export default class PostgresSampleDataSource implements SampleDataSource {
         if (filter?.sampleIds) {
           query.where('sample_id', 'in', filter.sampleIds);
         }
-        if (filter?.proposalPK) {
-          query.where('proposal_pk', filter.proposalPK);
+        if (filter?.proposalPk) {
+          query.where('proposal_pk', filter.proposalPk);
         }
         if (filter?.questionId) {
           query.where('question_id', filter.questionId);

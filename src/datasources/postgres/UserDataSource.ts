@@ -428,13 +428,13 @@ export default class PostgresUserDataSource implements UserDataSource {
     return userRecord ? createUserObject(userRecord) : null;
   }
 
-  async getProposalUsersFull(proposalPK: number): Promise<User[]> {
+  async getProposalUsersFull(proposalPk: number): Promise<User[]> {
     return database
       .select()
       .from('users as u')
       .join('proposal_user as pc', { 'u.user_id': 'pc.user_id' })
       .join('proposals as p', { 'p.proposal_pk': 'pc.proposal_pk' })
-      .where('p.proposal_pk', proposalPK)
+      .where('p.proposal_pk', proposalPk)
       .then((users: UserRecord[]) =>
         users.map((user) => createUserObject(user))
       );
@@ -465,7 +465,7 @@ export default class PostgresUserDataSource implements UserDataSource {
 
   async checkScientistToProposal(
     scientistId: number,
-    proposalPK: number
+    proposalPk: number
   ): Promise<boolean> {
     const proposal = await database
       .select('*')
@@ -476,7 +476,7 @@ export default class PostgresUserDataSource implements UserDataSource {
       .join('instrument_has_proposals as ihp', {
         'ihp.instrument_id': 'ihs.instrument_id',
       })
-      .where('ihp.proposal_pk', proposalPK)
+      .where('ihp.proposal_pk', proposalPk)
       .first();
 
     return !!proposal;

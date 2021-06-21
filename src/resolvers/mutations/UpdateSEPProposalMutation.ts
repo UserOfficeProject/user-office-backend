@@ -18,7 +18,7 @@ export class UpdateSEPTimeAllocationArgs {
   sepId: number;
 
   @Field(() => Int)
-  proposalPK: number;
+  proposalPk: number;
 
   @Field(() => Int, { nullable: true })
   sepTimeAllocation?: number | null;

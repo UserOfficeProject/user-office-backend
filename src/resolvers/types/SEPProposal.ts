@@ -15,7 +15,7 @@ import { SEPAssignment } from './SEPAssignments';
 @ObjectType()
 export class SEPProposal {
   @Field(() => Int)
-  public proposalPK: number;
+  public proposalPk: number;
 
   @Field(() => Int)
   public sepId: number;
@@ -34,7 +34,7 @@ export class SEPUserResolver {
     @Root() sepProposal: SEPProposal,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.proposal.dataSource.get(sepProposal.proposalPK);
+    return context.queries.proposal.dataSource.get(sepProposal.proposalPk);
   }
 
   @FieldResolver(() => [SEPAssignment], { nullable: true })
@@ -44,7 +44,7 @@ export class SEPUserResolver {
   ) {
     return context.queries.sep.getSEPProposalAssignments(context.user, {
       sepId: sepProposal.sepId,
-      proposalPK: sepProposal.proposalPK,
+      proposalPk: sepProposal.proposalPk,
     });
   }
 
@@ -54,7 +54,7 @@ export class SEPUserResolver {
     @Ctx() context: ResolverContext
   ) {
     return context.queries.instrument.dataSource.isProposalInstrumentSubmitted(
-      sepProposal.proposalPK
+      sepProposal.proposalPk
     );
   }
 }

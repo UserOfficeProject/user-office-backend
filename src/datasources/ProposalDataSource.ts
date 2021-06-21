@@ -1,6 +1,6 @@
 import { Event } from '../events/event.enum';
 import { Call } from '../models/Call';
-import { Proposal, ProposalPKsWithNextStatus } from '../models/Proposal';
+import { Proposal, ProposalPksWithNextStatus } from '../models/Proposal';
 import { ProposalView } from '../models/ProposalView';
 import { UpdateTechnicalReviewAssigneeInput } from '../resolvers/mutations/UpdateTechnicalReviewAssignee';
 import { UserProposalsFilter } from '../resolvers/types/User';
@@ -36,7 +36,7 @@ export interface ProposalDataSource {
   ): Promise<Proposal>;
   update(proposal: Proposal): Promise<Proposal>;
   updateProposalStatus(
-    proposalPK: number,
+    proposalPk: number,
     proposalStatusId: number
   ): Promise<Proposal>;
   updateProposalTechnicalReviewer(
@@ -47,17 +47,17 @@ export interface ProposalDataSource {
   deleteProposal(id: number): Promise<Proposal>;
   markEventAsDoneOnProposal(
     event: Event,
-    proposalPK: number
+    proposalPk: number
   ): Promise<ProposalEventsRecord | null>;
   getCount(callId: number): Promise<number>;
   cloneProposal(sourceProposal: Proposal, call: Call): Promise<Proposal>;
   resetProposalEvents(
-    proposalPK: number,
+    proposalPk: number,
     callId: number,
     statusId: number
   ): Promise<boolean>;
   changeProposalsStatus(
     statusId: number,
-    proposalPKs: number[]
-  ): Promise<ProposalPKsWithNextStatus>;
+    proposalPks: number[]
+  ): Promise<ProposalPksWithNextStatus>;
 }

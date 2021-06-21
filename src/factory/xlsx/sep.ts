@@ -103,8 +103,8 @@ export const collectSEPlXLSXData = async (
   );
 
   const instrumentsProposals = await Promise.all(
-    instrumentsSepProposals.map((sepProposalPKs) => {
-      if (!sepProposalPKs) {
+    instrumentsSepProposals.map((sepProposalPks) => {
+      if (!sepProposalPks) {
         const instrumentIds = instruments.map(({ id }) => id).join(', ');
 
         throw new Error(
@@ -115,8 +115,8 @@ export const collectSEPlXLSXData = async (
       }
 
       return Promise.all(
-        sepProposalPKs.map(({ proposalPK }) =>
-          baseContext.queries.proposal.dataSource.get(proposalPK)
+        sepProposalPks.map(({ proposalPk }) =>
+          baseContext.queries.proposal.dataSource.get(proposalPk)
         )
       );
     })

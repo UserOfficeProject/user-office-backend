@@ -38,7 +38,7 @@ export class SampleDataSourceMock implements SampleDataSource {
   async create(
     title: string,
     creatorId: number,
-    proposalPK: number,
+    proposalPk: number,
     questionaryId: number,
     questionId: string
   ): Promise<Sample> {
@@ -46,7 +46,7 @@ export class SampleDataSourceMock implements SampleDataSource {
       1,
       title,
       creatorId,
-      proposalPK,
+      proposalPk,
       questionaryId,
       questionId,
       SampleStatus.PENDING_EVALUATION,

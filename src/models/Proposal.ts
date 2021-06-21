@@ -51,9 +51,9 @@ export class Proposal {
   ) {}
 }
 
-export class ProposalPKsWithNextStatus {
+export class ProposalPksWithNextStatus {
   constructor(
-    public proposalPKs: number[],
+    public proposalPks: number[],
     public id?: number,
     public shortCode?: string,
     public name?: string

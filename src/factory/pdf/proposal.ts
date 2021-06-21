@@ -56,12 +56,12 @@ const getTopicActiveAnswers = (
 };
 
 export const collectProposalPDFData = async (
-  proposalPK: number,
+  proposalPk: number,
   user: UserWithRole,
   notify?: CallableFunction
 ): Promise<ProposalPDFData> => {
   const userAuthorization = baseContext.userAuthorization;
-  const proposal = await baseContext.queries.proposal.get(user, proposalPK);
+  const proposal = await baseContext.queries.proposal.get(user, proposalPk);
 
   // Authenticate user
   if (!proposal || !userAuthorization.hasAccessRights(user, proposal)) {
@@ -85,7 +85,7 @@ export const collectProposalPDFData = async (
   );
   const coProposers = await baseContext.queries.user.getProposers(
     user,
-    proposalPK
+    proposalPk
   );
 
   if (!principalInvestigator || !coProposers) {
@@ -95,7 +95,7 @@ export const collectProposalPDFData = async (
   const sampleAttachments: Attachment[] = [];
 
   const samples = await baseContext.queries.sample.getSamples(user, {
-    filter: { proposalPK },
+    filter: { proposalPk },
   });
 
   const samplePDFData = (

@@ -27,7 +27,7 @@ export class NotifyProposalMutation {
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.proposal.notify(context.user, { proposalPK: args.id }),
+      context.mutations.proposal.notify(context.user, { proposalPk: args.id }),
       ProposalResponseWrap
     );
   }

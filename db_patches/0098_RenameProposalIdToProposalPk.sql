@@ -1,7 +1,7 @@
 DO
 $$
 BEGIN
-	IF register_patch('RenameProposalIdToProposalPK.sql', 'jekabskarklins', 'Rename proposal id to proposal_pk', '2021-06-14') THEN
+	IF register_patch('RenameProposalIdToProposalPk.sql', 'jekabskarklins', 'Rename proposal id to proposal_pk', '2021-06-14') THEN
     ALTER TABLE "SEP_Assignments" RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE "SEP_Proposals" RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE "SEP_Reviews" RENAME COLUMN proposal_id TO proposal_pk;

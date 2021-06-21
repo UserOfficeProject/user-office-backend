@@ -67,8 +67,8 @@ export default class PostgresShipmentDataSource implements ShipmentDataSource {
         if (filter?.shipmentIds) {
           query.where('shipment_id', 'in', filter.shipmentIds);
         }
-        if (filter?.proposalPK) {
-          query.where('proposal_pk', filter.proposalPK);
+        if (filter?.proposalPk) {
+          query.where('proposal_pk', filter.proposalPk);
         }
         if (filter?.externalRef) {
           query.where('external_ref', filter.externalRef);
@@ -97,7 +97,7 @@ export default class PostgresShipmentDataSource implements ShipmentDataSource {
         {
           title: args.title,
           status: args.status,
-          proposal_pk: args.proposalPK,
+          proposal_pk: args.proposalPk,
           external_ref: args.externalRef,
         },
         '*'

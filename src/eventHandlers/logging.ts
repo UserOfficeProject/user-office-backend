@@ -52,13 +52,13 @@ export default function createHandler() {
         case Event.PROPOSAL_INSTRUMENT_SELECTED:
         case Event.PROPOSAL_SEP_SELECTED:
         case Event.PROPOSAL_STATUS_UPDATED:
-          event.proposalpkswithnextstatus.proposalPKs.forEach(
-            async (proposalPK) => {
+          event.proposalpkswithnextstatus.proposalPks.forEach(
+            async (proposalPk) => {
               await eventLogsDataSource.set(
                 event.loggedInUserId,
                 event.type,
                 json,
-                proposalPK.toString()
+                proposalPk.toString()
               );
             }
           );
@@ -86,7 +86,7 @@ export default function createHandler() {
             event.loggedInUserId,
             event.type,
             json,
-            event.sepmeetingdecision.proposalPK.toString()
+            event.sepmeetingdecision.proposalPk.toString()
           );
           break;
         default:

@@ -80,9 +80,9 @@ export default function createHandler() {
       case Event.PROPOSAL_STATUS_UPDATED:
         try {
           await Promise.all(
-            event.proposalpkswithnextstatus.proposalPKs.map(
-              async (proposalPK) => {
-                const proposal = await proposalDataSource.get(proposalPK);
+            event.proposalpkswithnextstatus.proposalPks.map(
+              async (proposalPk) => {
+                const proposal = await proposalDataSource.get(proposalPk);
 
                 if (proposal?.id) {
                   await markProposalEventAsDoneAndCallWorkflowEngine(
@@ -107,7 +107,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposalpkswithnextstatus.proposalPKs}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposalpkswithnextstatus.proposalPks}: `,
             error
           );
         }
@@ -199,12 +199,12 @@ export default function createHandler() {
       case Event.PROPOSAL_FEASIBILITY_REVIEW_UPDATED:
         try {
           const proposal = await proposalDataSource.get(
-            event.technicalreview.proposalPK
+            event.technicalreview.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.technicalreview.proposalPK} not found`
+              `Proposal with id ${event.technicalreview.proposalPk} not found`
             );
           }
 
@@ -224,7 +224,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.technicalreview.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.technicalreview.proposalPk}: `,
             error
           );
         }
@@ -233,12 +233,12 @@ export default function createHandler() {
       case Event.PROPOSAL_FEASIBILITY_REVIEW_SUBMITTED:
         try {
           const proposal = await proposalDataSource.get(
-            event.technicalreview.proposalPK
+            event.technicalreview.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.technicalreview.proposalPK} not found`
+              `Proposal with id ${event.technicalreview.proposalPk} not found`
             );
           }
 
@@ -271,7 +271,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.technicalreview.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.technicalreview.proposalPk}: `,
             error
           );
         }
@@ -280,12 +280,12 @@ export default function createHandler() {
       case Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED:
         try {
           const proposal = await proposalDataSource.get(
-            event.sample.proposalPK
+            event.sample.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.sample.proposalPK} not found`
+              `Proposal with id ${event.sample.proposalPk} not found`
             );
           }
 
@@ -309,7 +309,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sample.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sample.proposalPk}: `,
             error
           );
         }
@@ -318,12 +318,12 @@ export default function createHandler() {
       case Event.PROPOSAL_SEP_MEETING_REORDER:
         try {
           const proposal = await proposalDataSource.get(
-            event.sepmeetingdecision.proposalPK
+            event.sepmeetingdecision.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.sepmeetingdecision.proposalPK} not found`
+              `Proposal with id ${event.sepmeetingdecision.proposalPk} not found`
             );
           }
 
@@ -333,7 +333,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sepmeetingdecision.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sepmeetingdecision.proposalPk}: `,
             error
           );
         }
@@ -341,12 +341,12 @@ export default function createHandler() {
       case Event.PROPOSAL_SEP_MEETING_SAVED:
         try {
           const proposal = await proposalDataSource.get(
-            event.sepmeetingdecision.proposalPK
+            event.sepmeetingdecision.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.sepmeetingdecision.proposalPK} not found`
+              `Proposal with id ${event.sepmeetingdecision.proposalPk} not found`
             );
           }
 
@@ -366,7 +366,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sepmeetingdecision.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.sepmeetingdecision.proposalPk}: `,
             error
           );
         }
@@ -374,12 +374,12 @@ export default function createHandler() {
       case Event.PROPOSAL_SEP_REVIEW_UPDATED:
         try {
           const proposal = await proposalDataSource.get(
-            event.reviewwithnextproposalstatus.proposalPK
+            event.reviewwithnextproposalstatus.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.reviewwithnextproposalstatus.proposalPK} not found`
+              `Proposal with id ${event.reviewwithnextproposalstatus.proposalPk} not found`
             );
           }
 
@@ -401,7 +401,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.reviewwithnextproposalstatus.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.reviewwithnextproposalstatus.proposalPk}: `,
             error
           );
         }
@@ -410,12 +410,12 @@ export default function createHandler() {
       case Event.PROPOSAL_SEP_REVIEW_SUBMITTED:
         try {
           const proposal = await proposalDataSource.get(
-            event.review.proposalPK
+            event.review.proposalPk
           );
 
           if (!proposal) {
             throw new Error(
-              `Proposal with id ${event.review.proposalPK} not found`
+              `Proposal with id ${event.review.proposalPk} not found`
             );
           }
           const allProposalReviews = await reviewDataSource.getProposalReviews(
@@ -443,7 +443,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.review.proposalPK}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.review.proposalPk}: `,
             error
           );
         }
@@ -479,8 +479,8 @@ export default function createHandler() {
       case Event.PROPOSAL_INSTRUMENT_SUBMITTED:
         try {
           await Promise.all(
-            event.instrumenthasproposals.proposalPKs.map(async (proposalPK) => {
-              const proposal = await proposalDataSource.get(proposalPK);
+            event.instrumenthasproposals.proposalPks.map(async (proposalPk) => {
+              const proposal = await proposalDataSource.get(proposalPk);
 
               if (proposal?.id) {
                 return await markProposalEventAsDoneAndCallWorkflowEngine(
@@ -492,7 +492,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.instrumenthasproposals.proposalPKs}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.instrumenthasproposals.proposalPks}: `,
             error
           );
         }

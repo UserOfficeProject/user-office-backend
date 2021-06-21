@@ -66,7 +66,7 @@ export class ShipmentAuthorization {
       return false;
     }
 
-    const proposal = await this.proposalDataSource.get(shipment.proposalPK);
+    const proposal = await this.proposalDataSource.get(shipment.proposalPk);
 
     if (!proposal) {
       logger.logError('Could not find proposal for shipment', {

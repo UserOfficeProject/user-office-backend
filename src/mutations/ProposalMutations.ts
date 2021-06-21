@@ -19,7 +19,7 @@ import { Event } from '../events/event.enum';
 import {
   Proposal,
   ProposalEndStatus,
-  ProposalPKsWithNextStatus,
+  ProposalPksWithNextStatus,
 } from '../models/Proposal';
 import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 import { rejection, Rejection } from '../models/Rejection';
@@ -164,13 +164,13 @@ export default class ProposalMutations {
   @EventBus(Event.PROPOSAL_SUBMITTED)
   async submit(
     agent: UserWithRole | null,
-    { proposalPK }: { proposalPK: number }
+    { proposalPk }: { proposalPk: number }
   ): Promise<Proposal | Rejection> {
-    const proposal = await this.proposalDataSource.get(proposalPK);
+    const proposal = await this.proposalDataSource.get(proposalPk);
 
     if (!proposal) {
       return rejection('Can not submit proposal, because proposal not found', {
-        proposalPK,
+        proposalPk,
       });
     }
 
@@ -181,7 +181,7 @@ export default class ProposalMutations {
     ) {
       return rejection('Unauthorized submission of the proposal', {
         agent,
-        proposalPK,
+        proposalPk,
       });
     }
 
@@ -192,14 +192,14 @@ export default class ProposalMutations {
     if (!isUserOfficer && !hasActiveCall) {
       return rejection('Can not submit proposal because call is not active', {
         agent,
-        proposalPK,
+        proposalPk,
       });
     }
 
-    return this.proposalDataSource.submitProposal(proposalPK).catch((error) => {
+    return this.proposalDataSource.submitProposal(proposalPk).catch((error) => {
       return rejection(
         'Could not submit proposal',
-        { agent, proposalPK },
+        { agent, proposalPk },
         error
       );
     });
@@ -209,14 +209,14 @@ export default class ProposalMutations {
   @Authorized()
   async delete(
     agent: UserWithRole | null,
-    { proposalPK }: { proposalPK: number }
+    { proposalPk }: { proposalPk: number }
   ): Promise<Proposal | Rejection> {
-    const proposal = await this.proposalDataSource.get(proposalPK);
+    const proposal = await this.proposalDataSource.get(proposalPk);
 
     if (!proposal) {
       return rejection('Can not delete proposal because proposal not found', {
         agent,
-        proposalPK,
+        proposalPk,
       });
     }
 
@@ -227,12 +227,12 @@ export default class ProposalMutations {
       )
         return rejection(
           'Can not delete proposal because proposal is submitted',
-          { agent, proposalPK }
+          { agent, proposalPk }
         );
     }
 
     try {
-      const result = await this.proposalDataSource.deleteProposal(proposalPK);
+      const result = await this.proposalDataSource.deleteProposal(proposalPk);
 
       return result;
     } catch (error) {
@@ -246,7 +246,7 @@ export default class ProposalMutations {
 
       return rejection(
         'Failed to delete proposal',
-        { agent, proposalPK },
+        { agent, proposalPk },
         error
       );
     }
@@ -257,9 +257,9 @@ export default class ProposalMutations {
   @Authorized([Roles.USER_OFFICER])
   async notify(
     user: UserWithRole | null,
-    { proposalPK }: { proposalPK: number }
+    { proposalPk }: { proposalPk: number }
   ): Promise<unknown> {
-    const proposal = await this.proposalDataSource.get(proposalPK);
+    const proposal = await this.proposalDataSource.get(proposalPk);
 
     if (!proposal || proposal.notified || !proposal.finalStatus) {
       return rejection('Can not notify proposal', { proposal });
@@ -374,7 +374,7 @@ export default class ProposalMutations {
   async changeProposalsStatus(
     agent: UserWithRole | null,
     args: ChangeProposalsStatusInput
-  ): Promise<ProposalPKsWithNextStatus | Rejection> {
+  ): Promise<ProposalPksWithNextStatus | Rejection> {
     const { statusId, proposals } = args;
 
     const result = await this.proposalDataSource.changeProposalsStatus(
@@ -382,7 +382,7 @@ export default class ProposalMutations {
       proposals.map((proposal) => proposal.id)
     );
 
-    if (result.proposalPKs.length === proposals.length) {
+    if (result.proposalPks.length === proposals.length) {
       await Promise.all(
         proposals.map((proposal) => {
           return this.proposalDataSource.resetProposalEvents(
@@ -494,14 +494,14 @@ export default class ProposalMutations {
       );
 
       const proposalSamples = await this.sampleDataSource.getSamples({
-        filter: { proposalPK: sourceProposal.id },
+        filter: { proposalPk: sourceProposal.id },
       });
 
       for await (const sample of proposalSamples) {
         const clonedSample = await this.sampleDataSource.cloneSample(sample.id);
         await this.sampleDataSource.updateSample({
           sampleId: clonedSample.id,
-          proposalPK: clonedProposal.id,
+          proposalPk: clonedProposal.id,
           questionaryId: clonedSample.questionaryId,
           safetyComment: '',
           safetyStatus: SampleStatus.PENDING_EVALUATION,
