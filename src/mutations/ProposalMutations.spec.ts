@@ -36,7 +36,7 @@ test('A user on the proposal can update its title if it is in edit mode', () => 
 test('A user on the proposal can not update its title if it is not in edit mode', async () => {
   return expect(
     proposalMutations.update(dummyUserWithRole, {
-      id: dummyProposalSubmitted.id,
+      id: dummyProposalSubmitted.primaryKey,
       title: '',
     })
   ).resolves.toHaveProperty(
@@ -61,7 +61,7 @@ test('A user-officer can update a proposal even if the call is not active', asyn
 
   return expect(
     proposalMutations.update(dummyUserOfficerWithRole, {
-      id: dummyProposalWithNotActiveCall.id,
+      id: dummyProposalWithNotActiveCall.primaryKey,
       title: newTitle,
     })
   ).resolves.toHaveProperty('title', newTitle);
@@ -81,7 +81,7 @@ test('A user-officer can update submitted proposal', async () => {
 
 test('A user-officer can submit proposal even if the call is not active', async () => {
   const result = await proposalMutations.submit(dummyUserOfficerWithRole, {
-    proposalPk: dummyProposalWithNotActiveCall.id,
+    proposalPk: dummyProposalWithNotActiveCall.primaryKey,
   });
 
   return expect(isRejection(result)).toBe(false);
@@ -104,7 +104,7 @@ test('A user can not update a proposals score mode', async () => {
 
   return expect(
     proposalMutations.update(dummyUserWithRole, {
-      id: dummyProposalSubmitted.id,
+      id: dummyProposalSubmitted.primaryKey,
       proposerId: newProposerId,
     })
   ).resolves.toHaveProperty(
@@ -200,7 +200,7 @@ test('Principal investigator can delete a proposal', () => {
 test('Principal investigator can not delete submitted proposal', async () => {
   return expect(
     proposalMutations.delete(dummyPrincipalInvestigatorWithRole, {
-      proposalPk: dummyProposalSubmitted.id,
+      proposalPk: dummyProposalSubmitted.primaryKey,
     })
   ).resolves.toHaveProperty(
     'reason',

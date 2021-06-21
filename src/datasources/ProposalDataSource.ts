@@ -10,7 +10,7 @@ import { ProposalEventsRecord } from './postgres/records';
 export interface ProposalDataSource {
   getProposalsFromView(filter?: ProposalsFilter): Promise<ProposalView[]>;
   // Read
-  get(id: number): Promise<Proposal | null>;
+  get(primaryKey: number): Promise<Proposal | null>;
 
   getProposals(
     filter?: ProposalsFilter,
@@ -43,8 +43,8 @@ export interface ProposalDataSource {
     args: UpdateTechnicalReviewAssigneeInput
   ): Promise<Proposal[]>;
   setProposalUsers(id: number, users: number[]): Promise<void>;
-  submitProposal(id: number): Promise<Proposal>;
-  deleteProposal(id: number): Promise<Proposal>;
+  submitProposal(primaryKey: number): Promise<Proposal>;
+  deleteProposal(primaryKey: number): Promise<Proposal>;
   markEventAsDoneOnProposal(
     event: Event,
     proposalPk: number

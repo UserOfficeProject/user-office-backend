@@ -222,7 +222,7 @@ export default class SEPMutations {
       .assignProposalsToSep(args)
       .then(async (result) => {
         const nextProposalStatus = await this.proposalSettingsDataSource.getProposalNextStatus(
-          args.proposals[0].id,
+          args.proposals[0].primaryKey,
           Event.PROPOSAL_SEP_SELECTED
         );
 
@@ -408,7 +408,7 @@ export default class SEPMutations {
 
     const proposal = await this.proposalDataSource.get(args.proposalPk);
 
-    if (!proposal?.id) {
+    if (!proposal?.primaryKey) {
       return rejection(
         'Can not add SEP meeting decision to non existing proposal',
         { args }

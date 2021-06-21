@@ -37,7 +37,7 @@ export default function createHandler() {
     ) => {
       const allProposalEvents = await proposalDataSource.markEventAsDoneOnProposal(
         eventType,
-        proposal.id
+        proposal.primaryKey
       );
 
       const updatedProposals = await workflowEngine({
@@ -66,11 +66,11 @@ export default function createHandler() {
         try {
           await proposalDataSource.markEventAsDoneOnProposal(
             event.type,
-            event.proposal.id
+            event.proposal.primaryKey
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.primaryKey}: `,
             error
           );
         }
@@ -84,7 +84,7 @@ export default function createHandler() {
               async (proposalPk) => {
                 const proposal = await proposalDataSource.get(proposalPk);
 
-                if (proposal?.id) {
+                if (proposal?.primaryKey) {
                   await markProposalEventAsDoneAndCallWorkflowEngine(
                     event.type,
                     proposal
@@ -129,7 +129,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.primaryKey}: `,
             error
           );
         }
@@ -153,7 +153,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.primaryKey}: `,
             error
           );
         }
@@ -191,7 +191,7 @@ export default function createHandler() {
           );
         } catch (error) {
           logger.logError(
-            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.id}: `,
+            `Error while trying to mark ${event.type} event as done and calling workflow engine with ${event.proposal.primaryKey}: `,
             error
           );
         }
@@ -419,7 +419,7 @@ export default function createHandler() {
             );
           }
           const allProposalReviews = await reviewDataSource.getProposalReviews(
-            proposal?.id
+            proposal?.primaryKey
           );
 
           const allOtherReviewsSubmitted = checkAllReviewsSubmittedOnProposal(
@@ -482,7 +482,7 @@ export default function createHandler() {
             event.instrumenthasproposals.proposalPks.map(async (proposalPk) => {
               const proposal = await proposalDataSource.get(proposalPk);
 
-              if (proposal?.id) {
+              if (proposal?.primaryKey) {
                 return await markProposalEventAsDoneAndCallWorkflowEngine(
                   event.type,
                   proposal

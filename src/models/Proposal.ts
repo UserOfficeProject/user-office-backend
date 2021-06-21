@@ -29,7 +29,7 @@ export enum ProposalPublicStatus {
 
 export class Proposal {
   constructor(
-    public id: number,
+    public primaryKey: number,
     public title: string,
     public abstract: string,
     public proposerId: number,

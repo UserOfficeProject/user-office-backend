@@ -29,7 +29,7 @@ export type DeepPartial<T> = {
 
 const dummyProposalFactory = (values?: Partial<Proposal>) => {
   return new Proposal(
-    values?.id || 1,
+    values?.primaryKey || 1,
     values?.title || 'title',
     values?.abstract || 'abstract',
     values?.proposerId || 1,
@@ -78,9 +78,9 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     return [];
   }
   public init() {
-    dummyProposal = dummyProposalFactory({ id: 1 });
+    dummyProposal = dummyProposalFactory({ primaryKey: 1 });
     dummyProposalSubmitted = dummyProposalFactory({
-      id: 2,
+      primaryKey: 2,
       title: 'Submitted proposal',
       submitted: true,
       finalStatus: ProposalEndStatus.ACCEPTED,
@@ -89,7 +89,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     });
 
     dummyProposalWithNotActiveCall = dummyProposalFactory({
-      id: 3,
+      primaryKey: 3,
       questionaryId: 2,
       callId: 2,
     });
@@ -103,13 +103,13 @@ export class ProposalDataSourceMock implements ProposalDataSource {
 
   async deleteProposal(id: number): Promise<Proposal> {
     const dummyProposalRef = dummyProposalFactory(dummyProposal);
-    dummyProposal.id = -1; // hacky
+    dummyProposal.primaryKey = -1; // hacky
 
     return dummyProposalRef;
   }
 
   async rejectProposal(proposalPk: number): Promise<Proposal> {
-    if (dummyProposal.id !== proposalPk) {
+    if (dummyProposal.primaryKey !== proposalPk) {
       throw new Error('Wrong ID');
     }
 
@@ -119,7 +119,9 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async update(proposal: Proposal): Promise<Proposal> {
-    const foundIndex = allProposals.findIndex(({ id }) => proposal.id === id);
+    const foundIndex = allProposals.findIndex(
+      ({ primaryKey: id }) => proposal.primaryKey === id
+    );
 
     if (foundIndex === -1) {
       throw new Error('Proposal does not exist');
@@ -132,7 +134,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     proposalPk: number,
     proposalStatusId: number
   ): Promise<Proposal> {
-    if (proposalPk !== dummyProposal.id) {
+    if (proposalPk !== dummyProposal.primaryKey) {
       throw new Error('Proposal does not exist');
     }
 
@@ -143,8 +145,10 @@ export class ProposalDataSourceMock implements ProposalDataSource {
     throw new Error('Not implemented');
   }
 
-  async submitProposal(id: number): Promise<Proposal> {
-    const found = allProposals.find((proposal) => proposal.id === id);
+  async submitProposal(primaryKey: number): Promise<Proposal> {
+    const found = allProposals.find(
+      (proposal) => proposal.primaryKey === primaryKey
+    );
 
     if (!found) {
       throw new Error('Wrong ID');
@@ -157,7 +161,7 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async get(id: number) {
-    return allProposals.find((proposal) => proposal.id === id) || null;
+    return allProposals.find((proposal) => proposal.primaryKey === id) || null;
   }
 
   async create(proposerId: number, callId: number, questionaryId: number) {

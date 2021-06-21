@@ -33,10 +33,12 @@ const getProposalMessageData = async (proposal: Proposal) => {
     Tokens.UserDataSource
   );
 
-  const proposalUsers = await userDataSource.getProposalUsersFull(proposal.id);
+  const proposalUsers = await userDataSource.getProposalUsersFull(
+    proposal.primaryKey
+  );
 
   const messageData: ProposalMessageData = {
-    proposalPk: proposal.id,
+    proposalPk: proposal.primaryKey,
     shortCode: proposal.shortCode,
     title: proposal.title,
     abstract: proposal.abstract,
@@ -97,7 +99,7 @@ export function createPostToRabbitMQHandler() {
           ProposalStatusDefaultShortCodes.SCHEDULING
         ) {
           logger.logDebug(
-            `Proposal '${proposal.id}' status isn't 'SCHEDULING', skipping`,
+            `Proposal '${proposal.primaryKey}' status isn't 'SCHEDULING', skipping`,
             { proposal, proposalStatus }
           );
 
@@ -105,20 +107,23 @@ export function createPostToRabbitMQHandler() {
         }
 
         const instrument = await instrumentDataSource.getInstrumentByProposalPk(
-          proposal.id
+          proposal.primaryKey
         );
 
         if (!instrument) {
-          logger.logWarn(`Proposal '${proposal.id}' has no instrument`, {
-            proposal,
-          });
+          logger.logWarn(
+            `Proposal '${proposal.primaryKey}' has no instrument`,
+            {
+              proposal,
+            }
+          );
 
           return;
         }
 
         // NOTE: maybe use shared types?
         const message = {
-          proposalPk: proposal.id,
+          proposalPk: proposal.primaryKey,
           callId: proposal.callId,
           // the UI supports days
           allocatedTime: proposal.managementTimeAllocation * 24 * 60 * 60,

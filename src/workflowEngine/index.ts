@@ -53,7 +53,7 @@ const updateProposalStatus = (
 ) => proposalDataSource.updateProposalStatus(proposalPk, nextProposalStatusId);
 
 export type WorkflowEngineProposalType = {
-  id: number;
+  primaryKey: number;
   callId: number;
   statusId: number;
 };
@@ -128,7 +128,7 @@ export const workflowEngine = async (
         shouldMoveToNextStatus(statusChangingEvents, proposal.proposalEvents)
       ) {
         return updateProposalStatus(
-          proposal.id,
+          proposal.primaryKey,
           currentWorkflowConnection.nextProposalStatusId
         );
       }

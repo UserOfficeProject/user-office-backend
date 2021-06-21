@@ -216,9 +216,18 @@ describe('Call update', () => {
 
     expect(getProposalsInCall(call.id)).resolves.toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: p1.id, referenceNumberSequence: 123 }),
-        expect.objectContaining({ id: p2.id, referenceNumberSequence: 456 }),
-        expect.objectContaining({ id: p3.id, referenceNumberSequence: 789 }),
+        expect.objectContaining({
+          id: p1.primaryKey,
+          referenceNumberSequence: 123,
+        }),
+        expect.objectContaining({
+          id: p2.primaryKey,
+          referenceNumberSequence: 456,
+        }),
+        expect.objectContaining({
+          id: p3.primaryKey,
+          referenceNumberSequence: 789,
+        }),
       ])
     );
   });

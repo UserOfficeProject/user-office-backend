@@ -152,7 +152,7 @@ export default class InstrumentMutations {
       );
     }
 
-    const proposalPks = args.proposals.map((proposal) => proposal.id);
+    const proposalPks = args.proposals.map((proposal) => proposal.primaryKey);
 
     await this.proposalDataSource.updateProposalTechnicalReviewer({
       userId: instrument.managerUserId,

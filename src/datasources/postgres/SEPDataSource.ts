@@ -499,7 +499,7 @@ export default class PostgresSEPDataSource implements SEPDataSource {
   async assignProposalsToSep({ proposals, sepId }: AssignProposalsToSepArgs) {
     const dataToInsert = proposals.map((proposal) => ({
       sep_id: sepId,
-      proposal_pk: proposal.id,
+      proposal_pk: proposal.primaryKey,
       call_id: proposal.callId,
     }));
 
@@ -518,7 +518,7 @@ export default class PostgresSEPDataSource implements SEPDataSource {
           .del()
           .whereIn(
             'proposal_pk',
-            proposals.map((proposal) => proposal.id)
+            proposals.map((proposal) => proposal.primaryKey)
           )
           .transacting(trx);
 

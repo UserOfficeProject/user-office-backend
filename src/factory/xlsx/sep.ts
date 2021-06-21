@@ -127,7 +127,10 @@ export const collectSEPlXLSXData = async (
       return Promise.all(
         proposals.map((proposal) =>
           proposal
-            ? baseContext.queries.review.reviewsForProposal(user, proposal.id)
+            ? baseContext.queries.review.reviewsForProposal(
+                user,
+                proposal.primaryKey
+              )
             : null
         )
       );
@@ -141,7 +144,7 @@ export const collectSEPlXLSXData = async (
           proposal
             ? baseContext.queries.review.technicalReviewForProposal(
                 user,
-                proposal.id
+                proposal.primaryKey
               )
             : null
         )
@@ -156,7 +159,7 @@ export const collectSEPlXLSXData = async (
           proposal
             ? baseContext.queries.sep.getProposalSepMeetingDecision(
                 user,
-                proposal.id
+                proposal.primaryKey
               )
             : null
         )

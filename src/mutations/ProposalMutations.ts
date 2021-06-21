@@ -281,7 +281,7 @@ export default class ProposalMutations {
     args: AdministrationProposalArgs
   ): Promise<Proposal | Rejection> {
     const {
-      id,
+      primaryKey: id,
       finalStatus,
       statusId,
       commentForManagement,
@@ -333,7 +333,7 @@ export default class ProposalMutations {
        * proposal_feasible, proposal_feasibility_review_submitted and proposal_sep_selected should be reset to false in the proposal_events table
        */
       await this.proposalDataSource.resetProposalEvents(
-        proposal.id,
+        proposal.primaryKey,
         proposal.callId,
         statusId
       );
@@ -379,14 +379,14 @@ export default class ProposalMutations {
 
     const result = await this.proposalDataSource.changeProposalsStatus(
       statusId,
-      proposals.map((proposal) => proposal.id)
+      proposals.map((proposal) => proposal.primaryKey)
     );
 
     if (result.proposalPks.length === proposals.length) {
       await Promise.all(
         proposals.map((proposal) => {
           return this.proposalDataSource.resetProposalEvents(
-            proposal.id,
+            proposal.primaryKey,
             proposal.callId,
             statusId
           );
@@ -464,7 +464,7 @@ export default class ProposalMutations {
         : agent!.id;
 
       clonedProposal = await this.proposalDataSource.update({
-        id: clonedProposal.id,
+        primaryKey: clonedProposal.primaryKey,
         title: `Copy of ${clonedProposal.title}`,
         abstract: clonedProposal.abstract,
         proposerId: proposerId,
@@ -486,22 +486,22 @@ export default class ProposalMutations {
       });
 
       const proposalUsers = await this.userDataSource.getProposalUsers(
-        sourceProposal.id
+        sourceProposal.primaryKey
       );
       await this.proposalDataSource.setProposalUsers(
-        clonedProposal.id,
+        clonedProposal.primaryKey,
         proposalUsers.map((user) => user.id)
       );
 
       const proposalSamples = await this.sampleDataSource.getSamples({
-        filter: { proposalPk: sourceProposal.id },
+        filter: { proposalPk: sourceProposal.primaryKey },
       });
 
       for await (const sample of proposalSamples) {
         const clonedSample = await this.sampleDataSource.cloneSample(sample.id);
         await this.sampleDataSource.updateSample({
           sampleId: clonedSample.id,
-          proposalPk: clonedProposal.id,
+          proposalPk: clonedProposal.primaryKey,
           questionaryId: clonedSample.questionaryId,
           safetyComment: '',
           safetyStatus: SampleStatus.PENDING_EVALUATION,

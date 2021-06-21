@@ -262,7 +262,7 @@ const createProposals = async () => {
       abstract: faker.random.words(7),
     });
     await proposalDataSource.setProposalUsers(
-      proposal.id,
+      proposal.primaryKey,
       createUniqueIntArray(3, MAX_USERS)
     );
     const questionarySteps = await questionaryDataSource.getQuestionarySteps(
@@ -284,7 +284,7 @@ const createProposals = async () => {
     }
 
     instrumentDataSource.assignProposalsToInstrument(
-      [proposal.id],
+      [proposal.primaryKey],
       dummy.positiveNumber(MAX_INSTRUMENTS)
     );
   }, MAX_PROPOSALS);
@@ -336,7 +336,7 @@ const createSeps = async () => {
     for (const proposalPk of proposalPks) {
       const tmpUserId = dummy.positiveNumber(MAX_USERS);
       await sepDataSource.assignProposalsToSep({
-        proposals: [{ id: proposalPk, callId: 1 }],
+        proposals: [{ primaryKey: proposalPk, callId: 1 }],
         sepId: sep.id,
       });
       await sepDataSource.assignMemberToSEPProposal(proposalPk, sep.id, [

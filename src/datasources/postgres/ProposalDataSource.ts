@@ -71,7 +71,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
     return response;
   }
-  async submitProposal(id: number): Promise<Proposal> {
+  async submitProposal(primaryKey: number): Promise<Proposal> {
     const proposal: ProposalRecord[] = await database.transaction(
       async (trx) => {
         try {
@@ -83,7 +83,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             )
             .from('call as c')
             .join('proposals as p', { 'p.call_id': 'c.call_id' })
-            .where('p.proposal_pk', id)
+            .where('p.proposal_pk', primaryKey)
             .first()
             .forUpdate()
             .transacting(trx);
@@ -97,7 +97,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
             if (!referenceNumber) {
               throw new Error(
-                `Failed to calculate reference number for proposal with id '${id}' using format '${call.reference_number_format}'`
+                `Failed to calculate reference number for proposal with id '${primaryKey}' using format '${call.reference_number_format}'`
               );
             } else if (referenceNumber.length > 16) {
               throw new Error(
@@ -117,7 +117,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           const proposalUpdate = await database
             .from('proposals')
             .returning('*')
-            .where('proposal_pk', id)
+            .where('proposal_pk', primaryKey)
             .modify((query) => {
               if (referenceNumber) {
                 query.update({
@@ -137,14 +137,14 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           return await trx.commit(proposalUpdate);
         } catch (error) {
           throw new Error(
-            `Failed to submit proposal with id '${id}' because: '${error.message}'`
+            `Failed to submit proposal with id '${primaryKey}' because: '${error.message}'`
           );
         }
       }
     );
 
     if (proposal === undefined || proposal.length !== 1) {
-      throw new Error(`Failed to submit proposal with id '${id}'`);
+      throw new Error(`Failed to submit proposal with id '${primaryKey}'`);
     }
 
     return createProposalObject(proposal[0]);
@@ -214,10 +214,10 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         ['*']
       )
       .from('proposals')
-      .where('proposal_pk', proposal.id)
+      .where('proposal_pk', proposal.primaryKey)
       .then((records: ProposalRecord[]) => {
         if (records === undefined || !records.length) {
-          throw new Error(`Proposal not found ${proposal.id}`);
+          throw new Error(`Proposal not found ${proposal.primaryKey}`);
         }
 
         return createProposalObject(records[0]);
@@ -600,7 +600,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       FROM 
         proposals
       WHERE
-        proposal_pk = ${sourceProposal.id}
+        proposal_pk = ${sourceProposal.primaryKey}
       RETURNING *
     `)
     ).rows;

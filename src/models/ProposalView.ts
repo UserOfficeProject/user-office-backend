@@ -2,7 +2,7 @@ import { AllocationTimeUnits } from './Call';
 import { TechnicalReviewStatus } from './TechnicalReview';
 export class ProposalView {
   constructor(
-    public id: number,
+    public primaryKey: number,
     public title: string,
     public statusId: number,
     public statusName: string,

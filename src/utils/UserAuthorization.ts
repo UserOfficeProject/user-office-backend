@@ -63,9 +63,11 @@ export class UserAuthorization {
       return true;
     }
 
-    return this.userDataSource.getProposalUsers(proposal.id).then((users) => {
-      return users.some((user) => user.id === agent.id);
-    });
+    return this.userDataSource
+      .getProposalUsers(proposal.primaryKey)
+      .then((users) => {
+        return users.some((user) => user.id === agent.id);
+      });
   }
 
   async isReviewerOfProposal(agent: UserWithRole | null, proposalPk: number) {
@@ -122,9 +124,9 @@ export class UserAuthorization {
     return (
       this.isUserOfficer(agent) ||
       (await this.isMemberOfProposal(agent, proposal)) ||
-      (await this.isReviewerOfProposal(agent, proposal.id)) ||
-      (await this.isScientistToProposal(agent, proposal.id)) ||
-      (await this.isChairOrSecretaryOfProposal(agent, proposal.id)) ||
+      (await this.isReviewerOfProposal(agent, proposal.primaryKey)) ||
+      (await this.isScientistToProposal(agent, proposal.primaryKey)) ||
+      (await this.isChairOrSecretaryOfProposal(agent, proposal.primaryKey)) ||
       this.hasGetAccessByToken(agent)
     );
   }
