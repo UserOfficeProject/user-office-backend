@@ -13,7 +13,7 @@ BEGIN
 
   INSERT INTO proposals 
     (
-       proposal_id
+       proposal_pk
      , title
      , abstract
      , status_id
@@ -31,7 +31,7 @@ BEGIN
     )
     VALUES 
     (
-       1                  -- proposal_id
+       1                  -- proposal_pk
      , 'Test proposal'    -- title
      , 'Lorem ipsum'      -- abstract
      , 8                  -- status_id
@@ -48,9 +48,9 @@ BEGIN
      , true               -- submitted
     );
 
-  INSERT INTO instrument_has_proposals(instrument_id, proposal_id) VALUES (1, 1);
+  INSERT INTO instrument_has_proposals(instrument_id, proposal_pk) VALUES (1, 1);
 
-  INSERT INTO technical_review (technical_review_id, proposal_id, comment, time_allocation, status, public_comment, reviewer_id) VALUES (1, 1, '', 2, 0, '', 0);
+  INSERT INTO technical_review (technical_review_id, proposal_pk, comment, time_allocation, status, public_comment, reviewer_id) VALUES (1, 1, '', 2, 0, '', 0);
 
 END;
 $DO$
