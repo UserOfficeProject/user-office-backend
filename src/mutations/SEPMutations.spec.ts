@@ -197,7 +197,7 @@ describe('Test SEPMutations', () => {
     const result = (await SEPMutationsInstance.assignProposalsToSep(
       dummyUserWithRole,
       {
-        proposals: [{ id: 1, callId: 1 }],
+        proposals: [{ primaryKey: 1, callId: 1 }],
         sepId: 1,
       }
     )) as Rejection;
@@ -208,7 +208,7 @@ describe('Test SEPMutations', () => {
   test('A userofficer can assign proposal to SEP', () => {
     return expect(
       SEPMutationsInstance.assignProposalsToSep(dummyUserOfficerWithRole, {
-        proposals: [{ id: 1, callId: 1 }],
+        proposals: [{ primaryKey: 1, callId: 1 }],
         sepId: 1,
       })
     ).resolves.toStrictEqual(
