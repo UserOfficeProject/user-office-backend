@@ -77,8 +77,8 @@ describe('Test Instrument Mutations', () => {
         dummyUserOfficerWithRole,
         {
           proposals: [
-            { id: 1, callId: 1 },
-            { id: 2, callId: 1 },
+            { primaryKey: 1, callId: 1 },
+            { primaryKey: 2, callId: 1 },
           ],
           instrumentId: 1,
         }

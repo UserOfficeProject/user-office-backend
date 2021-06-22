@@ -29,14 +29,17 @@ test('A user on the proposal can update its title if it is in edit mode', () => 
   const newTitle = 'New Title';
 
   return expect(
-    proposalMutations.update(dummyUserWithRole, { id: 1, title: newTitle })
+    proposalMutations.update(dummyUserWithRole, {
+      primaryKey: 1,
+      title: newTitle,
+    })
   ).resolves.toHaveProperty('title', newTitle);
 });
 
 test('A user on the proposal can not update its title if it is not in edit mode', async () => {
   return expect(
     proposalMutations.update(dummyUserWithRole, {
-      id: dummyProposalSubmitted.primaryKey,
+      primaryKey: dummyProposalSubmitted.primaryKey,
       title: '',
     })
   ).resolves.toHaveProperty(
@@ -50,7 +53,7 @@ test('A user-officer can update a proposal', async () => {
 
   return expect(
     proposalMutations.update(dummyUserOfficerWithRole, {
-      id: 1,
+      primaryKey: 1,
       title: newTitle,
     })
   ).resolves.toHaveProperty('title', newTitle);
@@ -61,7 +64,7 @@ test('A user-officer can update a proposal even if the call is not active', asyn
 
   return expect(
     proposalMutations.update(dummyUserOfficerWithRole, {
-      id: dummyProposalWithNotActiveCall.primaryKey,
+      primaryKey: dummyProposalWithNotActiveCall.primaryKey,
       title: newTitle,
     })
   ).resolves.toHaveProperty('title', newTitle);
@@ -73,7 +76,7 @@ test('A user-officer can update submitted proposal', async () => {
 
   return expect(
     proposalMutations.update(dummyUserOfficerWithRole, {
-      id: 1,
+      primaryKey: 1,
       title: newTitle,
     })
   ).resolves.toHaveProperty('title', newTitle);
@@ -93,7 +96,7 @@ test('A user-officer can update a proposals score in submit mode', async () => {
 
   return expect(
     proposalMutations.update(dummyUserOfficerWithRole, {
-      id: 1,
+      primaryKey: 1,
       proposerId: newProposerId,
     })
   ).resolves.toHaveProperty('proposerId', newProposerId);
@@ -104,7 +107,7 @@ test('A user can not update a proposals score mode', async () => {
 
   return expect(
     proposalMutations.update(dummyUserWithRole, {
-      id: dummyProposalSubmitted.primaryKey,
+      primaryKey: dummyProposalSubmitted.primaryKey,
       proposerId: newProposerId,
     })
   ).resolves.toHaveProperty(
@@ -116,7 +119,7 @@ test('A user can not update a proposals score mode', async () => {
 test('A user not on a proposal can not update it', () => {
   return expect(
     proposalMutations.update(dummyUserNotOnProposalWithRole, {
-      id: 1,
+      primaryKey: 1,
       proposerId: dummyUserNotOnProposal.id,
     })
   ).resolves.toHaveProperty('reason', 'Unauthorized proposal update');
@@ -222,14 +225,17 @@ test('Can create a proposal', () => {
 
 test('User officer can set final status of a proposal', () => {
   return expect(
-    proposalMutations.admin(dummyUserOfficerWithRole, { id: 1, finalStatus: 1 })
+    proposalMutations.admin(dummyUserOfficerWithRole, {
+      primaryKey: 1,
+      finalStatus: 1,
+    })
   ).resolves.toBeInstanceOf(Proposal);
 });
 
 test('User cannot set final status of a proposal', () => {
   return expect(
     proposalMutations.admin(dummyUserNotOnProposalWithRole, {
-      id: 1,
+      primaryKey: 1,
       finalStatus: 1,
     })
   ).resolves.not.toBeInstanceOf(Proposal);
