@@ -16,7 +16,7 @@ import { wrapResponse } from '../wrapResponse';
 @ArgsType()
 export class AdministrationProposalArgs {
   @Field(() => Int)
-  public primaryKey: number;
+  public proposalPk: number;
 
   @Field(() => String, { nullable: true })
   public commentForUser?: string;

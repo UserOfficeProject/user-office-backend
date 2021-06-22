@@ -95,10 +95,10 @@ export default class ProposalMutations {
     agent: UserWithRole | null,
     args: UpdateProposalArgs
   ): Promise<Proposal | Rejection> {
-    const { primaryKey, title, abstract, users, proposerId } = args;
+    const { proposalPk, title, abstract, users, proposerId } = args;
 
     // Get proposal information
-    const proposal = await this.proposalDataSource.get(primaryKey); //Hacky
+    const proposal = await this.proposalDataSource.get(proposalPk); //Hacky
 
     if (!proposal) {
       return rejection('Proposal not found', { args });
@@ -142,11 +142,11 @@ export default class ProposalMutations {
 
     if (users !== undefined) {
       this.proposalDataSource
-        .setProposalUsers(primaryKey, users)
+        .setProposalUsers(proposalPk, users)
         .catch((error) => {
           return rejection(
             'Could not update proposal co-proposers',
-            { primaryKey, agent },
+            { primaryKey: proposalPk, agent },
             error
           );
         });
@@ -157,7 +157,11 @@ export default class ProposalMutations {
     }
 
     return this.proposalDataSource.update(proposal).catch((err) => {
-      return rejection('Could not update proposal', { agent, primaryKey }, err);
+      return rejection(
+        'Could not update proposal',
+        { agent, primaryKey: proposalPk },
+        err
+      );
     });
   }
 
@@ -283,7 +287,7 @@ export default class ProposalMutations {
     args: AdministrationProposalArgs
   ): Promise<Proposal | Rejection> {
     const {
-      primaryKey,
+      proposalPk: primaryKey,
       finalStatus,
       statusId,
       commentForManagement,
@@ -403,7 +407,7 @@ export default class ProposalMutations {
   @EventBus(Event.PROPOSAL_CLONED)
   async clone(
     agent: UserWithRole | null,
-    { callId, proposalToCloneId }: CloneProposalInput
+    { callId, proposalToClonePk: proposalToCloneId }: CloneProposalInput
   ): Promise<Proposal | Rejection> {
     const sourceProposal = await this.proposalDataSource.get(proposalToCloneId);
 

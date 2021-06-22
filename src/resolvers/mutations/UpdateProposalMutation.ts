@@ -15,7 +15,7 @@ import { wrapResponse } from '../wrapResponse';
 @ArgsType()
 export class UpdateProposalArgs {
   @Field(() => Int)
-  public primaryKey: number;
+  public proposalPk: number;
 
   @Field(() => String, { nullable: true })
   public title?: string;
