@@ -90,11 +90,14 @@ export default function createHandler() {
           );
           break;
         default:
+          const changedObjectId =
+            (event as any)[event.key].id ||
+            (event as any)[event.key].primaryKey;
           await eventLogsDataSource.set(
             event.loggedInUserId,
             event.type,
             json,
-            (event as any)[event.key].id.toString()
+            changedObjectId.toString()
           );
           break;
       }

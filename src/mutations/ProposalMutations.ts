@@ -281,7 +281,7 @@ export default class ProposalMutations {
     args: AdministrationProposalArgs
   ): Promise<Proposal | Rejection> {
     const {
-      primaryKey: id,
+      primaryKey,
       finalStatus,
       statusId,
       commentForManagement,
@@ -291,7 +291,7 @@ export default class ProposalMutations {
     } = args;
     const isChairOrSecretaryOfProposal = await this.userAuth.isChairOrSecretaryOfProposal(
       agent,
-      id
+      primaryKey
     );
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
 
@@ -302,7 +302,7 @@ export default class ProposalMutations {
       );
     }
 
-    const proposal = await this.proposalDataSource.get(id);
+    const proposal = await this.proposalDataSource.get(primaryKey);
 
     if (!proposal) {
       return rejection(
@@ -312,7 +312,7 @@ export default class ProposalMutations {
     }
 
     const isProposalInstrumentSubmitted = await this.instrumentDataSource.isProposalInstrumentSubmitted(
-      id
+      primaryKey
     );
 
     if (isProposalInstrumentSubmitted && !isUserOfficer) {

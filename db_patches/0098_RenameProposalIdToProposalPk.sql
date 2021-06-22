@@ -14,6 +14,7 @@ BEGIN
     ALTER TABLE samples RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE shipments RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE visits RENAME COLUMN proposal_id TO proposal_pk;
+    ALTER TABLE proposal_table_view RENAME COLUMN id TO proposal_pk;
 	END IF;
 END;
 $$

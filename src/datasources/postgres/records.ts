@@ -71,7 +71,7 @@ export interface ProposalRecord {
 }
 
 export interface ProposalViewRecord {
-  readonly primaryKey: number;
+  readonly proposal_pk: number;
   readonly title: string;
   readonly proposer_id: number;
   readonly proposal_status_id: number;
@@ -551,7 +551,7 @@ export const createProposalObject = (proposal: ProposalRecord) => {
 
 export const createProposalViewObject = (proposal: ProposalViewRecord) => {
   return new ProposalView(
-    proposal.primaryKey,
+    proposal.proposal_pk,
     proposal.title || '',
     proposal.proposal_status_id,
     proposal.proposal_status_name,
