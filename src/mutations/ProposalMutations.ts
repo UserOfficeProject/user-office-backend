@@ -95,10 +95,10 @@ export default class ProposalMutations {
     agent: UserWithRole | null,
     args: UpdateProposalArgs
   ): Promise<Proposal | Rejection> {
-    const { id, title, abstract, users, proposerId } = args;
+    const { primaryKey, title, abstract, users, proposerId } = args;
 
     // Get proposal information
-    const proposal = await this.proposalDataSource.get(id); //Hacky
+    const proposal = await this.proposalDataSource.get(primaryKey); //Hacky
 
     if (!proposal) {
       return rejection('Proposal not found', { args });
@@ -141,13 +141,15 @@ export default class ProposalMutations {
     }
 
     if (users !== undefined) {
-      this.proposalDataSource.setProposalUsers(id, users).catch((error) => {
-        return rejection(
-          'Could not update proposal co-proposers',
-          { id, agent },
-          error
-        );
-      });
+      this.proposalDataSource
+        .setProposalUsers(primaryKey, users)
+        .catch((error) => {
+          return rejection(
+            'Could not update proposal co-proposers',
+            { primaryKey, agent },
+            error
+          );
+        });
     }
 
     if (proposerId !== undefined) {
@@ -155,7 +157,7 @@ export default class ProposalMutations {
     }
 
     return this.proposalDataSource.update(proposal).catch((err) => {
-      return rejection('Could not update proposal', { agent, id }, err);
+      return rejection('Could not update proposal', { agent, primaryKey }, err);
     });
   }
 

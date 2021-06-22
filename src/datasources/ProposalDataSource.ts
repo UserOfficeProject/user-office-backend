@@ -42,7 +42,7 @@ export interface ProposalDataSource {
   updateProposalTechnicalReviewer(
     args: UpdateTechnicalReviewAssigneeInput
   ): Promise<Proposal[]>;
-  setProposalUsers(id: number, users: number[]): Promise<void>;
+  setProposalUsers(proposalPk: number, users: number[]): Promise<void>;
   submitProposal(primaryKey: number): Promise<Proposal>;
   deleteProposal(primaryKey: number): Promise<Proposal>;
   markEventAsDoneOnProposal(

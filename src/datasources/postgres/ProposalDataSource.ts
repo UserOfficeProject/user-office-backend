@@ -165,17 +165,17 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       });
   }
 
-  async setProposalUsers(id: number, users: number[]): Promise<void> {
+  async setProposalUsers(proposalPk: number, users: number[]): Promise<void> {
     return database.transaction(function (trx: Transaction) {
       return database
         .from('proposal_user')
-        .where('proposal_pk', id)
+        .where('proposal_pk', proposalPk)
         .del()
         .transacting(trx)
         .then(() => {
           return BluePromise.map(users, (user_id: number) => {
             return database
-              .insert({ proposal_pk: id, user_id: user_id })
+              .insert({ proposal_pk: proposalPk, user_id: user_id })
               .into('proposal_user')
               .transacting(trx);
           });
