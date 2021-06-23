@@ -50,7 +50,7 @@ export class Proposal implements Partial<ProposalOrigin> {
   public updated: Date;
 
   @Field(() => String)
-  public shortCode: string;
+  public proposalId: string;
 
   @Field(() => ProposalEndStatus, { nullable: true })
   public finalStatus?: ProposalEndStatus;

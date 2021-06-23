@@ -15,6 +15,10 @@ BEGIN
     ALTER TABLE shipments RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE visits RENAME COLUMN proposal_id TO proposal_pk;
     ALTER TABLE proposal_table_view RENAME COLUMN id TO proposal_pk;
+
+
+    ALTER TABLE proposals RENAME COLUMN short_code TO proposal_id;
+    ALTER TABLE proposal_table_view RENAME COLUMN short_code TO proposal_id;
 	END IF;
 END;
 $$

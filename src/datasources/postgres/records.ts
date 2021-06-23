@@ -52,7 +52,7 @@ export interface ProposalRecord {
   readonly created_at: Date;
   readonly updated_at: Date;
   readonly full_count: number;
-  readonly short_code: string;
+  readonly proposal_id: string;
   readonly final_status: number;
   readonly excellence_score: number;
   readonly safety_score: number;
@@ -77,7 +77,7 @@ export interface ProposalViewRecord {
   readonly proposal_status_id: number;
   readonly proposal_status_name: string;
   readonly proposal_status_description: string;
-  readonly short_code: string;
+  readonly proposal_id: string;
   readonly rank_order: number;
   readonly final_status: number;
   readonly time_allocation: number;
@@ -534,7 +534,7 @@ export const createProposalObject = (proposal: ProposalRecord) => {
     proposal.status_id,
     proposal.created_at,
     proposal.updated_at,
-    proposal.short_code,
+    proposal.proposal_id,
     proposal.final_status,
     proposal.call_id,
     proposal.questionary_id,
@@ -556,7 +556,7 @@ export const createProposalViewObject = (proposal: ProposalViewRecord) => {
     proposal.proposal_status_id,
     proposal.proposal_status_name,
     proposal.proposal_status_description,
-    proposal.short_code,
+    proposal.proposal_id,
     proposal.rank_order,
     proposal.final_status,
     proposal.time_allocation,

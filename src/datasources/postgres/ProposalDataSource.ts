@@ -121,7 +121,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             .modify((query) => {
               if (referenceNumber) {
                 query.update({
-                  short_code: referenceNumber,
+                  proposal_id: referenceNumber,
                   reference_number_sequence: call.proposal_sequence ?? 0,
                   submitted: true,
                 });
@@ -200,7 +200,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           status_id: proposal.statusId,
           created_at: proposal.created,
           updated_at: proposal.updated,
-          short_code: proposal.shortCode,
+          proposal_id: proposal.proposalId,
           final_status: proposal.finalStatus,
           call_id: proposal.callId,
           questionary_id: proposal.questionaryId,
@@ -300,7 +300,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             .join('|');
 
           query.whereRaw(
-            `proposal_table_view.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
+            `proposal_table_view.proposal_id similar to '%(${filteredAndPreparedShortCodes})%'`
           );
         }
         if (filter?.questionFilter) {
@@ -373,7 +373,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             .join('|');
 
           query.whereRaw(
-            `proposals.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
+            `proposals.proposal_id similar to '%(${filteredAndPreparedShortCodes})%'`
           );
         }
 
@@ -446,7 +446,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             .join('|');
 
           query.whereRaw(
-            `proposals.short_code similar to '%(${filteredAndPreparedShortCodes})%'`
+            `proposals.proposal_id similar to '%(${filteredAndPreparedShortCodes})%'`
           );
         }
 

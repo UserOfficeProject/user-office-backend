@@ -42,7 +42,7 @@ export const collectProposalXLSXData = async (
   }
 
   notify?.(
-    `proposal_${proposal.created.getUTCFullYear()}_${proposal.shortCode}.xlsx`
+    `proposal_${proposal.created.getUTCFullYear()}_${proposal.proposalId}.xlsx`
   );
 
   const proposer = await baseContext.queries.user.get(
@@ -72,7 +72,7 @@ export const collectProposalXLSXData = async (
   );
 
   return [
-    proposal.shortCode,
+    proposal.proposalId,
     proposal.title,
     `${proposer.firstname} ${proposer.lastname}`,
     technicalReview?.status !== undefined

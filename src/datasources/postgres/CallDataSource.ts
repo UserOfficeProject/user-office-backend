@@ -145,7 +145,7 @@ export default class PostgresCallDataSource implements CallDataSource {
             async (p) => {
               await database
                 .update({
-                  short_code: await calculateReferenceNumber(
+                  proposal_id: await calculateReferenceNumber(
                     args.referenceNumberFormat,
                     p.reference_number_sequence
                   ),

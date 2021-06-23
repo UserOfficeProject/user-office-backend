@@ -36,7 +36,7 @@ export class Proposal {
     public statusId: number, // proposal status id while it moving though proposal workflow
     public created: Date,
     public updated: Date,
-    public shortCode: string,
+    public proposalId: string,
     public finalStatus: ProposalEndStatus,
     public callId: number,
     public questionaryId: number,

@@ -143,7 +143,7 @@ describe('Submit proposal', () => {
     const submission = proposalDataSource.submitProposal(proposal.primaryKey);
 
     return expect(submission).resolves.toMatchObject({
-      shortCode: proposal.shortCode,
+      shortCode: proposal.proposalId,
       submitted: true,
     });
   });
@@ -275,7 +275,7 @@ describe('Submit proposal', () => {
       (s) =>
         !s.submitted ||
         !(s.referenceNumberSequence || s.referenceNumberSequence == 0) ||
-        !expectedRefNums.includes(s.shortCode)
+        !expectedRefNums.includes(s.proposalId)
     );
 
     expect(invalidSubmissions.length).toBe(0);

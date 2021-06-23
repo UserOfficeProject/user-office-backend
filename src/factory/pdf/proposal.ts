@@ -110,7 +110,7 @@ export const collectProposalPDFData = async (
 
   notify?.(
     `${proposal.created.getUTCFullYear()}_${principalInvestigator.lastname}_${
-      proposal.shortCode
+      proposal.proposalId
     }.pdf`
   );
 

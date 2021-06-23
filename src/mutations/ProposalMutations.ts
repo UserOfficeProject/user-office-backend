@@ -477,7 +477,7 @@ export default class ProposalMutations {
         statusId: 1,
         created: new Date(),
         updated: new Date(),
-        shortCode: clonedProposal.shortCode,
+        proposalId: clonedProposal.proposalId,
         finalStatus: ProposalEndStatus.UNSET,
         callId: callId,
         questionaryId: clonedQuestionary.questionaryId,

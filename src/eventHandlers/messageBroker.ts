@@ -39,7 +39,7 @@ const getProposalMessageData = async (proposal: Proposal) => {
 
   const messageData: ProposalMessageData = {
     proposalPk: proposal.primaryKey,
-    shortCode: proposal.shortCode,
+    shortCode: proposal.proposalId,
     title: proposal.title,
     abstract: proposal.abstract,
     members: proposalUsers.map((proposalUser) => ({

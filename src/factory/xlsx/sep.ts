@@ -201,7 +201,7 @@ export const collectSEPlXLSXData = async (
       const proposalAverageScore = average(getGrades(reviews)) || 0;
 
       return {
-        propShortCode: proposal?.shortCode,
+        propShortCode: proposal?.proposalId,
         propTitle: proposal?.title,
         principalInv: `${firstname} ${lastname}`,
         instrAvailTime: instrument.availabilityTime,

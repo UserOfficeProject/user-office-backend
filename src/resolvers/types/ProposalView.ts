@@ -25,7 +25,7 @@ export class ProposalView implements Partial<ProposalOrigin> {
   public statusDescription: string;
 
   @Field(() => String)
-  public shortCode: string;
+  public proposalId: string;
 
   @Field(() => Int, { nullable: true })
   public rankOrder: number;
