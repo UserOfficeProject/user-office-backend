@@ -20,7 +20,7 @@ BEGIN
      , proposer_id
      , created_at
      , updated_at
-     , short_code
+     , proposal_id
      , final_status
      , call_id
      , questionary_id
@@ -38,7 +38,7 @@ BEGIN
      , 1                  -- proposer_id
      , NOW()              -- created_at
      , NOW()              -- updated_at
-     , '999999'           -- short_code
+     , '999999'           -- proposal_id
      , 1                  -- final_status
      , 1                  -- call_id
      , 1                  -- questionary_id
