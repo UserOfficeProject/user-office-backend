@@ -62,6 +62,6 @@ export class VisitDataSourceMock implements VisitDataSource {
     visitorId: number,
     proposalPk: number
   ): Promise<boolean> {
-    return true;
+    return false;
   }
 }
