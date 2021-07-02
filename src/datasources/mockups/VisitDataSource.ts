@@ -22,6 +22,9 @@ export class VisitDataSourceMock implements VisitDataSource {
   getTeam(visitId: number): Promise<BasicUserDetails[]> {
     throw new Error('Method not implemented.');
   }
+  getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
+    throw new Error('Method not implemented.');
+  }
   async createVisit(
     proposalPk: number,
     visitorId: number,

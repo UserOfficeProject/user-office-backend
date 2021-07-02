@@ -8,6 +8,7 @@ export interface VisitDataSource {
   getVisit(visitId: number): Promise<Visit | null>;
   getVisits(filter?: VisitsFilter): Promise<Visit[]>;
   getTeam(visitId: number): Promise<BasicUserDetails[]>;
+  getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
   // Write
   createVisit(
     proposalPk: number,

@@ -44,6 +44,14 @@ class PostgresVisitDataSource implements VisitDataSource {
       .then((visit) => (visit ? createVisitObject(visit) : null));
   }
 
+  getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
+    return database('visits')
+      .select('*')
+      .where({ scheduled_event_id: eventId })
+      .first()
+      .then((visit) => (visit ? createVisitObject(visit) : null));
+  }
+
   createVisit(
     proposalPk: number,
     visitorId: number,

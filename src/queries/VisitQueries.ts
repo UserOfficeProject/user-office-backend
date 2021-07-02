@@ -50,4 +50,12 @@ export default class VisitQueries {
   ): Promise<BasicUserDetails[]> {
     return this.dataSource.getTeam(visitId);
   }
+
+  @Authorized()
+  async getVisitByScheduledEventId(
+    agent: UserWithRole | null,
+    eventId: number
+  ) {
+    return this.dataSource.getVisitByScheduledEventId(eventId);
+  }
 }
