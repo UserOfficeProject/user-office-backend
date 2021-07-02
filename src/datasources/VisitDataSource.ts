@@ -1,6 +1,7 @@
 import { BasicUserDetails } from '../models/User';
 import { Visit } from '../models/Visit';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
+import { CreateVisitArgs } from './../resolvers/mutations/CreateVisitMutation';
 import { VisitsFilter } from './../resolvers/queries/VisitsQuery';
 
 export interface VisitDataSource {
@@ -11,7 +12,7 @@ export interface VisitDataSource {
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
   // Write
   createVisit(
-    proposalPk: number,
+    args: CreateVisitArgs,
     visitorId: number,
     questionaryId: number
   ): Promise<Visit>;

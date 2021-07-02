@@ -3,13 +3,22 @@ import { Visit, VisitStatus } from '../../models/Visit';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
 import { VisitsFilter } from '../../resolvers/queries/VisitsQuery';
 import { VisitDataSource } from '../VisitDataSource';
+import { CreateVisitArgs } from './../../resolvers/mutations/CreateVisitMutation';
 import { dummyUserWithRole } from './UserDataSource';
 
 export class VisitDataSourceMock implements VisitDataSource {
   private visits: Visit[];
   init() {
     this.visits = [
-      new Visit(1, 1, VisitStatus.DRAFT, 1, dummyUserWithRole.id, new Date()),
+      new Visit(
+        1,
+        1,
+        VisitStatus.DRAFT,
+        1,
+        dummyUserWithRole.id,
+        1,
+        new Date()
+      ),
     ];
   }
 
@@ -26,7 +35,7 @@ export class VisitDataSourceMock implements VisitDataSource {
     throw new Error('Method not implemented.');
   }
   async createVisit(
-    proposalPk: number,
+    { proposalPk, scheduledEventId }: CreateVisitArgs,
     visitorId: number,
     questionaryId: number
   ): Promise<Visit> {
@@ -36,6 +45,7 @@ export class VisitDataSourceMock implements VisitDataSource {
       VisitStatus.DRAFT,
       questionaryId,
       visitorId,
+      scheduledEventId,
       new Date()
     );
 

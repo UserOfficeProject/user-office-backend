@@ -1,5 +1,6 @@
 import { BasicUserDetails } from '../../models/User';
 import { Visit } from '../../models/Visit';
+import { CreateVisitArgs } from '../../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
 import { VisitDataSource } from '../VisitDataSource';
 import { VisitsFilter } from './../../resolvers/queries/VisitsQuery';
@@ -53,7 +54,7 @@ class PostgresVisitDataSource implements VisitDataSource {
   }
 
   createVisit(
-    proposalPk: number,
+    { proposalPk, scheduledEventId }: CreateVisitArgs,
     visitorId: number,
     questionaryId: number
   ): Promise<Visit> {
@@ -62,6 +63,7 @@ class PostgresVisitDataSource implements VisitDataSource {
         proposal_pk: proposalPk,
         visitor_id: visitorId,
         questionary_id: questionaryId,
+        scheduled_event_id: scheduledEventId,
       })
       .returning('*')
       .then((visit) => createVisitObject(visit[0]));

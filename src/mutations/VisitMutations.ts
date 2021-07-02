@@ -79,6 +79,7 @@ export default class VisitMutations {
       );
     }
 
+    // TODO verify that provided scheduledEventId exists
     try {
       const questionary = await this.questionaryDataSource.create(
         user!.id,
@@ -86,7 +87,7 @@ export default class VisitMutations {
       );
 
       const visit = await this.dataSource.createVisit(
-        args.proposalPk,
+        args,
         user!.id,
         questionary.questionaryId
       );
