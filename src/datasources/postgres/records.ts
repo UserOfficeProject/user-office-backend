@@ -27,6 +27,7 @@ import {
   Topic,
 } from '../../models/Template';
 import { BasicUserDetails, User } from '../../models/User';
+import { UserVisit } from '../../models/UserVisit';
 import { Visit, VisitStatus } from '../../models/Visit';
 
 // Interfaces corresponding exactly to database tables
@@ -68,6 +69,7 @@ export interface ProposalRecord {
   readonly management_time_allocation: number;
   readonly management_decision_submitted: boolean;
   readonly technical_review_assignee: number;
+  readonly risk_assessment_questionary_id: number;
 }
 
 export interface ProposalViewRecord {
@@ -192,6 +194,13 @@ export interface UserRecord {
   readonly institution: string;
   readonly placeholder: boolean;
   readonly orcid_refreshtoken: string;
+}
+
+export interface UserVisitRecord {
+  user_id: number;
+  visit_id: number;
+  registration_questionary_id: number | null;
+  training_expiry_date: Date | null;
 }
 
 export interface RoleRecord {
@@ -547,7 +556,8 @@ export const createProposalObject = (proposal: ProposalRecord) => {
     proposal.reference_number_sequence,
     proposal.management_time_allocation,
     proposal.management_decision_submitted,
-    proposal.technical_review_assignee
+    proposal.technical_review_assignee,
+    proposal.risk_assessment_questionary_id
   );
 };
 
@@ -662,6 +672,15 @@ export const createBasicUserObject = (user: UserRecord) => {
     user.position,
     user.created_at,
     user.placeholder
+  );
+};
+
+export const createUserVisitObject = (user: UserVisitRecord) => {
+  return new UserVisit(
+    user.user_id,
+    user.visit_id,
+    user.registration_questionary_id,
+    user.training_expiry_date
   );
 };
 

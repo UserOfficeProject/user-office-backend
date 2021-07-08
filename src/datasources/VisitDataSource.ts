@@ -1,4 +1,4 @@
-import { BasicUserDetails } from '../models/User';
+import { UserVisit } from '../models/UserVisit';
 import { Visit } from '../models/Visit';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
 import { CreateVisitArgs } from './../resolvers/mutations/CreateVisitMutation';
@@ -8,7 +8,7 @@ export interface VisitDataSource {
   // Read
   getVisit(visitId: number): Promise<Visit | null>;
   getVisits(filter?: VisitsFilter): Promise<Visit[]>;
-  getTeam(visitId: number): Promise<BasicUserDetails[]>;
+  getUserVisits(visitId: number): Promise<UserVisit[]>;
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
   // Write
   createVisit(

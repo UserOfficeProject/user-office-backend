@@ -1,4 +1,4 @@
-import { BasicUserDetails } from '../../models/User';
+import { UserVisit } from '../../models/UserVisit';
 import { Visit } from '../../models/Visit';
 import { CreateVisitArgs } from '../../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
@@ -6,18 +6,18 @@ import { VisitDataSource } from '../VisitDataSource';
 import { VisitsFilter } from './../../resolvers/queries/VisitsQuery';
 import database from './database';
 import {
-  createBasicUserObject,
+  createUserVisitObject,
   createVisitObject,
   VisitRecord,
 } from './records';
 
 class PostgresVisitDataSource implements VisitDataSource {
-  getTeam(visitId: number): Promise<BasicUserDetails[]> {
+  getUserVisits(visitId: number): Promise<UserVisit[]> {
     return database('visits_has_users')
-      .select('users.*')
       .where({ visit_id: visitId })
-      .leftJoin('users', 'users.user_id', 'visits_has_users.user_id')
-      .then((users) => users.map((user) => createBasicUserObject(user)));
+      .then((userVisits) =>
+        userVisits.map((userVisit) => createUserVisitObject(userVisit))
+      );
   }
   getVisits(filter?: VisitsFilter): Promise<Visit[]> {
     return database('visits')

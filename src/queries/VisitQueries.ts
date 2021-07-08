@@ -6,7 +6,8 @@ import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
-import { BasicUserDetails, UserWithRole } from '../models/User';
+import { UserWithRole } from '../models/User';
+import { UserVisit } from '../models/UserVisit';
 import { VisitsFilter } from '../resolvers/queries/VisitsQuery';
 import { VisitAuthorization } from './../utils/VisitAuthorization';
 
@@ -44,11 +45,11 @@ export default class VisitQueries {
     return this.dataSource.getVisits({ ...filter, visitorId: agent!.id });
   }
 
-  async getTeam(
+  async getUserVisits(
     user: UserWithRole | null,
     visitId: number
-  ): Promise<BasicUserDetails[]> {
-    return this.dataSource.getTeam(visitId);
+  ): Promise<UserVisit[]> {
+    return this.dataSource.getUserVisits(visitId);
   }
 
   @Authorized()

@@ -1,4 +1,4 @@
-import { BasicUserDetails } from '../../models/User';
+import { UserVisit } from '../../models/UserVisit';
 import { Visit, VisitStatus } from '../../models/Visit';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
 import { VisitsFilter } from '../../resolvers/queries/VisitsQuery';
@@ -28,7 +28,7 @@ export class VisitDataSourceMock implements VisitDataSource {
   getVisits(filter?: VisitsFilter): Promise<Visit[]> {
     throw new Error('Method not implemented.');
   }
-  getTeam(visitId: number): Promise<BasicUserDetails[]> {
+  getUserVisits(visitId: number): Promise<UserVisit[]> {
     throw new Error('Method not implemented.');
   }
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
