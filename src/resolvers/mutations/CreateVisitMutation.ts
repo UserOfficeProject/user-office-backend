@@ -20,8 +20,11 @@ export class CreateVisitArgs {
   @Field(() => Int)
   scheduledEventId: number;
 
-  @Field(() => [Int], { nullable: true })
-  team?: number[];
+  @Field(() => [Int!])
+  team: number[];
+
+  @Field(() => Int)
+  teamLeadUserId: number;
 }
 
 @Resolver()

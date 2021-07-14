@@ -6,6 +6,7 @@ BEGIN
 
         DELETE FROM visits; /* Delete all existing visits, because visit must have associated event_id */
 		ALTER TABLE visits ADD COLUMN scheduled_event_id INTEGER NOT NULL;
+		ALTER TABLE visits ADD COLUMN team_lead_user_id INTEGER NOT NULL REFERENCES users(user_id);
 
 		ALTER TABLE visits_has_users ADD COLUMN registration_questionary_id INTEGER REFERENCES questionaries(questionary_id) DEFAULT NULL;
 		ALTER TABLE visits_has_users ADD COLUMN training_expiry_date TIMESTAMPTZ DEFAULT NULL;

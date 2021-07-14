@@ -3,7 +3,7 @@ import {
   Directive,
   Field,
   FieldResolver,
-  ID,
+  Int,
   ObjectType,
   Resolver,
   Root,
@@ -16,7 +16,7 @@ import { Visit } from './Visit';
 @Directive('@extends')
 @Directive('@key(fields: "id")')
 export class ScheduledEvent {
-  @Field(() => ID)
+  @Field(() => Int)
   @Directive('@external')
   id: number;
 }

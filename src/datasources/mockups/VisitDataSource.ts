@@ -17,6 +17,7 @@ export class VisitDataSourceMock implements VisitDataSource {
         1,
         dummyUserWithRole.id,
         1,
+        1,
         new Date()
       ),
     ];
@@ -35,7 +36,7 @@ export class VisitDataSourceMock implements VisitDataSource {
     throw new Error('Method not implemented.');
   }
   async createVisit(
-    { proposalPk, scheduledEventId }: CreateVisitArgs,
+    { proposalPk, scheduledEventId, teamLeadUserId }: CreateVisitArgs,
     visitorId: number,
     questionaryId: number
   ): Promise<Visit> {
@@ -45,6 +46,7 @@ export class VisitDataSourceMock implements VisitDataSource {
       VisitStatus.DRAFT,
       questionaryId,
       visitorId,
+      teamLeadUserId,
       scheduledEventId,
       new Date()
     );
