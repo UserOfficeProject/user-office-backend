@@ -5,7 +5,6 @@ export class Visit {
     public id: number,
     public proposalPk: number,
     public status: VisitStatus,
-    public questionaryId: number,
     public visitorId: number,
     public teamLeadUserId: number,
     public scheduledEventId: number,

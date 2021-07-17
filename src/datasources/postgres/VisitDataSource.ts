@@ -2,6 +2,7 @@ import { UserVisit } from '../../models/UserVisit';
 import { Visit } from '../../models/Visit';
 import { CreateVisitArgs } from '../../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
+import { UpdateVisitRegistrationArgs } from '../../resolvers/mutations/UpdateVisitRegistration';
 import { VisitDataSource } from '../VisitDataSource';
 import { VisitsFilter } from './../../resolvers/queries/VisitsQuery';
 import database from './database';
@@ -12,13 +13,6 @@ import {
 } from './records';
 
 class PostgresVisitDataSource implements VisitDataSource {
-  getUserVisits(visitId: number): Promise<UserVisit[]> {
-    return database('visits_has_users')
-      .where({ visit_id: visitId })
-      .then((userVisits) =>
-        userVisits.map((userVisit) => createUserVisitObject(userVisit))
-      );
-  }
   getVisits(filter?: VisitsFilter): Promise<Visit[]> {
     return database('visits')
       .select('*')
@@ -45,6 +39,30 @@ class PostgresVisitDataSource implements VisitDataSource {
       .then((visit) => (visit ? createVisitObject(visit) : null));
   }
 
+  getUserVisit(userId: number, visitId: number): Promise<UserVisit> {
+    return database('visits_has_users')
+      .where({ visit_id: visitId })
+      .andWhere({ user_id: userId })
+      .first()
+      .then((userVisit) => createUserVisitObject(userVisit));
+  }
+
+  getUserVisits(visitId: number): Promise<UserVisit[]> {
+    return database('visits_has_users')
+      .where({ visit_id: visitId })
+      .then((userVisits) =>
+        userVisits.map((userVisit) => createUserVisitObject(userVisit))
+      );
+  }
+
+  getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]> {
+    return database('visits_has_users')
+      .whereIn('registration_questionary_id', filter.questionaryIds)
+      .then((userVisits) =>
+        userVisits.map((userVisit) => createUserVisitObject(userVisit))
+      );
+  }
+
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
     return database('visits')
       .select('*')
@@ -55,14 +73,12 @@ class PostgresVisitDataSource implements VisitDataSource {
 
   createVisit(
     { proposalPk, scheduledEventId, teamLeadUserId }: CreateVisitArgs,
-    visitorId: number,
-    questionaryId: number
+    visitorId: number
   ): Promise<Visit> {
     return database('visits')
       .insert({
         proposal_pk: proposalPk,
         visitor_id: visitorId,
-        questionary_id: questionaryId,
         scheduled_event_id: scheduledEventId,
         team_lead_user_id: teamLeadUserId,
       })
@@ -110,6 +126,31 @@ class PostgresVisitDataSource implements VisitDataSource {
       });
   }
 
+  updateVisitRegistration(
+    userId: number,
+    {
+      visitId,
+      trainingExpiryDate,
+      isRegistrationSubmitted,
+      registrationQuestionaryId,
+    }: UpdateVisitRegistrationArgs
+  ): Promise<UserVisit> {
+    return database('visits_has_users')
+      .update({
+        training_expiry_date: trainingExpiryDate,
+        is_registration_submitted: isRegistrationSubmitted,
+        registration_questionary_id: registrationQuestionaryId,
+      })
+      .where({ visit_id: visitId })
+      .andWhere({ user_id: userId })
+      .returning('*')
+      .then((result) => {
+        console.log(visitId, userId);
+
+        return createUserVisitObject(result[0]);
+      });
+  }
+
   deleteVisit(visitId: number): Promise<Visit> {
     return database('visits')
       .where({ visit_id: visitId })
@@ -127,6 +168,15 @@ class PostgresVisitDataSource implements VisitDataSource {
       .whereIn('visit_id', function () {
         this.select('visit_id').from('visits').where('proposal_pk', proposalPk);
       })
+      .andWhere('visits_has_users.user_id', visitorId)
+      .then((results) => results.length > 0);
+  }
+
+  isVisitorOfVisit(visitorId: number, visitId: number): Promise<boolean> {
+    return database
+      .select('*')
+      .from('visits_has_users')
+      .where('visits_has_users.visit_id', visitId)
       .andWhere('visits_has_users.user_id', visitorId)
       .then((results) => results.length > 0);
   }

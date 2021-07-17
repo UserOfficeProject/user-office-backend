@@ -13,7 +13,6 @@ import { Visit as VisitOrigin } from '../../models/Visit';
 import { VisitStatus } from '../../models/Visit';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Proposal } from './Proposal';
-import { Questionary } from './Questionary';
 import { UserVisit } from './UserVisit';
 
 @ObjectType()
@@ -26,9 +25,6 @@ export class Visit implements Partial<VisitOrigin> {
 
   @Field(() => VisitStatus)
   public status: VisitStatus;
-
-  @Field(() => Int)
-  public questionaryId: number;
 
   @Field(() => Int)
   public visitorId: number;
@@ -53,17 +49,6 @@ export class VisitResolver {
     @Ctx() context: ResolverContext
   ): Promise<UserVisit[] | null> {
     return context.queries.visit.getUserVisits(context.user, visit.id);
-  }
-
-  @FieldResolver(() => Questionary)
-  async questionary(
-    @Root() visit: Visit,
-    @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
-    return context.queries.questionary.getQuestionary(
-      context.user,
-      visit.questionaryId
-    );
   }
 
   @FieldResolver(() => BasicUserDetails)

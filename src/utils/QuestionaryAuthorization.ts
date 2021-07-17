@@ -200,16 +200,17 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return true;
     }
 
-    const visit = (
-      await this.visitDataSource.getVisits({
-        questionaryId: questionaryId,
+    const registration = (
+      await this.visitDataSource.getRegistrations({
+        questionaryIds: [questionaryId],
       })
     )[0];
-    if (!visit) {
+
+    if (!registration) {
       return false;
     }
 
-    return this.visitAuth.hasReadRights(agent, visit.id);
+    return this.visitAuth.hasReadRights(agent, registration.visitId);
   }
   async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
     if (!agent) {
@@ -220,16 +221,17 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return true;
     }
 
-    const visit = (
-      await this.visitDataSource.getVisits({
-        questionaryId: questionaryId,
+    const registration = (
+      await this.visitDataSource.getRegistrations({
+        questionaryIds: [questionaryId],
       })
     )[0];
-    if (!visit) {
+
+    if (!registration) {
       return false;
     }
 
-    return this.visitAuth.hasWriteRights(agent, visit.id);
+    return registration.userId === agent.id;
   }
 }
 

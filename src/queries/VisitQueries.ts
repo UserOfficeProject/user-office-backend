@@ -53,6 +53,14 @@ export default class VisitQueries {
   }
 
   @Authorized()
+  async getUserVisit(
+    user: UserWithRole | null,
+    visitId: number
+  ): Promise<UserVisit> {
+    return this.dataSource.getUserVisit(user!.id, visitId);
+  }
+
+  @Authorized()
   async getVisitByScheduledEventId(
     agent: UserWithRole | null,
     eventId: number

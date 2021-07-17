@@ -31,6 +31,7 @@ import { Template } from './Template';
 import { Topic } from './Topic';
 import { Unit } from './Unit';
 import { User } from './User';
+import { UserVisit } from './UserVisit';
 import { Visit } from './Visit';
 
 @ObjectType()
@@ -303,4 +304,11 @@ export class VisitResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => Visit, { nullable: true })
   public visit: Visit;
+}
+
+@ObjectType()
+export class VisitRegistrationResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => UserVisit, { nullable: true })
+  public registration: UserVisit;
 }

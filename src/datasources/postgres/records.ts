@@ -200,6 +200,7 @@ export interface UserVisitRecord {
   user_id: number;
   visit_id: number;
   registration_questionary_id: number | null;
+  is_registration_submitted: boolean;
   training_expiry_date: Date | null;
 }
 
@@ -676,12 +677,13 @@ export const createBasicUserObject = (user: UserRecord) => {
   );
 };
 
-export const createUserVisitObject = (user: UserVisitRecord) => {
+export const createUserVisitObject = (userVisitRecord: UserVisitRecord) => {
   return new UserVisit(
-    user.user_id,
-    user.visit_id,
-    user.registration_questionary_id,
-    user.training_expiry_date
+    userVisitRecord.user_id,
+    userVisitRecord.visit_id,
+    userVisitRecord.registration_questionary_id,
+    userVisitRecord.is_registration_submitted,
+    userVisitRecord.training_expiry_date
   );
 };
 
@@ -845,7 +847,6 @@ export const createVisitObject = (visit: VisitRecord) => {
     visit.visit_id,
     visit.proposal_pk,
     (visit.status as any) as VisitStatus,
-    visit.questionary_id,
     visit.visitor_id,
     visit.team_lead_user_id,
     visit.scheduled_event_id,

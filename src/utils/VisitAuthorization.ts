@@ -5,11 +5,14 @@ import { Tokens } from '../config/Tokens';
 import { VisitDataSource } from '../datasources/VisitDataSource';
 import { UserWithRole } from '../models/User';
 import { VisitStatus } from '../models/Visit';
+import { ProposalDataSource } from './../datasources/ProposalDataSource';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class VisitAuthorization {
   constructor(
+    @inject(Tokens.ProposalDataSource)
+    private proposalDataSource: ProposalDataSource,
     @inject(Tokens.VisitDataSource)
     private visitDataSource: VisitDataSource,
     @inject(Tokens.UserAuthorization)
@@ -17,6 +20,10 @@ export class VisitAuthorization {
   ) {}
 
   async hasReadRights(agent: UserWithRole | null, visitId: number) {
+    if (!agent) {
+      return false;
+    }
+
     if (this.userAuthorization.isUserOfficer(agent)) {
       return true;
     }
@@ -27,10 +34,17 @@ export class VisitAuthorization {
       return false;
     }
 
-    return visit.visitorId === agent?.id;
+    return (
+      visit.visitorId === agent.id ||
+      this.visitDataSource.isVisitorOfVisit(agent.id, visitId)
+    );
   }
 
   async hasWriteRights(agent: UserWithRole | null, visitId: number) {
+    if (!agent) {
+      return false;
+    }
+
     if (this.userAuthorization.isUserOfficer(agent)) {
       return true;
     }
@@ -41,18 +55,26 @@ export class VisitAuthorization {
       return false;
     }
 
-    if (
-      this.userAuthorization.isUser(agent) &&
-      visit.status === VisitStatus.ACCEPTED
-    ) {
-      logger.logError('User tried to change accepted visit', {
-        agent,
-        visitId,
-      });
+    const proposal = await this.proposalDataSource.get(visit.proposalPk);
 
-      return false;
+    if (this.userAuthorization.isMemberOfProposal(agent, proposal)) {
+      if (visit.status === VisitStatus.ACCEPTED) {
+        logger.logError('User tried to change accepted visit', {
+          agent,
+          visitId,
+        });
+
+        return false;
+      }
+
+      return true;
     }
 
-    return visit.visitorId === agent?.id;
+    logger.logError('User tried to change visit that he is not a member of', {
+      agent,
+      visitId,
+    });
+
+    return false;
   }
 }
