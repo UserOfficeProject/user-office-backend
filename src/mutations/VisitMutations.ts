@@ -62,6 +62,17 @@ export default class VisitMutations {
       );
     }
 
+    const visitAlreadyExists =
+      (await this.dataSource.getVisits({ proposalPk: args.proposalPk }))
+        .length > 0;
+
+    if (visitAlreadyExists) {
+      return rejection(
+        'Can not create visit because visit for the proposal already exists',
+        { args }
+      );
+    }
+
     const isProposalOwner = await this.userAuthorization.hasAccessRights(
       user,
       proposal
