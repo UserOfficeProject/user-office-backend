@@ -17,6 +17,8 @@ BEGIN
 		ALTER TABLE visits_has_users ADD COLUMN training_expiry_date TIMESTAMPTZ DEFAULT NULL;
 
 		ALTER TABLE proposals ADD COLUMN risk_assessment_questionary_id INTEGER REFERENCES questionaries(questionary_id) DEFAULT NULL;
+		
+		ALTER TABLE visits RENAME COLUMN visitor_id TO creator_id;
     END;
 	END IF;
 END;

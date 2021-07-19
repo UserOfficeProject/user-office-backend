@@ -35,7 +35,7 @@ export class VisitAuthorization {
     }
 
     return (
-      visit.visitorId === agent.id ||
+      visit.creatorId === agent.id ||
       this.visitDataSource.isVisitorOfVisit(agent.id, visitId)
     );
   }

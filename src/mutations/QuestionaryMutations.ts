@@ -60,7 +60,7 @@ export default class QuestionaryMutations {
     const questionary = await this.dataSource.getQuestionary(questionaryId);
     if (!questionary) {
       return rejection(
-        'Can not answer topic because quesitonary does not exist',
+        'Can not answer topic because questionary does not exist',
         { questionaryId }
       );
     }

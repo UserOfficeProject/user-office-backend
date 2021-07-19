@@ -17,8 +17,8 @@ class PostgresVisitDataSource implements VisitDataSource {
     return database('visits')
       .select('*')
       .modify((query) => {
-        if (filter?.visitorId) {
-          query.where('visitor_id', filter.visitorId);
+        if (filter?.creator_id) {
+          query.where('creator_id', filter.creator_id);
         }
         if (filter?.questionaryId) {
           query.where('questionary_id', filter.questionaryId);
@@ -73,12 +73,12 @@ class PostgresVisitDataSource implements VisitDataSource {
 
   createVisit(
     { proposalPk, scheduledEventId, teamLeadUserId }: CreateVisitArgs,
-    visitorId: number
+    creatorId: number
   ): Promise<Visit> {
     return database('visits')
       .insert({
         proposal_pk: proposalPk,
-        visitor_id: visitorId,
+        creator_id: creatorId,
         scheduled_event_id: scheduledEventId,
         team_lead_user_id: teamLeadUserId,
       })

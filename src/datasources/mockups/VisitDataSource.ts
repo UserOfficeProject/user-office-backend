@@ -44,13 +44,13 @@ export class VisitDataSourceMock implements VisitDataSource {
 
   async createVisit(
     { proposalPk, teamLeadUserId, scheduledEventId }: CreateVisitArgs,
-    visitorId: number
+    creatorId: number
   ): Promise<Visit> {
     const newVisit = new Visit(
       this.visits.length,
       proposalPk,
       VisitStatus.DRAFT,
-      visitorId,
+      creatorId,
       teamLeadUserId,
       scheduledEventId,
       new Date()

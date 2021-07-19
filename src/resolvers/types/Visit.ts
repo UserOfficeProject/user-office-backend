@@ -27,7 +27,7 @@ export class Visit implements Partial<VisitOrigin> {
   public status: VisitStatus;
 
   @Field(() => Int)
-  public visitorId: number;
+  public creatorId: number;
 
   @Field(() => Int)
   public teamLeadUserId: number;

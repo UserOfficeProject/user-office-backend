@@ -6,7 +6,7 @@ import { Visit } from '../types/Visit';
 @InputType()
 export class VisitsFilter {
   @Field(() => Int, { nullable: true })
-  public visitorId?: number;
+  public creator_id?: number;
 
   @Field(() => Int, { nullable: true })
   public questionaryId?: number;

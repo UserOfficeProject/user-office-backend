@@ -231,6 +231,16 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return false;
     }
 
+    if (registration.isRegistrationSubmitted) {
+      logger.logError('User tried to update visit that is already submitted', {
+        agent,
+        questionaryId,
+        registration,
+      });
+
+      return false;
+    }
+
     return registration.userId === agent.id;
   }
 }

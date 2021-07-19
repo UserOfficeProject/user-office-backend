@@ -501,7 +501,7 @@ export interface VisitRecord {
   readonly instrument_id: number;
   readonly status: string;
   readonly questionary_id: number;
-  readonly visitor_id: number;
+  readonly creator_id: number;
   readonly team_lead_user_id: number;
   readonly scheduled_event_id: number;
   readonly created_at: Date;
@@ -847,7 +847,7 @@ export const createVisitObject = (visit: VisitRecord) => {
     visit.visit_id,
     visit.proposal_pk,
     (visit.status as any) as VisitStatus,
-    visit.visitor_id,
+    visit.creator_id,
     visit.team_lead_user_id,
     visit.scheduled_event_id,
     visit.created_at

@@ -14,7 +14,7 @@ export interface VisitDataSource {
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
   getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]>;
   // Write
-  createVisit(args: CreateVisitArgs, visitorId: number): Promise<Visit>;
+  createVisit(args: CreateVisitArgs, creatorId: number): Promise<Visit>;
   updateVisit(args: UpdateVisitArgs): Promise<Visit>;
   updateVisitRegistration(
     userId: number,
