@@ -9,6 +9,7 @@ import { dummyUserWithRole } from './UserDataSource';
 
 export class VisitDataSourceMock implements VisitDataSource {
   private visits: Visit[];
+  private visitsHasVisitors: UserVisit[];
   init() {
     this.visits = [
       new Visit(
@@ -21,25 +22,47 @@ export class VisitDataSourceMock implements VisitDataSource {
         new Date()
       ),
     ];
+
+    this.visitsHasVisitors = [
+      new UserVisit(1, 1, 1, false, new Date('2033-07-19T00:00:00.0000')),
+    ];
   }
 
   async getVisit(visitId: number): Promise<Visit | null> {
     return this.visits.find((visit) => visit.id === visitId) ?? null;
   }
-  getVisits(filter?: VisitsFilter): Promise<Visit[]> {
-    throw new Error('Method not implemented.');
+  async getVisits(filter?: VisitsFilter): Promise<Visit[]> {
+    return this.visits.reduce((accumulator, currentValue) => {
+      if (filter?.creator_id && currentValue.creatorId === filter.creator_id) {
+        accumulator.push(currentValue);
+      }
+
+      if (filter?.proposalPk && currentValue.proposalPk === filter.proposalPk) {
+        accumulator.push(currentValue);
+      }
+
+      return accumulator;
+    }, new Array<Visit>());
   }
   getUserVisits(visitId: number): Promise<UserVisit[]> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented 1.');
   }
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented 2.');
   }
-  getUserVisit(user_id: number, visitId: number): Promise<UserVisit> {
-    throw new Error('Method not implemented.');
+  async getUserVisit(
+    userId: number,
+    visitId: number
+  ): Promise<UserVisit | null> {
+    return (
+      this.visitsHasVisitors.find(
+        (registration) =>
+          registration.userId === userId && registration.visitId === visitId
+      ) || null
+    );
   }
   getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented 3');
   }
 
   async createVisit(
@@ -76,7 +99,7 @@ export class VisitDataSourceMock implements VisitDataSource {
     userId: number,
     args: UpdateVisitRegistrationArgs
   ): Promise<UserVisit> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented 4.');
   }
   async deleteVisit(visitId: number): Promise<Visit> {
     return this.visits.splice(
@@ -92,7 +115,12 @@ export class VisitDataSourceMock implements VisitDataSource {
     return false;
   }
 
-  isVisitorOfVisit(visitorId: number, visitId: number): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async isVisitorOfVisit(visitorId: number, visitId: number): Promise<boolean> {
+    return this.visitsHasVisitors.find(
+      (registration) =>
+        registration.userId === visitorId && registration.visitId === visitId
+    )
+      ? true
+      : false;
   }
 }

@@ -9,9 +9,6 @@ export class VisitsFilter {
   public creator_id?: number;
 
   @Field(() => Int, { nullable: true })
-  public questionaryId?: number;
-
-  @Field(() => Int, { nullable: true })
   public proposalPk?: number;
 }
 

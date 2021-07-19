@@ -125,11 +125,7 @@ export default class VisitMutations {
       );
     }
 
-    const proposal = await this.proposalDataSource.get(visit?.proposalPk);
-    const hasRights = await this.userAuthorization.isMemberOfProposal(
-      user,
-      proposal
-    );
+    const hasRights = await this.visitAuthorization.hasWriteRights(user, visit);
 
     if (hasRights === false) {
       return rejection(

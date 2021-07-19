@@ -6,6 +6,7 @@ import { VisitDataSource } from '../datasources/VisitDataSource';
 import { UserWithRole } from '../models/User';
 import { VisitStatus } from '../models/Visit';
 import { ProposalDataSource } from './../datasources/ProposalDataSource';
+import { Visit } from './../models/Visit';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
@@ -40,7 +41,18 @@ export class VisitAuthorization {
     );
   }
 
-  async hasWriteRights(agent: UserWithRole | null, visitId: number) {
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    visit: Visit
+  ): Promise<boolean>;
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    visitId: number
+  ): Promise<boolean>;
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    visitOrVisitId: number | Visit
+  ) {
     if (!agent) {
       return false;
     }
@@ -49,10 +61,15 @@ export class VisitAuthorization {
       return true;
     }
 
-    const visit = await this.visitDataSource.getVisit(visitId);
-
-    if (!visit) {
-      return false;
+    let visit: Visit;
+    if (typeof visitOrVisitId === 'number') {
+      const visitFromDb = await this.visitDataSource.getVisit(visitOrVisitId);
+      if (!visitFromDb) {
+        return false;
+      }
+      visit = visitFromDb;
+    } else {
+      visit = visitOrVisitId;
     }
 
     const proposal = await this.proposalDataSource.get(visit.proposalPk);
@@ -61,7 +78,7 @@ export class VisitAuthorization {
       if (visit.status === VisitStatus.ACCEPTED) {
         logger.logError('User tried to change accepted visit', {
           agent,
-          visitId,
+          visit,
         });
 
         return false;
@@ -72,7 +89,7 @@ export class VisitAuthorization {
 
     logger.logError('User tried to change visit that he is not a member of', {
       agent,
-      visitId,
+      visit,
     });
 
     return false;

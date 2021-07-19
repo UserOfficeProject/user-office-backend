@@ -56,7 +56,7 @@ export default class VisitQueries {
   async getUserVisit(
     user: UserWithRole | null,
     visitId: number
-  ): Promise<UserVisit> {
+  ): Promise<UserVisit | null> {
     return this.dataSource.getUserVisit(user!.id, visitId);
   }
 

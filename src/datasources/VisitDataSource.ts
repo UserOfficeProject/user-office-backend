@@ -9,7 +9,7 @@ export interface VisitDataSource {
   // Read
   getVisit(visitId: number): Promise<Visit | null>;
   getVisits(filter?: VisitsFilter): Promise<Visit[]>;
-  getUserVisit(user_id: number, visitId: number): Promise<UserVisit>;
+  getUserVisit(user_id: number, visitId: number): Promise<UserVisit | null>;
   getUserVisits(visitId: number): Promise<UserVisit[]>;
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
   getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]>;
