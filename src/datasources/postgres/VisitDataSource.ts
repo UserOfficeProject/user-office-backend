@@ -128,7 +128,7 @@ class PostgresVisitDataSource implements VisitDataSource {
       });
   }
 
-  updateVisitRegistration(
+  updateRegistration(
     userId: number,
     {
       visitId,

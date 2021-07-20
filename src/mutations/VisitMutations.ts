@@ -195,7 +195,7 @@ export default class VisitMutations {
       activeTemplate
     );
 
-    return this.dataSource.updateVisitRegistration(user.id, {
+    return this.dataSource.updateRegistration(user.id, {
       visitId: visitId,
       registrationQuestionaryId: questionary.questionaryId,
     });
@@ -210,6 +210,6 @@ export default class VisitMutations {
       return null;
     }
 
-    return this.dataSource.updateVisitRegistration(user.id, args);
+    return this.dataSource.updateRegistration(user.id, args);
   }
 }

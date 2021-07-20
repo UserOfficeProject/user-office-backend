@@ -102,7 +102,7 @@ export class VisitDataSourceMock implements VisitDataSource {
 
     return (await this.getVisit(args.visitId))!;
   }
-  updateVisitRegistration(
+  updateRegistration(
     userId: number,
     args: UpdateVisitRegistrationArgs
   ): Promise<VisitRegistration> {
