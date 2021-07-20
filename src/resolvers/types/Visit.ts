@@ -13,6 +13,7 @@ import { Visit as VisitOrigin } from '../../models/Visit';
 import { VisitStatus } from '../../models/Visit';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Proposal } from './Proposal';
+import { Shipment } from './Shipment';
 import { VisitRegistration } from './VisitRegistration';
 
 @ObjectType()
@@ -59,5 +60,15 @@ export class VisitResolver {
     @Ctx() context: ResolverContext
   ): Promise<BasicUserDetails | null> {
     return context.queries.user.getBasic(context.user, visit.teamLeadUserId);
+  }
+
+  @FieldResolver(() => [Shipment])
+  async shipments(
+    @Root() visit: Visit,
+    @Ctx() context: ResolverContext
+  ): Promise<Shipment[] | null> {
+    return context.queries.shipment.getShipments(context.user, {
+      filter: { visitId: visit.id },
+    });
   }
 }

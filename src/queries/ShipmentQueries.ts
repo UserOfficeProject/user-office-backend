@@ -30,7 +30,7 @@ export default class ShipmentQueries {
     return this.dataSource.getShipment(shipmentId);
   }
 
-  @Authorized([Roles.USER_OFFICER])
+  @Authorized([Roles.USER])
   async getShipments(agent: UserWithRole | null, args: ShipmentsArgs) {
     let shipments = await this.dataSource.getShipments(args);
 
