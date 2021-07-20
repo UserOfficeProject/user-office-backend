@@ -28,7 +28,7 @@ export default class VisitQueries {
     public visitAuth: VisitAuthorization
   ) {}
 
-  @Authorized([Roles.USER])
+  @Authorized()
   async getVisit(agent: UserWithRole | null, id: number) {
     const hasRights = await this.visitAuth.hasReadRights(agent, id);
     if (hasRights === false) {
@@ -43,7 +43,7 @@ export default class VisitQueries {
     return this.dataSource.getVisits(filter);
   }
 
-  @Authorized([Roles.USER])
+  @Authorized()
   async getMyVisits(agent: UserWithRole | null, filter?: VisitsFilter) {
     // TODO return also visits you are part of the team
     return this.dataSource.getVisits({ ...filter, creator_id: agent!.id });
