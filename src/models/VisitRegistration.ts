@@ -1,4 +1,4 @@
-export class UserVisit {
+export class VisitRegistration {
   constructor(
     public userId: number,
     public visitId: number,

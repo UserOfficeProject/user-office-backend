@@ -1,5 +1,6 @@
-import { UserVisit } from '../models/UserVisit';
 import { Visit } from '../models/Visit';
+import { VisitRegistration } from '../models/VisitRegistration';
+import { GetRegistrationsFilter } from '../queries/VisitQueries';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../resolvers/mutations/UpdateVisitRegistration';
 import { CreateVisitArgs } from './../resolvers/mutations/CreateVisitMutation';
@@ -9,17 +10,21 @@ export interface VisitDataSource {
   // Read
   getVisit(visitId: number): Promise<Visit | null>;
   getVisits(filter?: VisitsFilter): Promise<Visit[]>;
-  getUserVisit(user_id: number, visitId: number): Promise<UserVisit | null>;
-  getUserVisits(visitId: number): Promise<UserVisit[]>;
+  getRegistration(
+    user_id: number,
+    visitId: number
+  ): Promise<VisitRegistration | null>;
+  getRegistrations(
+    filter: GetRegistrationsFilter
+  ): Promise<VisitRegistration[]>;
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null>;
-  getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]>;
   // Write
   createVisit(args: CreateVisitArgs, creatorId: number): Promise<Visit>;
   updateVisit(args: UpdateVisitArgs): Promise<Visit>;
   updateVisitRegistration(
     userId: number,
     args: UpdateVisitRegistrationArgs
-  ): Promise<UserVisit>;
+  ): Promise<VisitRegistration>;
   deleteVisit(visitId: number): Promise<Visit>;
   isVisitorOfProposal(visitorId: number, proposalPk: number): Promise<boolean>;
   isVisitorOfVisit(visitorId: number, visitId: number): Promise<boolean>;

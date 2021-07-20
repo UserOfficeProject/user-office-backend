@@ -13,7 +13,7 @@ import { Visit as VisitOrigin } from '../../models/Visit';
 import { VisitStatus } from '../../models/Visit';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Proposal } from './Proposal';
-import { UserVisit } from './UserVisit';
+import { VisitRegistration } from './VisitRegistration';
 
 @ObjectType()
 export class Visit implements Partial<VisitOrigin> {
@@ -43,12 +43,14 @@ export class VisitResolver {
     return context.queries.proposal.get(context.user, visit.proposalPk);
   }
 
-  @FieldResolver(() => [UserVisit])
-  async userVisits(
+  @FieldResolver(() => [VisitRegistration])
+  async registrations(
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
-  ): Promise<UserVisit[] | null> {
-    return context.queries.visit.getUserVisits(context.user, visit.id);
+  ): Promise<VisitRegistration[] | null> {
+    return context.queries.visit.getRegistrations(context.user, {
+      visitId: visit.id,
+    });
   }
 
   @FieldResolver(() => BasicUserDetails)

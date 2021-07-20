@@ -11,8 +11,8 @@ import { rejection } from '../models/Rejection';
 import { Rejection } from '../models/Rejection';
 import { TemplateCategoryId } from '../models/Template';
 import { UserWithRole } from '../models/User';
-import { UserVisit } from '../models/UserVisit';
 import { Visit, VisitStatus } from '../models/Visit';
+import { VisitRegistration } from '../models/VisitRegistration';
 import { CreateVisitArgs } from '../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../resolvers/mutations/UpdateVisitRegistration';
@@ -168,7 +168,7 @@ export default class VisitMutations {
   async createVisitRegistrationQuestionary(
     user: UserWithRole | null,
     visitId: number
-  ): Promise<UserVisit | Rejection> {
+  ): Promise<VisitRegistration | Rejection> {
     if (!user) {
       return rejection(
         'Can not create visit registration questionary, because the request is not authorized'

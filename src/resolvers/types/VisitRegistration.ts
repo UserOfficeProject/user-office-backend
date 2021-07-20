@@ -9,12 +9,12 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
-import { UserVisit as UserVisitOrigin } from '../../models/UserVisit';
+import { VisitRegistration as VisitRegistrationOrig } from '../../models/VisitRegistration';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Questionary } from './Questionary';
 
 @ObjectType()
-export class UserVisit implements Partial<UserVisitOrigin> {
+export class VisitRegistration implements Partial<VisitRegistrationOrig> {
   @Field(() => Int)
   public userId: number;
 
@@ -31,11 +31,11 @@ export class UserVisit implements Partial<UserVisitOrigin> {
   public trainingExpiryDate: Date | null;
 }
 
-@Resolver((of) => UserVisit)
+@Resolver((of) => VisitRegistration)
 export class UserVisitResolver {
   @FieldResolver(() => BasicUserDetails)
   async user(
-    @Root() userVisit: UserVisit,
+    @Root() userVisit: VisitRegistration,
     @Ctx() context: ResolverContext
   ): Promise<BasicUserDetails | null> {
     return context.queries.user.getBasic(context.user, userVisit.userId);
@@ -43,7 +43,7 @@ export class UserVisitResolver {
 
   @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
-    @Root() userVisit: UserVisit,
+    @Root() userVisit: VisitRegistration,
     @Ctx() context: ResolverContext
   ): Promise<Questionary | null> {
     if (!userVisit.registrationQuestionaryId) {

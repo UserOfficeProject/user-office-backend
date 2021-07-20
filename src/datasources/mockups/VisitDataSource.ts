@@ -1,5 +1,6 @@
-import { UserVisit } from '../../models/UserVisit';
 import { Visit, VisitStatus } from '../../models/Visit';
+import { VisitRegistration } from '../../models/VisitRegistration';
+import { GetRegistrationsFilter } from '../../queries/VisitQueries';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../../resolvers/mutations/UpdateVisitRegistration';
 import { VisitsFilter } from '../../resolvers/queries/VisitsQuery';
@@ -9,7 +10,7 @@ import { dummyUserWithRole } from './UserDataSource';
 
 export class VisitDataSourceMock implements VisitDataSource {
   private visits: Visit[];
-  private visitsHasVisitors: UserVisit[];
+  private visitsHasVisitors: VisitRegistration[];
   init() {
     this.visits = [
       new Visit(
@@ -24,7 +25,13 @@ export class VisitDataSourceMock implements VisitDataSource {
     ];
 
     this.visitsHasVisitors = [
-      new UserVisit(1, 1, 1, false, new Date('2033-07-19T00:00:00.0000')),
+      new VisitRegistration(
+        1,
+        1,
+        1,
+        false,
+        new Date('2033-07-19T00:00:00.0000')
+      ),
     ];
   }
 
@@ -44,16 +51,14 @@ export class VisitDataSourceMock implements VisitDataSource {
       return accumulator;
     }, new Array<Visit>());
   }
-  getUserVisits(visitId: number): Promise<UserVisit[]> {
-    throw new Error('Method not implemented 1.');
-  }
+
   getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
     throw new Error('Method not implemented 2.');
   }
-  async getUserVisit(
+  async getRegistration(
     userId: number,
     visitId: number
-  ): Promise<UserVisit | null> {
+  ): Promise<VisitRegistration | null> {
     return (
       this.visitsHasVisitors.find(
         (registration) =>
@@ -61,7 +66,9 @@ export class VisitDataSourceMock implements VisitDataSource {
       ) || null
     );
   }
-  getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]> {
+  getRegistrations(
+    filter: GetRegistrationsFilter
+  ): Promise<VisitRegistration[]> {
     throw new Error('Method not implemented 3');
   }
 
@@ -98,7 +105,7 @@ export class VisitDataSourceMock implements VisitDataSource {
   updateVisitRegistration(
     userId: number,
     args: UpdateVisitRegistrationArgs
-  ): Promise<UserVisit> {
+  ): Promise<VisitRegistration> {
     throw new Error('Method not implemented 4.');
   }
   async deleteVisit(visitId: number): Promise<Visit> {

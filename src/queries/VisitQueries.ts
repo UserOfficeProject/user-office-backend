@@ -7,9 +7,13 @@ import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
-import { UserVisit } from '../models/UserVisit';
+import { VisitRegistration } from '../models/VisitRegistration';
 import { VisitsFilter } from '../resolvers/queries/VisitsQuery';
 import { VisitAuthorization } from './../utils/VisitAuthorization';
+export interface GetRegistrationsFilter {
+  questionaryIds?: number[];
+  visitId?: number;
+}
 
 @injectable()
 export default class VisitQueries {
@@ -45,19 +49,19 @@ export default class VisitQueries {
     return this.dataSource.getVisits({ ...filter, creator_id: agent!.id });
   }
 
-  async getUserVisits(
+  async getRegistrations(
     user: UserWithRole | null,
-    visitId: number
-  ): Promise<UserVisit[]> {
-    return this.dataSource.getUserVisits(visitId);
+    filter: GetRegistrationsFilter
+  ): Promise<VisitRegistration[]> {
+    return this.dataSource.getRegistrations(filter);
   }
 
   @Authorized()
-  async getUserVisit(
+  async getRegistration(
     user: UserWithRole | null,
     visitId: number
-  ): Promise<UserVisit | null> {
-    return this.dataSource.getUserVisit(user!.id, visitId);
+  ): Promise<VisitRegistration | null> {
+    return this.dataSource.getRegistration(user!.id, visitId);
   }
 
   @Authorized()

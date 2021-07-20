@@ -1,5 +1,6 @@
-import { UserVisit } from '../../models/UserVisit';
 import { Visit } from '../../models/Visit';
+import { VisitRegistration } from '../../models/VisitRegistration';
+import { GetRegistrationsFilter } from '../../queries/VisitQueries';
 import { CreateVisitArgs } from '../../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../../resolvers/mutations/UpdateVisitRegistration';
@@ -7,9 +8,10 @@ import { VisitDataSource } from '../VisitDataSource';
 import { VisitsFilter } from './../../resolvers/queries/VisitsQuery';
 import database from './database';
 import {
-  createUserVisitObject,
+  createVisitRegistrationObject,
   createVisitObject,
   VisitRecord,
+  VisitRegistrationRecord,
 } from './records';
 
 class PostgresVisitDataSource implements VisitDataSource {
@@ -36,27 +38,30 @@ class PostgresVisitDataSource implements VisitDataSource {
       .then((visit) => (visit ? createVisitObject(visit) : null));
   }
 
-  getUserVisit(userId: number, visitId: number): Promise<UserVisit> {
+  getRegistration(userId: number, visitId: number): Promise<VisitRegistration> {
     return database('visits_has_users')
       .where({ visit_id: visitId })
       .andWhere({ user_id: userId })
       .first()
-      .then((userVisit) => createUserVisitObject(userVisit));
+      .then((registration) => createVisitRegistrationObject(registration));
   }
 
-  getUserVisits(visitId: number): Promise<UserVisit[]> {
+  getRegistrations(
+    filter: GetRegistrationsFilter
+  ): Promise<VisitRegistration[]> {
     return database('visits_has_users')
-      .where({ visit_id: visitId })
-      .then((userVisits) =>
-        userVisits.map((userVisit) => createUserVisitObject(userVisit))
-      );
-  }
-
-  getRegistrations(filter: { questionaryIds: number[] }): Promise<UserVisit[]> {
-    return database('visits_has_users')
-      .whereIn('registration_questionary_id', filter.questionaryIds)
-      .then((userVisits) =>
-        userVisits.map((userVisit) => createUserVisitObject(userVisit))
+      .modify((query) => {
+        if (filter.questionaryIds) {
+          query.whereIn('registration_questionary_id', filter.questionaryIds);
+        }
+        if (filter.visitId) {
+          query.where({ visit_id: filter.visitId });
+        }
+      })
+      .then((registrations: VisitRegistrationRecord[]) =>
+        registrations.map((registration) =>
+          createVisitRegistrationObject(registration)
+        )
       );
   }
 
@@ -131,7 +136,7 @@ class PostgresVisitDataSource implements VisitDataSource {
       isRegistrationSubmitted,
       registrationQuestionaryId,
     }: UpdateVisitRegistrationArgs
-  ): Promise<UserVisit> {
+  ): Promise<VisitRegistration> {
     return database('visits_has_users')
       .update({
         training_expiry_date: trainingExpiryDate,
@@ -144,7 +149,7 @@ class PostgresVisitDataSource implements VisitDataSource {
       .then((result) => {
         console.log(visitId, userId);
 
-        return createUserVisitObject(result[0]);
+        return createVisitRegistrationObject(result[0]);
       });
   }
 

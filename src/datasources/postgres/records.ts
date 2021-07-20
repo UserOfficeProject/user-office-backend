@@ -27,8 +27,8 @@ import {
   Topic,
 } from '../../models/Template';
 import { BasicUserDetails, User } from '../../models/User';
-import { UserVisit } from '../../models/UserVisit';
 import { Visit, VisitStatus } from '../../models/Visit';
+import { VisitRegistration } from '../../models/VisitRegistration';
 
 // Interfaces corresponding exactly to database tables
 
@@ -196,7 +196,7 @@ export interface UserRecord {
   readonly orcid_refreshtoken: string;
 }
 
-export interface UserVisitRecord {
+export interface VisitRegistrationRecord {
   user_id: number;
   visit_id: number;
   registration_questionary_id: number | null;
@@ -677,13 +677,15 @@ export const createBasicUserObject = (user: UserRecord) => {
   );
 };
 
-export const createUserVisitObject = (userVisitRecord: UserVisitRecord) => {
-  return new UserVisit(
-    userVisitRecord.user_id,
-    userVisitRecord.visit_id,
-    userVisitRecord.registration_questionary_id,
-    userVisitRecord.is_registration_submitted,
-    userVisitRecord.training_expiry_date
+export const createVisitRegistrationObject = (
+  record: VisitRegistrationRecord
+) => {
+  return new VisitRegistration(
+    record.user_id,
+    record.visit_id,
+    record.registration_questionary_id,
+    record.is_registration_submitted,
+    record.training_expiry_date
   );
 };
 
