@@ -39,16 +39,16 @@ export class VisitDataSourceMock implements VisitDataSource {
     return this.visits.find((visit) => visit.id === visitId) ?? null;
   }
   async getVisits(filter?: VisitsFilter): Promise<Visit[]> {
-    return this.visits.reduce((accumulator, currentValue) => {
-      if (filter?.creator_id && currentValue.creatorId === filter.creator_id) {
-        accumulator.push(currentValue);
+    return this.visits.reduce((matchingVisits, currentVisit) => {
+      if (filter?.creator_id && currentVisit.creatorId === filter.creator_id) {
+        matchingVisits.push(currentVisit);
       }
 
-      if (filter?.proposalPk && currentValue.proposalPk === filter.proposalPk) {
-        accumulator.push(currentValue);
+      if (filter?.proposalPk && currentVisit.proposalPk === filter.proposalPk) {
+        matchingVisits.push(currentVisit);
       }
 
-      return accumulator;
+      return matchingVisits;
     }, new Array<Visit>());
   }
 
