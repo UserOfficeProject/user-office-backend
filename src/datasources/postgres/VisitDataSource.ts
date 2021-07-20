@@ -146,11 +146,7 @@ class PostgresVisitDataSource implements VisitDataSource {
       .where({ visit_id: visitId })
       .andWhere({ user_id: userId })
       .returning('*')
-      .then((result) => {
-        console.log(visitId, userId);
-
-        return createVisitRegistrationObject(result[0]);
-      });
+      .then((result) => createVisitRegistrationObject(result[0]));
   }
 
   deleteVisit(visitId: number): Promise<Visit> {
