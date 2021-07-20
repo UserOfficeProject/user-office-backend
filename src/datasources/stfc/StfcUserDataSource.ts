@@ -1,6 +1,6 @@
 import { Role } from '../../models/Role';
 import { Roles } from '../../models/Role';
-import { BasicUserDetails, User } from '../../models/User';
+import { BasicUserDetails, User, UserRole } from '../../models/User';
 import { AddUserRoleArgs } from '../../resolvers/mutations/AddUserRoleMutation';
 import { CreateUserByEmailInviteArgs } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
 import PostgresUserDataSource from '../postgres/UserDataSource';
@@ -113,6 +113,16 @@ export class StfcUserDataSource implements UserDataSource {
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
+
+    return stfcUser ? toEssBasicUserDetails(stfcUser) : null;
+  }
+
+  async getBasicUserDetailsByEmail(
+    email: string,
+    role?: UserRole
+  ): Promise<BasicUserDetails | null> {
+    const stfcUser = (await client.getBasicPersonDetailsFromEmail(token, email))
+      ?.return;
 
     return stfcUser ? toEssBasicUserDetails(stfcUser) : null;
   }
@@ -250,6 +260,44 @@ export class StfcUserDataSource implements UserDataSource {
   ): Promise<{ totalCount: number; users: BasicUserDetails[] }> {
     const dbUsers: BasicUserDetails[] = (
       await postgresUserDataSource.getUsers(
+        filter,
+        first,
+        offset,
+        userRole,
+        subtractUsers
+      )
+    ).users;
+
+    let users: BasicUserDetails[] = [];
+
+    if (dbUsers[0]) {
+      const userNumbers: string[] = dbUsers.map((record) => String(record.id));
+      const stfcBasicPeople: StfcBasicPersonDetails[] | null = (
+        await client.getBasicPeopleDetailsFromUserNumbers(token, userNumbers)
+      )?.return;
+
+      users = stfcBasicPeople
+        ? stfcBasicPeople.map((person) => toEssBasicUserDetails(person))
+        : [];
+    }
+
+    return {
+      totalCount: users.length,
+      users,
+    };
+  }
+
+  async getPreviousCollaborators(
+    userId: number,
+    filter?: string,
+    first?: number,
+    offset?: number,
+    userRole?: number,
+    subtractUsers?: [number]
+  ): Promise<{ totalCount: number; users: BasicUserDetails[] }> {
+    const dbUsers: BasicUserDetails[] = (
+      await postgresUserDataSource.getPreviousCollaborators(
+        userId,
         filter,
         first,
         offset,
