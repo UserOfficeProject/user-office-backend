@@ -5,7 +5,7 @@ BEGIN
 	BEGIN
 
 		/* visits */
-        DELETE FROM visits; /* Delete all existing visits, because visit must have associated event_id */
+		DELETE FROM visits; /* Delete all existing visits, because visit must have associated event_id */
 
 		ALTER TABLE visits ADD COLUMN scheduled_event_id INTEGER NOT NULL;
 		ALTER TABLE visits ADD COLUMN team_lead_user_id INTEGER NOT NULL REFERENCES users(user_id);
