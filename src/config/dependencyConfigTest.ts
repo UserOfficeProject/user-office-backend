@@ -63,3 +63,6 @@ mapValue(Tokens.EnableDefaultFeatures, () => {
   const dataSource = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
   dataSource.setFeatures([FeatureId.SCHEDULER, FeatureId.SHIPPING], true);
 });
+
+/* eslint-disable @typescript-eslint/no-empty-function */
+mapValue(Tokens.SetColourTheme, () => {});

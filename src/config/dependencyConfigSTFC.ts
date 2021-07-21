@@ -22,6 +22,7 @@ import { StfcUserDataSource } from '../datasources/stfc/StfcUserDataSource';
 import { SMTPMailService } from '../eventHandlers/MailService/SMTPMailService';
 import { createSkipPostingHandler } from '../eventHandlers/messageBroker';
 import { FeatureId } from '../models/Feature';
+import { SettingsId } from '../models/Settings';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
@@ -63,4 +64,24 @@ mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
 mapValue(Tokens.EnableDefaultFeatures, () => {
   const dataSource = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
   dataSource.setFeatures([FeatureId.EXTERNAL_AUTH], true);
+});
+
+mapValue(Tokens.SetColourTheme, () => {
+  const dataSource = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
+  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_DARK, '#303f9f');
+  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_MAIN, '#3f51b5');
+  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_LIGHT, '#7986cb');
+  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_CONTRAST, '#ffffff');
+  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_DARK, '#c51162');
+  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_MAIN, '#f50057');
+  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_LIGHT, '#ff4081');
+  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_CONTRAST, '#ffffff');
+  dataSource.updateSettings(SettingsId.PALETTE_ERROR_MAIN, '#f44336');
+  dataSource.updateSettings(SettingsId.PALETTE_SUCCESS_MAIN, '#4caf50');
+  dataSource.updateSettings(SettingsId.PALETTE_WARNING_MAIN, '#ff9800');
+  dataSource.updateSettings(SettingsId.PALETTE_INFO_MAIN, '#2196f3');
+  dataSource.updateSettings(
+    SettingsId.HEADER_LOGO_FILENAME,
+    'stfc-ukri-white.svg'
+  );
 });
