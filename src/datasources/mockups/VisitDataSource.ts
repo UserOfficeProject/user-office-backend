@@ -40,7 +40,7 @@ export class VisitDataSourceMock implements VisitDataSource {
   }
   async getVisits(filter?: VisitsFilter): Promise<Visit[]> {
     return this.visits.reduce((matchingVisits, currentVisit) => {
-      if (filter?.creator_id && currentVisit.creatorId === filter.creator_id) {
+      if (filter?.creatorId && currentVisit.creatorId === filter.creatorId) {
         matchingVisits.push(currentVisit);
       }
 

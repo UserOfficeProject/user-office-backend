@@ -6,7 +6,7 @@ import { Visit } from '../types/Visit';
 @InputType()
 export class VisitsFilter {
   @Field(() => Int, { nullable: true })
-  public creator_id?: number;
+  public creatorId?: number;
 
   @Field(() => Int, { nullable: true })
   public proposalPk?: number;

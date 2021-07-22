@@ -19,8 +19,8 @@ class PostgresVisitDataSource implements VisitDataSource {
     return database('visits')
       .select('*')
       .modify((query) => {
-        if (filter?.creator_id) {
-          query.where('creator_id', filter.creator_id);
+        if (filter?.creatorId) {
+          query.where('creator_id', filter.creatorId);
         }
         if (filter?.proposalPk) {
           query.where('proposal_pk', filter.proposalPk);

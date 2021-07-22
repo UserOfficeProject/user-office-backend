@@ -46,7 +46,7 @@ export default class VisitQueries {
   @Authorized()
   async getMyVisits(agent: UserWithRole | null, filter?: VisitsFilter) {
     // TODO return also visits you are part of the team
-    return this.dataSource.getVisits({ ...filter, creator_id: agent!.id });
+    return this.dataSource.getVisits({ ...filter, creatorId: agent!.id });
   }
 
   async getRegistrations(
