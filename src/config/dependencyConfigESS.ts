@@ -1,6 +1,4 @@
 import 'reflect-metadata';
-import { container } from 'tsyringe';
-
 import { PostgresAdminDataSourceWithAutoUpgrade } from '../datasources/postgres/AdminDataSource';
 import PostgresCallDataSource from '../datasources/postgres/CallDataSource';
 import PostgresEventLogsDataSource from '../datasources/postgres/EventLogsDataSource';
@@ -19,15 +17,14 @@ import PostgresUserDataSource from '../datasources/postgres/UserDataSource';
 import PostgresVisitDataSource from '../datasources/postgres/VisitDataSource';
 import { SparkPostMailService } from '../eventHandlers/MailService/SparkPostMailService';
 import { createPostToRabbitMQHandler } from '../eventHandlers/messageBroker';
-import { FeatureId } from '../models/Feature';
-import { SettingsId } from '../models/Settings';
 import { EAMAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
-import { AdminDataSource } from './../datasources/AdminDataSource';
 import { VisitAuthorization } from './../utils/VisitAuthorization';
+import enableDefaultEssFeatures from './ess/enableDefaultEssFeatures';
+import setEssColourTheme from './ess/setEssColourTheme';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
 
@@ -60,24 +57,6 @@ mapClass(Tokens.MailService, SparkPostMailService);
 
 mapValue(Tokens.PostToMessageQueue, createPostToRabbitMQHandler());
 
-mapValue(Tokens.EnableDefaultFeatures, () => {
-  const dataSource = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
-  dataSource.setFeatures([FeatureId.SCHEDULER, FeatureId.SHIPPING], true);
-});
+mapValue(Tokens.EnableDefaultFeatures, enableDefaultEssFeatures);
 
-mapValue(Tokens.SetColourTheme, () => {
-  const dataSource = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
-  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_DARK, '#b33739');
-  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_MAIN, '#FF4E50');
-  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_LIGHT, '#FC913A');
-  dataSource.updateSettings(SettingsId.PALETTE_PRIMARY_CONTRAST, '#ffffff');
-  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_DARK, '#F9D423');
-  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_MAIN, '#F9D423');
-  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_LIGHT, '#E1F5C4');
-  dataSource.updateSettings(SettingsId.PALETTE_SECONDARY_CONTRAST, '#ffffff');
-  dataSource.updateSettings(SettingsId.PALETTE_ERROR_MAIN, '#f44336');
-  dataSource.updateSettings(SettingsId.PALETTE_SUCCESS_MAIN, '#4caf50');
-  dataSource.updateSettings(SettingsId.PALETTE_WARNING_MAIN, '#ff9800');
-  dataSource.updateSettings(SettingsId.PALETTE_INFO_MAIN, '#2196f3');
-  dataSource.updateSettings(SettingsId.HEADER_LOGO_FILENAME, 'ess-white.svg');
-});
+mapValue(Tokens.SetColourTheme, setEssColourTheme);
