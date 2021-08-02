@@ -65,14 +65,13 @@ export default class VisitMutations {
     const visitAlreadyExists =
       (
         await this.dataSource.getVisits({
-          proposalPk: args.proposalPk,
           scheduledEventId: args.scheduledEventId,
         })
       ).length > 0;
 
     if (visitAlreadyExists) {
       return rejection(
-        'Can not create visit because visit for the proposal already exists',
+        'Can not create visit because visit for the experiment that already exists',
         { args }
       );
     }
