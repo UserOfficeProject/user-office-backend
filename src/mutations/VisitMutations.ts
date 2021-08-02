@@ -63,8 +63,12 @@ export default class VisitMutations {
     }
 
     const visitAlreadyExists =
-      (await this.dataSource.getVisits({ proposalPk: args.proposalPk }))
-        .length > 0;
+      (
+        await this.dataSource.getVisits({
+          proposalPk: args.proposalPk,
+          scheduledEventId: args.scheduledEventId,
+        })
+      ).length > 0;
 
     if (visitAlreadyExists) {
       return rejection(
