@@ -48,7 +48,7 @@ BEGIN
             'Risk assessment basic information',
             '{"required":false,"small_label":"","tooltip":""}',
             'risk_assessment_basis',
-            1
+            5
         );
 	END IF;
 END;
