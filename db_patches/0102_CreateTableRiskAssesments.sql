@@ -7,7 +7,7 @@ BEGIN
         
       CREATE TABLE risk_assessments (
         risk_assessment_id serial PRIMARY KEY
-        , risk_assessment_pk int UNIQUE REFERENCES risk_assessments(risk_assessment_pk) ON DELETE CASCADE
+        , proposal_pk int UNIQUE REFERENCES proposals(proposal_pk) ON DELETE CASCADE
         , creator_user_id int REFERENCES users(user_id)
         , questionary_id int UNIQUE REFERENCES questionaries(questionary_id) ON DELETE CASCADE
         , status VARCHAR(20) NOT NULL CHECK (status IN ('DRAFT', 'SUBMITTED', 'ACCEPTED')) DEFAULT 'DRAFT' 
