@@ -61,6 +61,10 @@ export class RiskAssessmentAuthorization {
       (await this.userAuthorization.isMemberOfProposal(
         agent,
         riskAssessment.proposalPk
+      )) ||
+      (await this.userAuthorization.isVisitorOfProposal(
+        agent,
+        riskAssessment.proposalPk
       ))
     );
   }

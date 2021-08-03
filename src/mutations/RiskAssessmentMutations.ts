@@ -11,6 +11,7 @@ import { UserWithRole } from '../models/User';
 import { CreateRiskAssessmentArgs } from '../resolvers/mutations/CreateRiskAssesssment';
 import { UpdateRiskAssessmentArgs } from '../resolvers/mutations/UpdateRiskAssessmentMutation';
 import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
+import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { RiskAssessment } from './../resolvers/types/RiskAssessment';
 import { RiskAssessmentAuthorization } from './../utils/RiskAssessmentAuthorization';
 import { UserAuthorization } from './../utils/UserAuthorization';
@@ -24,6 +25,8 @@ export default class RiskAssessmentMutations {
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource,
+    @inject(Tokens.TemplateDataSource)
+    private templateDataSource: TemplateDataSource,
     @inject(Tokens.UserAuthorization)
     private userAuthorization: UserAuthorization,
     @inject(Tokens.RiskAssessmentAuthorization)
@@ -77,9 +80,19 @@ export default class RiskAssessmentMutations {
         user!.id
       );
 
+      const activeTemplate = await this.templateDataSource.getActiveTemplateId(
+        TemplateCategoryId.RISK_ASSESSMENT
+      );
+      if (!activeTemplate) {
+        return rejection(
+          'Could not create visit registration questionary, because no active template for visit is set',
+          { args }
+        );
+      }
+
       const questionary = await this.questionaryDataSource.create(
         user!.id,
-        TemplateCategoryId.RISK_ASSESSMENT
+        activeTemplate
       );
 
       return this.dataSource.updateRiskAssessment({

@@ -10,6 +10,6 @@ export class RiskAssessment {
 }
 
 export enum RiskAssessmentStatus {
-  'DRAFT',
-  'SUBMITTED',
+  'DRAFT' = 'DRAFT',
+  'SUBMITTED' = 'SUBMITTED',
 }

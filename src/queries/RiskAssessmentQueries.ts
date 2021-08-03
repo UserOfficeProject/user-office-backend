@@ -10,7 +10,8 @@ import { RiskAssessmentAuthorization } from '../utils/RiskAssessmentAuthorizatio
 import { UserAuthorization } from './../utils/UserAuthorization';
 
 export interface RiskAssessmentsFilter {
-  proposalPk: number;
+  proposalPk?: number;
+  questionaryIds?: number[];
 }
 
 @injectable()
