@@ -32,6 +32,8 @@ BEGIN
         ALTER TABLE proposals DROP column risk_assessment_questionary_id;
 
         INSERT INTO template_categories(name) VALUES('Risk assessment');
+
+        INSERT INTO question_datatypes(question_datatype_id) VALUES('RISK_ASSESSMENT_BASIS');
 	END IF;
 END;
 $$

@@ -18,7 +18,7 @@ export class UpdateRiskAssessmentArgs {
   @Field(() => Int!)
   riskAssessmentId: number;
 
-  @Field(() => Boolean, { nullable: true })
+  @Field(() => RiskAssessmentStatus, { nullable: true })
   status?: RiskAssessmentStatus;
 
   questionaryId?: number;

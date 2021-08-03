@@ -30,7 +30,7 @@ export class RiskAssessment implements Partial<RiskAssessmentOrig> {
   @Field(() => Int)
   public questionaryId: number;
 
-  @Field(() => Int)
+  @Field(() => RiskAssessmentStatus)
   public status: RiskAssessmentStatus;
 }
 

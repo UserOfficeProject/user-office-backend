@@ -318,5 +318,5 @@ export class VisitRegistrationResponseWrap extends ResponseWrapBase {
 export class RiskAssessmentResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => RiskAssessment, { nullable: true })
-  public risk: RiskAssessment;
+  public riskAssessment: RiskAssessment;
 }
