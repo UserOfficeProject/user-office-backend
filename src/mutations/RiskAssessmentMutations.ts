@@ -66,7 +66,7 @@ export default class RiskAssessmentMutations {
 
     if (isProposalOwner === false) {
       return rejection(
-        'Can not create riskAssessment for proposal that does not belong to you',
+        'Can not create riskAssessment, because of insufficient permissions for proposal',
         { args, agent: user }
       );
     }
