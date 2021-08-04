@@ -403,7 +403,7 @@ export default class ProposalMutations {
     return result || rejection('Can not change proposal status', { result });
   }
 
-  @Authorized([Roles.USER_OFFICER])
+  @Authorized()
   async cloneProposals(
     agent: UserWithRole | null,
     { callId, proposalsToClonePk }: CloneProposalsInput
@@ -418,6 +418,7 @@ export default class ProposalMutations {
     );
   }
 
+  @Authorized()
   @EventBus(Event.PROPOSAL_CLONED)
   private async clone(
     agent: UserWithRole | null,
