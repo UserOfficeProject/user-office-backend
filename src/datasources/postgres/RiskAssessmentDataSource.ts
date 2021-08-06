@@ -9,7 +9,7 @@ import database from './database';
 import { createRiskAssessmentObject, RiskAssessmentRecord } from './records';
 
 class PostgresRiskAssessmentDataSource implements RiskAssessmentDataSource {
-  createRiskAssessment(
+  async createRiskAssessment(
     { proposalPk }: CreateRiskAssessmentArgs,
     creatorId: number
   ): Promise<RiskAssessment> {
@@ -23,7 +23,9 @@ class PostgresRiskAssessmentDataSource implements RiskAssessmentDataSource {
       .then((riskAssessment) => createRiskAssessmentObject(riskAssessment[0]));
   }
 
-  getRiskAssessment(riskAssessmentId: number): Promise<RiskAssessment | null> {
+  async getRiskAssessment(
+    riskAssessmentId: number
+  ): Promise<RiskAssessment | null> {
     return database('risk_assessments')
       .select('*')
       .where({ risk_assessment_id: riskAssessmentId })
@@ -65,7 +67,7 @@ class PostgresRiskAssessmentDataSource implements RiskAssessmentDataSource {
       });
   }
 
-  deleteRiskAssessment(
+  async deleteRiskAssessment(
     riskAssessmentId: number
   ): Promise<RiskAssessment | Rejection> {
     return database('risk_assessments')
