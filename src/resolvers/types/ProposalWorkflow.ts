@@ -27,12 +27,12 @@ export class ProposalWorkflow implements Partial<ProposalWorkflowOrigin> {
 
 @Resolver(() => ProposalWorkflow)
 export class ProposalWorkflowResolver {
-  @FieldResolver(() => [ProposalWorkflowConnectionGroup])
+  @FieldResolver(() => [ProposalWorkflowConnectionGroup], { nullable: true })
   async proposalWorkflowConnectionGroups(
     @Root() proposalWorkflow: ProposalWorkflow,
     @Ctx() context: ResolverContext
   ): Promise<ProposalWorkflowConnectionGroup[]> {
-    const connections = await context.queries.proposalSettings.proposalWorkflowConnectionGroups(
+    const connections = await context.queries.proposalSettings.getProposalWorkflowConnectionGroups(
       context.user,
       proposalWorkflow.id
     );

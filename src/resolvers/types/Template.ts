@@ -34,9 +34,9 @@ export class Template implements Partial<TemplateOrigin> {
   public isArchived: boolean;
 }
 
-@Resolver((of) => Template)
+@Resolver(() => Template)
 export class TemplateResolver {
-  @FieldResolver(() => [TemplateStep])
+  @FieldResolver(() => [TemplateStep], { nullable: true })
   async steps(
     @Root() template: Template,
     @Ctx() context: ResolverContext
@@ -47,7 +47,7 @@ export class TemplateResolver {
     );
   }
 
-  @FieldResolver(() => [Question])
+  @FieldResolver(() => [Question], { nullable: true })
   async complementaryQuestions(
     @Root() template: Template,
     @Ctx() context: ResolverContext
@@ -58,7 +58,7 @@ export class TemplateResolver {
     );
   }
 
-  @FieldResolver(() => Int)
+  @FieldResolver(() => Int, { nullable: true })
   async questionaryCount(
     @Root() template: Template,
     @Ctx() context: ResolverContext

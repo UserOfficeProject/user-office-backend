@@ -29,6 +29,7 @@ export default class ProposalSettingsQueries {
     return proposalStatuses;
   }
 
+  @Authorized()
   async getProposalWorkflow(agent: UserWithRole | null, id: number) {
     const proposalWorkflow = await this.dataSource.getProposalWorkflow(id);
 
@@ -84,7 +85,7 @@ export default class ProposalSettingsQueries {
   }
 
   @Authorized()
-  async proposalWorkflowConnectionGroups(
+  async getProposalWorkflowConnectionGroups(
     agent: UserWithRole | null,
     proposalWorkflowId: number
   ) {

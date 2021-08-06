@@ -13,7 +13,7 @@ import { Template } from './Template';
 @ObjectType()
 export class ProposalTemplate extends Template {}
 
-@Resolver((of) => ProposalTemplate)
+@Resolver(() => ProposalTemplate)
 export class TemplateResolver {
   @FieldResolver(() => Int)
   async callCount(

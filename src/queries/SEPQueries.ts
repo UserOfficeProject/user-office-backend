@@ -14,6 +14,10 @@ export default class SEPQueries {
     @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
+  hasGetAccessByToken(agent: UserWithRole, accessModule: string) {
+    return !!agent.accessPermissions?.[accessModule];
+  }
+
   @Authorized([Roles.USER_OFFICER, Roles.SEP_CHAIR, Roles.SEP_SECRETARY])
   async get(agent: UserWithRole | null, id: number) {
     const sep = await this.dataSource.getSEP(id);
@@ -24,6 +28,7 @@ export default class SEPQueries {
 
     if (
       this.userAuth.isUserOfficer(agent) ||
+      this.hasGetAccessByToken(agent as UserWithRole, 'SEPQueries.get') ||
       (await this.userAuth.isMemberOfSEP(agent, id))
     ) {
       return sep;
@@ -60,6 +65,10 @@ export default class SEPQueries {
   ) {
     if (
       this.userAuth.isUserOfficer(agent) ||
+      this.hasGetAccessByToken(
+        agent as UserWithRole,
+        'SEPQueries.getSEPProposals'
+      ) ||
       (await this.userAuth.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposals(sepId, callId);
@@ -73,8 +82,19 @@ export default class SEPQueries {
     agent: UserWithRole | null,
     { sepId, proposalPk }: { sepId: number; proposalPk: number }
   ) {
+    console.log(
+      agent,
+      this.hasGetAccessByToken(
+        agent as UserWithRole,
+        'SEPQueries.getSEPProposal'
+      )
+    );
     if (
       this.userAuth.isUserOfficer(agent) ||
+      this.hasGetAccessByToken(
+        agent as UserWithRole,
+        'SEPQueries.getSEPProposal'
+      ) ||
       (await this.userAuth.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposal(sepId, proposalPk);
@@ -99,6 +119,10 @@ export default class SEPQueries {
   ) {
     if (
       this.userAuth.isUserOfficer(agent) ||
+      this.hasGetAccessByToken(
+        agent as UserWithRole,
+        'SEPQueries.getSEPProposalsByInstrument'
+      ) ||
       (await this.userAuth.isMemberOfSEP(agent, sepId))
     ) {
       return this.dataSource.getSEPProposalsByInstrument(
@@ -153,6 +177,10 @@ export default class SEPQueries {
 
     if (
       this.userAuth.isUserOfficer(agent) ||
+      this.hasGetAccessByToken(
+        agent as UserWithRole,
+        'SEPQueries.getProposalSepMeetingDecision'
+      ) ||
       (await this.userAuth.isMemberOfSEP(agent, proposalPk))
     ) {
       return sepMeetingDecision;

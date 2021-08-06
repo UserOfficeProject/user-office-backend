@@ -21,7 +21,7 @@ export class ScheduledEvent {
   id: number;
 }
 
-@Resolver((of) => ScheduledEvent)
+@Resolver(() => ScheduledEvent)
 export class ScheduledEventResolver {
   @FieldResolver(() => Visit, { nullable: true })
   async visit(

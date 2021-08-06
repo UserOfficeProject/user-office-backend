@@ -13,18 +13,6 @@ import { ResolverContext } from '../../context';
 export class Fields {}
 
 @ObjectType()
-class Institutions {
-  @Field(() => Int)
-  id: number;
-
-  @Field()
-  value: string;
-
-  @Field()
-  verified: boolean;
-}
-
-@ObjectType()
 class Entry {
   @Field(() => Int)
   id: number;
@@ -33,7 +21,7 @@ class Entry {
   value: string;
 }
 
-@Resolver((of) => Fields)
+@Resolver(() => Fields)
 export class FieldsResolver {
   @FieldResolver(() => [Entry])
   async nationalities(@Ctx() context: ResolverContext): Promise<Entry[]> {

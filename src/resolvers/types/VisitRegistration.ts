@@ -32,9 +32,9 @@ export class VisitRegistration implements Partial<VisitRegistrationOrig> {
   public trainingExpiryDate: Date | null;
 }
 
-@Resolver((of) => VisitRegistration)
+@Resolver(() => VisitRegistration)
 export class UserVisitResolver {
-  @FieldResolver(() => BasicUserDetails)
+  @FieldResolver(() => BasicUserDetails, { nullable: true })
   async user(
     @Root() userVisit: VisitRegistration,
     @Ctx() context: ResolverContext
@@ -42,7 +42,7 @@ export class UserVisitResolver {
     return context.queries.user.getBasic(context.user, userVisit.userId);
   }
 
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() userVisit: VisitRegistration,
     @Ctx() context: ResolverContext

@@ -46,7 +46,7 @@ export class Sample implements Partial<SampleOrigin> {
 
 @Resolver(() => Sample)
 export class SampleResolver {
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() sample: Sample,
     @Ctx() context: ResolverContext
@@ -58,7 +58,7 @@ export class SampleResolver {
     );
   }
 
-  @FieldResolver(() => Proposal)
+  @FieldResolver(() => Proposal, { nullable: true })
   async proposal(
     @Root() sample: Sample,
     @Ctx() context: ResolverContext

@@ -102,6 +102,7 @@ export default class QuestionaryQueries {
     return this.dataSource.getBlankQuestionarySteps(templateId);
   }
 
+  @Authorized()
   async getQuestionaryStepsOrDefault(
     agent: UserWithRole | null,
     questionaryId: number,

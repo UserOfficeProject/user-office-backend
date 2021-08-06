@@ -24,9 +24,9 @@ export class Questionary implements Partial<QuestionaryOrigin> {
   public created: Date;
 }
 
-@Resolver((of) => Questionary)
+@Resolver(() => Questionary)
 export class QuestionaryResolver {
-  @FieldResolver(() => [QuestionaryStep])
+  @FieldResolver(() => [QuestionaryStep], { nullable: true })
   async steps(
     @Root() questionary: Questionary,
     @Ctx() context: ResolverContext
@@ -38,7 +38,7 @@ export class QuestionaryResolver {
     );
   }
 
-  @FieldResolver(() => Boolean)
+  @FieldResolver(() => Boolean, { nullable: true })
   async isCompleted(
     @Root() questionary: Questionary,
     @Ctx() context: ResolverContext

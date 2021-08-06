@@ -21,7 +21,7 @@ export class QuestionsFilter {
 
 @Resolver()
 export class QuestionsQuery {
-  @Query(() => [QuestionWithUsage])
+  @Query(() => [QuestionWithUsage], { nullable: true })
   questions(
     @Arg('filter', () => QuestionsFilter, { nullable: true })
     filter: QuestionsFilter | undefined,

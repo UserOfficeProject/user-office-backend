@@ -62,7 +62,7 @@ describe('Test Proposal Workflows Queries', () => {
 
   test('A userofficer can get Proposal Workflow connections', () => {
     return expect(
-      ProposalSettingsQueriesInstance.proposalWorkflowConnectionGroups(
+      ProposalSettingsQueriesInstance.getProposalWorkflowConnectionGroups(
         dummyUserOfficerWithRole,
         1
       )

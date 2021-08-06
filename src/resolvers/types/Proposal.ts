@@ -182,10 +182,10 @@ export class ProposalResolver {
     @Root() proposal: Proposal,
     @Ctx() context: ResolverContext
   ): Promise<Call | null> {
-    return await context.queries.call.dataSource.getCall(proposal.callId);
+    return await context.queries.call.get(context.user, proposal.callId);
   }
 
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() proposal: Proposal,
     @Ctx() context: ResolverContext

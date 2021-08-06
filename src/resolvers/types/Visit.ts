@@ -36,7 +36,7 @@ export class Visit implements Partial<VisitOrigin> {
 
 @Resolver(() => Visit)
 export class VisitResolver {
-  @FieldResolver(() => Proposal)
+  @FieldResolver(() => Proposal, { nullable: true })
   async proposal(
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
@@ -44,7 +44,7 @@ export class VisitResolver {
     return context.queries.proposal.get(context.user, visit.proposalPk);
   }
 
-  @FieldResolver(() => [VisitRegistration])
+  @FieldResolver(() => [VisitRegistration], { nullable: true })
   async registrations(
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
@@ -54,7 +54,7 @@ export class VisitResolver {
     });
   }
 
-  @FieldResolver(() => BasicUserDetails)
+  @FieldResolver(() => BasicUserDetails, { nullable: true })
   async teamLead(
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
@@ -62,7 +62,7 @@ export class VisitResolver {
     return context.queries.user.getBasic(context.user, visit.teamLeadUserId);
   }
 
-  @FieldResolver(() => [Shipment])
+  @FieldResolver(() => [Shipment], { nullable: true })
   async shipments(
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
