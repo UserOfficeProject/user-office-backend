@@ -11,7 +11,7 @@ import { rejection } from '../models/Rejection';
 import { Rejection } from '../models/Rejection';
 import { TemplateCategoryId } from '../models/Template';
 import { UserWithRole } from '../models/User';
-import { Visit, VisitStatus } from '../models/Visit';
+import { Visit } from '../models/Visit';
 import { VisitRegistration } from '../models/VisitRegistration';
 import { CreateVisitArgs } from '../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
@@ -134,15 +134,6 @@ export default class VisitMutations {
       return rejection(
         'Can not update visit because of insufficient permissions',
         { args, agent: user }
-      );
-    }
-
-    if (
-      args.status === VisitStatus.ACCEPTED &&
-      !this.userAuthorization.isUserOfficer(user)
-    ) {
-      return rejection(
-        'Can not update proposal status because of insufficient permissions'
       );
     }
 
