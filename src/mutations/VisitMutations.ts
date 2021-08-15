@@ -11,7 +11,7 @@ import { rejection } from '../models/Rejection';
 import { Rejection } from '../models/Rejection';
 import { TemplateCategoryId } from '../models/Template';
 import { UserWithRole } from '../models/User';
-import { Visit } from '../models/Visit';
+import { Visit, VisitStatus } from '../models/Visit';
 import { VisitRegistration } from '../models/VisitRegistration';
 import { CreateVisitArgs } from '../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
@@ -129,6 +129,15 @@ export default class VisitMutations {
     }
 
     const hasRights = await this.visitAuthorization.hasWriteRights(user, visit);
+
+    if (
+      this.userAuthorization.isUser(user) &&
+      args.status === VisitStatus.ACCEPTED
+    ) {
+      return rejection(
+        'Can not update visit status because of insufficient permissions'
+      );
+    }
 
     if (hasRights === false) {
       return rejection(
