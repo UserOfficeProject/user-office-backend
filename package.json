@@ -126,6 +126,6 @@
     "sinon": "^9.2.4",
     "ts-jest": "^26.5.6",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^3.9.9"
+    "typescript": "^3.9.10"
   }
 }
