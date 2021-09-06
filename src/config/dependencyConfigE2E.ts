@@ -26,10 +26,11 @@ import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
 import { VisitAuthorization } from '../utils/VisitAuthorization';
-import enableDefaultEssFeatures from './ess/enableDefaultEssFeatures';
-import setEssColourTheme from './ess/setEssColourTheme';
+import { configureESSDevelopmentEnvironment } from './ess/configureESSEnvironment';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
+
+const isProduction = process.env.NODE_ENV !== 'production';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
 mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
@@ -62,10 +63,4 @@ mapClass(Tokens.MailService, SkipSendMailService);
 
 mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
 
-mapValue(Tokens.EnableDefaultFeatures, enableDefaultEssFeatures);
-
-mapValue(Tokens.SetColourTheme, setEssColourTheme);
-
-mapValue(Tokens.ConfigureProductionEnvironment, () => {
-  return;
-});
+mapValue(Tokens.ConfigureEnvironment, configureESSDevelopmentEnvironment);
