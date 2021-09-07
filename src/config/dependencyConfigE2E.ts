@@ -30,8 +30,6 @@ import { configureESSDevelopmentEnvironment } from './ess/configureESSEnvironmen
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
 
-const isProduction = process.env.NODE_ENV !== 'production';
-
 mapClass(Tokens.UserAuthorization, UserAuthorization);
 mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
 mapClass(Tokens.RiskAssessmentAuthorization, RiskAssessmentAuthorization);
