@@ -151,7 +151,7 @@ export default class SampleMutations {
   async cloneSample(
     agent: UserWithRole | null,
     sampleId: number,
-    title: string | undefined
+    title?: string
   ) {
     if (!agent) {
       return rejection(
