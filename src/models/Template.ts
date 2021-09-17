@@ -89,8 +89,9 @@ export enum TemplateCategoryId {
   PROPOSAL_QUESTIONARY = 1,
   SAMPLE_DECLARATION,
   SHIPMENT_DECLARATION,
-  VISIT,
-  RISK_ASSESSMENT,
+  VISIT_REGISTRATION,
+  PROPOSAL_ESI,
+  SAMPLE_ESI,
 }
 
 export class FieldCondition {

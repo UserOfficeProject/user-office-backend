@@ -80,7 +80,7 @@ export default class TemplateMutations {
           'shipment_basis'
         );
         break;
-      case TemplateCategoryId.VISIT:
+      case TemplateCategoryId.VISIT_REGISTRATION:
         await this.createInitialTopic(
           newTemplate.templateId,
           0,
@@ -88,7 +88,7 @@ export default class TemplateMutations {
           'visit_basis'
         );
         break;
-      case TemplateCategoryId.RISK_ASSESSMENT:
+      case TemplateCategoryId.PROPOSAL_ESI:
         await this.createInitialTopic(
           newTemplate.templateId,
           0,

@@ -83,7 +83,7 @@ export default class RiskAssessmentMutations {
       );
 
       const activeTemplate = await this.templateDataSource.getActiveTemplateId(
-        TemplateCategoryId.RISK_ASSESSMENT
+        TemplateCategoryId.PROPOSAL_ESI
       );
       if (!activeTemplate) {
         return rejection(

@@ -349,11 +349,11 @@ export class QuestionaryAuthorization {
       container.resolve(ShipmentDeclarationQuestionaryAuthorizer)
     );
     this.authorizers.set(
-      TemplateCategoryId.VISIT,
+      TemplateCategoryId.VISIT_REGISTRATION,
       container.resolve(VisitQuestionaryAuthorizer)
     );
     this.authorizers.set(
-      TemplateCategoryId.RISK_ASSESSMENT,
+      TemplateCategoryId.PROPOSAL_ESI,
       container.resolve(RiskAssessmentQuestionaryAuthorizer)
     );
   }

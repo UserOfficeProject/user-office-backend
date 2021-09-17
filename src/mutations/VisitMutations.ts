@@ -185,7 +185,7 @@ export default class VisitMutations {
     }
 
     const activeTemplate = await this.templateDataSource.getActiveTemplateId(
-      TemplateCategoryId.VISIT
+      TemplateCategoryId.VISIT_REGISTRATION
     );
     if (!activeTemplate) {
       return rejection(

@@ -161,6 +161,10 @@ class PostgresVisitDataSource implements VisitDataSource {
       .delete()
       .returning('*')
       .then((result) => {
+        if (result.length !== 1) {
+          throw new Error('Visit not found');
+        }
+
         return createVisitObject(result[0]);
       });
   }
