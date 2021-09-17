@@ -1829,6 +1829,8 @@
 							"pm.test(\"Should create sample\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.data.createSample.sample.id).to.be.above(0)",
+							"",
+							"    pm.environment.set(\"NEW_SAMPLE_ID\", jsonData.data.createSample.sample.id);",
 							"});",
 							"",
 							""
@@ -1898,6 +1900,97 @@
 					"graphql": {
 						"query": "mutation($sampleTemplateId: Int!, $proposalPk: Int!, $questionId: String!) {\n\tcreateSample(title: \"My sample\", templateId: $sampleTemplateId, proposalPk: $proposalPk, questionId: $questionId) {\n\t\tsample {\n\t\t\tid\n\t\t\ttitle\n\t\t}\n\t\trejection { reason }\n\t}\n}",
 						"variables": "{\n\t\"sampleTemplateId\": {{NEW_SAMPLE_TEMPLATE_ID}},\n\t\"proposalPk\": {{NEW_PROPOSAL_PK}},\n\t\"questionId\": \"{{NEW_FIELD_ID}}\"\n}"
+					},
+					"options": {
+						"graphql": {}
+					}
+				},
+				"url": "http://localhost:4000/graphql"
+			},
+			"response": []
+		},
+		{
+			"name": "updateSample [Mutation]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "619f709d-2583-44f4-8a63-514d2658a9fd",
+						"exec": [
+							"pm.test(\"Should update sample\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.updateSample.sample.id).to.eql(pm.environment.get(\"NEW_SAMPLE_ID\"))",
+							"    pm.expect(jsonData.data.updateSample.sample.title).to.eql(\"Updated title\")",
+							"    pm.expect(jsonData.data.updateSample.sample.safetyStatus).to.eql(\"ELEVATED_RISK\")",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Authorization}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Sec-Fetch-Mode",
+						"value": "cors"
+					},
+					{
+						"key": "Sec-Fetch-Site",
+						"value": "same-origin"
+					},
+					{
+						"key": "Origin",
+						"value": "http://localhost:3000"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip, deflate, br"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "en-GB,en-US;q=0.9,en;q=0.8"
+					},
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VyX3RpdGxlIjoiTXIuIiwiZmlyc3RuYW1lIjoiQ2FybCIsIm1pZGRsZW5hbWUiOiJDaHJpc3RpYW4iLCJsYXN0bmFtZSI6IkNhcmxzc29uIiwidXNlcm5hbWUiOiJ0ZXN0dXNlciIsInByZWZlcnJlZG5hbWUiOm51bGwsIm9yY2lkIjoiNTgxNDU5NjA0IiwiZ2VuZGVyIjoibWFsZSIsIm5hdGlvbmFsaXR5IjoiTm9yd2VnaWFuIiwiYmlydGhkYXRlIjoiMjAwMC0wNC0wMVQyMjowMDowMC4wMDBaIiwib3JnYW5pc2F0aW9uIjoiUm9iZXJ0cywgUmVpbGx5IGFuZCBHdXRrb3dza2kiLCJkZXBhcnRtZW50IjoiSVQgZGVwYXJtZW50Iiwib3JnYW5pc2F0aW9uX2FkZHJlc3MiOiJFc3RvbmlhLCBOZXcgR2FicmllbGxhLCA0MDU2IENyb25pbiBNb3RvcndheSIsInBvc2l0aW9uIjoiU3RyYXRlZ2lzdCIsImVtYWlsIjoiSmF2b240QGhvdG1haWwuY29tIiwidGVsZXBob25lIjoiKDI4OCkgNDMxLTE0NDMiLCJ0ZWxlcGhvbmVfYWx0IjoiKDM3MCkgMzg2LTg5NzYiLCJjcmVhdGVkIjoiMjAxOS0xMC0wM1QwODoyNDo1Ni41MTdaIiwidXBkYXRlZCI6IjIwMTktMTAtMDNUMDg6MjQ6NTYuNTE3WiJ9LCJyb2xlcyI6W3siaWQiOjEsInNob3J0Q29kZSI6InVzZXIiLCJ0aXRsZSI6IlVzZXIifV0sImlhdCI6MTU3MDA5ODAyNCwiZXhwIjoxNTcwNzAyODI0fQ.tQKzxyg8_i_Z4b2ny6-naoT3JqaFnJN_Z-MvU1ta31s"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+					},
+					{
+						"key": "Referer",
+						"value": "http://localhost:3000/ProposalSubmission"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation updateSample(\n  $sampleId: Int!\n  $title: String\n  $safetyStatus: SampleStatus\n) {\n  updateSample(\n    sampleId: $sampleId\n    title: $title\n    safetyStatus: $safetyStatus\n  ) {\n    sample {\n      id\n      title\n      safetyStatus\n    }\n    rejection {\n      reason\n    }\n  }\n}\n",
+						"variables": "{\n\t\"sampleId\": {{NEW_SAMPLE_ID}},\n\t\"title\": \"Updated title\",\n\t\"safetyStatus\": \"ELEVATED_RISK\"\n}\n"
 					},
 					"options": {
 						"graphql": {}
