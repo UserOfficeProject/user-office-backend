@@ -11,7 +11,6 @@ import { PageName } from '../models/Page';
 import { ProposalEndStatus, ProposalPublicStatus } from '../models/Proposal';
 import { QuestionFilterCompareOperator } from '../models/Questionary';
 import { ReviewerFilter, ReviewStatus } from '../models/Review';
-import { RiskAssessment, RiskAssessmentStatus } from '../models/RiskAssessment';
 import { SampleStatus } from '../models/Sample';
 import { SettingsId } from '../models/Settings';
 import { ShipmentStatus } from '../models/Shipment';
@@ -49,11 +48,5 @@ export const registerEnums = () => {
   });
   registerEnumType(AllocationTimeUnits, {
     name: 'AllocationTimeUnits',
-  });
-  registerEnumType(RiskAssessment, {
-    name: 'RiskAssessment',
-  });
-  registerEnumType(RiskAssessmentStatus, {
-    name: 'RiskAssessmentStatus',
   });
 };

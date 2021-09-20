@@ -155,6 +155,15 @@ export default class PostgresSampleDataSource implements SampleDataSource {
         if (filter?.questionId) {
           query.where('question_id', filter.questionId);
         }
+        if (filter?.visitId) {
+          query
+            .rightJoin(
+              'visits_has_samples',
+              'samples.sample_id',
+              'visits_has_samples.sample_id'
+            )
+            .where('visits_has_samples.visit_id', filter.visitId);
+        }
       })
       .select('*')
       .orderBy('created_at', 'asc')

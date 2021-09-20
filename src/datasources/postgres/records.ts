@@ -10,7 +10,6 @@ import { Proposal, ProposalEndStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { AnswerBasic, Questionary } from '../../models/Questionary';
 import { createConfig } from '../../models/questionTypes/QuestionRegistry';
-import { RiskAssessment } from '../../models/RiskAssessment';
 import { Role } from '../../models/Role';
 import { Sample } from '../../models/Sample';
 import { SEP, SEPProposal, SEPAssignment, SEPReviewer } from '../../models/SEP';
@@ -30,7 +29,6 @@ import {
 import { BasicUserDetails, User } from '../../models/User';
 import { Visit, VisitStatus } from '../../models/Visit';
 import { VisitRegistration } from '../../models/VisitRegistration';
-import { RiskAssessmentStatus } from './../../models/RiskAssessment';
 
 // Interfaces corresponding exactly to database tables
 
@@ -509,16 +507,6 @@ export interface VisitRecord {
   readonly created_at: Date;
 }
 
-export interface RiskAssessmentRecord {
-  readonly risk_assessment_id: number;
-  readonly proposal_pk: number;
-  readonly scheduled_event_id: number;
-  readonly creator_user_id: number;
-  readonly questionary_id: number;
-  readonly status: string;
-  readonly created_at: Date;
-}
-
 export const createTopicObject = (record: TopicRecord) => {
   return new Topic(
     record.topic_id,
@@ -865,19 +853,5 @@ export const createVisitObject = (visit: VisitRecord) => {
     visit.team_lead_user_id,
     visit.scheduled_event_id,
     visit.created_at
-  );
-};
-
-export const createRiskAssessmentObject = (
-  riskAssessment: RiskAssessmentRecord
-) => {
-  return new RiskAssessment(
-    riskAssessment.risk_assessment_id,
-    riskAssessment.proposal_pk,
-    riskAssessment.scheduled_event_id,
-    riskAssessment.creator_user_id,
-    riskAssessment.questionary_id,
-    riskAssessment.status as any as RiskAssessmentStatus,
-    riskAssessment.created_at
   );
 };

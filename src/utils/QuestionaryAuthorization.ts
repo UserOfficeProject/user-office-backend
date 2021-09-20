@@ -8,12 +8,9 @@ import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
-import { RiskAssessmentStatus } from '../models/RiskAssessment';
 import { TemplateCategoryId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
-import { RiskAssessmentDataSource } from './../datasources/RiskAssessmentDataSource';
 import { VisitDataSource } from './../datasources/VisitDataSource';
-import { RiskAssessmentAuthorization } from './RiskAssessmentAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 import { VisitAuthorization } from './VisitAuthorization';
 
@@ -259,73 +256,6 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
 }
 
 @injectable()
-class RiskAssessmentQuestionaryAuthorizer implements QuestionaryAuthorizer {
-  constructor(
-    @inject(Tokens.RiskAssessmentDataSource)
-    private riskAssessmentDataSource: RiskAssessmentDataSource,
-    @inject(Tokens.RiskAssessmentAuthorization)
-    private riskAssessmentAuth: RiskAssessmentAuthorization,
-    @inject(Tokens.UserAuthorization)
-    private userAuthorization: UserAuthorization
-  ) {}
-  async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
-    if (!agent) {
-      return false;
-    }
-
-    if (await this.userAuthorization.isUserOfficer(agent)) {
-      return true;
-    }
-
-    const assessment = (
-      await this.riskAssessmentDataSource.getRiskAssessments({
-        questionaryIds: [questionaryId],
-      })
-    )[0];
-
-    if (!assessment) {
-      return false;
-    }
-
-    return this.riskAssessmentAuth.hasReadRights(agent, assessment);
-  }
-  async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
-    if (!agent) {
-      return false;
-    }
-
-    if (await this.userAuthorization.isUserOfficer(agent)) {
-      return true;
-    }
-
-    const assessment = (
-      await this.riskAssessmentDataSource.getRiskAssessments({
-        questionaryIds: [questionaryId],
-      })
-    )[0];
-
-    if (!assessment) {
-      return false;
-    }
-
-    if (assessment.status === RiskAssessmentStatus.SUBMITTED) {
-      logger.logError(
-        'User tried to update risk assessment that is already submitted',
-        {
-          agent,
-          questionaryId,
-          assessment,
-        }
-      );
-
-      return false;
-    }
-
-    return this.riskAssessmentAuth.hasWriteRights(agent, assessment);
-  }
-}
-
-@injectable()
 export class QuestionaryAuthorization {
   private authorizers = new Map<number, QuestionaryAuthorizer>();
   // TODO obtain authorizer from QuestionaryDefinition
@@ -351,10 +281,6 @@ export class QuestionaryAuthorization {
     this.authorizers.set(
       TemplateCategoryId.VISIT_REGISTRATION,
       container.resolve(VisitQuestionaryAuthorizer)
-    );
-    this.authorizers.set(
-      TemplateCategoryId.PROPOSAL_ESI,
-      container.resolve(RiskAssessmentQuestionaryAuthorizer)
     );
   }
 

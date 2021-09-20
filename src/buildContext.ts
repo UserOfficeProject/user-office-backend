@@ -9,7 +9,6 @@ import ProposalMutations from './mutations/ProposalMutations';
 import ProposalSettingsMutations from './mutations/ProposalSettingsMutations';
 import QuestionaryMutations from './mutations/QuestionaryMutations';
 import ReviewMutations from './mutations/ReviewMutations';
-import RiskAssessmentMutations from './mutations/RiskAssessmentMutations';
 import SampleMutations from './mutations/SampleMutations';
 import SEPMutations from './mutations/SEPMutations';
 import ShipmentMutations from './mutations/ShipmentMutations';
@@ -25,7 +24,6 @@ import ProposalQueries from './queries/ProposalQueries';
 import ProposalSettingsQueries from './queries/ProposalSettingsQueries';
 import QuestionaryQueries from './queries/QuestionaryQueries';
 import ReviewQueries from './queries/ReviewQueries';
-import RiskAssessmentQueries from './queries/RiskAssessmentQueries';
 import SampleQueries from './queries/SampleQueries';
 import SEPQueries from './queries/SEPQueries';
 import ShipmentQueries from './queries/ShipmentQueries';
@@ -47,7 +45,6 @@ const context: BasicResolverContext = {
     proposalSettings: container.resolve(ProposalSettingsQueries),
     questionary: container.resolve(QuestionaryQueries),
     review: container.resolve(ReviewQueries),
-    riskAssessment: container.resolve(RiskAssessmentQueries),
     sample: container.resolve(SampleQueries),
     sep: container.resolve(SEPQueries),
     shipment: container.resolve(ShipmentQueries),
@@ -65,7 +62,6 @@ const context: BasicResolverContext = {
     proposalSettings: container.resolve(ProposalSettingsMutations),
     questionary: container.resolve(QuestionaryMutations),
     review: container.resolve(ReviewMutations),
-    riskAssessment: container.resolve(RiskAssessmentMutations),
     sample: container.resolve(SampleMutations),
     sep: container.resolve(SEPMutations),
     shipment: container.resolve(ShipmentMutations),

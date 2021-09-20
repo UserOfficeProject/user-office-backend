@@ -9,7 +9,6 @@ import PostgresProposalDataSource from '../datasources/postgres/ProposalDataSour
 import PostgresProposalSettingsDataSource from '../datasources/postgres/ProposalSettingsDataSource';
 import PostgresQuestionaryDataSource from '../datasources/postgres/QuestionaryDataSource';
 import PostgresReviewDataSource from '../datasources/postgres/ReviewDataSource';
-import PostgresRiskAssessmentDataSource from '../datasources/postgres/RiskAssessmentDataSource';
 import PostgresSampleDataSource from '../datasources/postgres/SampleDataSource';
 import PostgresSEPDataSource from '../datasources/postgres/SEPDataSource';
 import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSource';
@@ -21,7 +20,6 @@ import { SparkPostMailService } from '../eventHandlers/MailService/SparkPostMail
 import { createPostToRabbitMQHandler } from '../eventHandlers/messageBroker';
 import { EAMAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
-import { RiskAssessmentAuthorization } from '../utils/RiskAssessmentAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
@@ -34,7 +32,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 mapClass(Tokens.UserAuthorization, UserAuthorization);
 mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
-mapClass(Tokens.RiskAssessmentAuthorization, RiskAssessmentAuthorization);
 mapClass(Tokens.SampleAuthorization, SampleAuthorization);
 mapClass(Tokens.ShipmentAuthorization, ShipmentAuthorization);
 mapClass(Tokens.VisitAuthorization, VisitAuthorization);
@@ -48,7 +45,6 @@ mapClass(Tokens.ProposalDataSource, PostgresProposalDataSource);
 mapClass(Tokens.ProposalSettingsDataSource, PostgresProposalSettingsDataSource);
 mapClass(Tokens.QuestionaryDataSource, PostgresQuestionaryDataSource);
 mapClass(Tokens.ReviewDataSource, PostgresReviewDataSource);
-mapClass(Tokens.RiskAssessmentDataSource, PostgresRiskAssessmentDataSource);
 mapClass(Tokens.SampleDataSource, PostgresSampleDataSource);
 mapClass(Tokens.SEPDataSource, PostgresSEPDataSource);
 mapClass(Tokens.ShipmentDataSource, PostgresShipmentDataSource);

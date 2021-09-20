@@ -13,6 +13,7 @@ import { Visit as VisitOrigin } from '../../models/Visit';
 import { VisitStatus } from '../../models/Visit';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Proposal } from './Proposal';
+import { Sample } from './Sample';
 import { Shipment } from './Shipment';
 import { VisitRegistration } from './VisitRegistration';
 
@@ -68,6 +69,16 @@ export class VisitResolver {
     @Ctx() context: ResolverContext
   ): Promise<Shipment[] | null> {
     return context.queries.shipment.getShipments(context.user, {
+      filter: { visitId: visit.id },
+    });
+  }
+
+  @FieldResolver(() => [Sample])
+  async samples(
+    @Root() visit: Visit,
+    @Ctx() context: ResolverContext
+  ): Promise<Sample[]> {
+    return context.queries.sample.getSamples(context.user, {
       filter: { visitId: visit.id },
     });
   }

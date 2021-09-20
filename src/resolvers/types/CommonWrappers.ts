@@ -20,7 +20,6 @@ import { QuestionTemplateRelation } from './QuestionTemplateRelation';
 import { Rejection } from './Rejection';
 import { ReviewWithNextProposalStatus } from './Review';
 import { Review } from './Review';
-import { RiskAssessment } from './RiskAssessment';
 import { Sample } from './Sample';
 import { SEP } from './SEP';
 import { SepMeetingDecision } from './SepMeetingDecision';
@@ -312,11 +311,4 @@ export class VisitRegistrationResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => VisitRegistration, { nullable: true })
   public registration: VisitRegistration;
-}
-
-@ObjectType()
-export class RiskAssessmentResponseWrap extends ResponseWrapBase {
-  @Response()
-  @Field(() => RiskAssessment, { nullable: true })
-  public riskAssessment: RiskAssessment;
 }
