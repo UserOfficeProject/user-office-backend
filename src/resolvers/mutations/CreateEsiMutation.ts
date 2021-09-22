@@ -23,7 +23,7 @@ export class CreateEsiMutation {
   @Mutation(() => EsiResponseWrap)
   createEsi(@Args() args: CreateEsiArgs, @Ctx() context: ResolverContext) {
     return wrapResponse(
-      context.mutations.esi.createEsi(context.user, args),
+      context.mutations.proposalEsi.createEsi(context.user, args),
       EsiResponseWrap
     );
   }

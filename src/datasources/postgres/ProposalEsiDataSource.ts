@@ -1,19 +1,13 @@
 import { ExperimentSafetyInput } from '../../models/ExperimentSafetyInput';
 import { Rejection } from '../../models/Rejection';
-import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
-import { GetEsisFilter, GetSampleEsisFilter } from '../../queries/EsiQueries';
+import { GetProposalEsisFilter } from '../../queries/ProposalEsiQueries';
 import { CreateEsiArgs } from '../../resolvers/mutations/CreateEsiMutation';
 import { UpdateEsiArgs } from '../../resolvers/mutations/UpdateEsiMutation';
-import { EsiDataSource } from './../EsiDataSource';
+import { ProposalEsiDataSource } from '../ProposalEsiDataSource';
 import database from './database';
-import {
-  createEsiObject,
-  createSampleEsiObject,
-  EsiRecord,
-  SampleEsiRecord,
-} from './records';
+import { createEsiObject, EsiRecord } from './records';
 
-class PostgresEsiDataSource implements EsiDataSource {
+class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
   async createEsi(
     args: CreateEsiArgs & { questionaryId: number }
   ): Promise<ExperimentSafetyInput | Rejection> {
@@ -37,7 +31,9 @@ class PostgresEsiDataSource implements EsiDataSource {
     return createEsiObject(result);
   }
 
-  async getEsis(filter: GetEsisFilter): Promise<ExperimentSafetyInput[]> {
+  async getEsis(
+    filter: GetProposalEsisFilter
+  ): Promise<ExperimentSafetyInput[]> {
     const esis: EsiRecord[] = await database
       .select('*')
       .from('experiment_safety_inputs')
@@ -48,35 +44,6 @@ class PostgresEsiDataSource implements EsiDataSource {
       });
 
     return esis.map((esi) => createEsiObject(esi));
-  }
-
-  async getSampleEsi(
-    sampleEsiId: number
-  ): Promise<SampleExperimentSafetyInput | null> {
-    const result = await database
-      .select('*')
-      .from('sample_experiment_safety_inputs')
-      .where('sample_esi_id', sampleEsiId)
-      .first();
-
-    return createSampleEsiObject(result);
-  }
-  async getSampleEsis(
-    filter: GetSampleEsisFilter
-  ): Promise<SampleExperimentSafetyInput[]> {
-    const esis: SampleEsiRecord[] = await database
-      .select('*')
-      .from('sample_experiment_safety_inputs')
-      .modify((query) => {
-        if (filter.visitId) {
-          query.where('visit_id', filter.visitId);
-        }
-        if (filter.sampleId) {
-          query.where('sample_id', filter.sampleId);
-        }
-      });
-
-    return esis.map((esi) => createSampleEsiObject(esi));
   }
 
   async updateEsi(args: UpdateEsiArgs): Promise<ExperimentSafetyInput> {
@@ -91,4 +58,4 @@ class PostgresEsiDataSource implements EsiDataSource {
   }
 }
 
-export default PostgresEsiDataSource;
+export default PostgresProposalEsiDataSource;

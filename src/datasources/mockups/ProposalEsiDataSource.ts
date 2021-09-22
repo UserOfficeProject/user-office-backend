@@ -1,12 +1,11 @@
 import { ExperimentSafetyInput } from '../../models/ExperimentSafetyInput';
 import { Rejection } from '../../models/Rejection';
-import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
-import { GetEsisFilter, GetSampleEsisFilter } from '../../queries/EsiQueries';
+import { GetProposalEsisFilter } from '../../queries/ProposalEsiQueries';
 import { CreateEsiArgs } from '../../resolvers/mutations/CreateEsiMutation';
 import { UpdateEsiArgs } from '../../resolvers/mutations/UpdateEsiMutation';
-import { EsiDataSource } from '../EsiDataSource';
+import { ProposalEsiDataSource } from '../ProposalEsiDataSource';
 
-export class EsiDataSourceMock implements EsiDataSource {
+export class ProposalEsiDataSourceMock implements ProposalEsiDataSource {
   updateEsi(args: UpdateEsiArgs): Promise<ExperimentSafetyInput> {
     throw new Error('Method not implemented.');
   }
@@ -17,18 +16,7 @@ export class EsiDataSourceMock implements EsiDataSource {
     throw new Error('Method not implemented.');
   }
 
-  getEsis(filter: GetEsisFilter): Promise<ExperimentSafetyInput[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  getSampleEsi(
-    sampleEsiId: number
-  ): Promise<SampleExperimentSafetyInput | null> {
-    throw new Error('Method not implemented.');
-  }
-  getSampleEsis(
-    filter: GetSampleEsisFilter
-  ): Promise<SampleExperimentSafetyInput[]> {
+  getEsis(filter: GetProposalEsisFilter): Promise<ExperimentSafetyInput[]> {
     throw new Error('Method not implemented.');
   }
 }

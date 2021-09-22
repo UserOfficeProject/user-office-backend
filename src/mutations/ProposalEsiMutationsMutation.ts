@@ -2,24 +2,24 @@ import { reject } from 'bluebird';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { EsiDataSource } from '../datasources/EsiDataSource';
+import { CallDataSource } from '../datasources/CallDataSource';
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
+import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
+import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
+import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Authorized } from '../decorators';
 import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
 import { Rejection } from '../models/Rejection';
 import { UserWithRole } from '../models/User';
 import { CreateEsiArgs } from '../resolvers/mutations/CreateEsiMutation';
 import { UpdateEsiArgs } from '../resolvers/mutations/UpdateEsiMutation';
-import { CallDataSource } from './../datasources/CallDataSource';
-import { ProposalDataSource } from './../datasources/ProposalDataSource';
-import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
-import { VisitDataSource } from './../datasources/VisitDataSource';
-import { UserAuthorization } from './../utils/UserAuthorization';
+import { UserAuthorization } from '../utils/UserAuthorization';
 
 @injectable()
-export default class EsiMutations {
+export default class ProposalEsiMutations {
   constructor(
-    @inject(Tokens.EsiDataSource)
-    private dataSource: EsiDataSource,
+    @inject(Tokens.ProposalEsiDataSource)
+    private dataSource: ProposalEsiDataSource,
     @inject(Tokens.VisitDataSource)
     private visitDataSource: VisitDataSource,
     @inject(Tokens.ProposalDataSource)

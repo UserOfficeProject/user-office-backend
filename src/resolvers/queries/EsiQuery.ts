@@ -7,6 +7,6 @@ import { ExperimentSafetyInput } from './../types/ExperimentSafetyInput';
 export class EsiQuery {
   @Query(() => ExperimentSafetyInput, { nullable: true })
   esi(@Ctx() context: ResolverContext, @Arg('esiId', () => Int) esiId: number) {
-    return context.queries.esi.getEsi(context.user, esiId);
+    return context.queries.proposalEsi.getEsi(context.user, esiId);
   }
 }

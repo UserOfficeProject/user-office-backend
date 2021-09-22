@@ -1,15 +1,10 @@
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { SampleEsiDataSource } from '../datasources/SampleEsiDataSource';
 import { Authorized } from '../decorators';
-import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
 import { SampleExperimentSafetyInput } from '../models/SampleExperimentSafetyInput';
 import { UserWithRole } from '../models/User';
-import { EsiDataSource } from './../datasources/EsiDataSource';
-
-export interface GetEsisFilter {
-  visitId?: number;
-}
 
 export interface GetSampleEsisFilter {
   visitId?: number;
@@ -17,32 +12,12 @@ export interface GetSampleEsisFilter {
 }
 
 @injectable()
-export default class EsiQueries {
+export default class ProposalEsiQueries {
   constructor(
-    @inject(Tokens.EsiDataSource)
-    public dataSource: EsiDataSource
+    @inject(Tokens.SampleEsiDataSource)
+    public dataSource: SampleEsiDataSource
   ) {}
 
-  /* Proposal */
-  @Authorized()
-  async getEsi(
-    user: UserWithRole | null,
-    id: number
-  ): Promise<ExperimentSafetyInput | null> {
-    // TODO implement authorizer
-    return this.dataSource.getEsi(id);
-  }
-
-  @Authorized()
-  async getEsis(
-    user: UserWithRole | null,
-    filter: GetEsisFilter
-  ): Promise<ExperimentSafetyInput[] | null> {
-    // TODO implement authorizer
-    return this.dataSource.getEsis(filter);
-  }
-
-  /* Sample */
   @Authorized()
   async getSampleEsi(
     user: UserWithRole | null,

@@ -89,7 +89,7 @@ export class VisitResolver {
     @Root() visit: Visit,
     @Ctx() context: ResolverContext
   ): Promise<ExperimentSafetyInput | null> {
-    const esi = await context.queries.esi.getEsis(context.user, {
+    const esi = await context.queries.proposalEsi.getEsis(context.user, {
       visitId: visit.id,
     });
 

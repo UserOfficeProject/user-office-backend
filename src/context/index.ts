@@ -1,9 +1,9 @@
 import { UserWithRole } from '../models/User';
 import AdminMutations from '../mutations/AdminMutations';
 import CallMutations from '../mutations/CallMutations';
-import EsiMutations from '../mutations/EsiMutationsMutation';
 import FileMutations from '../mutations/FileMutations';
 import InstrumentMutations from '../mutations/InstrumentMutations';
+import ProposalEsiMutations from '../mutations/ProposalEsiMutationsMutation';
 import ProposalMutations from '../mutations/ProposalMutations';
 import ProposalSettingsMutations from '../mutations/ProposalSettingsMutations';
 import QuestionaryMutations from '../mutations/QuestionaryMutations';
@@ -16,14 +16,15 @@ import UserMutations from '../mutations/UserMutations';
 import VisitMutations from '../mutations/VisitMutations';
 import AdminQueries from '../queries/AdminQueries';
 import CallQueries from '../queries/CallQueries';
-import EsiQueries from '../queries/EsiQueries';
 import EventLogQueries from '../queries/EventLogQueries';
 import FileQueries from '../queries/FileQueries';
 import InstrumentQueries from '../queries/InstrumentQueries';
+import ProposalEsiQueries from '../queries/ProposalEsiQueries';
 import ProposalQueries from '../queries/ProposalQueries';
 import ProposalSettingsQueries from '../queries/ProposalSettingsQueries';
 import QuestionaryQueries from '../queries/QuestionaryQueries';
 import ReviewQueries from '../queries/ReviewQueries';
+import SampleEsiQueries from '../queries/SampleEsiQueries';
 import SampleQueries from '../queries/SampleQueries';
 import SEPQueries from '../queries/SEPQueries';
 import ShipmentQueries from '../queries/ShipmentQueries';
@@ -50,7 +51,8 @@ interface ResolverContextQueries {
   shipment: ShipmentQueries;
   system: SystemQueries;
   visit: VisitQueries;
-  esi: EsiQueries;
+  proposalEsi: ProposalEsiQueries;
+  sampleEsi: SampleEsiQueries;
 }
 
 interface ResolverContextMutations {
@@ -68,7 +70,7 @@ interface ResolverContextMutations {
   proposalSettings: ProposalSettingsMutations;
   shipment: ShipmentMutations;
   visit: VisitMutations;
-  esi: EsiMutations;
+  proposalEsi: ProposalEsiMutations;
 }
 
 export interface BasicResolverContext {

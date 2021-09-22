@@ -72,6 +72,6 @@ export class SampleResolver {
     @Root() sample: Sample,
     @Ctx() context: ResolverContext
   ): Promise<SampleExperimentSafetyInput | null> {
-    return context.queries.esi.getSampleEsi(context.user, sample.id);
+    return context.queries.sampleEsi.getSampleEsi(context.user, sample.id);
   }
 }

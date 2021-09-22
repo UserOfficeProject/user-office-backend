@@ -26,7 +26,7 @@ export class UpdateEsiMutation {
   @Mutation(() => EsiResponseWrap)
   updateEsi(@Args() args: UpdateEsiArgs, @Ctx() context: ResolverContext) {
     return wrapResponse(
-      context.mutations.esi.updateEsi(context.user, args),
+      context.mutations.proposalEsi.updateEsi(context.user, args),
       EsiResponseWrap
     );
   }
