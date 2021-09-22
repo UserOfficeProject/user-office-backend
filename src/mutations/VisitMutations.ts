@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { EsiDataSource } from '../datasources/EsiDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
@@ -30,6 +31,8 @@ export default class VisitMutations {
     private questionaryDataSource: QuestionaryDataSource,
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
+    @inject(Tokens.EsiDataSource)
+    private esiDataSource: EsiDataSource,
     @inject(Tokens.VisitAuthorization)
     private visitAuthorization: VisitAuthorization,
     @inject(Tokens.UserAuthorization)

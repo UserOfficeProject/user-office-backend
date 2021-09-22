@@ -1,6 +1,7 @@
 import { UserWithRole } from '../models/User';
 import AdminMutations from '../mutations/AdminMutations';
 import CallMutations from '../mutations/CallMutations';
+import EsiMutations from '../mutations/EsiMutationsMutation';
 import FileMutations from '../mutations/FileMutations';
 import InstrumentMutations from '../mutations/InstrumentMutations';
 import ProposalMutations from '../mutations/ProposalMutations';
@@ -15,6 +16,7 @@ import UserMutations from '../mutations/UserMutations';
 import VisitMutations from '../mutations/VisitMutations';
 import AdminQueries from '../queries/AdminQueries';
 import CallQueries from '../queries/CallQueries';
+import EsiQueries from '../queries/EsiQueries';
 import EventLogQueries from '../queries/EventLogQueries';
 import FileQueries from '../queries/FileQueries';
 import InstrumentQueries from '../queries/InstrumentQueries';
@@ -48,6 +50,7 @@ interface ResolverContextQueries {
   shipment: ShipmentQueries;
   system: SystemQueries;
   visit: VisitQueries;
+  esi: EsiQueries;
 }
 
 interface ResolverContextMutations {
@@ -65,6 +68,7 @@ interface ResolverContextMutations {
   proposalSettings: ProposalSettingsMutations;
   shipment: ShipmentMutations;
   visit: VisitMutations;
+  esi: EsiMutations;
 }
 
 export interface BasicResolverContext {

@@ -13,6 +13,7 @@ import { Sample as SampleOrigin, SampleStatus } from '../../models/Sample';
 import { TemplateCategoryId } from '../../models/Template';
 import { Proposal } from './Proposal';
 import { Questionary } from './Questionary';
+import { SampleExperimentSafetyInput } from './SampleExperimentSafetyInput';
 
 @ObjectType()
 export class Sample implements Partial<SampleOrigin> {
@@ -64,5 +65,13 @@ export class SampleResolver {
     @Ctx() context: ResolverContext
   ): Promise<Proposal | null> {
     return context.queries.proposal.get(context.user, sample.proposalPk);
+  }
+
+  @FieldResolver(() => SampleExperimentSafetyInput)
+  async sampleEsi(
+    @Root() sample: Sample,
+    @Ctx() context: ResolverContext
+  ): Promise<SampleExperimentSafetyInput | null> {
+    return context.queries.esi.getSampleEsi(context.user, sample.id);
   }
 }

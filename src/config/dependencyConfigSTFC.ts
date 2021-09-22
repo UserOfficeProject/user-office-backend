@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { PostgresAdminDataSourceWithAutoUpgrade } from '../datasources/postgres/AdminDataSource';
 import PostgresCallDataSource from '../datasources/postgres/CallDataSource';
+import PostgresEsiDataSource from '../datasources/postgres/EsiDataSource';
 import PostgresEventLogsDataSource from '../datasources/postgres/EventLogsDataSource';
 import PostgresFileDataSource from '../datasources/postgres/FileDataSource';
 import PostgresInstrumentDataSource from '../datasources/postgres/InstrumentDataSource';
@@ -37,6 +38,7 @@ mapClass(Tokens.VisitAuthorization, VisitAuthorization);
 mapClass(Tokens.AdminDataSource, PostgresAdminDataSourceWithAutoUpgrade);
 mapClass(Tokens.CallDataSource, PostgresCallDataSource);
 mapClass(Tokens.EventLogsDataSource, PostgresEventLogsDataSource);
+mapClass(Tokens.EsiDataSource, PostgresEsiDataSource);
 mapClass(Tokens.FileDataSource, PostgresFileDataSource);
 mapClass(Tokens.InstrumentDataSource, PostgresInstrumentDataSource);
 mapClass(Tokens.ProposalDataSource, PostgresProposalDataSource);

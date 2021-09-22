@@ -151,6 +151,12 @@ export class ProposalBasisConfig {
 }
 
 @ObjectType()
+export class ProposalEsiBasisConfig {
+  @Field(() => String)
+  tooltip: string;
+}
+
+@ObjectType()
 export class RichTextInputConfig extends ConfigBase {
   @Field(() => Int, { nullable: true })
   max: number | null;
@@ -168,6 +174,7 @@ export const FieldConfigType = createUnionType({
     SampleBasisConfig,
     SubTemplateConfig,
     ProposalBasisConfig,
+    ProposalEsiBasisConfig,
     IntervalConfig,
     NumberInputConfig,
     ShipmentBasisConfig,

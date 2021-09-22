@@ -10,6 +10,7 @@ import { fileUploadDefinition } from './FileUpload';
 import { intervalDefinition } from './Interval';
 import { numberInputDefinition } from './NumberInput';
 import { proposalBasisDefinition } from './ProposalBasis';
+import { proposalEsiBasisDefinition } from './ProposalEsiBasis';
 import { richTextInputDefinition } from './RichTextInput';
 import { sampleBasisDefinition } from './SampleBasis';
 import { sampleDeclarationDefinition } from './SampleDeclaration';
@@ -68,6 +69,7 @@ const registry = [
   textInputDefinition,
   sampleDeclarationDefinition,
   proposalBasisDefinition,
+  proposalEsiBasisDefinition,
   sampleBasisDefinition,
   intervalDefinition,
   numberInputDefinition,

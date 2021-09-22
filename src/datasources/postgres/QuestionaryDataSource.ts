@@ -376,6 +376,14 @@ export default class PostgresQuestionaryDataSource
     return steps;
   }
 
+  async copyAnswers(
+    sourceQuestionaryId: number,
+    targetQuestionaryId: number
+  ): Promise<boolean> {
+    // TODO implement this
+    return true;
+  }
+
   async clone(questionaryId: number): Promise<Questionary> {
     const sourceQuestionary = await this.getQuestionary(questionaryId);
     if (!sourceQuestionary) {

@@ -6,6 +6,7 @@ import { Answer } from './Answer';
 import { AnswerBasic } from './AnswerBasic';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
+import { ExperimentSafetyInput } from './ExperimentSafetyInput';
 import { Institution } from './Institution';
 import { Instrument } from './Instrument';
 import { PermissionsWithAccessToken } from './PermissionsWithAccessToken';
@@ -311,4 +312,11 @@ export class VisitRegistrationResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => VisitRegistration, { nullable: true })
   public registration: VisitRegistration;
+}
+
+@ObjectType()
+export class EsiResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => ExperimentSafetyInput, { nullable: true })
+  public esi: ExperimentSafetyInput;
 }

@@ -24,5 +24,6 @@ export const Tokens = {
   MailService: Symbol('MailService'),
   VisitDataSource: Symbol('VisitDataSource'),
   VisitAuthorization: Symbol('VisitAuthorization'),
+  EsiDataSource: Symbol('EsiDataSource'),
   ConfigureEnvironment: Symbol('ConfigureEnvironment'),
 };

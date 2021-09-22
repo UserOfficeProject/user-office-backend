@@ -92,8 +92,8 @@ export default class TemplateMutations {
         await this.createInitialTopic(
           newTemplate.templateId,
           0,
-          'New risk assessment',
-          'risk_assessment_basis'
+          'New experiment safety input',
+          'proposal_esi_basis'
         );
         break;
     }

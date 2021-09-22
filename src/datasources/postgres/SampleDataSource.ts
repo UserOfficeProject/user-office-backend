@@ -16,6 +16,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
     @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource
   ) {}
+
   async cloneSample(sampleId: number): Promise<Sample> {
     const sourceSample = await this.getSample(sampleId);
     if (!sourceSample) {
@@ -155,15 +156,6 @@ export default class PostgresSampleDataSource implements SampleDataSource {
         if (filter?.questionId) {
           query.where('question_id', filter.questionId);
         }
-        if (filter?.visitId) {
-          query
-            .rightJoin(
-              'visits_has_samples',
-              'samples.sample_id',
-              'visits_has_samples.sample_id'
-            )
-            .where('visits_has_samples.visit_id', filter.visitId);
-        }
       })
       .select('*')
       .orderBy('created_at', 'asc')
@@ -181,6 +173,20 @@ export default class PostgresSampleDataSource implements SampleDataSource {
       )
       .select('samples.*')
       .where(' shipments_has_samples.shipment_id', shipmentId)
+      .then((records: SampleRecord[]) => {
+        return records.map((record) => createSampleObject(record)) || [];
+      });
+  }
+
+  getSamplesByEsiId(esiId: number): Promise<Sample[]> {
+    return database('experiment_safety_inputs_has_samples')
+      .leftJoin(
+        'samples',
+        'experiment_safety_inputs_has_samples.sample_id',
+        'samples.sample_id'
+      )
+      .select('samples.*')
+      .where(' experiment_safety_inputs_has_samples.esi_id', esiId)
       .then((records: SampleRecord[]) => {
         return records.map((record) => createSampleObject(record)) || [];
       });

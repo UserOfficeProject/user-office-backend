@@ -101,6 +101,7 @@ export default class PostgresCallDataSource implements CallDataSource {
         proposal_sequence: args.proposalSequence,
         proposal_workflow_id: args.proposalWorkflowId,
         template_id: args.templateId,
+        esi_template_id: args.esiTemplateId,
         allocation_time_unit: args.allocationTimeUnit,
       })
       .into('call')

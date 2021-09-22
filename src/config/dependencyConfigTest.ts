@@ -2,6 +2,7 @@
 import 'reflect-metadata';
 import { AdminDataSourceMock } from '../datasources/mockups/AdminDataSource';
 import { CallDataSourceMock } from '../datasources/mockups/CallDataSource';
+import { EsiDataSourceMock } from '../datasources/mockups/EsiDataSource';
 import { EventLogsDataSourceMock } from '../datasources/mockups/EventLogsDataSource';
 import FileDataSourceMock from '../datasources/mockups/FileDataSource';
 import { InstrumentDataSourceMock } from '../datasources/mockups/InstrumentDataSource';
@@ -36,6 +37,7 @@ mapClass(Tokens.VisitAuthorization, VisitAuthorization);
 mapClass(Tokens.AdminDataSource, AdminDataSourceMock);
 mapClass(Tokens.CallDataSource, CallDataSourceMock);
 mapClass(Tokens.EventLogsDataSource, EventLogsDataSourceMock);
+mapClass(Tokens.EsiDataSource, EsiDataSourceMock);
 mapClass(Tokens.InstrumentDataSource, InstrumentDataSourceMock);
 mapClass(Tokens.ProposalDataSource, ProposalDataSourceMock);
 mapClass(Tokens.ProposalSettingsDataSource, ProposalSettingsDataSourceMock);

@@ -12,6 +12,7 @@ import { AnswerBasic, Questionary } from '../../models/Questionary';
 import { createConfig } from '../../models/questionTypes/QuestionRegistry';
 import { Role } from '../../models/Role';
 import { Sample } from '../../models/Sample';
+import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { SEP, SEPProposal, SEPAssignment, SEPReviewer } from '../../models/SEP';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
 import { Settings, SettingsId } from '../../models/Settings';
@@ -29,6 +30,7 @@ import {
 import { BasicUserDetails, User } from '../../models/User';
 import { Visit, VisitStatus } from '../../models/Visit';
 import { VisitRegistration } from '../../models/VisitRegistration';
+import { ExperimentSafetyInput } from './../../models/ExperimentSafetyInput';
 
 // Interfaces corresponding exactly to database tables
 
@@ -252,6 +254,7 @@ export interface CallRecord {
   readonly call_review_ended: boolean;
   readonly call_sep_review_ended: boolean;
   readonly template_id: number;
+  readonly esi_template_id: number;
   readonly allocation_time_unit: AllocationTimeUnits;
 }
 
@@ -507,6 +510,22 @@ export interface VisitRecord {
   readonly created_at: Date;
 }
 
+export interface EsiRecord {
+  readonly esi_id: number;
+  readonly visit_id: number;
+  readonly creator_id: number;
+  readonly questionary_id: number;
+  readonly is_submitted: boolean;
+  readonly created_at: Date;
+}
+
+export interface SampleEsiRecord {
+  readonly esi_id: number;
+  readonly sample_id: number;
+  readonly questionary_id: number;
+  readonly is_submitted: boolean;
+}
+
 export const createTopicObject = (record: TopicRecord) => {
   return new Topic(
     record.topic_id,
@@ -711,6 +730,7 @@ export const createCallObject = (call: CallRecord) => {
     call.call_review_ended,
     call.call_sep_review_ended,
     call.template_id,
+    call.esi_template_id,
     call.allocation_time_unit
   );
 };
@@ -853,5 +873,26 @@ export const createVisitObject = (visit: VisitRecord) => {
     visit.team_lead_user_id,
     visit.scheduled_event_id,
     visit.created_at
+  );
+};
+
+export const createEsiObject = (esi: EsiRecord) => {
+  return new ExperimentSafetyInput(
+    esi.esi_id,
+    esi.visit_id,
+    esi.creator_id,
+    esi.questionary_id,
+    esi.is_submitted,
+    esi.created_at
+  );
+};
+
+export const createSampleEsiObject = (esi: SampleEsiRecord) => {
+  return new SampleExperimentSafetyInput(
+    esi.esi_id,
+    esi.esi_id,
+    esi.sample_id,
+    esi.questionary_id,
+    esi.is_submitted
   );
 };
