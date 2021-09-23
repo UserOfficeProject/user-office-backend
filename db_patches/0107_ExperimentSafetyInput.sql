@@ -46,9 +46,47 @@ BEGIN
         /* End cleanup*/
 
         UPDATE question_datatypes set question_datatype_id='PROPOSAL_ESI_BASIS' WHERE question_datatype_id='RISK_ASSESSMENT_BASIS';
-        UPDATE questions set question_id='proposal_esi_basis', natural_key='Proposal ESI', question='Proposal ESI basis' WHERE question_id='risk_assessment_basis';
+        UPDATE questions set question_id='proposal_esi_basis', natural_key='proposal_esi_basis', question='Proposal ESI basis' WHERE question_id='risk_assessment_basis';
 
         ALTER table call ADD COLUMN esi_template_id INTEGER DEFAULT NULL REFERENCES templates (template_id);
+
+        /* adding group to templates */
+
+        CREATE TABLE template_groups (
+            template_group_id VARCHAR(30) PRIMARY KEY
+            , category_id INT REFERENCES template_categories(template_category_id)
+        ); 
+
+
+        INSERT INTO template_groups (template_group_id, category_id)
+        VALUES
+            ('PROPOSAL', 1),
+            ('PROPOSAL_ESI', 1),
+            ('SAMPLE', 2),
+            ('SAMPLE_ESI', 2),
+            ('SHIPMENT', 3),
+            ('VISIT_REGISTRATION', 4);
+
+        ALTER table templates ADD COLUMN group_id VARCHAR(30) DEFAULT NULL REFERENCES template_groups(template_group_id);
+
+        UPDATE templates SET group_id='PROPOSAL' where category_id=1;
+        UPDATE templates SET group_id='SAMPLE' where category_id=2;
+        UPDATE templates SET group_id='SHIPMENT' where category_id=3;
+        UPDATE templates SET group_id='VISIT_REGISTRATION' where category_id=4;
+
+        UPDATE questions SET category_id=1 WHERE category_id=5; -- move "Proposal ESI" questions to "proposal" category
+        UPDATE questions SET category_id=2 WHERE category_id=6; -- move "Proposal ESI" questions to "proposal" category
+
+        DELETE FROM template_categories WHERE template_category_id=5; -- DELETE Experiment ESI
+        DELETE FROM template_categories WHERE template_category_id=6; -- DELETE Sample ESI
+
+        ALTER TABLE templates ALTER COLUMN group_id SET NOT NULL;
+        ALTER TABLE templates DROP COLUMN category_id;
+
+        DELETE FROM active_templates; -- delete, migration of these few rows would be complicated
+        ALTER TABLE active_templates DROP COLUMN category_id;
+        ALTER TABLE active_templates ADD  COLUMN group_id VARCHAR(30) NOT NULL REFERENCES template_groups(template_group_id) UNIQUE;
+
 
     END IF;
 END;

@@ -47,7 +47,7 @@ export class ExperimentSafetyInputResolver {
     return context.queries.questionary.getQuestionaryOrDefault(
       context.user,
       esi.questionaryId,
-      TemplateCategoryId.PROPOSAL_ESI
+      TemplateCategoryId.PROPOSAL_QUESTIONARY
     );
   }
 

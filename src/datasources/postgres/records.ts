@@ -25,6 +25,8 @@ import {
   QuestionTemplateRelation,
   Template,
   TemplateCategory,
+  TemplateGroup,
+  TemplateGroupId,
   Topic,
 } from '../../models/Template';
 import { BasicUserDetails, User } from '../../models/User';
@@ -162,7 +164,7 @@ export interface QuestionTemplateRelRecord {
 
 export interface TemplateRecord {
   readonly template_id: number;
-  readonly category_id: number;
+  readonly group_id: string;
   readonly name: string;
   readonly description: string;
   readonly is_archived: boolean;
@@ -526,6 +528,11 @@ export interface SampleEsiRecord {
   readonly is_submitted: boolean;
 }
 
+export interface TemplateGroupRecord {
+  readonly template_group_id: string;
+  readonly category_id: number;
+}
+
 export const createTopicObject = (record: TopicRecord) => {
   return new Topic(
     record.topic_id,
@@ -550,7 +557,7 @@ export const createQuestionObject = (question: QuestionRecord) => {
 export const createProposalTemplateObject = (template: TemplateRecord) => {
   return new Template(
     template.template_id,
-    template.category_id,
+    template.group_id as TemplateGroupId,
     template.name,
     template.description,
     template.is_archived
@@ -894,5 +901,12 @@ export const createSampleEsiObject = (esi: SampleEsiRecord) => {
     esi.sample_id,
     esi.questionary_id,
     esi.is_submitted
+  );
+};
+
+export const createTemplateGroupObject = (group: TemplateGroupRecord) => {
+  return new TemplateGroup(
+    group.template_group_id as TemplateGroupId,
+    group.category_id
   );
 };

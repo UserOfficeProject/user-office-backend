@@ -40,7 +40,7 @@ export class SampleExperimentSafetyInputResolver {
     return context.queries.questionary.getQuestionaryOrDefault(
       context.user,
       sampleEsi.questionaryId,
-      TemplateCategoryId.SAMPLE_ESI
+      TemplateCategoryId.SAMPLE_DECLARATION
     );
   }
 }

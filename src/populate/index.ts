@@ -168,7 +168,7 @@ const createCalls = async () => {
 const createTemplates = async () => {
   const templates = await execute(() => {
     return templateDataSource.createTemplate({
-      categoryId: TemplateCategoryId.PROPOSAL_QUESTIONARY,
+      groupId: TemplateCategoryId.PROPOSAL_QUESTIONARY,
       name: faker.random.word(),
       description: faker.random.words(3),
     });

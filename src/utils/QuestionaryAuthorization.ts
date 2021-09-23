@@ -8,7 +8,7 @@ import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
-import { TemplateCategoryId } from '../models/Template';
+import { TemplateGroupId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
 import { VisitDataSource } from './../datasources/VisitDataSource';
 import { UserAuthorization } from './UserAuthorization';
@@ -257,7 +257,7 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
 
 @injectable()
 export class QuestionaryAuthorization {
-  private authorizers = new Map<number, QuestionaryAuthorizer>();
+  private authorizers = new Map<TemplateGroupId, QuestionaryAuthorizer>();
   // TODO obtain authorizer from QuestionaryDefinition
   constructor(
     @inject(Tokens.QuestionaryDataSource)
@@ -267,38 +267,38 @@ export class QuestionaryAuthorization {
     @inject(Tokens.SampleDataSource) private sampleDataSource: SampleDataSource
   ) {
     this.authorizers.set(
-      TemplateCategoryId.PROPOSAL_QUESTIONARY,
+      TemplateGroupId.PROPOSAL,
       container.resolve(ProposalQuestionaryAuthorizer)
     );
     this.authorizers.set(
-      TemplateCategoryId.SAMPLE_DECLARATION,
+      TemplateGroupId.SAMPLE,
       container.resolve(SampleDeclarationQuestionaryAuthorizer)
     );
     this.authorizers.set(
-      TemplateCategoryId.SHIPMENT_DECLARATION,
+      TemplateGroupId.SHIPMENT,
       container.resolve(ShipmentDeclarationQuestionaryAuthorizer)
     );
     this.authorizers.set(
-      TemplateCategoryId.VISIT_REGISTRATION,
+      TemplateGroupId.VISIT_REGISTRATION,
       container.resolve(VisitQuestionaryAuthorizer)
     );
   }
 
-  private async getTemplateCategoryIdForQuestionary(questionaryId: number) {
+  private async getTemplateGroupIdForQuestionary(questionaryId: number) {
     const templateId = (
       await this.questionaryDataSource.getQuestionary(questionaryId)
     )?.templateId;
     if (!templateId) return null;
 
-    const categoryId = (await this.templateDataSource.getTemplate(templateId))
-      ?.categoryId;
-    if (!categoryId) return null;
+    const groupId = (await this.templateDataSource.getTemplate(templateId))
+      ?.groupId;
+    if (!groupId) return null;
 
-    return categoryId;
+    return groupId;
   }
 
   private async getAuthorizer(questionaryId: number) {
-    const categoryId = await this.getTemplateCategoryIdForQuestionary(
+    const categoryId = await this.getTemplateGroupIdForQuestionary(
       questionaryId
     );
     if (!categoryId) return null;

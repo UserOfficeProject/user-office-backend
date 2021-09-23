@@ -8,6 +8,8 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
+  TemplateGroup,
+  TemplateGroupId,
   TemplatesHasQuestions,
   TemplateStep,
   Topic,
@@ -33,7 +35,7 @@ export let dummyComplementarySteps: Question[];
 const dummyProposalTemplateFactory = (values?: Partial<Template>) => {
   return new Template(
     values?.templateId || 1,
-    values?.categoryId || 1,
+    values?.groupId || TemplateGroupId.PROPOSAL,
     values?.name || 'Industrial template',
     values?.description || 'Industrial template description',
     values?.isArchived || false
@@ -112,6 +114,9 @@ const dummyTemplateStepsFactory = () => {
 export class TemplateDataSourceMock implements TemplateDataSource {
   constructor() {
     this.init();
+  }
+  getGroup(groupId: TemplateGroupId): TemplateGroup {
+    throw new Error('Method not implemented.');
   }
   public init() {
     dummyProposalTemplate = dummyProposalTemplateFactory();
@@ -194,7 +199,7 @@ export class TemplateDataSourceMock implements TemplateDataSource {
     return [
       new Template(
         1,
-        1,
+        TemplateGroupId.PROPOSAL,
         'Industrial',
         'Industrial proposal template',
         args?.filter?.isArchived || false
@@ -337,9 +342,7 @@ export class TemplateDataSourceMock implements TemplateDataSource {
     return true;
   }
 
-  async getActiveTemplateId(
-    _categoryId: TemplateCategoryId
-  ): Promise<number | null> {
+  async getActiveTemplateId(_groupId: TemplateGroupId): Promise<number | null> {
     return 1;
   }
 

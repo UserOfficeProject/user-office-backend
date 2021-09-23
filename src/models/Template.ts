@@ -77,6 +77,13 @@ export class QuestionTemplateRelation {
   ) {}
 }
 
+export class TemplateGroup {
+  constructor(
+    public groupId: TemplateGroupId,
+    public categoryId: TemplateCategoryId
+  ) {}
+}
+
 export class TemplateStep {
   constructor(public topic: Topic, public fields: QuestionTemplateRelation[]) {}
 }
@@ -90,8 +97,15 @@ export enum TemplateCategoryId {
   SAMPLE_DECLARATION,
   SHIPMENT_DECLARATION,
   VISIT_REGISTRATION,
-  PROPOSAL_ESI,
-  SAMPLE_ESI,
+}
+
+export enum TemplateGroupId {
+  PROPOSAL = 'PROPOSAL',
+  PROPOSAL_ESI = 'PROPOSAL_ESI',
+  SAMPLE = 'SAMPLE',
+  SAMPLE_ESI = 'SAMPLE_ESI',
+  SHIPMENT = 'SHIPMENT',
+  VISIT_REGISTRATION = 'VISIT_REGISTRATION',
 }
 
 export class FieldCondition {
@@ -101,7 +115,7 @@ export class FieldCondition {
 export class Template {
   constructor(
     public templateId: number,
-    public categoryId: number,
+    public groupId: TemplateGroupId,
     public name: string,
     public description: string,
     public isArchived: boolean
