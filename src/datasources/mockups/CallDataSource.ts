@@ -32,7 +32,9 @@ export const dummyCallFactory = (values?: Partial<Call>) => {
     values?.callSEPReviewEnded || false,
     values?.templateId || 1,
     values?.esiTemplateId || 2,
-    values?.allocationTimeUnit || AllocationTimeUnits.Day
+    values?.allocationTimeUnit || AllocationTimeUnits.Day,
+    values?.title || 'Title',
+    values?.description || 'Description'
   );
 };
 
@@ -59,7 +61,9 @@ export const dummyCall = new Call(
   false,
   1,
   2,
-  AllocationTimeUnits.Day
+  AllocationTimeUnits.Day,
+  '',
+  ''
 );
 
 export const anotherDummyCall = new Call(
@@ -85,7 +89,9 @@ export const anotherDummyCall = new Call(
   false,
   1,
   2,
-  AllocationTimeUnits.Day
+  AllocationTimeUnits.Day,
+  '',
+  ''
 );
 
 export const dummyCalls = [dummyCall, anotherDummyCall];

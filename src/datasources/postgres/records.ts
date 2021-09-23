@@ -258,6 +258,8 @@ export interface CallRecord {
   readonly template_id: number;
   readonly esi_template_id: number;
   readonly allocation_time_unit: AllocationTimeUnits;
+  readonly title: string;
+  readonly description: string;
 }
 
 export interface PageTextRecord {
@@ -738,7 +740,9 @@ export const createCallObject = (call: CallRecord) => {
     call.call_sep_review_ended,
     call.template_id,
     call.esi_template_id,
-    call.allocation_time_unit
+    call.allocation_time_unit,
+    call.title,
+    call.description
   );
 };
 

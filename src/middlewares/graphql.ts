@@ -46,7 +46,10 @@ const apolloServer = async (app: Express) => {
   );
 
   schema = applyMiddleware(schema, rejectionLogger);
-  if (process.env.NODE_ENV === 'production') {
+
+  const env = process.env.NODE_ENV;
+
+  if (env === 'production') {
     // prevent exposing too much information when running in production
     schema = applyMiddleware(schema, rejectionSanitizer);
   }

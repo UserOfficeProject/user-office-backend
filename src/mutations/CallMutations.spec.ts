@@ -34,6 +34,8 @@ describe('Test Call Mutations', () => {
         proposalWorkflowId: 1,
         allocationTimeUnit: AllocationTimeUnits.Day,
         templateId: 1,
+        title: 'Title',
+        description: 'Description',
       })
     ).resolves.toHaveProperty('reason', 'INSUFFICIENT_PERMISSIONS');
   });
@@ -67,6 +69,8 @@ describe('Test Call Mutations', () => {
         proposalWorkflowId: 1,
         allocationTimeUnit: AllocationTimeUnits.Day,
         templateId: 1,
+        title: 'Title',
+        description: 'Description',
       })
     ).resolves.toHaveProperty('reason', 'NOT_LOGGED_IN');
   });
@@ -91,6 +95,8 @@ describe('Test Call Mutations', () => {
       proposalWorkflowId: 1,
       allocationTimeUnit: AllocationTimeUnits.Day,
       templateId: 1,
+      title: 'Title',
+      description: 'Description',
     };
 
     return expect(
@@ -119,6 +125,8 @@ describe('Test Call Mutations', () => {
       allocationTimeUnit: AllocationTimeUnits.Day,
       templateId: 1,
       esiTemplateId: 2,
+      title: 'Title',
+      description: 'Description',
     };
 
     return expect(
@@ -155,6 +163,8 @@ describe('Test Call Mutations', () => {
         proposalWorkflowId: 1,
         allocationTimeUnit: AllocationTimeUnits.Day,
         templateId: 1,
+        title: 'Title',
+        description: 'Description',
       })
     ).resolves.toHaveProperty('reason', 'INSUFFICIENT_PERMISSIONS');
   });
@@ -180,6 +190,8 @@ describe('Test Call Mutations', () => {
       proposalWorkflowId: 1,
       allocationTimeUnit: AllocationTimeUnits.Day,
       templateId: 1,
+      title: 'Title',
+      description: 'Description',
     };
 
     return expect(

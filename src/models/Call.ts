@@ -22,7 +22,9 @@ export class Call {
     public callSEPReviewEnded: boolean,
     public templateId: number,
     public esiTemplateId: number | undefined,
-    public allocationTimeUnit: AllocationTimeUnits
+    public allocationTimeUnit: AllocationTimeUnits,
+    public title: string,
+    public description: string
   ) {}
 }
 

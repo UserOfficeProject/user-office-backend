@@ -79,6 +79,12 @@ export class Call implements Partial<CallOrigin> {
 
   @Field(() => Int, { nullable: true })
   public esiTemplateId?: number;
+
+  @Field({ nullable: true })
+  public title: string;
+
+  @Field({ nullable: true })
+  public description: string;
 }
 
 @Resolver(() => Call)

@@ -103,6 +103,8 @@ export default class PostgresCallDataSource implements CallDataSource {
         template_id: args.templateId,
         esi_template_id: args.esiTemplateId,
         allocation_time_unit: args.allocationTimeUnit,
+        title: args.title,
+        description: args.description,
       })
       .into('call')
       .returning('*')
@@ -182,6 +184,8 @@ export default class PostgresCallDataSource implements CallDataSource {
               call_sep_review_ended: args.callSEPReviewEnded,
               template_id: args.templateId,
               allocation_time_unit: args.allocationTimeUnit,
+              title: args.title,
+              description: args.description,
             },
             ['*']
           )
