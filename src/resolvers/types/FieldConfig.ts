@@ -124,6 +124,11 @@ export class SubTemplateConfig {
 }
 
 @ObjectType()
+export class SampleDeclarationConfig extends SubTemplateConfig {
+  @Field(() => Int, { nullable: true })
+  esiTemplateId: number | null;
+}
+@ObjectType()
 export class IntervalConfig extends ConfigBase {
   @Field(() => [String], { nullable: true })
   units: string[] | null;
@@ -172,6 +177,7 @@ export const FieldConfigType = createUnionType({
     SelectionFromOptionsConfig,
     TextInputConfig,
     SampleBasisConfig,
+    SampleDeclarationConfig,
     SubTemplateConfig,
     ProposalBasisConfig,
     ProposalEsiBasisConfig,
