@@ -115,7 +115,7 @@ export class TemplateDataSourceMock implements TemplateDataSource {
   constructor() {
     this.init();
   }
-  getGroup(groupId: TemplateGroupId): TemplateGroup {
+  getGroup(groupId: TemplateGroupId): Promise<TemplateGroup> {
     throw new Error('Method not implemented.');
   }
   public init() {

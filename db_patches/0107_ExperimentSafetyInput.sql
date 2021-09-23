@@ -11,8 +11,8 @@ BEGIN
         CREATE TABLE experiment_safety_inputs (
             esi_id serial PRIMARY KEY
             , visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE
-            , creator_user_id int REFERENCES users(user_id)
-            , questionary_id int UNIQUE REFERENCES questionaries(questionary_id) ON UPDATE CASCADE
+            , creator_id INT NOT NULL REFERENCES users(user_id)
+            , questionary_id INT NOT NULL UNIQUE REFERENCES questionaries(questionary_id) ON UPDATE CASCADE
             , is_submitted BOOLEAN DEFAULT FALSE
             , created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         ); 

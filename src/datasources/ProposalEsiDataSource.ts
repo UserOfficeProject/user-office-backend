@@ -7,7 +7,7 @@ import { UpdateEsiArgs } from '../resolvers/mutations/UpdateEsiMutation';
 export interface ProposalEsiDataSource {
   // Create
   createEsi(
-    args: CreateEsiArgs & { questionaryId: number }
+    args: CreateEsiArgs & { questionaryId: number; creatorId: number }
   ): Promise<ExperimentSafetyInput | Rejection>;
 
   // Read

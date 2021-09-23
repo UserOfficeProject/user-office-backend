@@ -9,12 +9,13 @@ import { createEsiObject, EsiRecord } from './records';
 
 class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
   async createEsi(
-    args: CreateEsiArgs & { questionaryId: number }
+    args: CreateEsiArgs & { questionaryId: number; creatorId: number }
   ): Promise<ExperimentSafetyInput | Rejection> {
     return database
       .insert({
         visit_id: args.visitId,
         questionary_id: args.questionaryId,
+        creator_id: args.creatorId,
       })
       .into('experiment_safety_inputs')
       .returning('*')
@@ -51,10 +52,9 @@ class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
       .update({
         is_submitted: args.isSubmitted,
       })
-      .where('esiId', args.esiId)
+      .where('esi_id', args.esiId)
       .returning('*')
-      .first()
-      .then((result: EsiRecord) => createEsiObject(result));
+      .then((result: EsiRecord[]) => createEsiObject(result[0]));
   }
 }
 

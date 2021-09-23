@@ -72,7 +72,7 @@ export default class ProposalEsiMutations {
     );
     const newQuestionaryId = newQuestionary.questionaryId;
 
-    this.questionaryDataSource.copyAnswers(
+    await this.questionaryDataSource.copyAnswers(
       proposal.questionaryId,
       newQuestionaryId
     );
@@ -80,6 +80,7 @@ export default class ProposalEsiMutations {
     return this.dataSource.createEsi({
       ...args,
       questionaryId: newQuestionaryId,
+      creatorId: user!.id,
     });
   }
 
