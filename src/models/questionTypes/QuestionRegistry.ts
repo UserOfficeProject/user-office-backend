@@ -14,6 +14,7 @@ import { proposalEsiBasisDefinition } from './ProposalEsiBasis';
 import { richTextInputDefinition } from './RichTextInput';
 import { sampleBasisDefinition } from './SampleBasis';
 import { sampleDeclarationDefinition } from './SampleDeclaration';
+import { sampleEsiBasisDefinition } from './SampleEsiBasis';
 import { selectionFromOptionsDefinition } from './SelectionFromOptions';
 import { shipmentBasis } from './ShipmentBasis';
 import { textInputDefinition } from './TextInput';
@@ -68,6 +69,7 @@ const registry = [
   selectionFromOptionsDefinition,
   textInputDefinition,
   sampleDeclarationDefinition,
+  sampleEsiBasisDefinition,
   proposalBasisDefinition,
   proposalEsiBasisDefinition,
   sampleBasisDefinition,

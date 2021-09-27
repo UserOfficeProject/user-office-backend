@@ -4,6 +4,7 @@ import { container, inject, injectable } from 'tsyringe';
 import { Tokens } from '../config/Tokens';
 import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
+import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
@@ -14,7 +15,7 @@ import { VisitDataSource } from './../datasources/VisitDataSource';
 import { UserAuthorization } from './UserAuthorization';
 import { VisitAuthorization } from './VisitAuthorization';
 
-interface QuestionaryAuthorizer {
+export interface QuestionaryAuthorizer {
   hasReadRights(agent: User | null, questionaryId: number): Promise<boolean>;
   hasWriteRights(agent: User | null, questionaryId: number): Promise<boolean>;
 }
@@ -31,40 +32,39 @@ export class ProposalQuestionaryAuthorizer implements QuestionaryAuthorizer {
     private callDataSource: CallDataSource
   ) {}
   async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
-    return true;
-    // return this.hasRights(agent, questionaryId);
+    return this.hasRights(agent, questionaryId);
   }
   async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
-    return true;
-    // const isUserOfficer = this.userAuth.isUserOfficer(agent);
-    // if (isUserOfficer) {
-    //   return true;
-    // }
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
+    if (isUserOfficer) {
+      return true;
+    }
 
-    // const proposal = (
-    //   await this.proposalDataSource.getProposals({
-    //     questionaryIds: [questionaryId],
-    //   })
-    // ).proposals[0];
+    const proposal = (
+      await this.proposalDataSource.getProposals({
+        questionaryIds: [questionaryId],
+      })
+    ).proposals[0];
 
-    // if (!proposal) {
-    //   // there is no proposal associated with the questionary
-    //   logger.logError(
-    //     'Authorizer failed unexpectedly, because is no proposal is associated with the questionary',
-    //     { agent, questionaryId }
-    //   );
-    //   return false;
-    // }
+    if (!proposal) {
+      // there is no proposal associated with the questionary
+      logger.logError(
+        'Authorizer failed unexpectedly, because is no proposal is associated with the questionary',
+        { agent, questionaryId }
+      );
 
-    // const hasActiveCall = await this.callDataSource.checkActiveCall(
-    //   proposal.callId
-    // );
+      return false;
+    }
 
-    // if (!hasActiveCall) {
-    //   return false;
-    // }
+    const hasActiveCall = await this.callDataSource.checkActiveCall(
+      proposal.callId
+    );
 
-    // return this.hasRights(agent, questionaryId);
+    if (!hasActiveCall) {
+      return false;
+    }
+
+    return this.hasRights(agent, questionaryId);
   }
 
   private async hasRights(agent: UserWithRole | null, questionaryId: number) {
@@ -267,6 +267,51 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
 }
 
 @injectable()
+export class ProposalEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
+  constructor(
+    @inject(Tokens.ProposalEsiDataSource)
+    private proposalEsiDataSource: ProposalEsiDataSource,
+    @inject(Tokens.VisitDataSource)
+    private visitDataSource: VisitDataSource,
+
+    private proposalQuestionaryAuth: ProposalQuestionaryAuthorizer = container.resolve(
+      ProposalQuestionaryAuthorizer
+    )
+  ) {}
+
+  async getProposalPk(esiQuestionaryId: number): Promise<number | null> {
+    const esi = await this.proposalEsiDataSource.getEsis({
+      questionaryId: esiQuestionaryId,
+    });
+    if (esi.length !== 1) {
+      return null;
+    }
+    const visit = await this.visitDataSource.getVisit(esi[0].visitId);
+    if (!visit) {
+      return null;
+    }
+
+    return visit.proposalPk;
+  }
+  async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
+    const proposalPk = await this.getProposalPk(questionaryId);
+    if (proposalPk === null) {
+      return false;
+    }
+
+    return this.proposalQuestionaryAuth.hasReadRights(agent, proposalPk);
+  }
+  async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
+    const proposalPk = await this.getProposalPk(questionaryId);
+    if (proposalPk === null) {
+      return false;
+    }
+
+    return this.proposalQuestionaryAuth.hasWriteRights(agent, proposalPk);
+  }
+}
+
+@injectable()
 export class QuestionaryAuthorization {
   private authorizers = new Map<TemplateGroupId, QuestionaryAuthorizer>();
   // TODO obtain authorizer from QuestionaryDefinition
@@ -292,6 +337,10 @@ export class QuestionaryAuthorization {
     this.authorizers.set(
       TemplateGroupId.VISIT_REGISTRATION,
       container.resolve(VisitQuestionaryAuthorizer)
+    );
+    this.authorizers.set(
+      TemplateGroupId.PROPOSAL_ESI,
+      container.resolve(ProposalEsiQuestionaryAuthorizer)
     );
   }
 

@@ -19,7 +19,7 @@ BEGIN
 
 
         CREATE TABLE sample_experiment_safety_inputs (
-            sample_esi_id serial PRIMARY KEy,
+            sample_esi_id serial PRIMARY KEY,
             esi_id int REFERENCES experiment_safety_inputs(esi_id) ON DELETE CASCADE ,
             sample_id int REFERENCES samples(sample_id) ON DELETE CASCADE ,
             questionary_id INTEGER REFERENCES questionaries (questionary_id),
@@ -47,6 +47,24 @@ BEGIN
 
         UPDATE question_datatypes set question_datatype_id='PROPOSAL_ESI_BASIS' WHERE question_datatype_id='RISK_ASSESSMENT_BASIS';
         UPDATE questions set question_id='proposal_esi_basis', natural_key='proposal_esi_basis', question='Proposal ESI basis' WHERE question_id='risk_assessment_basis';
+
+        INSERT INTO question_datatypes(question_datatype_id) VALUES('SAMPLE_ESI_BASIS');
+        INSERT INTO questions(
+            question_id,
+            data_type,
+            question,
+            default_config,
+            natural_key,
+            category_id
+        )
+    VALUES(
+            'sample_esi_basis',
+            'SAMPLE_ESI_BASIS',
+            'Sample ESI basic information',
+            '{"required":false,"small_label":"","tooltip":""}',
+            'sample_esi_basis',
+            2
+        );
 
         ALTER table call ADD COLUMN esi_template_id INTEGER DEFAULT NULL REFERENCES templates (template_id);
 
@@ -86,7 +104,6 @@ BEGIN
         DELETE FROM active_templates; -- delete, migration of these few rows would be complicated
         ALTER TABLE active_templates DROP COLUMN category_id;
         ALTER TABLE active_templates ADD  COLUMN group_id VARCHAR(30) NOT NULL REFERENCES template_groups(template_group_id) UNIQUE;
-
 
     END IF;
 END;

@@ -179,14 +179,14 @@ export default class PostgresSampleDataSource implements SampleDataSource {
   }
 
   getSamplesByEsiId(esiId: number): Promise<Sample[]> {
-    return database('experiment_safety_inputs_has_samples')
+    return database('sample_experiment_safety_inputs')
       .leftJoin(
         'samples',
-        'experiment_safety_inputs_has_samples.sample_id',
+        'sample_experiment_safety_inputs.sample_id',
         'samples.sample_id'
       )
       .select('samples.*')
-      .where(' experiment_safety_inputs_has_samples.esi_id', esiId)
+      .where(' sample_experiment_safety_inputs.esi_id', esiId)
       .then((records: SampleRecord[]) => {
         return records.map((record) => createSampleObject(record)) || [];
       });

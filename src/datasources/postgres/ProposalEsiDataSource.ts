@@ -42,6 +42,9 @@ class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
         if (filter.visitId) {
           query.where('visit_id', filter.visitId);
         }
+        if (filter.visitId) {
+          query.where('questionary_id', filter.questionaryId);
+        }
       });
 
     return esis.map((esi) => createEsiObject(esi));

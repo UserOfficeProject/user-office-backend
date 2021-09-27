@@ -8,6 +8,7 @@ import { UserWithRole } from '../models/User';
 
 export interface GetProposalEsisFilter {
   visitId?: number;
+  questionaryId?: number;
 }
 
 @injectable()

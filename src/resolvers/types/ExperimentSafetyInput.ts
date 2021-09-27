@@ -56,6 +56,6 @@ export class ExperimentSafetyInputResolver {
     @Root() esi: ExperimentSafetyInput,
     @Ctx() context: ResolverContext
   ): Promise<Sample[]> {
-    return context.queries.sample.getSamples(context.user, { filter: {} });
+    return context.queries.sample.getSamplesByEsiId(context.user, esi.id);
   }
 }

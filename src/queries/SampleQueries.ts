@@ -77,7 +77,7 @@ export default class SampleQueries {
   async getSamplesByEsiId(
     user: UserWithRole | null,
     esiId: number
-  ): Promise<Sample[] | null> {
+  ): Promise<Sample[]> {
     // TODO implement authorization
     const response = await this.dataSource.getSamplesByEsiId(esiId);
 
