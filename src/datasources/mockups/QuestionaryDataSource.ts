@@ -280,7 +280,7 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   async copyAnswers(
     sourceQuestionaryId: number,
     targetQuestionaryId: number
-  ): Promise<boolean> {
+  ): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

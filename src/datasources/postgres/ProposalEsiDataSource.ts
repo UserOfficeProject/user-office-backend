@@ -42,7 +42,7 @@ class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
         if (filter.visitId) {
           query.where('visit_id', filter.visitId);
         }
-        if (filter.visitId) {
+        if (filter.questionaryId) {
           query.where('questionary_id', filter.questionaryId);
         }
       });

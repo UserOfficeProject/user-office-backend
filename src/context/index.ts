@@ -3,7 +3,7 @@ import AdminMutations from '../mutations/AdminMutations';
 import CallMutations from '../mutations/CallMutations';
 import FileMutations from '../mutations/FileMutations';
 import InstrumentMutations from '../mutations/InstrumentMutations';
-import ProposalEsiMutations from '../mutations/ProposalEsiMutationsMutation';
+import ProposalEsiMutations from '../mutations/ProposalEsiMutations';
 import ProposalMutations from '../mutations/ProposalMutations';
 import ProposalSettingsMutations from '../mutations/ProposalSettingsMutations';
 import QuestionaryMutations from '../mutations/QuestionaryMutations';

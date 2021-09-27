@@ -31,5 +31,5 @@ export interface QuestionaryDataSource {
   copyAnswers(
     sourceQuestionaryId: number,
     targetQuestionaryId: number
-  ): Promise<boolean>;
+  ): Promise<void>;
 }
