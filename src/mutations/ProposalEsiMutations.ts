@@ -49,13 +49,6 @@ export default class ProposalEsiMutations {
       return reject('Can not create ESI, because proposal does not exist');
     }
 
-    const questionary = await this.questionaryDataSource.getQuestionary(
-      proposal.questionaryId
-    );
-    if (!questionary) {
-      return reject('Can not create ESI, because questionary does not exist');
-    }
-
     // TODO implement authorization
 
     const call = (await this.callDataSource.getCall(proposal.callId))!;
