@@ -901,7 +901,6 @@ export const createEsiObject = (esi: EsiRecord) => {
 export const createSampleEsiObject = (esi: SampleEsiRecord) => {
   return new SampleExperimentSafetyInput(
     esi.esi_id,
-    esi.esi_id,
     esi.sample_id,
     esi.questionary_id,
     esi.is_submitted

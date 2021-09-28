@@ -1,9 +1,10 @@
 import { SampleExperimentSafetyInput } from '../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../queries/SampleEsiQueries';
+import { SampleEsiArgs } from '../resolvers/queries/SampleEsiQuery';
 
 export interface SampleEsiDataSource {
   getSampleEsi(
-    sampleEsiId: number
+    args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null>;
   getSampleEsis(
     filter: GetSampleEsisFilter

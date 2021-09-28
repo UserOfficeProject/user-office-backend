@@ -2,6 +2,7 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { Authorized } from '../decorators';
 import {
@@ -9,10 +10,12 @@ import {
   ProposalEndStatus,
   ProposalPublicStatus,
 } from '../models/Proposal';
+import { Questionary } from '../models/Questionary';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { omit } from '../utils/helperFunctions';
 import { UserAuthorization } from '../utils/UserAuthorization';
+import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
 import { ProposalsFilter } from './../resolvers/queries/ProposalsQuery';
 
 const statusMap = new Map<ProposalEndStatus, ProposalPublicStatus>();
@@ -23,9 +26,38 @@ statusMap.set(ProposalEndStatus.RESERVED, ProposalPublicStatus.reserved);
 @injectable()
 export default class ProposalQueries {
   constructor(
-    @inject(Tokens.ProposalDataSource) public dataSource: ProposalDataSource,
-    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
+    @inject(Tokens.ProposalDataSource)
+    public dataSource: ProposalDataSource,
+
+    @inject(Tokens.UserAuthorization)
+    private userAuth: UserAuthorization,
+
+    @inject(Tokens.CallDataSource)
+    private callDataSource: CallDataSource,
+
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource
   ) {}
+
+  @Authorized()
+  async getQuestionaryOrDefault(
+    user: UserWithRole | null,
+    proposal: Proposal
+  ): Promise<Questionary | null> {
+    // TODO implement authorizer
+    const questionary = await this.questionaryDataSource.getQuestionary(
+      proposal.questionaryId
+    );
+    if (questionary) return questionary;
+
+    const call = await this.callDataSource.getCall(proposal.callId);
+
+    if (!call) {
+      return null;
+    }
+
+    return new Questionary(0, call.templateId, user!.id, new Date());
+  }
 
   @Authorized()
   async get(agent: UserWithRole | null, primaryKey: number) {
@@ -114,7 +146,7 @@ export default class ProposalQueries {
 
     if (proposal.submitted) {
       return (
-        statusMap.get(proposal.finalStatus) || ProposalPublicStatus.submitted
+        statusMap.get(proposal.finalStatus!) || ProposalPublicStatus.submitted
       );
     } else {
       return ProposalPublicStatus.draft;

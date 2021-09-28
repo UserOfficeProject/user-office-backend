@@ -38,26 +38,6 @@ export default class QuestionaryQueries {
   }
 
   @Authorized()
-  async getQuestionaryOrDefault(
-    agent: UserWithRole | null,
-    questionaryId: number,
-    templateCategory: TemplateCategoryId
-  ): Promise<Questionary> {
-    const questionary = await this.dataSource.getQuestionary(questionaryId);
-
-    if (questionary) {
-      return questionary;
-    }
-
-    return {
-      questionaryId: 0,
-      templateId: templateCategory,
-      creatorId: agent!.id,
-      created: new Date(),
-    };
-  }
-
-  @Authorized()
   async getQuestionarySteps(
     agent: UserWithRole | null,
     questionaryId: number

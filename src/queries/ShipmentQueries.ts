@@ -4,17 +4,30 @@ import { inject, injectable } from 'tsyringe';
 import { Tokens } from '../config/Tokens';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { Authorized } from '../decorators';
+import { Questionary } from '../models/Questionary';
 import { Roles } from '../models/Role';
+import { Shipment } from '../models/Shipment';
+import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { ShipmentsArgs } from '../resolvers/queries/ShipmentsQuery';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
+import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
+import { TemplateDataSource } from './../datasources/TemplateDataSource';
 
 @injectable()
 export default class ShipmentQueries {
   constructor(
-    @inject(Tokens.ShipmentDataSource) private dataSource: ShipmentDataSource,
+    @inject(Tokens.ShipmentDataSource)
+    private dataSource: ShipmentDataSource,
+
     @inject(Tokens.ShipmentAuthorization)
-    private shipmentAuthorization: ShipmentAuthorization
+    private shipmentAuthorization: ShipmentAuthorization,
+
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource,
+
+    @inject(Tokens.TemplateDataSource)
+    private templateDataSource: TemplateDataSource
   ) {}
 
   async getShipment(agent: UserWithRole | null, shipmentId: number) {
@@ -62,5 +75,26 @@ export default class ShipmentQueries {
     ).then((results) => shipments.filter((_v, index) => results[index]));
 
     return shipments;
+  }
+
+  async getQuestionaryOrDefault(
+    user: UserWithRole | null,
+    shipment: Shipment
+  ): Promise<Questionary | null> {
+    const questionary = await this.questionaryDataSource.getQuestionary(
+      shipment.questionaryId
+    );
+    if (questionary) {
+      return questionary;
+    }
+
+    const activeTemplateId = await this.templateDataSource.getActiveTemplateId(
+      TemplateGroupId.SHIPMENT
+    );
+    if (!activeTemplateId) {
+      return null;
+    }
+
+    return new Questionary(0, activeTemplateId, user!.id, new Date());
   }
 }

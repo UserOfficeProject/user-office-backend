@@ -10,7 +10,6 @@ import {
 
 import { ResolverContext } from '../../context';
 import { SampleExperimentSafetyInput as SampleExperimentSafetyInputOrigin } from '../../models/SampleExperimentSafetyInput';
-import { TemplateCategoryId } from '../../models/Template';
 import { Questionary } from './Questionary';
 
 @ObjectType()
@@ -32,15 +31,14 @@ export class SampleExperimentSafetyInput
 
 @Resolver(() => SampleExperimentSafetyInput)
 export class SampleExperimentSafetyInputResolver {
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() sampleEsi: SampleExperimentSafetyInput,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary> {
-    return context.queries.questionary.getQuestionaryOrDefault(
+  ): Promise<Questionary | null> {
+    return context.queries.sampleEsi.getQuestionaryOrDefault(
       context.user,
-      sampleEsi.questionaryId,
-      TemplateCategoryId.SAMPLE_DECLARATION
+      sampleEsi
     );
   }
 }

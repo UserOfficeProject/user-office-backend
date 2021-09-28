@@ -13,7 +13,6 @@ import {
   Shipment as ShipmentOrigin,
   ShipmentStatus,
 } from '../../models/Shipment';
-import { TemplateCategoryId } from '../../models/Template';
 import { Proposal } from './Proposal';
 import { Questionary } from './Questionary';
 import { Sample } from './Sample';
@@ -50,15 +49,14 @@ export class Shipment implements Partial<ShipmentOrigin> {
 
 @Resolver(() => Shipment)
 export class ShipmentResolver {
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() shipment: Shipment,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary> {
-    return context.queries.questionary.getQuestionaryOrDefault(
+  ): Promise<Questionary | null> {
+    return context.queries.shipment.getQuestionaryOrDefault(
       context.user,
-      shipment.questionaryId,
-      TemplateCategoryId.SHIPMENT_DECLARATION
+      shipment
     );
   }
 

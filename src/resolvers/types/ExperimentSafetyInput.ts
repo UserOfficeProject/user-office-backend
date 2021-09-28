@@ -10,7 +10,6 @@ import {
 
 import { ResolverContext } from '../../context';
 import { ExperimentSafetyInput as ExperimentSafetyInputOrigin } from '../../models/ExperimentSafetyInput';
-import { TemplateCategoryId } from '../../models/Template';
 import { Questionary } from './Questionary';
 import { Sample } from './Sample';
 
@@ -39,15 +38,14 @@ export class ExperimentSafetyInput
 
 @Resolver(() => ExperimentSafetyInput)
 export class ExperimentSafetyInputResolver {
-  @FieldResolver(() => Questionary)
+  @FieldResolver(() => Questionary, { nullable: true })
   async questionary(
     @Root() esi: ExperimentSafetyInput,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary> {
-    return context.queries.questionary.getQuestionaryOrDefault(
+  ): Promise<Questionary | null> {
+    return context.queries.proposalEsi.getQuestionaryOrDefault(
       context.user,
-      esi.questionaryId,
-      TemplateCategoryId.PROPOSAL_QUESTIONARY
+      esi
     );
   }
 

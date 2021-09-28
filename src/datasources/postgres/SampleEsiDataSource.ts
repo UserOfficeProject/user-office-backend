@@ -1,17 +1,19 @@
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
+import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
 import database from './database';
 import { createSampleEsiObject, SampleEsiRecord } from './records';
 
 class PostgresSampleEsiDataSource implements SampleEsiDataSource {
   async getSampleEsi(
-    sampleEsiId: number
+    args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
     const result = await database
       .select('*')
       .from('sample_experiment_safety_inputs')
-      .where('sample_esi_id', sampleEsiId)
+      .where('esi_id', args.esiId)
+      .andWhere('sample_id', args.sampleId)
       .first();
 
     return createSampleEsiObject(result);

@@ -1,10 +1,11 @@
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
+import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
 
 export class SampleEsiDataSourceMock implements SampleEsiDataSource {
   getSampleEsi(
-    sampleEsiId: number
+    args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
     throw new Error('Method not implemented.');
   }

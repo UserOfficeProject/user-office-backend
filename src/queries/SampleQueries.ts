@@ -2,14 +2,18 @@ import { logger } from '@esss-swap/duo-logger';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleDataSource } from '../datasources/SampleDataSource';
 import { Authorized } from '../decorators';
+import { Questionary } from '../models/Questionary';
 import { Roles } from '../models/Role';
 import { Sample } from '../models/Sample';
 import { UserWithRole } from '../models/User';
 import { SamplesArgs } from '../resolvers/queries/SamplesQuery';
+import { SampleDeclarationConfig } from '../resolvers/types/FieldConfig';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
+import { TemplateDataSource } from './../datasources/TemplateDataSource';
 
 @injectable()
 export default class SampleQueries {
@@ -21,7 +25,13 @@ export default class SampleQueries {
     private sampleAuthorization: SampleAuthorization,
 
     @inject(Tokens.ShipmentAuthorization)
-    private shipmentAuthorization: ShipmentAuthorization
+    private shipmentAuthorization: ShipmentAuthorization,
+
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource,
+
+    @inject(Tokens.TemplateDataSource)
+    private templateDataSource: TemplateDataSource
   ) {}
 
   async getSample(agent: UserWithRole | null, sampleId: number) {
@@ -82,5 +92,33 @@ export default class SampleQueries {
     const response = await this.dataSource.getSamplesByEsiId(esiId);
 
     return response;
+  }
+
+  async getQuestionaryOrDefault(
+    user: UserWithRole | null,
+    sample: Sample
+  ): Promise<Questionary | null> {
+    if (sample.questionaryId) {
+      const questionary = await this.questionaryDataSource.getQuestionary(
+        sample.questionaryId
+      );
+      if (questionary) {
+        return questionary;
+      }
+    }
+
+    const question = await this.templateDataSource.getQuestion(
+      sample.questionId
+    );
+    if (!question) {
+      return null;
+    }
+    const config = question.config as SampleDeclarationConfig;
+
+    if (!config.templateId) {
+      return null;
+    }
+
+    return new Questionary(0, config.templateId, user!.id, new Date());
   }
 }
