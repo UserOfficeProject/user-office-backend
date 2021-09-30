@@ -170,6 +170,9 @@ export class QuestionaryDataSourceMock implements QuestionaryDataSource {
   constructor() {
     this.init();
   }
+  getBlankQuestionary(): Promise<Questionary> {
+    throw new Error('Method not implemented.');
+  }
 
   public init() {
     dummyQuestionarySteps =

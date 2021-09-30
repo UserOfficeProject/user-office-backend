@@ -8,6 +8,7 @@ import ProposalMutations from '../mutations/ProposalMutations';
 import ProposalSettingsMutations from '../mutations/ProposalSettingsMutations';
 import QuestionaryMutations from '../mutations/QuestionaryMutations';
 import ReviewMutations from '../mutations/ReviewMutations';
+import SampleEsiMutations from '../mutations/SampleEsiMutations';
 import SampleMutations from '../mutations/SampleMutations';
 import SEPMutations from '../mutations/SEPMutations';
 import ShipmentMutations from '../mutations/ShipmentMutations';
@@ -67,6 +68,7 @@ interface ResolverContextMutations {
   instrument: InstrumentMutations;
   questionary: QuestionaryMutations;
   sample: SampleMutations;
+  sampleEsi: SampleEsiMutations;
   proposalSettings: ProposalSettingsMutations;
   shipment: ShipmentMutations;
   visit: VisitMutations;

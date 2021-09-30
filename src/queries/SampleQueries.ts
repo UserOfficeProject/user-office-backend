@@ -97,7 +97,7 @@ export default class SampleQueries {
   async getQuestionaryOrDefault(
     user: UserWithRole | null,
     sample: Sample
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     if (sample.questionaryId) {
       const questionary = await this.questionaryDataSource.getQuestionary(
         sample.questionaryId
@@ -111,12 +111,12 @@ export default class SampleQueries {
       sample.questionId
     );
     if (!question) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
     const config = question.config as SampleDeclarationConfig;
 
     if (!config.templateId) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     return new Questionary(0, config.templateId, user!.id, new Date());

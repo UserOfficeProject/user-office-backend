@@ -40,26 +40,6 @@ export default class ProposalQueries {
   ) {}
 
   @Authorized()
-  async getQuestionaryOrDefault(
-    user: UserWithRole | null,
-    proposal: Proposal
-  ): Promise<Questionary | null> {
-    // TODO implement authorizer
-    const questionary = await this.questionaryDataSource.getQuestionary(
-      proposal.questionaryId
-    );
-    if (questionary) return questionary;
-
-    const call = await this.callDataSource.getCall(proposal.callId);
-
-    if (!call) {
-      return null;
-    }
-
-    return new Questionary(0, call.templateId, user!.id, new Date());
-  }
-
-  @Authorized()
   async get(agent: UserWithRole | null, primaryKey: number) {
     let proposal = await this.dataSource.get(primaryKey);
 
@@ -151,5 +131,26 @@ export default class ProposalQueries {
     } else {
       return ProposalPublicStatus.draft;
     }
+  }
+
+  @Authorized()
+  async getQuestionaryOrDefault(
+    user: UserWithRole | null,
+    proposal: Proposal
+  ): Promise<Questionary> {
+    // TODO implement authorizer
+    const questionary = await this.questionaryDataSource.getQuestionary(
+      proposal.questionaryId
+    );
+    if (questionary) {
+      return questionary;
+    }
+
+    const call = await this.callDataSource.getCall(proposal.callId);
+    if (!call) {
+      return this.questionaryDataSource.getBlankQuestionary();
+    }
+
+    return new Questionary(0, call.templateId, user!.id, new Date());
   }
 }

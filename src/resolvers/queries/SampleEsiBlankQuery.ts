@@ -8,8 +8,8 @@ export class SampleEsiBlankArgs {
   @Field(() => Int)
   public esiId: number;
 
-  @Field(() => Int)
-  public sampleId: number;
+  @Field(() => String)
+  public questionId: string;
 }
 
 @Resolver()

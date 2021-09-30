@@ -41,11 +41,11 @@ export class UserVisitResolver {
     return context.queries.user.getBasic(context.user, userVisit.userId);
   }
 
-  @FieldResolver(() => Questionary, { nullable: true })
+  @FieldResolver(() => Questionary)
   async questionary(
     @Root() visitRegistration: VisitRegistration,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     return context.queries.visit.getQuestionaryOrDefault(
       context.user,
       visitRegistration

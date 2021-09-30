@@ -45,11 +45,11 @@ export class Sample implements Partial<SampleOrigin> {
 
 @Resolver(() => Sample)
 export class SampleResolver {
-  @FieldResolver(() => Questionary, { nullable: true })
+  @FieldResolver(() => Questionary)
   async questionary(
     @Root() sample: Sample,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     return context.queries.sample.getQuestionaryOrDefault(context.user, sample);
   }
 

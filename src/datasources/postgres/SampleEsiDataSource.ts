@@ -1,5 +1,8 @@
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
+import { CreateSampleEsiInput } from '../../resolvers/mutations/CreateSampleEsiMutation';
+import { DeleteSampleEsiInput } from '../../resolvers/mutations/DeleteSampleEsiMutation';
+import { UpdateSampleEsiArgs } from '../../resolvers/mutations/UpdateSampleEsiMutation';
 import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
 import database from './database';
@@ -9,14 +12,15 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
   async getSampleEsi(
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
-    const result = await database
+    return database
       .select('*')
       .from('sample_experiment_safety_inputs')
       .where('esi_id', args.esiId)
       .andWhere('sample_id', args.sampleId)
-      .first();
-
-    return createSampleEsiObject(result);
+      .first()
+      .then((row: SampleEsiRecord) =>
+        row ? createSampleEsiObject(row) : null
+      );
   }
   async getSampleEsis(
     filter: GetSampleEsisFilter
@@ -25,8 +29,8 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
       .select('*')
       .from('sample_experiment_safety_inputs')
       .modify((query) => {
-        if (filter.visitId) {
-          query.where('visit_id', filter.visitId);
+        if (filter.esiId) {
+          query.where('esi_id', filter.esiId);
         }
         if (filter.sampleId) {
           query.where('sample_id', filter.sampleId);
@@ -34,6 +38,48 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
       });
 
     return esis.map((esi) => createSampleEsiObject(esi));
+  }
+
+  async createSampleEsi(
+    args: CreateSampleEsiInput & { questionaryId: number }
+  ): Promise<SampleExperimentSafetyInput> {
+    return database('sample_experiment_safety_inputs')
+      .insert({
+        esi_id: args.esiId,
+        sample_id: args.sampleId,
+        questionary_id: args.questionaryId,
+      })
+      .returning('*')
+      .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
+  }
+
+  updateSampleEsi(
+    args: UpdateSampleEsiArgs & { questionaryId?: number }
+  ): Promise<SampleExperimentSafetyInput> {
+    return database('sample_experiment_safety_inputs')
+      .update({
+        questionaryId: args.questionaryId,
+        is_submitted: args.isSubmitted,
+      })
+      .where({
+        esi_id: args.esiId,
+        sample_id: args.sampleId,
+      })
+      .returning('*')
+      .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
+  }
+
+  deleteSampleEsi(
+    args: DeleteSampleEsiInput
+  ): Promise<SampleExperimentSafetyInput> {
+    return database('sample_experiment_safety_inputs')
+      .delete()
+      .where({
+        esi_id: args.esiId,
+        sample_id: args.sampleId,
+      })
+      .returning('*')
+      .then(([result]: SampleEsiRecord[]) => createSampleEsiObject(result));
   }
 }
 

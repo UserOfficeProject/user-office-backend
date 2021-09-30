@@ -11,7 +11,8 @@ import {
 import { ResolverContext } from '../../context';
 import { ExperimentSafetyInput as ExperimentSafetyInputOrigin } from '../../models/ExperimentSafetyInput';
 import { Questionary } from './Questionary';
-import { Sample } from './Sample';
+import { SampleExperimentSafetyInput } from './SampleExperimentSafetyInput';
+import { Visit } from './Visit';
 
 @ObjectType()
 export class ExperimentSafetyInput
@@ -38,22 +39,32 @@ export class ExperimentSafetyInput
 
 @Resolver(() => ExperimentSafetyInput)
 export class ExperimentSafetyInputResolver {
-  @FieldResolver(() => Questionary, { nullable: true })
+  @FieldResolver(() => Questionary)
   async questionary(
     @Root() esi: ExperimentSafetyInput,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     return context.queries.proposalEsi.getQuestionaryOrDefault(
       context.user,
       esi
     );
   }
 
-  @FieldResolver(() => [Sample])
-  async samples(
+  @FieldResolver(() => [SampleExperimentSafetyInput])
+  async sampleEsis(
     @Root() esi: ExperimentSafetyInput,
     @Ctx() context: ResolverContext
-  ): Promise<Sample[]> {
-    return context.queries.sample.getSamplesByEsiId(context.user, esi.id);
+  ): Promise<SampleExperimentSafetyInput[]> {
+    return context.queries.sampleEsi.getSampleEsis(context.user, {
+      esiId: esi.id,
+    });
+  }
+
+  @FieldResolver(() => Visit, { nullable: true })
+  async visit(
+    @Root() esi: ExperimentSafetyInput,
+    @Ctx() context: ResolverContext
+  ): Promise<Visit | null> {
+    return context.queries.visit.getVisit(context.user, esi.visitId);
   }
 }

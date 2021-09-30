@@ -22,6 +22,7 @@ import { Rejection } from './Rejection';
 import { ReviewWithNextProposalStatus } from './Review';
 import { Review } from './Review';
 import { Sample } from './Sample';
+import { SampleExperimentSafetyInput } from './SampleExperimentSafetyInput';
 import { SEP } from './SEP';
 import { SepMeetingDecision } from './SepMeetingDecision';
 import { SEPProposal } from './SEPProposal';
@@ -319,4 +320,11 @@ export class EsiResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => ExperimentSafetyInput, { nullable: true })
   public esi: ExperimentSafetyInput;
+}
+
+@ObjectType()
+export class SampleEsiResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => SampleExperimentSafetyInput, { nullable: true })
+  public esi?: SampleExperimentSafetyInput;
 }

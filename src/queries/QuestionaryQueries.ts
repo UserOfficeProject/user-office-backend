@@ -38,6 +38,19 @@ export default class QuestionaryQueries {
   }
 
   @Authorized()
+  async getBlankQuestionary(
+    agent: UserWithRole | null,
+    templateId: number
+  ): Promise<Questionary> {
+    return {
+      questionaryId: 0,
+      templateId: templateId,
+      creatorId: agent!.id,
+      created: new Date(),
+    };
+  }
+
+  @Authorized()
   async getQuestionarySteps(
     agent: UserWithRole | null,
     questionaryId: number

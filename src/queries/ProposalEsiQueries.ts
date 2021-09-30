@@ -57,7 +57,7 @@ export default class ProposalEsiQueries {
   async getQuestionaryOrDefault(
     user: UserWithRole | null,
     esi: ExperimentSafetyInput
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     // TODO implement authorizer
     const questionary = await this.questionaryDataSource.getQuestionary(
       esi.questionaryId
@@ -66,21 +66,21 @@ export default class ProposalEsiQueries {
 
     const visit = await this.visitDataSource.getVisit(esi.visitId);
     if (!visit) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     const proposal = await this.proposalDataSource.get(visit.proposalPk);
     if (!proposal) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     const call = await this.callDataSource.getCall(proposal.callId);
     if (!call) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
-    if (!call?.esiTemplateId) {
-      return null;
+    if (!call.esiTemplateId) {
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     return new Questionary(0, call.esiTemplateId, user!.id, new Date());

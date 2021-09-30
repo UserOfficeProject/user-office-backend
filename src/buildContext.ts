@@ -10,6 +10,7 @@ import ProposalMutations from './mutations/ProposalMutations';
 import ProposalSettingsMutations from './mutations/ProposalSettingsMutations';
 import QuestionaryMutations from './mutations/QuestionaryMutations';
 import ReviewMutations from './mutations/ReviewMutations';
+import SampleEsiMutations from './mutations/SampleEsiMutations';
 import SampleMutations from './mutations/SampleMutations';
 import SEPMutations from './mutations/SEPMutations';
 import ShipmentMutations from './mutations/ShipmentMutations';
@@ -69,6 +70,7 @@ const context: BasicResolverContext = {
     questionary: container.resolve(QuestionaryMutations),
     review: container.resolve(ReviewMutations),
     sample: container.resolve(SampleMutations),
+    sampleEsi: container.resolve(SampleEsiMutations),
     sep: container.resolve(SEPMutations),
     shipment: container.resolve(ShipmentMutations),
     template: container.resolve(TemplateMutations),

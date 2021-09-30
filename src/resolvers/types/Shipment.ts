@@ -49,11 +49,11 @@ export class Shipment implements Partial<ShipmentOrigin> {
 
 @Resolver(() => Shipment)
 export class ShipmentResolver {
-  @FieldResolver(() => Questionary, { nullable: true })
+  @FieldResolver(() => Questionary)
   async questionary(
     @Root() shipment: Shipment,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     return context.queries.shipment.getQuestionaryOrDefault(
       context.user,
       shipment

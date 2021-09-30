@@ -312,6 +312,18 @@ export class ProposalEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
 }
 
 @injectable()
+export class SampleEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
+  async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
+    //  TODO implement this
+    return true;
+  }
+  async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
+    //  TODO implement this
+    return true;
+  }
+}
+
+@injectable()
 export class QuestionaryAuthorization {
   private authorizers = new Map<TemplateGroupId, QuestionaryAuthorizer>();
   // TODO obtain authorizer from QuestionaryDefinition
@@ -341,6 +353,10 @@ export class QuestionaryAuthorization {
     this.authorizers.set(
       TemplateGroupId.PROPOSAL_ESI,
       container.resolve(ProposalEsiQuestionaryAuthorizer)
+    );
+    this.authorizers.set(
+      TemplateGroupId.SAMPLE_ESI,
+      container.resolve(SampleEsiQuestionaryAuthorizer)
     );
   }
 

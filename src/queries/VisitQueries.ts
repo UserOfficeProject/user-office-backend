@@ -84,7 +84,7 @@ export default class VisitQueries {
   async getQuestionaryOrDefault(
     user: UserWithRole | null,
     visitRegistration: VisitRegistration
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     if (visitRegistration.registrationQuestionaryId) {
       const questionary = await this.questionaryDataSource.getQuestionary(
         visitRegistration.registrationQuestionaryId
@@ -98,7 +98,7 @@ export default class VisitQueries {
       TemplateGroupId.VISIT_REGISTRATION
     );
     if (!activeTemplateId) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     return new Questionary(0, activeTemplateId, user!.id, new Date());

@@ -80,7 +80,7 @@ export default class ShipmentQueries {
   async getQuestionaryOrDefault(
     user: UserWithRole | null,
     shipment: Shipment
-  ): Promise<Questionary | null> {
+  ): Promise<Questionary> {
     const questionary = await this.questionaryDataSource.getQuestionary(
       shipment.questionaryId
     );
@@ -92,7 +92,7 @@ export default class ShipmentQueries {
       TemplateGroupId.SHIPMENT
     );
     if (!activeTemplateId) {
-      return null;
+      return this.questionaryDataSource.getBlankQuestionary();
     }
 
     return new Questionary(0, activeTemplateId, user!.id, new Date());

@@ -21,7 +21,7 @@ BEGIN
         CREATE TABLE sample_experiment_safety_inputs (
               esi_id int REFERENCES experiment_safety_inputs(esi_id) ON DELETE CASCADE
             , sample_id int REFERENCES samples(sample_id) ON DELETE CASCADE
-            , questionary_id INTEGER REFERENCES questionaries (questionary_id)
+            , questionary_id INT NOT NULL UNIQUE REFERENCES questionaries(questionary_id) ON UPDATE CASCADE
             , is_submitted BOOLEAN DEFAULT FALSE
             , PRIMARY KEY (esi_id, sample_id)
         ); 

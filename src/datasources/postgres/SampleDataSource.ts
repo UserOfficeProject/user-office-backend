@@ -186,7 +186,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
         'samples.sample_id'
       )
       .select('samples.*')
-      .where(' sample_experiment_safety_inputs.esi_id', esiId)
+      .where('sample_experiment_safety_inputs.esi_id', esiId)
       .then((records: SampleRecord[]) => {
         return records.map((record) => createSampleObject(record)) || [];
       });
