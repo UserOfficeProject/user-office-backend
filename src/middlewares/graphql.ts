@@ -59,7 +59,7 @@ const apolloServer = async (app: Express) => {
     tracing: false,
     // Explicitly disable playground in prod
     playground:
-      process.env.NODE_ENV !== 'production'
+      env !== 'production'
         ? { settings: { 'schema.polling.enable': false } }
         : false,
     plugins: [ApolloServerPluginInlineTraceDisabled()],
