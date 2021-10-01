@@ -114,7 +114,7 @@ export default class ProposalQueries {
 
     if (proposal.submitted) {
       return (
-        statusMap.get(proposal.finalStatus!) || ProposalPublicStatus.submitted
+        statusMap.get(proposal.finalStatus) || ProposalPublicStatus.submitted
       );
     } else {
       return ProposalPublicStatus.draft;
