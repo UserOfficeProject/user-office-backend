@@ -8,6 +8,7 @@ import database from './database';
 import { createEsiObject, EsiRecord } from './records';
 
 class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
+  // Create
   async createEsi(
     args: CreateEsiArgs & { questionaryId: number; creatorId: number }
   ): Promise<ExperimentSafetyInput | Rejection> {
@@ -22,6 +23,7 @@ class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
       .then((result) => createEsiObject(result[0]));
   }
 
+  // Read
   async getEsi(esiId: number): Promise<ExperimentSafetyInput | null> {
     const result = await database
       .select('*')
@@ -50,6 +52,7 @@ class PostgresProposalEsiDataSource implements ProposalEsiDataSource {
     return esis.map((esi) => createEsiObject(esi));
   }
 
+  // Update
   async updateEsi(args: UpdateEsiArgs): Promise<ExperimentSafetyInput> {
     return database('experiment_safety_inputs')
       .update({

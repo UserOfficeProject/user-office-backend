@@ -9,6 +9,21 @@ import database from './database';
 import { createSampleEsiObject, SampleEsiRecord } from './records';
 
 class PostgresSampleEsiDataSource implements SampleEsiDataSource {
+  // Create
+  async createSampleEsi(
+    args: CreateSampleEsiInput & { questionaryId: number }
+  ): Promise<SampleExperimentSafetyInput> {
+    return database('sample_experiment_safety_inputs')
+      .insert({
+        esi_id: args.esiId,
+        sample_id: args.sampleId,
+        questionary_id: args.questionaryId,
+      })
+      .returning('*')
+      .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
+  }
+
+  // Read
   async getSampleEsi(
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
@@ -40,19 +55,7 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
     return esis.map((esi) => createSampleEsiObject(esi));
   }
 
-  async createSampleEsi(
-    args: CreateSampleEsiInput & { questionaryId: number }
-  ): Promise<SampleExperimentSafetyInput> {
-    return database('sample_experiment_safety_inputs')
-      .insert({
-        esi_id: args.esiId,
-        sample_id: args.sampleId,
-        questionary_id: args.questionaryId,
-      })
-      .returning('*')
-      .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
-  }
-
+  // Update
   updateSampleEsi(
     args: UpdateSampleEsiArgs & { questionaryId?: number }
   ): Promise<SampleExperimentSafetyInput> {
@@ -69,6 +72,7 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
       .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
   }
 
+  // Delete
   deleteSampleEsi(
     args: DeleteSampleEsiInput
   ): Promise<SampleExperimentSafetyInput> {

@@ -6,19 +6,26 @@ import { UpdateSampleEsiArgs } from '../resolvers/mutations/UpdateSampleEsiMutat
 import { SampleEsiArgs } from '../resolvers/queries/SampleEsiQuery';
 
 export interface SampleEsiDataSource {
-  deleteSampleEsi(
-    args: DeleteSampleEsiInput
+  // Create
+  createSampleEsi(
+    args: CreateSampleEsiInput & { questionaryId: number }
   ): Promise<SampleExperimentSafetyInput>;
+
+  // Read
   getSampleEsi(
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null>;
   getSampleEsis(
     filter: GetSampleEsisFilter
   ): Promise<SampleExperimentSafetyInput[]>;
+
+  // Update
   updateSampleEsi(
     args: UpdateSampleEsiArgs & { questionaryId?: number }
   ): Promise<SampleExperimentSafetyInput>;
-  createSampleEsi(
-    args: CreateSampleEsiInput & { questionaryId: number }
+
+  // Delete
+  deleteSampleEsi(
+    args: DeleteSampleEsiInput
   ): Promise<SampleExperimentSafetyInput>;
 }

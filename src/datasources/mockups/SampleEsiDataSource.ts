@@ -7,22 +7,14 @@ import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
 
 export class SampleEsiDataSourceMock implements SampleEsiDataSource {
-  updateSampleEsi(
-    args: UpdateSampleEsiArgs & { questionaryId?: number }
-  ): Promise<SampleExperimentSafetyInput> {
-    throw new Error('Method not implemented.');
-  }
-
-  deleteSampleEsi(
-    args: DeleteSampleEsiInput
-  ): Promise<SampleExperimentSafetyInput> {
-    throw new Error('Method not implemented.');
-  }
+  // Create
   createSampleEsi(
     args: CreateSampleEsiInput
   ): Promise<SampleExperimentSafetyInput> {
     throw new Error('Method not implemented.');
   }
+
+  // Read
   getSampleEsi(
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
@@ -31,6 +23,20 @@ export class SampleEsiDataSourceMock implements SampleEsiDataSource {
   getSampleEsis(
     filter: GetSampleEsisFilter
   ): Promise<SampleExperimentSafetyInput[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  // Update
+  updateSampleEsi(
+    args: UpdateSampleEsiArgs & { questionaryId?: number }
+  ): Promise<SampleExperimentSafetyInput> {
+    throw new Error('Method not implemented.');
+  }
+
+  // Delete
+  deleteSampleEsi(
+    args: DeleteSampleEsiInput
+  ): Promise<SampleExperimentSafetyInput> {
     throw new Error('Method not implemented.');
   }
 }
