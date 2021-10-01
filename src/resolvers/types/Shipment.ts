@@ -13,6 +13,7 @@ import {
   Shipment as ShipmentOrigin,
   ShipmentStatus,
 } from '../../models/Shipment';
+import { TemplateCategoryId } from '../../models/Template';
 import { Proposal } from './Proposal';
 import { Questionary } from './Questionary';
 import { Sample } from './Sample';
@@ -54,9 +55,10 @@ export class ShipmentResolver {
     @Root() shipment: Shipment,
     @Ctx() context: ResolverContext
   ): Promise<Questionary> {
-    return context.queries.shipment.getQuestionaryOrDefault(
+    return context.queries.questionary.getQuestionaryOrDefault(
       context.user,
-      shipment
+      shipment.questionaryId,
+      TemplateCategoryId.SHIPMENT_DECLARATION
     );
   }
 

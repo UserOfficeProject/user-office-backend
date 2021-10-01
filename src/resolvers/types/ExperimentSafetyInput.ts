@@ -39,17 +39,6 @@ export class ExperimentSafetyInput
 
 @Resolver(() => ExperimentSafetyInput)
 export class ExperimentSafetyInputResolver {
-  @FieldResolver(() => Questionary)
-  async questionary(
-    @Root() esi: ExperimentSafetyInput,
-    @Ctx() context: ResolverContext
-  ): Promise<Questionary> {
-    return context.queries.proposalEsi.getQuestionaryOrDefault(
-      context.user,
-      esi
-    );
-  }
-
   @FieldResolver(() => [SampleExperimentSafetyInput])
   async sampleEsis(
     @Root() esi: ExperimentSafetyInput,
@@ -66,5 +55,16 @@ export class ExperimentSafetyInputResolver {
     @Ctx() context: ResolverContext
   ): Promise<Visit | null> {
     return context.queries.visit.getVisit(context.user, esi.visitId);
+  }
+
+  @FieldResolver(() => Questionary)
+  async questionary(
+    @Root() esi: ExperimentSafetyInput,
+    @Ctx() context: ResolverContext
+  ): Promise<Questionary> {
+    return context.queries.proposalEsi.getQuestionary(
+      context.user,
+      esi.questionaryId
+    );
   }
 }

@@ -5,9 +5,7 @@ import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Authorized } from '../decorators';
-import { Questionary } from '../models/Questionary';
 import { Roles } from '../models/Role';
-import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { VisitRegistration } from '../models/VisitRegistration';
 import { VisitsFilter } from '../resolvers/queries/VisitsQuery';
@@ -22,13 +20,10 @@ export default class VisitQueries {
   constructor(
     @inject(Tokens.VisitDataSource)
     public dataSource: VisitDataSource,
-
     @inject(Tokens.QuestionaryDataSource)
     public questionaryDataSource: QuestionaryDataSource,
-
     @inject(Tokens.TemplateDataSource)
     public templateDataSource: TemplateDataSource,
-
     @inject(Tokens.VisitAuthorization)
     public visitAuth: VisitAuthorization
   ) {}
@@ -79,28 +74,5 @@ export default class VisitQueries {
     eventId: number
   ) {
     return this.dataSource.getVisitByScheduledEventId(eventId);
-  }
-
-  async getQuestionaryOrDefault(
-    user: UserWithRole | null,
-    visitRegistration: VisitRegistration
-  ): Promise<Questionary> {
-    if (visitRegistration.registrationQuestionaryId) {
-      const questionary = await this.questionaryDataSource.getQuestionary(
-        visitRegistration.registrationQuestionaryId
-      );
-      if (questionary) {
-        return questionary;
-      }
-    }
-
-    const activeTemplateId = await this.templateDataSource.getActiveTemplateId(
-      TemplateGroupId.VISIT_REGISTRATION
-    );
-    if (!activeTemplateId) {
-      return this.questionaryDataSource.getBlankQuestionary();
-    }
-
-    return new Questionary(0, activeTemplateId, user!.id, new Date());
   }
 }

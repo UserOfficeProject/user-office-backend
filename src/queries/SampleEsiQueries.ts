@@ -1,15 +1,13 @@
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { SampleEsiDataSource } from '../datasources/SampleEsiDataSource';
 import { Authorized } from '../decorators';
+import { Questionary } from '../models/Questionary';
 import { SampleExperimentSafetyInput } from '../models/SampleExperimentSafetyInput';
 import { UserWithRole } from '../models/User';
-import { SampleEsiBlankArgs } from '../resolvers/queries/SampleEsiBlankQuery';
 import { SampleEsiArgs } from '../resolvers/queries/SampleEsiQuery';
-import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
-import { SampleDataSource } from './../datasources/SampleDataSource';
-import { TemplateDataSource } from './../datasources/TemplateDataSource';
 
 export interface GetSampleEsisFilter {
   esiId?: number;
@@ -22,14 +20,8 @@ export default class SampleEsiQueries {
     @inject(Tokens.SampleEsiDataSource)
     public dataSource: SampleEsiDataSource,
 
-    @inject(Tokens.SampleDataSource)
-    public sampleDs: SampleDataSource,
-
     @inject(Tokens.QuestionaryDataSource)
-    public questionaryDs: QuestionaryDataSource,
-
-    @inject(Tokens.TemplateDataSource)
-    public templateDs: TemplateDataSource
+    public questionaryDataSource: QuestionaryDataSource
   ) {}
 
   @Authorized()
@@ -37,8 +29,9 @@ export default class SampleEsiQueries {
     user: UserWithRole | null,
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
-    // TODO implement authorizer
-    return this.dataSource.getSampleEsi(args);
+    const esi = await this.dataSource.getSampleEsi(args);
+
+    return this.hasReadRights(user, esi) ? esi : null;
   }
 
   @Authorized()
@@ -46,16 +39,36 @@ export default class SampleEsiQueries {
     user: UserWithRole | null,
     filter: GetSampleEsisFilter
   ): Promise<SampleExperimentSafetyInput[]> {
-    // TODO implement authorizer
-    return this.dataSource.getSampleEsis(filter);
+    const esis = await this.dataSource.getSampleEsis(filter);
+    const accessibleEsis: SampleExperimentSafetyInput[] = esis
+      .map((esi) => (this.hasReadRights(user, esi) ? esi : null))
+      .filter((esi) => esi !== null) as SampleExperimentSafetyInput[];
+
+    return accessibleEsis;
   }
 
   @Authorized()
-  async getSampleEsiBlank(
+  async getQuestionary(
     user: UserWithRole | null,
-    args: SampleEsiBlankArgs
-  ): Promise<SampleExperimentSafetyInput> {
+    questionaryId: number
+  ): Promise<Questionary> {
+    const questionary = await this.questionaryDataSource.getQuestionary(
+      questionaryId
+    );
+    if (!questionary) {
+      throw new Error(
+        'Unexpected error. ESI must have a questionary, but not found'
+      );
+    }
+
+    return questionary;
+  }
+
+  private hasReadRights(
+    user: UserWithRole | null,
+    esi: SampleExperimentSafetyInput | null
+  ) {
     // TODO implement authorizer
-    return new SampleExperimentSafetyInput(args.esiId, 0, 0, false);
+    return true;
   }
 }

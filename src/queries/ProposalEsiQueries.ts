@@ -1,15 +1,12 @@
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
 import { Authorized } from '../decorators';
 import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
 import { Questionary } from '../models/Questionary';
 import { UserWithRole } from '../models/User';
-import { ProposalDataSource } from './../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../datasources/QuestionaryDataSource';
-import { VisitDataSource } from './../datasources/VisitDataSource';
 
 export interface GetProposalEsisFilter {
   visitId?: number;
@@ -23,16 +20,7 @@ export default class ProposalEsiQueries {
     public dataSource: ProposalEsiDataSource,
 
     @inject(Tokens.QuestionaryDataSource)
-    public questionaryDataSource: QuestionaryDataSource,
-
-    @inject(Tokens.CallDataSource)
-    public callDataSource: CallDataSource,
-
-    @inject(Tokens.ProposalDataSource)
-    public proposalDataSource: ProposalDataSource,
-
-    @inject(Tokens.VisitDataSource)
-    public visitDataSource: VisitDataSource
+    public questionaryDataSource: QuestionaryDataSource
   ) {}
 
   @Authorized()
@@ -40,8 +28,9 @@ export default class ProposalEsiQueries {
     user: UserWithRole | null,
     id: number
   ): Promise<ExperimentSafetyInput | null> {
-    // TODO implement authorizer
-    return this.dataSource.getEsi(id);
+    const esi = await this.dataSource.getEsi(id);
+
+    return this.hasReadRights(user, esi) ? esi : null;
   }
 
   @Authorized()
@@ -49,40 +38,37 @@ export default class ProposalEsiQueries {
     user: UserWithRole | null,
     filter: GetProposalEsisFilter
   ): Promise<ExperimentSafetyInput[] | null> {
-    // TODO implement authorizer
-    return this.dataSource.getEsis(filter);
+    const esis = await this.dataSource.getEsis(filter);
+
+    const accessibleEsis: ExperimentSafetyInput[] = esis
+      .map((esi) => (this.hasReadRights(user, esi) ? esi : null))
+      .filter((esi) => esi !== null) as ExperimentSafetyInput[];
+
+    return accessibleEsis;
   }
 
   @Authorized()
-  async getQuestionaryOrDefault(
+  async getQuestionary(
     user: UserWithRole | null,
-    esi: ExperimentSafetyInput
+    questionaryId: number
   ): Promise<Questionary> {
-    // TODO implement authorizer
     const questionary = await this.questionaryDataSource.getQuestionary(
-      esi.questionaryId
+      questionaryId
     );
-    if (questionary) return questionary;
-
-    const visit = await this.visitDataSource.getVisit(esi.visitId);
-    if (!visit) {
-      return this.questionaryDataSource.getBlankQuestionary();
+    if (!questionary) {
+      throw new Error(
+        'Unexpected error. ESI must have a questionary, but not found'
+      );
     }
 
-    const proposal = await this.proposalDataSource.get(visit.proposalPk);
-    if (!proposal) {
-      return this.questionaryDataSource.getBlankQuestionary();
-    }
+    return questionary;
+  }
 
-    const call = await this.callDataSource.getCall(proposal.callId);
-    if (!call) {
-      return this.questionaryDataSource.getBlankQuestionary();
-    }
-
-    if (!call.esiTemplateId) {
-      return this.questionaryDataSource.getBlankQuestionary();
-    }
-
-    return new Questionary(0, call.esiTemplateId, user!.id, new Date());
+  private hasReadRights(
+    user: UserWithRole | null,
+    esi: ExperimentSafetyInput | null
+  ) {
+    // TODO implement authorizer
+    return true;
   }
 }

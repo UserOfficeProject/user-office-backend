@@ -16,6 +16,7 @@ import {
   ProposalPublicStatus,
 } from '../../models/Proposal';
 import { isRejection } from '../../models/Rejection';
+import { TemplateCategoryId } from '../../models/Template';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
 import { Instrument } from './Instrument';
@@ -53,7 +54,7 @@ export class Proposal implements Partial<ProposalOrigin> {
   public proposalId: string;
 
   @Field(() => ProposalEndStatus, { nullable: true })
-  public finalStatus: ProposalEndStatus | undefined;
+  public finalStatus?: ProposalEndStatus;
 
   @Field(() => Int)
   public callId: number;
@@ -65,7 +66,7 @@ export class Proposal implements Partial<ProposalOrigin> {
   public commentForUser: string;
 
   @Field(() => String, { nullable: true })
-  public commentForManagement: string | undefined;
+  public commentForManagement?: string;
 
   @Field(() => Boolean)
   public notified: boolean;
@@ -81,9 +82,6 @@ export class Proposal implements Partial<ProposalOrigin> {
 
   @Field(() => Int, { nullable: true })
   public technicalReviewAssignee: number | null;
-
-  @Field(() => Int)
-  public referenceNumberSequence: number;
 
   public proposerId: number;
 }
@@ -191,9 +189,10 @@ export class ProposalResolver {
     @Root() proposal: Proposal,
     @Ctx() context: ResolverContext
   ): Promise<Questionary> {
-    return context.queries.proposal.getQuestionaryOrDefault(
+    return context.queries.questionary.getQuestionaryOrDefault(
       context.user,
-      proposal
+      proposal.questionaryId,
+      TemplateCategoryId.PROPOSAL_QUESTIONARY
     );
   }
 

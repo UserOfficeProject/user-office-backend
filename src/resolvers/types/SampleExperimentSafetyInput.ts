@@ -36,8 +36,8 @@ export class SampleExperimentSafetyInputResolver {
   async questionary(
     @Root() sampleEsi: SampleExperimentSafetyInput,
     @Ctx() context: ResolverContext
-  ): Promise<Questionary | null> {
-    return context.queries.questionary.getQuestionary(
+  ): Promise<Questionary> {
+    return context.queries.sampleEsi.getQuestionary(
       context.user,
       sampleEsi.questionaryId
     );
