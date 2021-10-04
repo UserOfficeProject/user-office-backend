@@ -1,4 +1,3 @@
-import { reject } from 'bluebird';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
@@ -9,7 +8,7 @@ import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Authorized } from '../decorators';
 import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
-import { Rejection } from '../models/Rejection';
+import { rejection, Rejection } from '../models/Rejection';
 import { UserWithRole } from '../models/User';
 import { CreateEsiArgs } from '../resolvers/mutations/CreateEsiMutation';
 import { UpdateEsiArgs } from '../resolvers/mutations/UpdateEsiMutation';
@@ -39,14 +38,14 @@ export default class ProposalEsiMutations {
   ): Promise<ExperimentSafetyInput | Rejection> {
     const visit = await this.visitDataSource.getVisit(args.visitId);
     if (!visit) {
-      return reject(
+      return rejection(
         'Can not create ESI, because visit with provided ID does not exist'
       );
     }
 
     const proposal = await this.proposalDataSource.get(visit.proposalPk);
     if (!proposal) {
-      return reject('Can not create ESI, because proposal does not exist');
+      return rejection('Can not create ESI, because proposal does not exist');
     }
 
     // TODO implement authorization
@@ -54,7 +53,7 @@ export default class ProposalEsiMutations {
     const call = (await this.callDataSource.getCall(proposal.callId))!;
 
     if (!call.esiTemplateId) {
-      return reject(
+      return rejection(
         'Can not create ESI, because system has no ESI template configured'
       );
     }
@@ -83,7 +82,7 @@ export default class ProposalEsiMutations {
     args: UpdateEsiArgs
   ): Promise<ExperimentSafetyInput | Rejection> {
     if (args.isSubmitted === false && !this.userAuth.isUserOfficer(user)) {
-      return reject(
+      return rejection(
         'Can not update ESI, it is not allowed to change ESI once it has been submitted'
       );
     }

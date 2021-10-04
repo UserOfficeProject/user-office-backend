@@ -57,14 +57,14 @@ BEGIN
             natural_key,
             category_id
         )
-    VALUES(
-            'sample_esi_basis',
-            'SAMPLE_ESI_BASIS',
-            'Sample ESI basic information',
-            '{"required":false,"small_label":"","tooltip":""}',
-            'sample_esi_basis',
-            2
-        );
+        VALUES(
+                'sample_esi_basis',
+                'SAMPLE_ESI_BASIS',
+                'Sample ESI basic information',
+                '{"required":false,"small_label":"","tooltip":""}',
+                'sample_esi_basis',
+                2
+            );
 
         ALTER table call ADD COLUMN esi_template_id INTEGER DEFAULT NULL REFERENCES templates (template_id);
 

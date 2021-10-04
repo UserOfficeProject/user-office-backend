@@ -3,8 +3,8 @@ $DO$
 BEGIN
 
   INSERT INTO public.templates(
-	name, description, is_archived, category_id)
-	VALUES ('Samples default template', 'The default template for the samples', false, 2);
+	name, description, is_archived, group_id)
+	VALUES ('Samples default template', 'The default template for the samples', false, 'SAMPLE');
 	
 INSERT INTO public.topics(
 	 topic_title, is_enabled, sort_order, template_id)
@@ -16,7 +16,7 @@ INSERT INTO public.templates_has_questions(
 	
 INSERT INTO public.questions(
 	question_id, data_type, question, default_config, created_at, updated_at, natural_key, category_id)
-	VALUES ('sample_declaration_question', 'SAMPLE_DECLARATION', 'Add samples', '{"addEntryButtonLabel":"Add","minEntries":null,"maxEntries":null,"templateId":2,"templateCategory":"SAMPLE_DECLARATION","required":false,"small_label":""}',
+	VALUES ('sample_declaration_question', 'SAMPLE_DECLARATION', 'Add samples', '{"addEntryButtonLabel":"Add","minEntries":null,"maxEntries":null,"templateId":5,"templateCategory":"SAMPLE_DECLARATION","required":false,"small_label":""}',
 			'2021-07-20 13:53:29.246687+00', '2021-07-20 13:53:29.246687+00', 'sample_declaration_question', 1);
 	
 INSERT INTO public.topics(
@@ -25,7 +25,7 @@ INSERT INTO public.topics(
 	
 INSERT INTO public.templates_has_questions(
 	question_id, template_id, topic_id, sort_order, config, dependencies_operator)
-	VALUES ('sample_declaration_question', 1, 3, 0, '{"addEntryButtonLabel":"Add","templateCategory":"SAMPLE_DECLARATION","templateId":2,"small_label":"","required":false,"minEntries":null,"maxEntries":null}', 'AND');
+	VALUES ('sample_declaration_question', 1, 3, 0, '{"addEntryButtonLabel":"Add","templateCategory":"SAMPLE_DECLARATION","templateId":5,"small_label":"","required":false,"minEntries":null,"maxEntries":null}', 'AND');
 
 INSERT INTO public.questionaries(
 	template_id, created_at, creator_id)
