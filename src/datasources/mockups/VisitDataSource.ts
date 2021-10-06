@@ -57,7 +57,7 @@ export class VisitDataSourceMock implements VisitDataSource {
   }
 
   async getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
-    throw new Error('Method not implemented 2.');
+    throw new Error('Method not implemented');
   }
 
   async getRegistration(
@@ -74,7 +74,7 @@ export class VisitDataSourceMock implements VisitDataSource {
   getRegistrations(
     filter: GetRegistrationsFilter
   ): Promise<VisitRegistration[]> {
-    throw new Error('Method not implemented 3');
+    throw new Error('Method not implemented');
   }
 
   async createVisit(
@@ -111,7 +111,7 @@ export class VisitDataSourceMock implements VisitDataSource {
     userId: number,
     args: UpdateVisitRegistrationArgs
   ): Promise<VisitRegistration> {
-    throw new Error('Method not implemented 4.');
+    throw new Error('Method not implemented');
   }
   async deleteVisit(visitId: number): Promise<Visit> {
     return this.visits.splice(

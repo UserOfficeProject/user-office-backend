@@ -7,36 +7,79 @@ import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
 
 export class SampleEsiDataSourceMock implements SampleEsiDataSource {
+  esis: SampleExperimentSafetyInput[];
+  constructor() {
+    this.init();
+  }
+
+  public init() {
+    this.esis = [new SampleExperimentSafetyInput(1, 1, 1, false)];
+  }
+
   // Create
-  createSampleEsi(
-    args: CreateSampleEsiInput
+  async createSampleEsi(
+    args: CreateSampleEsiInput & { questionaryId: number }
   ): Promise<SampleExperimentSafetyInput> {
-    throw new Error('Method not implemented.');
+    const newEsi = new SampleExperimentSafetyInput(
+      2,
+      args.sampleId,
+      args.questionaryId,
+      false
+    );
+    this.esis.push(newEsi);
+
+    return newEsi;
   }
 
   // Read
-  getSampleEsi(
+  async getSampleEsi(
     args: SampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | null> {
-    throw new Error('Method not implemented.');
+    return (
+      this.esis.find(
+        (esi) => esi.esiId === args.esiId && esi.sampleId === args.sampleId
+      ) || null
+    );
   }
-  getSampleEsis(
+
+  async getSampleEsis(
     filter: GetSampleEsisFilter
   ): Promise<SampleExperimentSafetyInput[]> {
-    throw new Error('Method not implemented.');
+    return this.esis.filter((esi) => {
+      const isEsiIdMatch = filter.esiId ? esi.esiId === filter.esiId : true;
+      const isSampleIdMatch = filter.sampleId
+        ? esi.sampleId === filter.sampleId
+        : true;
+
+      return isEsiIdMatch && isSampleIdMatch;
+    });
   }
 
   // Update
-  updateSampleEsi(
+  async updateSampleEsi(
     args: UpdateSampleEsiArgs & { questionaryId?: number }
   ): Promise<SampleExperimentSafetyInput> {
-    throw new Error('Method not implemented.');
+    const esiToUpdate = (await this.getSampleEsi(args))!;
+    console.log('is it', esiToUpdate.isSubmitted);
+    if (args.isSubmitted !== undefined) {
+      esiToUpdate.isSubmitted = args.isSubmitted;
+    }
+    if (args.questionaryId !== undefined) {
+      esiToUpdate.questionaryId = args.questionaryId;
+    }
+
+    return esiToUpdate;
   }
 
   // Delete
-  deleteSampleEsi(
+  async deleteSampleEsi(
     args: DeleteSampleEsiInput
   ): Promise<SampleExperimentSafetyInput> {
-    throw new Error('Method not implemented.');
+    return this.esis.splice(
+      this.esis.findIndex(
+        (esi) => esi.esiId === args.esiId && esi.sampleId === args.sampleId
+      ),
+      1
+    )[0];
   }
 }

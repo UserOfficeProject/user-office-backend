@@ -232,10 +232,6 @@ export default class PostgresQuestionaryDataSource
     );
   }
 
-  async getBlankQuestionary(): Promise<Questionary> {
-    return new Questionary(0, 0, 0, new Date());
-  }
-
   async getBlankQuestionarySteps(
     templateId: number
   ): Promise<QuestionaryStep[]> {

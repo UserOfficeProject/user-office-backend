@@ -1,4 +1,4 @@
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
@@ -13,9 +13,11 @@ import { SampleDataSource } from './../datasources/SampleDataSource';
 import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { SampleExperimentSafetyInput } from './../models/SampleExperimentSafetyInput';
 import { SampleDeclarationConfig } from './../resolvers/types/FieldConfig';
+import { EsiAuthorization } from './../utils/EsiAuthorization';
 
 @injectable()
-export default class SampleMutations {
+export default class SampleEsiMutations {
+  private esiAuth = container.resolve(EsiAuthorization);
   constructor(
     @inject(Tokens.SampleEsiDataSource)
     private sampleEsiDataSource: SampleEsiDataSource,
@@ -32,7 +34,15 @@ export default class SampleMutations {
     user: UserWithRole | null,
     args: CreateSampleEsiInput
   ): Promise<SampleExperimentSafetyInput | Rejection> {
-    // TODO authorize
+    const hasAccessRights = await this.esiAuth.hasAccessRights(
+      user,
+      args.esiId
+    );
+    if (hasAccessRights === false) {
+      return rejection('User does not have permission to create sample ESI', {
+        args,
+      });
+    }
     const sample = await this.sampleDataSource.getSample(args.sampleId);
     if (!sample) {
       return rejection('No sample found');
@@ -69,7 +79,19 @@ export default class SampleMutations {
     user: UserWithRole | null,
     args: DeleteSampleEsiInput
   ): Promise<SampleExperimentSafetyInput | Rejection> {
-    // TODO authorize
+    const hasAccessRights = await this.esiAuth.hasAccessRights(
+      user,
+      args.esiId
+    );
+    if (hasAccessRights === false) {
+      return rejection(
+        'User does not have permission to delete this sample ESI',
+        {
+          args,
+        }
+      );
+    }
+
     return this.sampleEsiDataSource.deleteSampleEsi(args);
   }
 
@@ -78,7 +100,19 @@ export default class SampleMutations {
     user: UserWithRole | null,
     args: UpdateSampleEsiArgs
   ): Promise<SampleExperimentSafetyInput | Rejection> {
-    // TODO authorize
+    const hasAccessRights = await this.esiAuth.hasAccessRights(
+      user,
+      args.esiId
+    );
+    if (hasAccessRights === false) {
+      return rejection(
+        'User does not have permission to update this sample ESI',
+        {
+          args,
+        }
+      );
+    }
+
     return this.sampleEsiDataSource.updateSampleEsi(args);
   }
 }

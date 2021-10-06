@@ -17,7 +17,7 @@ export class SampleDataSourceMock implements SampleDataSource {
         1,
         1,
         1,
-        'sampleQuestionId',
+        'experiment_samples',
         SampleStatus.LOW_RISK,
         'safety comment',
         new Date()

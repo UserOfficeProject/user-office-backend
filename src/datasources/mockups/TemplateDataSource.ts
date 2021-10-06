@@ -21,6 +21,7 @@ import { UpdateQuestionTemplateRelationSettingsArgs } from '../../resolvers/muta
 import { UpdateTemplateArgs } from '../../resolvers/mutations/UpdateTemplateMutation';
 import { QuestionsFilter } from '../../resolvers/queries/QuestionsQuery';
 import { TemplatesArgs } from '../../resolvers/queries/TemplatesQuery';
+import { SampleDeclarationConfig } from '../../resolvers/types/FieldConfig';
 import { TemplateDataSource } from '../TemplateDataSource';
 import {
   dummyQuestionFactory,
@@ -78,7 +79,7 @@ const dummyTemplateStepsFactory = () => {
     question: dummyQuestionFactory({
       id: 'enable_crystallization',
       dataType: DataType.BOOLEAN,
-      question: 'Is crystallization aplicable',
+      question: 'Is crystallization applicable',
       naturalKey: 'enable_crystallization',
     }),
   });
@@ -100,6 +101,15 @@ const dummyTemplateStepsFactory = () => {
     }),
   });
 
+  const samplesField = dummyQuestionTemplateRelationFactory({
+    question: dummyQuestionFactory({
+      id: 'experiment_samples',
+      naturalKey: 'experiment_samples',
+      dataType: DataType.SAMPLE_DECLARATION,
+      config: { esiTemplateId: 1 } as SampleDeclarationConfig,
+    }),
+  });
+
   return [
     new TemplateStep(new Topic(1, 'General information', 1, 1, true), [
       hasLinksToField,
@@ -107,6 +117,7 @@ const dummyTemplateStepsFactory = () => {
       hasLinksWithIndustry,
       enableCrystallization,
       proposalBasis,
+      samplesField,
     ]),
   ];
 };
@@ -115,8 +126,8 @@ export class TemplateDataSourceMock implements TemplateDataSource {
   constructor() {
     this.init();
   }
-  getGroup(groupId: TemplateGroupId): Promise<TemplateGroup> {
-    throw new Error('Method not implemented.');
+  async getGroup(groupId: TemplateGroupId): Promise<TemplateGroup> {
+    return new TemplateGroup(groupId, TemplateCategoryId.PROPOSAL_QUESTIONARY);
   }
   public init() {
     dummyProposalTemplate = dummyProposalTemplateFactory();
