@@ -21,7 +21,7 @@ INSERT INTO public.questions(
 	
 INSERT INTO public.topics(
 	 topic_title, is_enabled, sort_order, template_id)
-	VALUES ('Samples', true, 1, 1);
+	VALUES ('Topic title', true, 1, 1);
 	
 INSERT INTO public.templates_has_questions(
 	question_id, template_id, topic_id, sort_order, config, dependencies_operator)
