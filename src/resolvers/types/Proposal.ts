@@ -1,4 +1,5 @@
 import {
+  Arg,
   Ctx,
   Directive,
   Field,
@@ -20,6 +21,7 @@ import { TemplateCategoryId } from '../../models/Template';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
 import { Instrument } from './Instrument';
+import { ProposalBookingCore, ProposalBookingFilter } from './ProposalBooking';
 import { ProposalStatus } from './ProposalStatus';
 import { Questionary } from './Questionary';
 import { Review } from './Review';
@@ -224,6 +226,18 @@ export class ProposalResolver {
   ): Promise<Visit[] | null> {
     return await context.queries.visit.getMyVisits(context.user, {
       proposalPk: proposal.primaryKey,
+    });
+  }
+  @FieldResolver(() => ProposalBookingCore, { nullable: true })
+  proposalBookingCore(
+    @Root() proposal: Proposal,
+    @Ctx() ctx: ResolverContext,
+    @Arg('filter', () => ProposalBookingFilter, { nullable: true })
+    filter?: ProposalBookingFilter
+  ) {
+    return ctx.queries.proposal.getProposalBookingByProposalPk(ctx.user, {
+      proposalPk: proposal.primaryKey,
+      filter,
     });
   }
 }

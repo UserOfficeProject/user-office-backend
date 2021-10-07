@@ -19,7 +19,10 @@ import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSour
 import PostgresVisitDataSource from '../datasources/postgres/VisitDataSource';
 import { StfcUserDataSource } from '../datasources/stfc/StfcUserDataSource';
 import { SMTPMailService } from '../eventHandlers/MailService/SMTPMailService';
-import { createSkipPostingHandler } from '../eventHandlers/messageBroker';
+import {
+  createSkipListeningHandler,
+  createSkipPostingHandler,
+} from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
@@ -60,5 +63,6 @@ mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
 mapClass(Tokens.MailService, SMTPMailService);
 
 mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
+mapValue(Tokens.ListenToMessageQueue, createSkipListeningHandler());
 
 mapValue(Tokens.ConfigureEnvironment, configureSTFCEnvironment);

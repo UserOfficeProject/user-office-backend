@@ -17,7 +17,10 @@ import SystemDataSourceMock from '../datasources/mockups/SystemDataSource';
 import { TemplateDataSourceMock } from '../datasources/mockups/TemplateDataSource';
 import { UserDataSourceMock } from '../datasources/mockups/UserDataSource';
 import { SkipSendMailService } from '../eventHandlers/MailService/SkipSendMailService';
-import { createSkipPostingHandler } from '../eventHandlers/messageBroker';
+import {
+  createSkipListeningHandler,
+  createSkipPostingHandler,
+} from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
 import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
@@ -57,6 +60,7 @@ mapClass(Tokens.VisitDataSource, VisitDataSourceMock);
 mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
 
 mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
+mapValue(Tokens.ListenToMessageQueue, createSkipListeningHandler());
 
 mapClass(Tokens.MailService, SkipSendMailService);
 
