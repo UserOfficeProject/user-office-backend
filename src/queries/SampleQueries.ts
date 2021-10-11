@@ -1,5 +1,5 @@
 import { logger } from '@esss-swap/duo-logger';
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { SampleDataSource } from '../datasources/SampleDataSource';
@@ -8,11 +8,14 @@ import { Roles } from '../models/Role';
 import { Sample } from '../models/Sample';
 import { UserWithRole } from '../models/User';
 import { SamplesArgs } from '../resolvers/queries/SamplesQuery';
+import { EsiAuthorization } from '../utils/EsiAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 
 @injectable()
 export default class SampleQueries {
+  private esiAuth = container.resolve(EsiAuthorization);
+
   constructor(
     @inject(Tokens.SampleDataSource)
     private dataSource: SampleDataSource,
@@ -78,7 +81,10 @@ export default class SampleQueries {
     user: UserWithRole | null,
     esiId: number
   ): Promise<Sample[] | null> {
-    // TODO implement authorization
+    const hasAccessRights = await this.esiAuth.hasAccessRights(user, esiId);
+    if (hasAccessRights === false) {
+      return null;
+    }
     const response = await this.dataSource.getSamplesByEsiId(esiId);
 
     return response;
