@@ -18,6 +18,7 @@ import { UserAuthorization } from './../utils/UserAuthorization';
 @injectable()
 export default class SampleMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private sampleAuth = container.resolve(SampleAuthorization);
 
   constructor(
     @inject(Tokens.SampleDataSource) private sampleDataSource: SampleDataSource,
@@ -26,9 +27,7 @@ export default class SampleMutations {
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.ProposalDataSource)
-    private proposalDataSource: ProposalDataSource,
-    @inject(Tokens.SampleAuthorization)
-    private sampleAuthorization: SampleAuthorization
+    private proposalDataSource: ProposalDataSource
   ) {}
 
   @Authorized()
@@ -85,7 +84,7 @@ export default class SampleMutations {
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
   async updateSample(agent: UserWithRole | null, args: UpdateSampleArgs) {
-    const hasWriteRights = await this.sampleAuthorization.hasWriteRights(
+    const hasWriteRights = await this.sampleAuth.hasWriteRights(
       agent,
       args.sampleId
     );
@@ -121,7 +120,7 @@ export default class SampleMutations {
   }
 
   async deleteSample(agent: UserWithRole | null, sampleId: number) {
-    const hasWriteRights = await this.sampleAuthorization.hasWriteRights(
+    const hasWriteRights = await this.sampleAuth.hasWriteRights(
       agent,
       sampleId
     );
@@ -157,7 +156,7 @@ export default class SampleMutations {
         { agent, sampleId }
       );
     }
-    if (!(await this.sampleAuthorization.hasWriteRights(agent, sampleId))) {
+    if (!(await this.sampleAuth.hasWriteRights(agent, sampleId))) {
       return rejection(
         'Could not clone sample because of insufficient permissions',
         { agent, sampleId }

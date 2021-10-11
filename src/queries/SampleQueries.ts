@@ -1,5 +1,5 @@
 import { logger } from '@esss-swap/duo-logger';
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { SampleDataSource } from '../datasources/SampleDataSource';
@@ -13,21 +13,17 @@ import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 
 @injectable()
 export default class SampleQueries {
+  private sampleAuth = container.resolve(SampleAuthorization);
   constructor(
     @inject(Tokens.SampleDataSource)
     private dataSource: SampleDataSource,
-
-    @inject(Tokens.SampleAuthorization)
-    private sampleAuthorization: SampleAuthorization,
 
     @inject(Tokens.ShipmentAuthorization)
     private shipmentAuthorization: ShipmentAuthorization
   ) {}
 
   async getSample(agent: UserWithRole | null, sampleId: number) {
-    if (
-      (await this.sampleAuthorization.hasReadRights(agent, sampleId)) !== true
-    ) {
+    if ((await this.sampleAuth.hasReadRights(agent, sampleId)) !== true) {
       logger.logWarn('Unauthorized getSample access', { agent, sampleId });
 
       return null;
@@ -40,9 +36,7 @@ export default class SampleQueries {
     let samples = await this.dataSource.getSamples(args);
 
     samples = await Promise.all(
-      samples.map((sample) =>
-        this.sampleAuthorization.hasReadRights(agent, sample.id)
-      )
+      samples.map((sample) => this.sampleAuth.hasReadRights(agent, sample.id))
     ).then((results) => samples.filter((_v, index) => results[index]));
 
     return samples;

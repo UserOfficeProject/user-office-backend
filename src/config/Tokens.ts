@@ -7,11 +7,9 @@ export const Tokens = {
   InstrumentDataSource: Symbol('InstrumentDataSource'),
   ProposalDataSource: Symbol('ProposalDataSource'),
   ProposalSettingsDataSource: Symbol('ProposalSettingsDataSource'),
-
   QuestionaryDataSource: Symbol('QuestionaryDataSource'),
   ReviewDataSource: Symbol('ReviewDataSource'),
   SEPDataSource: Symbol('SEPDataSource'),
-  SampleAuthorization: Symbol('SampleAuthorization'),
   SampleDataSource: Symbol('SampleDataSource'),
   ShipmentAuthorization: Symbol('ShipmentAuthorization'),
   ShipmentDataSource: Symbol('ShipmentDataSource'),

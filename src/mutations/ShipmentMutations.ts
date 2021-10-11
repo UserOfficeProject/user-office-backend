@@ -22,6 +22,8 @@ import { UserAuthorization } from '../utils/UserAuthorization';
 @injectable()
 export default class ShipmentMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private sampleAuth = container.resolve(SampleAuthorization);
+
   constructor(
     @inject(Tokens.ShipmentDataSource)
     private shipmentDataSource: ShipmentDataSource,
@@ -31,8 +33,6 @@ export default class ShipmentMutations {
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
-    @inject(Tokens.SampleAuthorization)
-    private sampleAuth: SampleAuthorization,
     @inject(Tokens.ShipmentAuthorization)
     private shipmentAuth: ShipmentAuthorization,
     @inject(Tokens.AssetRegistrar)
