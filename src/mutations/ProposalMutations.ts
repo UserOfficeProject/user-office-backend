@@ -7,7 +7,7 @@ import {
   submitProposalValidationSchema,
   updateProposalValidationSchema,
 } from '@esss-swap/duo-validation';
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
@@ -37,6 +37,7 @@ import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDat
 
 @injectable()
 export default class ProposalMutations {
+  private userAuth = container.resolve(UserAuthorization);
   constructor(
     @inject(Tokens.ProposalDataSource)
     public proposalDataSource: ProposalDataSource,
@@ -49,8 +50,6 @@ export default class ProposalMutations {
     private sampleDataSource: SampleDataSource,
     @inject(Tokens.UserDataSource)
     private userDataSource: UserDataSource,
-    @inject(Tokens.UserAuthorization)
-    private userAuth: UserAuthorization,
     @inject(Tokens.ProposalSettingsDataSource)
     private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}

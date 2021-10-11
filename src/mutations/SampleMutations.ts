@@ -1,4 +1,4 @@
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -13,10 +13,12 @@ import { UserWithRole } from '../models/User';
 import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleArgs } from '../resolvers/mutations/UpdateSampleMutation';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
+import { UserAuthorization } from './../utils/UserAuthorization';
 
 @injectable()
 export default class SampleMutations {
+  private userAuth = container.resolve(UserAuthorization);
+
   constructor(
     @inject(Tokens.SampleDataSource) private sampleDataSource: SampleDataSource,
     @inject(Tokens.QuestionaryDataSource)
@@ -26,9 +28,7 @@ export default class SampleMutations {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.SampleAuthorization)
-    private sampleAuthorization: SampleAuthorization,
-    @inject(Tokens.UserAuthorization)
-    private userAuthorization: UserAuthorization
+    private sampleAuthorization: SampleAuthorization
   ) {}
 
   @Authorized()
@@ -56,9 +56,7 @@ export default class SampleMutations {
       });
     }
 
-    if (
-      (await this.userAuthorization.hasAccessRights(agent, proposal)) === false
-    ) {
+    if ((await this.userAuth.hasAccessRights(agent, proposal)) === false) {
       return rejection(
         'Can not create sample because of insufficient permissions',
         { agent, args }
@@ -102,8 +100,8 @@ export default class SampleMutations {
     // Thi makes sure administrative fields can be only updated by user with the right role
     if (args.safetyComment || args.safetyStatus) {
       const canAdministrerSample =
-        this.userAuthorization.isUserOfficer(agent) ||
-        (await this.userAuthorization.isSampleSafetyReviewer(agent));
+        this.userAuth.isUserOfficer(agent) ||
+        (await this.userAuth.isSampleSafetyReviewer(agent));
       if (canAdministrerSample === false) {
         delete args.safetyComment;
         delete args.safetyStatus;

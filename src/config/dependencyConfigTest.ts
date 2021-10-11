@@ -22,18 +22,14 @@ import {
   createSkipPostingHandler,
 } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
-import { QuestionaryAuthorization } from '../utils/QuestionaryAuthorization';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
 import { VisitAuthorization } from '../utils/VisitAuthorization';
 import { SampleEsiDataSourceMock } from './../datasources/mockups/SampleEsiDataSource';
 import { VisitDataSourceMock } from './../datasources/mockups/VisitDataSource';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
 
-mapClass(Tokens.UserAuthorization, UserAuthorization);
-mapClass(Tokens.QuestionaryAuthorization, QuestionaryAuthorization);
 mapClass(Tokens.SampleAuthorization, SampleAuthorization);
 mapClass(Tokens.ShipmentAuthorization, ShipmentAuthorization);
 mapClass(Tokens.VisitAuthorization, VisitAuthorization);

@@ -1,4 +1,4 @@
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -21,6 +21,7 @@ import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
 @injectable()
 export default class ShipmentMutations {
+  private userAuth = container.resolve(UserAuthorization);
   constructor(
     @inject(Tokens.ShipmentDataSource)
     private shipmentDataSource: ShipmentDataSource,
@@ -34,8 +35,6 @@ export default class ShipmentMutations {
     private sampleAuth: SampleAuthorization,
     @inject(Tokens.ShipmentAuthorization)
     private shipmentAuth: ShipmentAuthorization,
-    @inject(Tokens.UserAuthorization)
-    private userAuth: UserAuthorization,
     @inject(Tokens.AssetRegistrar)
     private assetRegistrarService: AssetRegistrar
   ) {}

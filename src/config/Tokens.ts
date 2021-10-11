@@ -7,7 +7,7 @@ export const Tokens = {
   InstrumentDataSource: Symbol('InstrumentDataSource'),
   ProposalDataSource: Symbol('ProposalDataSource'),
   ProposalSettingsDataSource: Symbol('ProposalSettingsDataSource'),
-  QuestionaryAuthorization: Symbol('QuestionaryAuthorization'),
+
   QuestionaryDataSource: Symbol('QuestionaryDataSource'),
   ReviewDataSource: Symbol('ReviewDataSource'),
   SEPDataSource: Symbol('SEPDataSource'),
@@ -17,7 +17,6 @@ export const Tokens = {
   ShipmentDataSource: Symbol('ShipmentDataSource'),
   SystemDataSource: Symbol('SystemDataSource'),
   TemplateDataSource: Symbol('TemplateDataSource'),
-  UserAuthorization: Symbol('UserAuthorization'),
   UserDataSource: Symbol('UserDataSource'),
   AssetRegistrar: Symbol('AssetRegistrar'),
   PostToMessageQueue: Symbol('PostToMessageQueue'),
