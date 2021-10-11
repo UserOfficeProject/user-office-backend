@@ -8,14 +8,12 @@ import {
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
-import { VisitDataSourceMock } from './../datasources/mockups/VisitDataSource';
 import SampleQueries from './SampleQueries';
 
 const sampleQueries = container.resolve(SampleQueries);
 
 beforeEach(() => {
   container.resolve<SampleDataSourceMock>(Tokens.SampleDataSource).init();
-  container.resolve<VisitDataSourceMock>(Tokens.VisitDataSource).init();
 });
 
 test('A userofficer can get samples', () => {
