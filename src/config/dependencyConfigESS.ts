@@ -24,7 +24,6 @@ import {
   createPostToRabbitMQHandler,
 } from '../eventHandlers/messageBroker';
 import { EAMAssetRegistrar } from '../utils/EAM_service';
-import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { VisitAuthorization } from './../utils/VisitAuthorization';
 import { configureESSDevelopmentEnvironment } from './ess/configureESSEnvironment';
 import { Tokens } from './Tokens';
@@ -32,7 +31,6 @@ import { mapClass, mapValue } from './utils';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-mapClass(Tokens.ShipmentAuthorization, ShipmentAuthorization);
 mapClass(Tokens.VisitAuthorization, VisitAuthorization);
 
 mapClass(Tokens.AdminDataSource, PostgresAdminDataSourceWithAutoUpgrade);

@@ -14,12 +14,11 @@ import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 @injectable()
 export default class SampleQueries {
   private sampleAuth = container.resolve(SampleAuthorization);
+  private shipmentAuth = container.resolve(ShipmentAuthorization);
+
   constructor(
     @inject(Tokens.SampleDataSource)
-    private dataSource: SampleDataSource,
-
-    @inject(Tokens.ShipmentAuthorization)
-    private shipmentAuthorization: ShipmentAuthorization
+    private dataSource: SampleDataSource
   ) {}
 
   async getSample(agent: UserWithRole | null, sampleId: number) {
@@ -51,10 +50,7 @@ export default class SampleQueries {
     user: UserWithRole | null,
     shipmentId: number
   ): Promise<Sample[] | null> {
-    const hasRights = await this.shipmentAuthorization.hasReadRights(
-      user,
-      shipmentId
-    );
+    const hasRights = await this.shipmentAuth.hasReadRights(user, shipmentId);
     if (hasRights === false) {
       logger.logWarn('Unauthorized getSamplesByShipmentId access', {
         user,

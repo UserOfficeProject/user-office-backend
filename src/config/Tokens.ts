@@ -11,7 +11,6 @@ export const Tokens = {
   ReviewDataSource: Symbol('ReviewDataSource'),
   SEPDataSource: Symbol('SEPDataSource'),
   SampleDataSource: Symbol('SampleDataSource'),
-  ShipmentAuthorization: Symbol('ShipmentAuthorization'),
   ShipmentDataSource: Symbol('ShipmentDataSource'),
   SystemDataSource: Symbol('SystemDataSource'),
   TemplateDataSource: Symbol('TemplateDataSource'),
