@@ -196,12 +196,11 @@ class ShipmentDeclarationQuestionaryAuthorizer
 @injectable()
 class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
   private userAuth = container.resolve(UserAuthorization);
+  private visitAuth = container.resolve(VisitAuthorization);
 
   constructor(
     @inject(Tokens.VisitDataSource)
-    private visitDataSource: VisitDataSource,
-    @inject(Tokens.VisitAuthorization)
-    private visitAuth: VisitAuthorization
+    private visitDataSource: VisitDataSource
   ) {}
   /**
    * Visitor has read rights on his and other visitor questionaries

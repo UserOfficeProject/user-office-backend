@@ -22,6 +22,7 @@ import { VisitAuthorization } from './../utils/VisitAuthorization';
 @injectable()
 export default class VisitMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private visitAuth = container.resolve(VisitAuthorization);
 
   constructor(
     @inject(Tokens.VisitDataSource)
@@ -31,9 +32,7 @@ export default class VisitMutations {
     @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource,
     @inject(Tokens.TemplateDataSource)
-    private templateDataSource: TemplateDataSource,
-    @inject(Tokens.VisitAuthorization)
-    private visitAuthorization: VisitAuthorization
+    private templateDataSource: TemplateDataSource
   ) {}
 
   @Authorized()
@@ -125,7 +124,7 @@ export default class VisitMutations {
       );
     }
 
-    const hasRights = await this.visitAuthorization.hasWriteRights(user, visit);
+    const hasRights = await this.visitAuth.hasWriteRights(user, visit);
 
     if (this.userAuth.isUser(user) && args.status === VisitStatus.ACCEPTED) {
       return rejection(
@@ -148,10 +147,7 @@ export default class VisitMutations {
     user: UserWithRole | null,
     visitId: number
   ): Promise<Visit | Rejection> {
-    const hasRights = await this.visitAuthorization.hasWriteRights(
-      user,
-      visitId
-    );
+    const hasRights = await this.visitAuth.hasWriteRights(user, visitId);
     if (hasRights === false) {
       return rejection(
         'Can not update visit because of insufficient permissions',

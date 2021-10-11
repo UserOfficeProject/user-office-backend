@@ -24,12 +24,9 @@ import {
   createSkipPostingHandler,
 } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
-import { VisitAuthorization } from '../utils/VisitAuthorization';
 import { configureESSDevelopmentEnvironment } from './ess/configureESSEnvironment';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
-
-mapClass(Tokens.VisitAuthorization, VisitAuthorization);
 
 mapClass(Tokens.AdminDataSource, PostgresAdminDataSource);
 mapClass(Tokens.CallDataSource, PostgresCallDataSource);

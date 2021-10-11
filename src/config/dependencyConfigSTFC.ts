@@ -24,12 +24,9 @@ import {
   createSkipPostingHandler,
 } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../utils/EAM_service';
-import { VisitAuthorization } from '../utils/VisitAuthorization';
 import { configureSTFCEnvironment } from './stfc/configureSTFCEnvironment';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
-
-mapClass(Tokens.VisitAuthorization, VisitAuthorization);
 
 mapClass(Tokens.AdminDataSource, PostgresAdminDataSourceWithAutoUpgrade);
 mapClass(Tokens.CallDataSource, PostgresCallDataSource);

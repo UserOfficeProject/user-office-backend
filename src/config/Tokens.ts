@@ -20,7 +20,6 @@ export const Tokens = {
   ListenToMessageQueue: Symbol('ListenToMessageQueue'),
   MailService: Symbol('MailService'),
   VisitDataSource: Symbol('VisitDataSource'),
-  VisitAuthorization: Symbol('VisitAuthorization'),
   ProposalEsiDataSource: Symbol('ProposalEsiDataSource'),
   SampleEsiDataSource: Symbol('SampleEsiDataSource'),
   ConfigureEnvironment: Symbol('ConfigureEnvironment'),
