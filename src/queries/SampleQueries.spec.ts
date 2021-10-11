@@ -8,12 +8,14 @@ import {
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
+import { VisitDataSourceMock } from './../datasources/mockups/VisitDataSource';
 import SampleQueries from './SampleQueries';
 
 const sampleQueries = container.resolve(SampleQueries);
 
 beforeEach(() => {
   container.resolve<SampleDataSourceMock>(Tokens.SampleDataSource).init();
+  container.resolve<VisitDataSourceMock>(Tokens.VisitDataSource).init();
 });
 
 test('A userofficer can get samples', () => {
@@ -37,5 +39,17 @@ test('A user of proposal can get samples by shipment id', () => {
 test('A user not on proposal can not get samples by shipment id', () => {
   return expect(
     sampleQueries.getSamplesByShipmentId(dummyUserNotOnProposalWithRole, 1)
+  ).resolves.toBe(null);
+});
+
+test('A user on proposal should get samples by esi id', () => {
+  return expect(
+    sampleQueries.getSamplesByEsiId(dummyUserWithRole, 1)
+  ).resolves.toBeInstanceOf(Array);
+});
+
+test('A user not on proposal should not get samples by esi id', () => {
+  return expect(
+    sampleQueries.getSamplesByEsiId(dummyUserNotOnProposalWithRole, 1)
   ).resolves.toBe(null);
 });
