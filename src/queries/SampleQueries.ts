@@ -76,17 +76,4 @@ export default class SampleQueries {
 
     return response;
   }
-
-  async getSamplesByEsiId(
-    user: UserWithRole | null,
-    esiId: number
-  ): Promise<Sample[] | null> {
-    const hasAccessRights = await this.esiAuth.hasAccessRights(user, esiId);
-    if (hasAccessRights === false) {
-      return null;
-    }
-    const response = await this.dataSource.getSamplesByEsiId(esiId);
-
-    return response;
-  }
 }

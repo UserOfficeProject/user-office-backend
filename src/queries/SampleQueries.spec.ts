@@ -41,15 +41,3 @@ test('A user not on proposal can not get samples by shipment id', () => {
     sampleQueries.getSamplesByShipmentId(dummyUserNotOnProposalWithRole, 1)
   ).resolves.toBe(null);
 });
-
-test('A user on proposal should get samples by esi id', () => {
-  return expect(
-    sampleQueries.getSamplesByEsiId(dummyUserWithRole, 1)
-  ).resolves.toBeInstanceOf(Array);
-});
-
-test('A user not on proposal should not get samples by esi id', () => {
-  return expect(
-    sampleQueries.getSamplesByEsiId(dummyUserNotOnProposalWithRole, 1)
-  ).resolves.toBe(null);
-});
