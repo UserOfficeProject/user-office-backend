@@ -52,6 +52,13 @@ export class VisitDataSourceMock implements VisitDataSource {
         matchingVisits.push(currentVisit);
       }
 
+      if (
+        filter?.scheduledEventId &&
+        currentVisit.scheduledEventId === filter.scheduledEventId
+      ) {
+        matchingVisits.push(currentVisit);
+      }
+
       return matchingVisits;
     }, new Array<Visit>());
   }
