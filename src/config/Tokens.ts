@@ -13,6 +13,7 @@ export const Tokens = {
   SEPDataSource: Symbol('SEPDataSource'),
   SampleAuthorization: Symbol('SampleAuthorization'),
   SampleDataSource: Symbol('SampleDataSource'),
+  ScheduledEventDataSource: Symbol('ScheduledEventDataSource'),
   ShipmentAuthorization: Symbol('ShipmentAuthorization'),
   ShipmentDataSource: Symbol('ShipmentDataSource'),
   SystemDataSource: Symbol('SystemDataSource'),

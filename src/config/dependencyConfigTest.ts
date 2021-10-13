@@ -11,6 +11,7 @@ import { ProposalSettingsDataSourceMock } from '../datasources/mockups/ProposalS
 import { QuestionaryDataSourceMock } from '../datasources/mockups/QuestionaryDataSource';
 import { ReviewDataSourceMock } from '../datasources/mockups/ReviewDataSource';
 import { SampleDataSourceMock } from '../datasources/mockups/SampleDataSource';
+import ScheduledEventDataSourceMock from '../datasources/mockups/ScheduledEventDataSource';
 import { SEPDataSourceMock } from '../datasources/mockups/SEPDataSource';
 import { ShipmentDataSourceMock } from '../datasources/mockups/ShipmentDataSource';
 import SystemDataSourceMock from '../datasources/mockups/SystemDataSource';
@@ -49,6 +50,7 @@ mapClass(Tokens.QuestionaryDataSource, QuestionaryDataSourceMock);
 mapClass(Tokens.ReviewDataSource, ReviewDataSourceMock);
 mapClass(Tokens.SampleDataSource, SampleDataSourceMock);
 mapClass(Tokens.SampleEsiDataSource, SampleEsiDataSourceMock);
+mapClass(Tokens.ScheduledEventDataSource, ScheduledEventDataSourceMock);
 mapClass(Tokens.SEPDataSource, SEPDataSourceMock);
 mapClass(Tokens.ShipmentDataSource, ShipmentDataSourceMock);
 mapClass(Tokens.SystemDataSource, SystemDataSourceMock);

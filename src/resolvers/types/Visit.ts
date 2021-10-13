@@ -34,6 +34,9 @@ export class Visit implements Partial<VisitOrigin> {
 
   @Field(() => Int)
   public teamLeadUserId: number;
+
+  @Field(() => Int)
+  public scheduledEventId: number;
 }
 
 @Resolver(() => Visit)

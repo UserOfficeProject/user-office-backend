@@ -87,8 +87,9 @@ class PostgresVisitDataSource implements VisitDataSource {
   }
 
   createVisit(
-    { proposalPk, scheduledEventId, teamLeadUserId }: CreateVisitArgs,
-    creatorId: number
+    { scheduledEventId: scheduledEventId, teamLeadUserId }: CreateVisitArgs,
+    creatorId: number,
+    proposalPk: number
   ): Promise<Visit> {
     return database('visits')
       .insert({
