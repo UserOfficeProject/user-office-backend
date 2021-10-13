@@ -16,7 +16,7 @@ import PostgresSampleEsiDataSource from '../datasources/postgres/SampleEsiDataSo
 import PostgresScheduledEventDataSource from '../datasources/postgres/ScheduledEventDataSource';
 import PostgresSEPDataSource from '../datasources/postgres/SEPDataSource';
 import PostgresShipmentDataSource from '../datasources/postgres/ShipmentDataSource';
-import PostgreSystemDataSource from '../datasources/postgres/SystemDataSource';
+import PostgresSystemDataSource from '../datasources/postgres/SystemDataSource';
 import PostgresTemplateDataSource from '../datasources/postgres/TemplateDataSource';
 import PostgresVisitDataSource from '../datasources/postgres/VisitDataSource';
 import { StfcUserDataSource } from '../datasources/stfc/StfcUserDataSource';
@@ -59,7 +59,7 @@ mapClass(Tokens.SampleEsiDataSource, PostgresSampleEsiDataSource);
 mapClass(Tokens.ScheduledEventDataSource, PostgresScheduledEventDataSource);
 mapClass(Tokens.SEPDataSource, PostgresSEPDataSource);
 mapClass(Tokens.ShipmentDataSource, PostgresShipmentDataSource);
-mapClass(Tokens.SystemDataSource, PostgreSystemDataSource);
+mapClass(Tokens.SystemDataSource, PostgresSystemDataSource);
 mapClass(Tokens.TemplateDataSource, PostgresTemplateDataSource);
 mapClass(Tokens.UserDataSource, StfcUserDataSource);
 mapClass(Tokens.VisitDataSource, PostgresVisitDataSource);
