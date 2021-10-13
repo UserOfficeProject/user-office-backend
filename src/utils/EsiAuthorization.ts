@@ -51,7 +51,7 @@ export class EsiAuthorization {
     if (!esi) {
       return false;
     }
-    const visit = await this.visitDataSource.getVisit(esi.visitId);
+    const visit = await this.visitDataSource.getVisit(esi.scheduledEventId);
 
     if (!visit) {
       return false;
@@ -80,7 +80,7 @@ export class EsiAuthorization {
     if (!esi) {
       return false;
     }
-    const visit = await this.visitDataSource.getVisit(esi.visitId);
+    const visit = await this.visitDataSource.getVisit(esi.scheduledEventId);
 
     if (!visit) {
       return false;
