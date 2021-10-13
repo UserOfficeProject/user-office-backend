@@ -80,9 +80,13 @@ export class EsiAuthorization {
     if (!esi) {
       return false;
     }
-    const visit = await this.visitDataSource.getVisit(esi.scheduledEventId);
+    const visit = (
+      await this.visitDataSource.getVisits({
+        scheduledEventId: esi.scheduledEventId,
+      })
+    )[0];
 
-    if (!visit) {
+    if (visit === undefined) {
       return false;
     }
 
