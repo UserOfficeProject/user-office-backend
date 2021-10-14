@@ -3,6 +3,7 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { CallDataSource } from '../datasources/CallDataSource';
+import { GenericTemplateDataSource } from '../datasources/GenericTemplateDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
@@ -12,6 +13,7 @@ import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { TemplateGroupId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
 import { VisitDataSource } from './../datasources/VisitDataSource';
+import { EsiAuthorization } from './EsiAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 import { VisitAuthorization } from './VisitAuthorization';
 
@@ -266,46 +268,38 @@ class VisitQuestionaryAuthorizer implements QuestionaryAuthorizer {
 
 @injectable()
 export class ProposalEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
+  private esiAuth = container.resolve(EsiAuthorization);
+
   constructor(
     @inject(Tokens.ProposalEsiDataSource)
-    private proposalEsiDataSource: ProposalEsiDataSource,
-    @inject(Tokens.VisitDataSource)
-    private visitDataSource: VisitDataSource,
-
-    private proposalQuestionaryAuth: ProposalQuestionaryAuthorizer = container.resolve(
-      ProposalQuestionaryAuthorizer
-    )
+    private proposalEsiDataSource: ProposalEsiDataSource
   ) {}
 
-  async getProposalPk(esiQuestionaryId: number): Promise<number | null> {
+  async getEsiId(esiQuestionaryId: number): Promise<number | null> {
     const esi = await this.proposalEsiDataSource.getEsis({
       questionaryId: esiQuestionaryId,
     });
     if (esi.length !== 1) {
       return null;
     }
-    const visit = await this.visitDataSource.getVisit(esi[0].visitId);
-    if (!visit) {
-      return null;
-    }
 
-    return visit.proposalPk;
+    return esi[0].id;
   }
   async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
-    const proposalPk = await this.getProposalPk(questionaryId);
-    if (proposalPk === null) {
+    const esiId = await this.getEsiId(questionaryId);
+    if (esiId === null) {
       return false;
     }
 
-    return this.proposalQuestionaryAuth.hasReadRights(agent, proposalPk);
+    return this.esiAuth.hasReadRights(agent, esiId);
   }
   async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
-    const proposalPk = await this.getProposalPk(questionaryId);
-    if (proposalPk === null) {
+    const esiId = await this.getEsiId(questionaryId);
+    if (esiId === null) {
       return false;
     }
 
-    return this.proposalQuestionaryAuth.hasWriteRights(agent, proposalPk);
+    return this.esiAuth.hasWriteRights(agent, esiId);
   }
 }
 
@@ -321,6 +315,63 @@ export class SampleEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
   }
 }
 
+@injectable()
+class GenericTemplateQuestionaryAuthorizer implements QuestionaryAuthorizer {
+  private userAuth = container.resolve(UserAuthorization);
+
+  constructor(
+    @inject(Tokens.ProposalDataSource)
+    private proposalDataSource: ProposalDataSource,
+    @inject(Tokens.GenericTemplateDataSource)
+    private genericTemplateDataSource: GenericTemplateDataSource
+  ) {}
+  async hasReadRights(agent: UserWithRole | null, questionaryId: number) {
+    return this.hasRights(agent, questionaryId);
+  }
+  async hasWriteRights(agent: UserWithRole | null, questionaryId: number) {
+    return this.hasRights(agent, questionaryId);
+  }
+
+  private async hasRights(agent: UserWithRole | null, questionaryId: number) {
+    if (!agent) {
+      return false;
+    }
+
+    if (this.userAuth.isUserOfficer(agent)) {
+      return true;
+    }
+
+    const queryResult =
+      await this.genericTemplateDataSource.getGenericTemplates({
+        filter: { questionaryIds: [questionaryId] },
+      });
+
+    if (queryResult.length !== 1) {
+      logger.logError(
+        'Expected to find exactly one generic template with questionaryId',
+        { questionaryId }
+      );
+
+      return false;
+    }
+
+    const genericTemplate = queryResult[0];
+
+    const proposal = await this.proposalDataSource.get(
+      genericTemplate.proposalPk
+    );
+
+    if (!proposal) {
+      logger.logError('Could not find proposal for questionary', {
+        questionaryId,
+      });
+
+      return false;
+    }
+
+    return this.userAuth.hasAccessRights(agent, proposal);
+  }
+}
 @injectable()
 export class QuestionaryAuthorization {
   private authorizers = new Map<TemplateGroupId, QuestionaryAuthorizer>();
@@ -355,6 +406,10 @@ export class QuestionaryAuthorization {
     this.authorizers.set(
       TemplateGroupId.SAMPLE_ESI,
       container.resolve(SampleEsiQuestionaryAuthorizer)
+    );
+    this.authorizers.set(
+      TemplateGroupId.GENERIC_TEMPLATE,
+      container.resolve(GenericTemplateQuestionaryAuthorizer)
     );
   }
 
