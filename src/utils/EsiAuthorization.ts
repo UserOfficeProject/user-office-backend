@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
-import { VisitDataSource } from '../datasources/VisitDataSource';
+import { ScheduledEventDataSource } from '../datasources/ScheduledEventDataSource';
 import { UserWithRole } from '../models/User';
 import { ExperimentSafetyInput } from './../resolvers/types/ExperimentSafetyInput';
 import { UserAuthorization } from './UserAuthorization';
@@ -10,12 +10,16 @@ import { UserAuthorization } from './UserAuthorization';
 @injectable()
 export class EsiAuthorization {
   constructor(
-    @inject(Tokens.VisitDataSource) private visitDataSource: VisitDataSource,
+    @inject(Tokens.ScheduledEventDataSource)
+    private scheduledEventDataSource: ScheduledEventDataSource,
     @inject(Tokens.ProposalEsiDataSource)
     private esiDataSource: ProposalEsiDataSource,
     @inject(Tokens.UserAuthorization)
     private userAuth: UserAuthorization
   ) {}
+
+  getScheduledEvent = async (scheduledEventId: number) =>
+    await this.scheduledEventDataSource.getScheduledEvent(scheduledEventId);
 
   private async resolveEsi(
     esiOrEsiId: ExperimentSafetyInput | number
@@ -51,13 +55,13 @@ export class EsiAuthorization {
     if (!esi) {
       return false;
     }
-    const visit = await this.visitDataSource.getVisit(esi.scheduledEventId);
+    const scheduledEvent = await this.getScheduledEvent(esi.scheduledEventId);
 
-    if (!visit) {
+    if (scheduledEvent === null) {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, visit.proposalPk);
+    return this.userAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
   }
 
   async hasWriteRights(
@@ -80,13 +84,9 @@ export class EsiAuthorization {
     if (!esi) {
       return false;
     }
-    const visit = (
-      await this.visitDataSource.getVisits({
-        scheduledEventId: esi.scheduledEventId,
-      })
-    )[0];
+    const scheduledEvent = await this.getScheduledEvent(esi.scheduledEventId);
 
-    if (visit === undefined) {
+    if (scheduledEvent === null) {
       return false;
     }
 
@@ -97,6 +97,6 @@ export class EsiAuthorization {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, visit.proposalPk);
+    return this.userAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
   }
 }
