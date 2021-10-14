@@ -15,6 +15,7 @@ export const Tokens = {
   GenericTemplateAuthorization: Symbol('GenericTemplateAuthorization'),
   SampleDataSource: Symbol('SampleDataSource'),
   GenericTemplateDataSource: Symbol('GenericTemplateDataSource'),
+  ScheduledEventDataSource: Symbol('ScheduledEventDataSource'),
   ShipmentAuthorization: Symbol('ShipmentAuthorization'),
   ShipmentDataSource: Symbol('ShipmentDataSource'),
   SystemDataSource: Symbol('SystemDataSource'),
