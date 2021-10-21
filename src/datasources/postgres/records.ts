@@ -401,6 +401,7 @@ export interface SampleRecord {
   readonly questionary_id: number;
   readonly question_id: string;
   readonly safety_status: number;
+  readonly is_post_proposal_submission: boolean;
   readonly safety_comment: string;
   readonly created_at: Date;
 }
@@ -797,6 +798,7 @@ export const createSampleObject = (sample: SampleRecord) => {
     sample.proposal_pk,
     sample.questionary_id,
     sample.question_id,
+    sample.is_post_proposal_submission,
     sample.safety_status,
     sample.safety_comment,
     sample.created_at
