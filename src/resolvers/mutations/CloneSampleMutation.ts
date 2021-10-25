@@ -10,10 +10,17 @@ export class CloneSampleMutation {
   cloneSample(
     @Arg('sampleId', () => Int) sampleId: number,
     @Arg('title', () => String, { nullable: true }) title: string | undefined,
+    @Arg('isPostProposalSubmission', () => Boolean, { nullable: true })
+    isPostProposalSubmission: boolean | undefined,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.sample.cloneSample(context.user, sampleId, title),
+      context.mutations.sample.cloneSample(
+        context.user,
+        sampleId,
+        title,
+        isPostProposalSubmission
+      ),
       SampleResponseWrap
     );
   }

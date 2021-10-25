@@ -65,6 +65,7 @@ export default class PostgresSampleDataSource implements SampleDataSource {
           proposal_pk: args.proposalPk,
           questionary_id: args.questionaryId,
           shipment_id: args.shipmentId,
+          is_post_proposal_submission: args.isPostProposalSubmission,
         },
         '*'
       )

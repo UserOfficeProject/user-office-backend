@@ -9,7 +9,7 @@ import {
   dummyUserOfficerWithRole,
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
-import { isRejection } from '../models/Rejection';
+import { isRejection, Rejection } from '../models/Rejection';
 import { Sample, SampleStatus } from '../models/Sample';
 import SampleMutations from './SampleMutations';
 
@@ -34,10 +34,7 @@ test('User officer should be able to clone sample', () => {
 test('User should not be able to clone sample that does not exist', () => {
   return expect(
     sampleMutations.cloneSample(dummyUserOfficerWithRole, 100)
-  ).resolves.toHaveProperty(
-    'reason',
-    'Could not clone sample because an error occurred'
-  );
+  ).resolves.toBeInstanceOf(Rejection);
 });
 
 test('User should be able to update title of the sample', () => {

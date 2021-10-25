@@ -12,6 +12,7 @@ import { UpdateSampleEsiArgs } from '../resolvers/mutations/UpdateSampleEsiMutat
 import { SampleDataSource } from './../datasources/SampleDataSource';
 import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { SampleExperimentSafetyInput } from './../models/SampleExperimentSafetyInput';
+import { CloneSampleEsiInput } from './../resolvers/mutations/CloneSampleEsiMutation';
 import { SampleDeclarationConfig } from './../resolvers/types/FieldConfig';
 import { EsiAuthorization } from './../utils/EsiAuthorization';
 
@@ -105,5 +106,56 @@ export default class SampleEsiMutations {
     }
 
     return this.sampleEsiDataSource.updateSampleEsi(args);
+  }
+
+  @Authorized()
+  async cloneSampleEsi(
+    user: UserWithRole | null,
+    input: CloneSampleEsiInput
+  ): Promise<SampleExperimentSafetyInput | Rejection> {
+    const sampleEsi = await this.sampleEsiDataSource.getSampleEsi(input);
+    if (!sampleEsi) {
+      return rejection(
+        'Can not clone sample ESI, because source sample ESI does not exist',
+        {
+          user,
+          input,
+        }
+      );
+    }
+
+    const hasRights = await this.esiAuth.hasWriteRights(user, input.esiId);
+    if (hasRights === false) {
+      return rejection(
+        'Can not clone sample ESI, because user does not have permissions to this sample ESI',
+        {
+          user,
+          input,
+        }
+      );
+    }
+
+    const newSampleEsi = await this.sampleEsiDataSource.cloneSampleEsi(input);
+    if (!newSampleEsi) {
+      return rejection(
+        'Can not clone sample ESI, because error occurred while cloning sampleEsi',
+        {
+          user,
+          input,
+        }
+      );
+    }
+
+    await this.sampleDataSource.updateSample({
+      sampleId: newSampleEsi.sampleId,
+      title: input.newSampleTitle,
+      isPostProposalSubmission: true, // ESIs can only be made after proposal submission, so mark the new sample as such
+    });
+
+    return this.sampleEsiDataSource.updateSampleEsi({
+      esiId: newSampleEsi.esiId,
+      sampleId: newSampleEsi.sampleId,
+      isSubmitted: false, // mark the new ESI as not submitted, so user must verify that the information is correct
+    });
   }
 }

@@ -1,14 +1,28 @@
+import { inject, injectable } from 'tsyringe';
+
+import { Tokens } from '../../config/Tokens';
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
+import { CloneSampleEsiInput } from '../../resolvers/mutations/CloneSampleEsiMutation';
 import { CreateSampleEsiInput } from '../../resolvers/mutations/CreateSampleEsiMutation';
 import { DeleteSampleEsiInput } from '../../resolvers/mutations/DeleteSampleEsiMutation';
 import { UpdateSampleEsiArgs } from '../../resolvers/mutations/UpdateSampleEsiMutation';
 import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
+import { SampleDataSource } from '../SampleDataSource';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
+import { QuestionaryDataSource } from './../QuestionaryDataSource';
 import database from './database';
 import { createSampleEsiObject, SampleEsiRecord } from './records';
 
+@injectable()
 class PostgresSampleEsiDataSource implements SampleEsiDataSource {
+  constructor(
+    @inject(Tokens.SampleDataSource)
+    private sampleDataSource: SampleDataSource,
+    @inject(Tokens.QuestionaryDataSource)
+    private questionaryDataSource: QuestionaryDataSource
+  ) {}
+
   // Create
   async createSampleEsi(
     args: CreateSampleEsiInput & { questionaryId: number }
@@ -23,6 +37,37 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
       .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
   }
 
+  async cloneSampleEsi(
+    args: CloneSampleEsiInput
+  ): Promise<SampleExperimentSafetyInput> {
+    const sourceSampleEsi = await this.getSampleEsi(args);
+
+    if (!sourceSampleEsi) {
+      throw new Error(
+        'Can not clone sample, because source sample does not exist'
+      );
+    }
+
+    const newSample = await this.sampleDataSource.cloneSample(
+      sourceSampleEsi.sampleId
+    );
+
+    const newEsiQuestionary = await this.questionaryDataSource.clone(
+      sourceSampleEsi.questionaryId
+    );
+
+    const newSampleEsi = await this.createSampleEsi({
+      esiId: sourceSampleEsi.esiId,
+      sampleId: newSample.id,
+      questionaryId: newEsiQuestionary.questionaryId,
+    });
+
+    return this.updateSampleEsi({
+      esiId: newSampleEsi.esiId,
+      sampleId: newSampleEsi.sampleId,
+      isSubmitted: sourceSampleEsi.isSubmitted,
+    });
+  }
   // Read
   async getSampleEsi(
     args: SampleEsiArgs

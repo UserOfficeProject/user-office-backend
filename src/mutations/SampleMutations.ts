@@ -7,12 +7,14 @@ import { SampleDataSource } from '../datasources/SampleDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { Authorized, EventBus } from '../decorators';
 import { Event } from '../events/event.enum';
+import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 import { rejection } from '../models/Rejection';
 import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleArgs } from '../resolvers/mutations/UpdateSampleMutation';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
+import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
 import { UserAuthorization } from './../utils/UserAuthorization';
 
 @injectable()
@@ -27,7 +29,9 @@ export default class SampleMutations {
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.ProposalDataSource)
-    private proposalDataSource: ProposalDataSource
+    private proposalDataSource: ProposalDataSource,
+    @inject(Tokens.ProposalSettingsDataSource)
+    private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}
 
   @Authorized()
@@ -168,7 +172,8 @@ export default class SampleMutations {
   async cloneSample(
     agent: UserWithRole | null,
     sampleId: number,
-    title?: string
+    title?: string,
+    isPostProposalSubmission?: boolean
   ) {
     if (!agent) {
       return rejection(
@@ -176,11 +181,50 @@ export default class SampleMutations {
         { agent, sampleId }
       );
     }
-    if (!(await this.sampleAuth.hasWriteRights(agent, sampleId))) {
+
+    const sourceSample = await this.sampleDataSource.getSample(sampleId);
+    if (!sourceSample) {
       return rejection(
-        'Could not clone sample because of insufficient permissions',
+        'Could not clone sample, because source sample does not exist',
+        {
+          agent,
+          sampleId,
+        }
+      );
+    }
+
+    if (!(await this.sampleAuth.hasWriteRights(agent, sourceSample))) {
+      return rejection(
+        'Could not clone sample, because of insufficient permissions',
         { agent, sampleId }
       );
+    }
+
+    const proposal = await this.proposalDataSource.get(sourceSample.proposalPk);
+    if (!proposal) {
+      return rejection(
+        'Could not clone sample, because proposal does not exist',
+        { agent, sampleId }
+      );
+    }
+
+    const proposalStatus =
+      await this.proposalSettingsDataSource.getProposalStatus(
+        proposal.statusId
+      );
+
+    // TODO Move this logic into commonly shared place ProposalAuthorizer SWAP-1944
+    if (
+      proposalStatus?.shortCode !==
+      ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED
+    ) {
+      if (
+        proposal.submitted &&
+        isPostProposalSubmission !== true &&
+        !this.userAuth.isUserOfficer(agent)
+      ) {
+        return rejection('Can not update proposal after submission');
+      }
     }
 
     try {
@@ -188,6 +232,7 @@ export default class SampleMutations {
       clonedSample = await this.sampleDataSource.updateSample({
         sampleId: clonedSample.id,
         title: title ? title : `Copy of ${clonedSample.title}`,
+        isPostProposalSubmission: isPostProposalSubmission ?? false,
       });
 
       return clonedSample;
