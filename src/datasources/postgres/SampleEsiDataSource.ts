@@ -1,27 +1,17 @@
-import { inject, injectable } from 'tsyringe';
+import { injectable } from 'tsyringe';
 
-import { Tokens } from '../../config/Tokens';
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
 import { CreateSampleEsiInput } from '../../resolvers/mutations/CreateSampleEsiMutation';
 import { DeleteSampleEsiInput } from '../../resolvers/mutations/DeleteSampleEsiMutation';
 import { UpdateSampleEsiArgs } from '../../resolvers/mutations/UpdateSampleEsiMutation';
 import { SampleEsiArgs } from '../../resolvers/queries/SampleEsiQuery';
-import { SampleDataSource } from '../SampleDataSource';
 import { SampleEsiDataSource } from '../SampleEsiDataSource';
-import { QuestionaryDataSource } from './../QuestionaryDataSource';
 import database from './database';
 import { createSampleEsiObject, SampleEsiRecord } from './records';
 
 @injectable()
 class PostgresSampleEsiDataSource implements SampleEsiDataSource {
-  constructor(
-    @inject(Tokens.SampleDataSource)
-    private sampleDataSource: SampleDataSource,
-    @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource
-  ) {}
-
   // Create
   async createSampleEsi(
     args: CreateSampleEsiInput & { questionaryId: number }
