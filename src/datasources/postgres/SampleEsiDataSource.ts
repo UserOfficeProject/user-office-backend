@@ -3,7 +3,6 @@ import { inject, injectable } from 'tsyringe';
 import { Tokens } from '../../config/Tokens';
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
-import { CloneSampleEsiInput } from '../../resolvers/mutations/CloneSampleEsiMutation';
 import { CreateSampleEsiInput } from '../../resolvers/mutations/CreateSampleEsiMutation';
 import { DeleteSampleEsiInput } from '../../resolvers/mutations/DeleteSampleEsiMutation';
 import { UpdateSampleEsiArgs } from '../../resolvers/mutations/UpdateSampleEsiMutation';
@@ -37,37 +36,6 @@ class PostgresSampleEsiDataSource implements SampleEsiDataSource {
       .then(([row]: SampleEsiRecord[]) => createSampleEsiObject(row));
   }
 
-  async cloneSampleEsi(
-    args: CloneSampleEsiInput
-  ): Promise<SampleExperimentSafetyInput> {
-    const sourceSampleEsi = await this.getSampleEsi(args);
-
-    if (!sourceSampleEsi) {
-      throw new Error(
-        'Can not clone sample, because source sample does not exist'
-      );
-    }
-
-    const newSample = await this.sampleDataSource.cloneSample(
-      sourceSampleEsi.sampleId
-    );
-
-    const newEsiQuestionary = await this.questionaryDataSource.clone(
-      sourceSampleEsi.questionaryId
-    );
-
-    const newSampleEsi = await this.createSampleEsi({
-      esiId: sourceSampleEsi.esiId,
-      sampleId: newSample.id,
-      questionaryId: newEsiQuestionary.questionaryId,
-    });
-
-    return this.updateSampleEsi({
-      esiId: newSampleEsi.esiId,
-      sampleId: newSampleEsi.sampleId,
-      isSubmitted: sourceSampleEsi.isSubmitted,
-    });
-  }
   // Read
   async getSampleEsi(
     args: SampleEsiArgs

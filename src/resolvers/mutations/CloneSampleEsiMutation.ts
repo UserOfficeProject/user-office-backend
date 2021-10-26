@@ -28,11 +28,11 @@ export class CloneSampleEsiInput {
 export class CloneSampleEsiMutation {
   @Mutation(() => SampleEsiResponseWrap)
   cloneSampleEsi(
-    @Args() input: CloneSampleEsiInput,
+    @Args() args: CloneSampleEsiInput,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.sampleEsi.cloneSampleEsi(context.user, input),
+      context.mutations.sampleEsi.cloneSampleEsi(context.user, args),
       SampleEsiResponseWrap
     );
   }

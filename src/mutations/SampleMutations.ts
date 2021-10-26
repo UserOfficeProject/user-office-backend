@@ -13,14 +13,17 @@ import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleArgs } from '../resolvers/mutations/UpdateSampleMutation';
+import { CloneUtils } from '../utils/CloneUtils';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
+import { CloneSampleInput } from './../resolvers/mutations/CloneSampleMutation';
 import { UserAuthorization } from './../utils/UserAuthorization';
 
 @injectable()
 export default class SampleMutations {
   private userAuth = container.resolve(UserAuthorization);
   private sampleAuth = container.resolve(SampleAuthorization);
+  private cloneUtils = container.resolve(CloneUtils);
 
   constructor(
     @inject(Tokens.SampleDataSource) private sampleDataSource: SampleDataSource,
@@ -73,25 +76,26 @@ export default class SampleMutations {
       );
     }
 
-    return this.questionaryDataSource
-      .create(agent.id, args.templateId)
-      .then((questionary) => {
-        return this.sampleDataSource.create(
-          args.title,
-          agent.id,
-          args.proposalPk,
-          questionary.questionaryId,
-          args.questionId,
-          args.isPostProposalSubmission
-        );
-      })
-      .catch((error) => {
-        return rejection(
-          'Can not create sample because an error occurred',
-          { agent, args },
-          error
-        );
+    const sampleQuestionary = await this.questionaryDataSource.create(
+      agent.id,
+      args.templateId
+    );
+
+    let newSample = await this.sampleDataSource.create(
+      args.title,
+      agent.id,
+      args.proposalPk,
+      sampleQuestionary.questionaryId,
+      args.questionId
+    );
+    if (args.isPostProposalSubmission) {
+      newSample = await this.sampleDataSource.updateSample({
+        sampleId: newSample.id,
+        isPostProposalSubmission: args.isPostProposalSubmission,
       });
+    }
+
+    return newSample;
   }
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
@@ -108,7 +112,7 @@ export default class SampleMutations {
       );
     }
 
-    // Thi makes sure administrative fields can be only updated by user with the right role
+    // This makes sure administrative fields can be only updated by user with the right role
     if (args.safetyComment || args.safetyStatus) {
       const canAdministrerSample =
         this.userAuth.isUserOfficer(agent) ||
@@ -169,16 +173,12 @@ export default class SampleMutations {
   }
 
   @Authorized()
-  async cloneSample(
-    agent: UserWithRole | null,
-    sampleId: number,
-    title?: string,
-    isPostProposalSubmission?: boolean
-  ) {
+  async cloneSample(agent: UserWithRole | null, args: CloneSampleInput) {
+    const { sampleId, title, isPostProposalSubmission } = args;
     if (!agent) {
       return rejection(
         'Could not clone sample because user is not authorized',
-        { agent, sampleId }
+        { agent, args }
       );
     }
 
@@ -186,17 +186,14 @@ export default class SampleMutations {
     if (!sourceSample) {
       return rejection(
         'Could not clone sample, because source sample does not exist',
-        {
-          agent,
-          sampleId,
-        }
+        { agent, args }
       );
     }
 
     if (!(await this.sampleAuth.hasWriteRights(agent, sourceSample))) {
       return rejection(
         'Could not clone sample, because of insufficient permissions',
-        { agent, sampleId }
+        { agent, args }
       );
     }
 
@@ -204,16 +201,16 @@ export default class SampleMutations {
     if (!proposal) {
       return rejection(
         'Could not clone sample, because proposal does not exist',
-        { agent, sampleId }
+        { agent, args }
       );
     }
 
+    // TODO Move this logic into commonly shared place ProposalAuthorizer SWAP-1944
     const proposalStatus =
       await this.proposalSettingsDataSource.getProposalStatus(
         proposal.statusId
       );
 
-    // TODO Move this logic into commonly shared place ProposalAuthorizer SWAP-1944
     if (
       proposalStatus?.shortCode !==
       ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED
@@ -228,14 +225,7 @@ export default class SampleMutations {
     }
 
     try {
-      let clonedSample = await this.sampleDataSource.cloneSample(sampleId);
-      clonedSample = await this.sampleDataSource.updateSample({
-        sampleId: clonedSample.id,
-        title: title ? title : `Copy of ${clonedSample.title}`,
-        isPostProposalSubmission: isPostProposalSubmission ?? false,
-      });
-
-      return clonedSample;
+      return this.cloneUtils.cloneSample(sourceSample, { title });
     } catch (error) {
       return rejection(
         'Could not clone sample because an error occurred',

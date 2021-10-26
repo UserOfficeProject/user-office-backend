@@ -1,6 +1,5 @@
 import { SampleExperimentSafetyInput } from '../../models/SampleExperimentSafetyInput';
 import { GetSampleEsisFilter } from '../../queries/SampleEsiQueries';
-import { CloneSampleEsiInput } from '../../resolvers/mutations/CloneSampleEsiMutation';
 import { CreateSampleEsiInput } from '../../resolvers/mutations/CreateSampleEsiMutation';
 import { DeleteSampleEsiInput } from '../../resolvers/mutations/DeleteSampleEsiMutation';
 import { UpdateSampleEsiArgs } from '../../resolvers/mutations/UpdateSampleEsiMutation';
@@ -30,17 +29,6 @@ export class SampleEsiDataSourceMock implements SampleEsiDataSource {
     this.esis.push(newEsi);
 
     return newEsi;
-  }
-
-  async cloneSampleEsi(
-    args: CloneSampleEsiInput
-  ): Promise<SampleExperimentSafetyInput> {
-    const sampleEsi = await this.getSampleEsi(args);
-    if (sampleEsi === null) {
-      throw new Error('Sample ESI not found');
-    }
-
-    return sampleEsi;
   }
 
   // Read

@@ -21,19 +21,19 @@ beforeEach(() => {
 
 test('User should be able to clone its sample', () => {
   return expect(
-    sampleMutations.cloneSample(dummyUserWithRole, 1)
+    sampleMutations.cloneSample(dummyUserWithRole, { sampleId: 1 })
   ).resolves.toBeInstanceOf(Sample);
 });
 
 test('User officer should be able to clone sample', () => {
   return expect(
-    sampleMutations.cloneSample(dummyUserOfficerWithRole, 1)
+    sampleMutations.cloneSample(dummyUserOfficerWithRole, { sampleId: 1 })
   ).resolves.toBeInstanceOf(Sample);
 });
 
 test('User should not be able to clone sample that does not exist', () => {
   return expect(
-    sampleMutations.cloneSample(dummyUserOfficerWithRole, 100)
+    sampleMutations.cloneSample(dummyUserOfficerWithRole, { sampleId: 100 })
   ).resolves.toBeInstanceOf(Rejection);
 });
 

@@ -14,11 +14,13 @@ import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { SampleExperimentSafetyInput } from './../models/SampleExperimentSafetyInput';
 import { CloneSampleEsiInput } from './../resolvers/mutations/CloneSampleEsiMutation';
 import { SampleDeclarationConfig } from './../resolvers/types/FieldConfig';
+import { CloneUtils } from './../utils/CloneUtils';
 import { EsiAuthorization } from './../utils/EsiAuthorization';
 
 @injectable()
 export default class SampleEsiMutations {
   private esiAuth = container.resolve(EsiAuthorization);
+  private cloneUtils = container.resolve(CloneUtils);
   constructor(
     @inject(Tokens.SampleEsiDataSource)
     private sampleEsiDataSource: SampleEsiDataSource,
@@ -111,51 +113,31 @@ export default class SampleEsiMutations {
   @Authorized()
   async cloneSampleEsi(
     user: UserWithRole | null,
-    input: CloneSampleEsiInput
+    args: CloneSampleEsiInput
   ): Promise<SampleExperimentSafetyInput | Rejection> {
-    const sampleEsi = await this.sampleEsiDataSource.getSampleEsi(input);
-    if (!sampleEsi) {
+    const sourceSampleEsi = await this.sampleEsiDataSource.getSampleEsi(args);
+    if (!sourceSampleEsi) {
       return rejection(
         'Can not clone sample ESI, because source sample ESI does not exist',
-        {
-          user,
-          input,
-        }
+        { user, args }
       );
     }
 
-    const hasRights = await this.esiAuth.hasWriteRights(user, input.esiId);
+    const hasRights = await this.esiAuth.hasWriteRights(user, args.esiId);
     if (hasRights === false) {
       return rejection(
         'Can not clone sample ESI, because user does not have permissions to this sample ESI',
-        {
-          user,
-          input,
-        }
+        { user, args }
       );
     }
 
-    const newSampleEsi = await this.sampleEsiDataSource.cloneSampleEsi(input);
-    if (!newSampleEsi) {
-      return rejection(
-        'Can not clone sample ESI, because error occurred while cloning sampleEsi',
-        {
-          user,
-          input,
-        }
-      );
-    }
-
-    await this.sampleDataSource.updateSample({
-      sampleId: newSampleEsi.sampleId,
-      title: input.newSampleTitle,
-      isPostProposalSubmission: true, // ESIs can only be made after proposal submission, so mark the new sample as such
-    });
-
-    return this.sampleEsiDataSource.updateSampleEsi({
-      esiId: newSampleEsi.esiId,
-      sampleId: newSampleEsi.sampleId,
-      isSubmitted: false, // mark the new ESI as not submitted, so user must verify that the information is correct
+    return this.cloneUtils.cloneSampleEsi(sourceSampleEsi, {
+      esi: {
+        isSubmitted: false,
+      },
+      sample: {
+        isPostProposalSubmission: true,
+      },
     });
   }
 }
