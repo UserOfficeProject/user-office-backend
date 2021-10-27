@@ -56,15 +56,15 @@ export class CloneUtils {
     );
 
     if (
-      overrides?.isPostProposalSubmission ||
-      overrides?.safetyComment ||
-      overrides?.safetyStatus
+      overrides?.isPostProposalSubmission !== undefined ||
+      overrides?.safetyComment !== undefined ||
+      overrides?.safetyStatus !== undefined
     ) {
       newSample = await this.sampleDataSource.updateSample({
         sampleId: newSample.id,
-        isPostProposalSubmission: newSample.isPostProposalSubmission,
-        safetyComment: newSample.safetyComment,
-        safetyStatus: newSample.safetyStatus,
+        isPostProposalSubmission: overrides.isPostProposalSubmission,
+        safetyComment: overrides.safetyComment,
+        safetyStatus: overrides.safetyStatus,
       });
     }
 
@@ -94,7 +94,7 @@ export class CloneUtils {
       sampleId: newSample.id,
       questionaryId: newQuestionary.questionaryId,
     });
-    if (overrides?.esi?.isSubmitted) {
+    if (overrides?.esi?.isSubmitted !== undefined) {
       newSampleEsi = await this.sampleEsiDataSource.updateSampleEsi({
         sampleId: newSampleEsi.sampleId,
         esiId: newSampleEsi.esiId,

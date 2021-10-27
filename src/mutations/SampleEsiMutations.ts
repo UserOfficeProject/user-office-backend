@@ -115,6 +115,7 @@ export default class SampleEsiMutations {
     user: UserWithRole | null,
     args: CloneSampleEsiInput
   ): Promise<SampleExperimentSafetyInput | Rejection> {
+    const { esiId, newSampleTitle } = args;
     const sourceSampleEsi = await this.sampleEsiDataSource.getSampleEsi(args);
     if (!sourceSampleEsi) {
       return rejection(
@@ -123,7 +124,7 @@ export default class SampleEsiMutations {
       );
     }
 
-    const hasRights = await this.esiAuth.hasWriteRights(user, args.esiId);
+    const hasRights = await this.esiAuth.hasWriteRights(user, esiId);
     if (hasRights === false) {
       return rejection(
         'Can not clone sample ESI, because user does not have permissions to this sample ESI',
@@ -137,6 +138,7 @@ export default class SampleEsiMutations {
       },
       sample: {
         isPostProposalSubmission: true,
+        title: newSampleTitle,
       },
     });
   }
