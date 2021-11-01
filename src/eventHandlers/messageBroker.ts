@@ -7,6 +7,7 @@ import { CallDataSource } from '../datasources/CallDataSource';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataSource';
+import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
 import { ApplicationEvent } from '../events/applicationEvents';
 import { Event } from '../events/event.enum';
@@ -124,6 +125,9 @@ export function createPostToRabbitMQHandler() {
   const callDataSource = container.resolve<CallDataSource>(
     Tokens.CallDataSource
   );
+  const reviewDataSource = container.resolve<ReviewDataSource>(
+    Tokens.ReviewDataSource
+  );
 
   return async (event: ApplicationEvent) => {
     // if the original method failed
@@ -177,8 +181,23 @@ export function createPostToRabbitMQHandler() {
           return;
         }
 
+        const technicalReview = await reviewDataSource.getTechnicalReview(
+          proposal.primaryKey
+        );
+
+        if (!technicalReview) {
+          logger.logWarn(
+            `Proposal '${proposal.primaryKey}' has no technical review`,
+            {
+              proposal,
+            }
+          );
+
+          return;
+        }
+
         const proposalAllocatedTime = getSecondsPerAllocationTimeUnit(
-          proposal.managementTimeAllocation,
+          technicalReview.timeAllocation,
           call.allocationTimeUnit
         );
 
