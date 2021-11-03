@@ -15,7 +15,7 @@ import { AddSamplesToShipmentArgs } from '../resolvers/mutations/AddSamplesShipm
 import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutation';
 import { SubmitShipmentArgs } from '../resolvers/mutations/SubmitShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
-import { AssetRegistrar } from '../utils/EAM_service';
+import { AssetRegistrar } from '../services/eam';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
