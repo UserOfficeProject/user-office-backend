@@ -5,11 +5,13 @@ import { ProposalEsiDataSource } from '../datasources/ProposalEsiDataSource';
 import { ScheduledEventDataSource } from '../datasources/ScheduledEventDataSource';
 import { UserWithRole } from '../models/User';
 import { ExperimentSafetyInput } from './../resolvers/types/ExperimentSafetyInput';
+import { ProposalAuthorization } from './ProposalAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class EsiAuthorization {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.ScheduledEventDataSource)
     private scheduledEventDataSource: ScheduledEventDataSource,
@@ -60,7 +62,7 @@ export class EsiAuthorization {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
+    return this.proposalAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
   }
 
   async hasWriteRights(
@@ -96,6 +98,6 @@ export class EsiAuthorization {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
+    return this.proposalAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
   }
 }

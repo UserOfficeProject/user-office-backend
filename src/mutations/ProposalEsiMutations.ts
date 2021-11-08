@@ -12,9 +12,11 @@ import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
 import { rejection, Rejection } from '../models/Rejection';
 import { UserWithRole } from '../models/User';
 import { UpdateEsiArgs } from '../resolvers/mutations/UpdateEsiMutation';
+import { ProposalAuthorization } from './../auth/ProposalAuthorization';
 
 @injectable()
 export default class ProposalEsiMutations {
+  private proposalAuth = container.resolve(ProposalAuthorization);
   private userAuth = container.resolve(UserAuthorization);
 
   constructor(
@@ -50,7 +52,10 @@ export default class ProposalEsiMutations {
       return rejection('Can not create ESI, because proposal does not exist');
     }
 
-    const hasAccessRights = await this.userAuth.hasAccessRights(user, proposal);
+    const hasAccessRights = await this.proposalAuth.hasAccessRights(
+      user,
+      proposal
+    );
     if (!hasAccessRights) {
       return rejection(
         'User is not authorized to create ESI for this proposal'

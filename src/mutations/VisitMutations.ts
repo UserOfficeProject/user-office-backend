@@ -1,6 +1,5 @@
 import { container, inject, injectable } from 'tsyringe';
 
-import { UserAuthorization } from '../auth/UserAuthorization';
 import { VisitAuthorization } from '../auth/VisitAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -19,10 +18,13 @@ import { VisitRegistration } from '../models/VisitRegistration';
 import { CreateVisitArgs } from '../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../resolvers/mutations/UpdateVisitRegistration';
+import { ProposalAuthorization } from './../auth/ProposalAuthorization';
+import { UserAuthorization } from './../auth/UserAuthorization';
 
 @injectable()
 export default class VisitMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   private visitAuth = container.resolve(VisitAuthorization);
 
   constructor(
@@ -108,7 +110,10 @@ export default class VisitMutations {
       );
     }
 
-    const isProposalOwner = await this.userAuth.hasAccessRights(user, proposal);
+    const isProposalOwner = await this.proposalAuth.hasAccessRights(
+      user,
+      proposal
+    );
     if (isProposalOwner === false) {
       return rejection(
         'Can not create visit for proposal that does not belong to you',

@@ -14,6 +14,7 @@ import { VisitDataSource } from '../datasources/VisitDataSource';
 import { TemplateGroupId } from '../models/Template';
 import { User, UserWithRole } from '../models/User';
 import { EsiAuthorization } from './EsiAuthorization';
+import { ProposalAuthorization } from './ProposalAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 import { VisitAuthorization } from './VisitAuthorization';
 
@@ -26,6 +27,7 @@ export interface QuestionaryAuthorizer {
 @injectable()
 export class ProposalQuestionaryAuthorizer implements QuestionaryAuthorizer {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.ProposalDataSource)
@@ -80,13 +82,14 @@ export class ProposalQuestionaryAuthorizer implements QuestionaryAuthorizer {
       })
     ).proposals[0];
 
-    return this.userAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasAccessRights(agent, proposal);
   }
 }
 
 @injectable()
 class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
@@ -134,7 +137,7 @@ class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasAccessRights(agent, proposal);
   }
 }
 
@@ -143,6 +146,7 @@ class ShipmentDeclarationQuestionaryAuthorizer
   implements QuestionaryAuthorizer
 {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.ProposalDataSource)
@@ -191,7 +195,7 @@ class ShipmentDeclarationQuestionaryAuthorizer
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasAccessRights(agent, proposal);
   }
 }
 
@@ -318,6 +322,7 @@ export class SampleEsiQuestionaryAuthorizer implements QuestionaryAuthorizer {
 @injectable()
 class GenericTemplateQuestionaryAuthorizer implements QuestionaryAuthorizer {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.ProposalDataSource)
@@ -369,7 +374,7 @@ class GenericTemplateQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return false;
     }
 
-    return this.userAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasAccessRights(agent, proposal);
   }
 }
 @injectable()

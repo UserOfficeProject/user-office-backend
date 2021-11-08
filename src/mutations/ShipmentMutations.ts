@@ -22,9 +22,11 @@ import { AssetRegistrar } from '../utils/EAM_service';
 import { SampleAuthorization } from '../utils/SampleAuthorization';
 import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
 import { UserAuthorization } from '../utils/UserAuthorization';
+import { ProposalAuthorization } from './../auth/ProposalAuthorization';
 @injectable()
 export default class ShipmentMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   private sampleAuth = container.resolve(SampleAuthorization);
   private shipmentAuth = container.resolve(ShipmentAuthorization);
 
@@ -77,7 +79,7 @@ export default class ShipmentMutations {
       });
     }
 
-    if ((await this.userAuth.hasAccessRights(agent, proposal)) === false) {
+    if ((await this.proposalAuth.hasAccessRights(agent, proposal)) === false) {
       return rejection(
         'Can not create shipment because of insufficient permissions',
         { args, agent }
