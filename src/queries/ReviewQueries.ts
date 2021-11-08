@@ -1,5 +1,6 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { Authorized } from '../decorators';
@@ -7,7 +8,6 @@ import { Review } from '../models/Review';
 import { Roles } from '../models/Role';
 import { TechnicalReview } from '../models/TechnicalReview';
 import { UserWithRole } from '../models/User';
-import { UserAuthorization } from '../utils/UserAuthorization';
 
 @injectable()
 export default class ReviewQueries {

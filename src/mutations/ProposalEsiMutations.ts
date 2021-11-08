@@ -1,5 +1,6 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -11,7 +12,6 @@ import { ExperimentSafetyInput } from '../models/ExperimentSafetyInput';
 import { rejection, Rejection } from '../models/Rejection';
 import { UserWithRole } from '../models/User';
 import { UpdateEsiArgs } from '../resolvers/mutations/UpdateEsiMutation';
-import { UserAuthorization } from '../utils/UserAuthorization';
 
 @injectable()
 export default class ProposalEsiMutations {

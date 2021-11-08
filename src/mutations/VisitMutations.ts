@@ -1,5 +1,7 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
+import { VisitAuthorization } from '../auth/VisitAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
@@ -17,8 +19,6 @@ import { VisitRegistration } from '../models/VisitRegistration';
 import { CreateVisitArgs } from '../resolvers/mutations/CreateVisitMutation';
 import { UpdateVisitArgs } from '../resolvers/mutations/UpdateVisitMutation';
 import { UpdateVisitRegistrationArgs } from '../resolvers/mutations/UpdateVisitRegistration';
-import { UserAuthorization } from '../utils/UserAuthorization';
-import { VisitAuthorization } from './../utils/VisitAuthorization';
 
 @injectable()
 export default class VisitMutations {

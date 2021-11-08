@@ -1,5 +1,8 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { SampleAuthorization } from '../auth/SampleAuthorization';
+import { ShipmentAuthorization } from '../auth/ShipmentAuthorization';
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
@@ -16,9 +19,6 @@ import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutati
 import { SubmitShipmentArgs } from '../resolvers/mutations/SubmitShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
 import { AssetRegistrar } from '../services/eam';
-import { SampleAuthorization } from '../utils/SampleAuthorization';
-import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
 @injectable()
 export default class ShipmentMutations {
   private userAuth = container.resolve(UserAuthorization);

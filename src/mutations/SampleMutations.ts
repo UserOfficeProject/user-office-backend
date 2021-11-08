@@ -1,5 +1,6 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { SampleAuthorization } from '../auth/SampleAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
@@ -14,10 +15,9 @@ import { UserWithRole } from '../models/User';
 import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleArgs } from '../resolvers/mutations/UpdateSampleMutation';
 import { CloneUtils } from '../utils/CloneUtils';
-import { SampleAuthorization } from '../utils/SampleAuthorization';
+import { UserAuthorization } from './../auth/UserAuthorization';
 import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
 import { CloneSampleInput } from './../resolvers/mutations/CloneSampleMutation';
-import { UserAuthorization } from './../utils/UserAuthorization';
 
 @injectable()
 export default class SampleMutations {

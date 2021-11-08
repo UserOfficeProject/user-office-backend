@@ -9,6 +9,7 @@ import {
 } from '@esss-swap/duo-validation';
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { GenericTemplateDataSource } from '../datasources/GenericTemplateDataSource';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
@@ -32,7 +33,6 @@ import { AdministrationProposalArgs } from '../resolvers/mutations/Administratio
 import { ChangeProposalsStatusInput } from '../resolvers/mutations/ChangeProposalsStatusMutation';
 import { CloneProposalsInput } from '../resolvers/mutations/CloneProposalMutation';
 import { UpdateProposalArgs } from '../resolvers/mutations/UpdateProposalMutation';
-import { UserAuthorization } from '../utils/UserAuthorization';
 import { CallDataSource } from './../datasources/CallDataSource';
 import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
 import { CloneUtils } from './../utils/CloneUtils';

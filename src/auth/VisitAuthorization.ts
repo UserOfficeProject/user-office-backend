@@ -2,11 +2,11 @@ import { logger } from '@esss-swap/duo-logger';
 import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
 import { UserWithRole } from '../models/User';
 import { VisitStatus } from '../models/Visit';
-import { ProposalDataSource } from './../datasources/ProposalDataSource';
-import { Visit } from './../models/Visit';
+import { Visit } from '../models/Visit';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()

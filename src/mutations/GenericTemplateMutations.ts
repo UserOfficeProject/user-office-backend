@@ -1,5 +1,7 @@
 import { container, inject, injectable } from 'tsyringe';
 
+import { GenericTemplateAuthorization } from '../auth/GenericTemplateAuthorization';
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { GenericTemplateDataSource } from '../datasources/GenericTemplateDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -11,8 +13,6 @@ import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
 import { CreateGenericTemplateInput } from '../resolvers/mutations/CreateGenericTemplateMutation';
 import { UpdateGenericTemplateArgs } from '../resolvers/mutations/UpdateGenericTemplateMutation';
-import { GenericTemplateAuthorization } from '../utils/GenericTemplateAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
 
 @injectable()
 export default class GenericTemplateMutations {
