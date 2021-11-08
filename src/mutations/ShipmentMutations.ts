@@ -110,7 +110,9 @@ export default class ShipmentMutations {
     }
 
     try {
-      const assetId = await this.assetRegistrarService.register();
+      const assetId = await this.assetRegistrarService.register(
+        args.shipmentId
+      );
 
       return this.shipmentDataSource
         .update({
