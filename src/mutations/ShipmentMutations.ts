@@ -19,9 +19,6 @@ import { CreateShipmentInput } from '../resolvers/mutations/CreateShipmentMutati
 import { SubmitShipmentArgs } from '../resolvers/mutations/SubmitShipmentMutation';
 import { UpdateShipmentArgs } from '../resolvers/mutations/UpdateShipmentMutation';
 import { AssetRegistrar } from '../utils/EAM_service';
-import { SampleAuthorization } from '../utils/SampleAuthorization';
-import { ShipmentAuthorization } from '../utils/ShipmentAuthorization';
-import { UserAuthorization } from '../utils/UserAuthorization';
 import { ProposalAuthorization } from './../auth/ProposalAuthorization';
 @injectable()
 export default class ShipmentMutations {
