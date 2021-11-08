@@ -17,6 +17,7 @@ import {
   ProposalBookingScheduledEventFilterCore,
 } from '../resolvers/types/ProposalBooking';
 import { omit } from '../utils/helperFunctions';
+import { ProposalAuthorization } from './../auth/ProposalAuthorization';
 import { ProposalsFilter } from './../resolvers/queries/ProposalsQuery';
 
 const statusMap = new Map<ProposalEndStatus, ProposalPublicStatus>();
@@ -27,6 +28,7 @@ statusMap.set(ProposalEndStatus.RESERVED, ProposalPublicStatus.reserved);
 @injectable()
 export default class ProposalQueries {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.ProposalDataSource) public dataSource: ProposalDataSource
@@ -70,7 +72,7 @@ export default class ProposalQueries {
       return true;
     }
 
-    return this.userAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasAccessRights(agent, proposal);
   }
 
   @Authorized([Roles.USER_OFFICER])

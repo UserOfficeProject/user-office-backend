@@ -4,11 +4,13 @@ import { Tokens } from '../config/Tokens';
 import { GenericTemplateDataSource } from '../datasources/GenericTemplateDataSource';
 import { UserWithRole } from '../models/User';
 import { GenericTemplate } from './../resolvers/types/GenericTemplate';
+import { ProposalAuthorization } from './ProposalAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class GenericTemplateAuthorization {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.GenericTemplateDataSource)
     private genericTemplateDataSource: GenericTemplateDataSource
@@ -81,6 +83,6 @@ export class GenericTemplateAuthorization {
      * For the genericTemplate the authorization follows the business logic for the proposal
      * authorization that the genericTemplate is associated with
      */
-    return this.userAuth.hasAccessRights(agent, genericTemplate.proposalPk);
+    return this.proposalAuth.hasAccessRights(agent, genericTemplate.proposalPk);
   }
 }

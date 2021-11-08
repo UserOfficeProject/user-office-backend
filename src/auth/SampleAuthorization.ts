@@ -2,13 +2,16 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { SampleDataSource } from '../datasources/SampleDataSource';
+import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { Sample } from './../resolvers/types/Sample';
+import { ProposalAuthorization } from './ProposalAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class SampleAuthorization {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.SampleDataSource)
@@ -27,6 +30,14 @@ export class SampleAuthorization {
     }
 
     return sample;
+  }
+
+  async isSampleSafetyReviewer(agent: UserWithRole | null) {
+    if (agent == null) {
+      return false;
+    }
+
+    return agent?.currentRole?.shortCode === Roles.SAMPLE_SAFETY_REVIEWER;
   }
 
   async hasReadRights(
@@ -78,6 +89,6 @@ export class SampleAuthorization {
      * For the sample the authorization follows the business logic for the proposal
      * authorization that the sample is associated with
      */
-    return this.userAuth.hasAccessRights(agent, sample.proposalPk);
+    return this.proposalAuth.hasAccessRights(agent, sample.proposalPk);
   }
 }

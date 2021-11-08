@@ -4,11 +4,13 @@ import { Tokens } from '../config/Tokens';
 import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { UserWithRole } from '../models/User';
 import { Shipment } from './../resolvers/types/Shipment';
+import { ProposalAuthorization } from './ProposalAuthorization';
 import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class ShipmentAuthorization {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.ShipmentDataSource)
     private shipmentDataSource: ShipmentDataSource
@@ -78,6 +80,6 @@ export class ShipmentAuthorization {
      * For the shipment the authorization follows the business logic for the proposal
      * authorization that the shipment is associated with
      */
-    return this.userAuth.hasAccessRights(agent, shipment.proposalPk);
+    return this.proposalAuth.hasAccessRights(agent, shipment.proposalPk);
   }
 }

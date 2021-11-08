@@ -15,6 +15,7 @@ import { UserWithRole } from '../models/User';
 import { CreateSampleInput } from '../resolvers/mutations/CreateSampleMutations';
 import { UpdateSampleArgs } from '../resolvers/mutations/UpdateSampleMutation';
 import { CloneUtils } from '../utils/CloneUtils';
+import { ProposalAuthorization } from './../auth/ProposalAuthorization';
 import { UserAuthorization } from './../auth/UserAuthorization';
 import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
 import { CloneSampleInput } from './../resolvers/mutations/CloneSampleMutation';
@@ -22,6 +23,7 @@ import { CloneSampleInput } from './../resolvers/mutations/CloneSampleMutation';
 @injectable()
 export default class SampleMutations {
   private userAuth = container.resolve(UserAuthorization);
+  private proposalAuth = container.resolve(ProposalAuthorization);
   private sampleAuth = container.resolve(SampleAuthorization);
   private cloneUtils = container.resolve(CloneUtils);
 
@@ -62,7 +64,7 @@ export default class SampleMutations {
       });
     }
 
-    if ((await this.userAuth.hasAccessRights(agent, proposal)) === false) {
+    if ((await this.proposalAuth.hasAccessRights(agent, proposal)) === false) {
       return rejection(
         'Can not create sample because of insufficient permissions',
         { agent, args }
@@ -116,7 +118,7 @@ export default class SampleMutations {
     if (args.safetyComment || args.safetyStatus) {
       const canAdministrerSample =
         this.userAuth.isUserOfficer(agent) ||
-        (await this.userAuth.isSampleSafetyReviewer(agent));
+        (await this.sampleAuth.isSampleSafetyReviewer(agent));
       if (canAdministrerSample === false) {
         delete args.safetyComment;
         delete args.safetyStatus;
