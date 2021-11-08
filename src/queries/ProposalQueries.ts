@@ -52,7 +52,7 @@ export default class ProposalQueries {
       proposal = omit(proposal, 'finalStatus', 'commentForUser') as Proposal;
     }
 
-    if ((await this.hasAccessRights(agent, proposal)) === true) {
+    if ((await this.hasReadRights(agent, proposal)) === true) {
       return proposal;
     } else {
       return null;
@@ -64,7 +64,7 @@ export default class ProposalQueries {
     return this.dataSource.get(id);
   }
 
-  private async hasAccessRights(
+  private async hasReadRights(
     agent: UserWithRole | null,
     proposal: Proposal | null
   ): Promise<boolean> {
@@ -72,7 +72,7 @@ export default class ProposalQueries {
       return true;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasReadRights(agent, proposal);
   }
 
   @Authorized([Roles.USER_OFFICER])

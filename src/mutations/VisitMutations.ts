@@ -89,7 +89,7 @@ export default class VisitMutations {
 
     if (proposal === null) {
       return rejection(
-        'Can not create visit, proposal for the scheduled does not exist',
+        'Can not create visit, proposal for the scheduled event does not exist',
         {
           args,
           agent: user,
@@ -110,7 +110,7 @@ export default class VisitMutations {
       );
     }
 
-    const isProposalOwner = await this.proposalAuth.hasAccessRights(
+    const isProposalOwner = await this.proposalAuth.hasReadRights(
       user,
       proposal
     );

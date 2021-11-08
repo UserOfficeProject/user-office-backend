@@ -2,7 +2,6 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { GenericTemplateAuthorization } from '../auth/GenericTemplateAuthorization';
 import { ProposalAuthorization } from '../auth/ProposalAuthorization';
-import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { GenericTemplateDataSource } from '../datasources/GenericTemplateDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -19,7 +18,6 @@ import { UpdateGenericTemplateArgs } from '../resolvers/mutations/UpdateGenericT
 export default class GenericTemplateMutations {
   private genericTemplateAuth = container.resolve(GenericTemplateAuthorization);
   private proposalAuth = container.resolve(ProposalAuthorization);
-  private userAuth = container.resolve(UserAuthorization);
 
   constructor(
     @inject(Tokens.GenericTemplateDataSource)
@@ -66,7 +64,11 @@ export default class GenericTemplateMutations {
       );
     }
 
-    if ((await this.proposalAuth.hasAccessRights(agent, proposal)) === false) {
+    const canReadProposal = await this.proposalAuth.hasReadRights(
+      agent,
+      proposal
+    );
+    if (canReadProposal === false) {
       return rejection(
         'Can not create genericTemplate because of insufficient permissions',
         { agent, args }

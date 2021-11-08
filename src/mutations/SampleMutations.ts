@@ -8,7 +8,6 @@ import { SampleDataSource } from '../datasources/SampleDataSource';
 import { TemplateDataSource } from '../datasources/TemplateDataSource';
 import { Authorized, EventBus } from '../decorators';
 import { Event } from '../events/event.enum';
-import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 import { rejection } from '../models/Rejection';
 import { TemplateGroupId } from '../models/Template';
 import { UserWithRole } from '../models/User';
@@ -64,7 +63,12 @@ export default class SampleMutations {
       });
     }
 
-    if ((await this.proposalAuth.hasAccessRights(agent, proposal)) === false) {
+    const canReadProposal = await this.proposalAuth.hasReadRights(
+      agent,
+      proposal
+    );
+
+    if (canReadProposal === false) {
       return rejection(
         'Can not create sample because of insufficient permissions',
         { agent, args }
@@ -102,10 +106,12 @@ export default class SampleMutations {
 
   @EventBus(Event.PROPOSAL_SAMPLE_REVIEW_SUBMITTED)
   async updateSample(agent: UserWithRole | null, args: UpdateSampleArgs) {
-    const hasWriteRights = await this.sampleAuth.hasWriteRights(
-      agent,
-      args.sampleId
-    );
+    const sample = await this.sampleDataSource.getSample(args.sampleId);
+    if (sample === null) {
+      return rejection('Sample does not exist', { agent, args });
+    }
+
+    const hasWriteRights = await this.sampleAuth.hasWriteRights(agent, sample);
 
     if (hasWriteRights === false) {
       return rejection(
@@ -155,11 +161,11 @@ export default class SampleMutations {
     }
 
     const proposal = await this.proposalDataSource.get(sample.proposalPk);
-    if (proposal!.submitted && sample.isPostProposalSubmission === false) {
-      return rejection(
-        'Could not delete sample because associated proposal is already submitted',
-        { agent, sampleId }
-      );
+    if (proposal === null) {
+      return rejection('Can not delete sample because proposal was not found', {
+        agent,
+        sampleId,
+      });
     }
 
     return this.sampleDataSource
@@ -192,7 +198,7 @@ export default class SampleMutations {
       );
     }
 
-    if (!(await this.sampleAuth.hasWriteRights(agent, sourceSample))) {
+    if ((await this.sampleAuth.hasReadRights(agent, sourceSample)) === false) {
       return rejection(
         'Could not clone sample, because of insufficient permissions',
         { agent, args }
@@ -207,23 +213,14 @@ export default class SampleMutations {
       );
     }
 
-    // TODO Move this logic into commonly shared place ProposalAuthorizer SWAP-1944
-    const proposalStatus =
-      await this.proposalSettingsDataSource.getProposalStatus(
-        proposal.statusId
-      );
-
     if (
-      proposalStatus?.shortCode !==
-      ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED
+      (await this.proposalAuth.hasWriteRights(agent, proposal)) === false &&
+      !isPostProposalSubmission
     ) {
-      if (
-        proposal.submitted &&
-        isPostProposalSubmission !== true &&
-        !this.userAuth.isUserOfficer(agent)
-      ) {
-        return rejection('Can not update proposal after submission');
-      }
+      return rejection('Can not update proposal due to lack of permissions', {
+        proposal,
+        agent,
+      });
     }
 
     try {

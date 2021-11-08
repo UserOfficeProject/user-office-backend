@@ -1,12 +1,15 @@
 import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
+import { ProposalStatusDefaultShortCodes } from '../models/ProposalStatus';
 import { User, UserWithRole } from '../models/User';
 import { Proposal } from '../resolvers/types/Proposal';
+import { ProposalSettingsDataSource } from './../datasources/ProposalSettingsDataSource';
 import { UserDataSource } from './../datasources/UserDataSource';
 import { UserAuthorization } from './UserAuthorization';
 
@@ -23,7 +26,11 @@ export class ProposalAuthorization {
     @inject(Tokens.SEPDataSource)
     private sepDataSource: SEPDataSource,
     @inject(Tokens.VisitDataSource)
-    private visitDataSource: VisitDataSource
+    private visitDataSource: VisitDataSource,
+    @inject(Tokens.CallDataSource)
+    private callDataSource: CallDataSource,
+    @inject(Tokens.ProposalSettingsDataSource)
+    private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}
 
   private async resolveProposal(
@@ -38,36 +45,6 @@ export class ProposalAuthorization {
     }
 
     return proposal;
-  }
-
-  async hasReadRights(
-    agent: UserWithRole | null,
-    proposal: Proposal
-  ): Promise<boolean>;
-  async hasReadRights(
-    agent: UserWithRole | null,
-    proposalId: number
-  ): Promise<boolean>;
-  async hasReadRights(
-    agent: UserWithRole | null,
-    proposalOrProposalId: Proposal | number
-  ): Promise<boolean> {
-    throw new Error('Not implemented');
-  }
-
-  async hasWriteRights(
-    agent: UserWithRole | null,
-    proposal: Proposal
-  ): Promise<boolean>;
-  async hasWriteRights(
-    agent: UserWithRole | null,
-    proposalId: number
-  ): Promise<boolean>;
-  async hasWriteRights(
-    agent: UserWithRole | null,
-    proposalOrProposalId: Proposal | number
-  ): Promise<boolean> {
-    throw new Error('Not implemented');
   }
 
   isPrincipalInvestigatorOfProposal(
@@ -174,15 +151,15 @@ export class ProposalAuthorization {
     );
   }
 
-  async hasAccessRights(
+  async hasReadRights(
     agent: UserWithRole | null,
     proposal: Proposal
   ): Promise<boolean>;
-  async hasAccessRights(
+  async hasReadRights(
     agent: UserWithRole | null,
     proposalId: number
   ): Promise<boolean>;
-  async hasAccessRights(
+  async hasReadRights(
     agent: UserWithRole | null,
     proposalOrProposalId: Proposal | number
   ): Promise<boolean> {
@@ -205,5 +182,59 @@ export class ProposalAuthorization {
       (await this.isChairOrSecretaryOfProposal(agent, proposal.primaryKey)) ||
       (await this.isVisitorOfProposal(agent, proposal.primaryKey))
     );
+  }
+
+  private async isProposalEditable(proposal: Proposal): Promise<boolean> {
+    const proposalStatus =
+      await this.proposalSettingsDataSource.getProposalStatus(
+        proposal.statusId
+      );
+
+    return (
+      proposal.submitted === false ||
+      proposalStatus?.shortCode ===
+        ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED
+    );
+  }
+
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    proposal: Proposal
+  ): Promise<boolean>;
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    proposalId: number
+  ): Promise<boolean>;
+  async hasWriteRights(
+    agent: UserWithRole | null,
+    proposalOrProposalId: Proposal | number
+  ): Promise<boolean> {
+    if (!agent) {
+      return false;
+    }
+
+    const proposal = await this.resolveProposal(proposalOrProposalId);
+
+    if (!proposal) {
+      return false;
+    }
+
+    if (
+      this.userAuth.isUserOfficer(agent) ||
+      this.userAuth.hasGetAccessByToken(agent)
+    ) {
+      return true;
+    }
+
+    const callId = proposal.callId;
+    const isMemberOfProposal = await this.isMemberOfProposal(agent, proposal);
+    const isCallActive = await this.callDataSource.checkActiveCall(callId);
+    const isProposalEditable = await this.isProposalEditable(proposal);
+
+    if (isMemberOfProposal && isCallActive && isProposalEditable) {
+      return true;
+    }
+
+    return false;
   }
 }

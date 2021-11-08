@@ -5,11 +5,9 @@ import { ShipmentDataSource } from '../datasources/ShipmentDataSource';
 import { UserWithRole } from '../models/User';
 import { Shipment } from './../resolvers/types/Shipment';
 import { ProposalAuthorization } from './ProposalAuthorization';
-import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class ShipmentAuthorization {
-  private userAuth = container.resolve(UserAuthorization);
   private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.ShipmentDataSource)
@@ -66,11 +64,6 @@ export class ShipmentAuthorization {
     agent: UserWithRole | null,
     shipmentOrShipmentId: Shipment | number
   ) {
-    // User officer has read/write rights
-    if (this.userAuth.isUserOfficer(agent)) {
-      return true;
-    }
-
     const shipment = await this.resolveShipment(shipmentOrShipmentId);
     if (!shipment) {
       return false;
@@ -78,8 +71,8 @@ export class ShipmentAuthorization {
 
     /*
      * For the shipment the authorization follows the business logic for the proposal
-     * authorization that the shipment is associated with
+     * authorization that the shipment is associated with, this should be changed
      */
-    return this.proposalAuth.hasAccessRights(agent, shipment.proposalPk);
+    return this.proposalAuth.hasReadRights(agent, shipment.proposalPk);
   }
 }

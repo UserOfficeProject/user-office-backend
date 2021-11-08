@@ -76,7 +76,7 @@ export const collectProposalPDFData = async (
   const proposal = await baseContext.queries.proposal.get(user, proposalPk);
 
   // Authenticate user
-  if (!proposal || !proposalAuth.hasAccessRights(user, proposal)) {
+  if (!proposal || !proposalAuth.hasReadRights(user, proposal)) {
     throw new Error('User was not allowed to download PDF');
   }
 
