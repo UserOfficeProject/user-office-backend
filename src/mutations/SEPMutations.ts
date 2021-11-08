@@ -10,6 +10,7 @@ import {
 } from '@esss-swap/duo-validation';
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -40,7 +41,6 @@ import { ReorderSepMeetingDecisionProposalsInput } from '../resolvers/mutations/
 import { SaveSEPMeetingDecisionInput } from '../resolvers/mutations/SEPMeetingDecisionMutation';
 import { UpdateSEPArgs } from '../resolvers/mutations/UpdateSEPMutation';
 import { UpdateSEPTimeAllocationArgs } from '../resolvers/mutations/UpdateSEPProposalMutation';
-import { UserAuthorization } from '../utils/UserAuthorization';
 @injectable()
 export default class SEPMutations {
   private userAuth = container.resolve(UserAuthorization);

@@ -1,6 +1,7 @@
 import { logger } from '@esss-swap/duo-logger';
 import { container, inject, injectable } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { Authorized } from '../decorators';
@@ -16,7 +17,6 @@ import {
   ProposalBookingScheduledEventFilterCore,
 } from '../resolvers/types/ProposalBooking';
 import { omit } from '../utils/helperFunctions';
-import { UserAuthorization } from '../utils/UserAuthorization';
 import { ProposalsFilter } from './../resolvers/queries/ProposalsQuery';
 
 const statusMap = new Map<ProposalEndStatus, ProposalPublicStatus>();
