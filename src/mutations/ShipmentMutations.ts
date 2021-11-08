@@ -79,7 +79,12 @@ export default class ShipmentMutations {
       });
     }
 
-    if ((await this.proposalAuth.hasAccessRights(agent, proposal)) === false) {
+    const canReadProposal = await this.proposalAuth.hasReadRights(
+      agent,
+      proposal
+    );
+
+    if (canReadProposal === false) {
       return rejection(
         'Can not create shipment because of insufficient permissions',
         { args, agent }

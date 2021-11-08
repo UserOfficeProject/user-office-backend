@@ -82,7 +82,7 @@ export class ProposalQuestionaryAuthorizer implements QuestionaryAuthorizer {
       })
     ).proposals[0];
 
-    return this.proposalAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasReadRights(agent, proposal);
   }
 }
 
@@ -137,7 +137,7 @@ class SampleDeclarationQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return false;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasReadRights(agent, proposal);
   }
 }
 
@@ -195,7 +195,7 @@ class ShipmentDeclarationQuestionaryAuthorizer
       return false;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasReadRights(agent, proposal);
   }
 }
 
@@ -374,7 +374,7 @@ class GenericTemplateQuestionaryAuthorizer implements QuestionaryAuthorizer {
       return false;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, proposal);
+    return this.proposalAuth.hasReadRights(agent, proposal);
   }
 }
 @injectable()

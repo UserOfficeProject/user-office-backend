@@ -36,6 +36,17 @@ export class EsiAuthorization {
     return esi;
   }
 
+  async canReadProposal(
+    agent: UserWithRole | null,
+    proposalPk: number
+  ): Promise<boolean> {
+    if (!agent) {
+      return false;
+    }
+
+    return this.proposalAuth.hasReadRights(agent, proposalPk);
+  }
+
   async hasReadRights(
     agent: UserWithRole | null,
     esi: ExperimentSafetyInput
@@ -58,11 +69,11 @@ export class EsiAuthorization {
     }
     const scheduledEvent = await this.getScheduledEvent(esi.scheduledEventId);
 
-    if (scheduledEvent === null) {
+    if (scheduledEvent === null || scheduledEvent.proposalPk === null) {
       return false;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
+    return this.canReadProposal(agent, scheduledEvent.proposalPk);
   }
 
   async hasWriteRights(
@@ -87,7 +98,7 @@ export class EsiAuthorization {
     }
     const scheduledEvent = await this.getScheduledEvent(esi.scheduledEventId);
 
-    if (scheduledEvent === null) {
+    if (scheduledEvent === null || scheduledEvent.proposalPk === null) {
       return false;
     }
 
@@ -98,6 +109,6 @@ export class EsiAuthorization {
       return false;
     }
 
-    return this.proposalAuth.hasAccessRights(agent, scheduledEvent.proposalPk!);
+    return this.canReadProposal(agent, scheduledEvent.proposalPk);
   }
 }

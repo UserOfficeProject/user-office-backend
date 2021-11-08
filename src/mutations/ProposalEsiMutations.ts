@@ -52,11 +52,11 @@ export default class ProposalEsiMutations {
       return rejection('Can not create ESI, because proposal does not exist');
     }
 
-    const hasAccessRights = await this.proposalAuth.hasAccessRights(
+    const canReadProposal = await this.proposalAuth.hasReadRights(
       user,
       proposal
     );
-    if (!hasAccessRights) {
+    if (canReadProposal === false) {
       return rejection(
         'User is not authorized to create ESI for this proposal'
       );

@@ -52,7 +52,13 @@ export class SampleAuthorization {
     agent: UserWithRole | null,
     sampleOrSampleId: Sample | number
   ): Promise<boolean> {
-    return this.hasAccessRights(agent, sampleOrSampleId);
+    const sample = await this.resolveSample(sampleOrSampleId);
+
+    if (!sample) {
+      return false;
+    }
+
+    return this.proposalAuth.hasReadRights(agent, sample.proposalPk);
   }
 
   async hasWriteRights(
@@ -67,28 +73,20 @@ export class SampleAuthorization {
     agent: UserWithRole | null,
     sampleOrSampleId: Sample | number
   ): Promise<boolean> {
-    return this.hasAccessRights(agent, sampleOrSampleId);
-  }
-
-  private async hasAccessRights(
-    agent: UserWithRole | null,
-    sampleOrSampleId: Sample | number
-  ) {
-    // User officer has access
-    if (this.userAuth.isUserOfficer(agent)) {
-      return true;
-    }
-
     const sample = await this.resolveSample(sampleOrSampleId);
 
     if (!sample) {
       return false;
     }
 
-    /*
-     * For the sample the authorization follows the business logic for the proposal
-     * authorization that the sample is associated with
-     */
-    return this.proposalAuth.hasAccessRights(agent, sample.proposalPk);
+    const isMemberOfProposal = await this.proposalAuth.isMemberOfProposal(
+      agent,
+      sample.proposalPk
+    );
+
+    return (
+      this.proposalAuth.hasWriteRights(agent, sample.proposalPk) ||
+      (isMemberOfProposal && sample.isPostProposalSubmission === true)
+    );
   }
 }
