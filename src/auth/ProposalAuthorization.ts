@@ -175,6 +175,7 @@ export class ProposalAuthorization {
 
     return (
       this.userAuth.isUserOfficer(agent) ||
+      this.userAuth.isInstrumentScientist(agent) ||
       this.userAuth.hasGetAccessByToken(agent) ||
       (await this.isMemberOfProposal(agent, proposal)) ||
       (await this.isReviewerOfProposal(agent, proposal.primaryKey)) ||

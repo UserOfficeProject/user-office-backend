@@ -13,7 +13,6 @@ export class UserAuthorization {
     @inject(Tokens.SEPDataSource) private sepDataSource: SEPDataSource
   ) {}
 
-  // User officer has access
   isUserOfficer(agent: UserWithRole | null) {
     if (agent == null) {
       return false;
@@ -38,6 +37,14 @@ export class UserAuthorization {
     return this.userDataSource.getUserRoles(agent.id).then((roles) => {
       return roles.some((roleItem) => roleItem.shortCode === role);
     });
+  }
+
+  isInstrumentScientist(agent: UserWithRole) {
+    if (agent == null) {
+      return false;
+    }
+
+    return agent?.currentRole?.shortCode === Roles.INSTRUMENT_SCIENTIST;
   }
 
   async isChairOrSecretaryOfSEP(
