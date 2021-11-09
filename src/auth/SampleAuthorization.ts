@@ -79,14 +79,18 @@ export class SampleAuthorization {
       return false;
     }
 
+    const canEditProposal = await this.proposalAuth.hasWriteRights(
+      agent,
+      sample.proposalPk
+    );
+
     const isMemberOfProposal = await this.proposalAuth.isMemberOfProposal(
       agent,
       sample.proposalPk
     );
 
-    return (
-      this.proposalAuth.hasWriteRights(agent, sample.proposalPk) ||
-      (isMemberOfProposal && sample.isPostProposalSubmission === true)
-    );
+    const isPostProposalSubmission = sample.isPostProposalSubmission === true;
+
+    return canEditProposal || (isMemberOfProposal && isPostProposalSubmission);
   }
 }
