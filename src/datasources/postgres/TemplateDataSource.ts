@@ -8,7 +8,6 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
-  TemplateExport,
   TemplateGroupId,
   TemplatesHasQuestions,
   TemplateStep,
@@ -173,7 +172,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       });
   }
 
-  async getTemplateExport(templateId: number): Promise<TemplateExport> {
+  async getTemplateAsJson(templateId: number): Promise<string> {
     const VERSION = '1.0.0';
     const EXPORT_DATE = new Date();
 
@@ -189,7 +188,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       questions,
     };
 
-    return new TemplateExport(VERSION, EXPORT_DATE, JSON.stringify(object));
+    return JSON.stringify(object);
   }
 
   async getQuestionsDependencies(

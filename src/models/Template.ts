@@ -125,11 +125,3 @@ export class Template {
     public isArchived: boolean
   ) {}
 }
-
-export class TemplateExport {
-  constructor(
-    public version: string,
-    public exportDate: Date,
-    public json: string
-  ) {}
-}

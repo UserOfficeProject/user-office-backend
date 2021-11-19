@@ -8,7 +8,6 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
-  TemplateExport,
   TemplateGroup,
   TemplateGroupId,
   TemplatesHasQuestions,
@@ -127,8 +126,8 @@ export class TemplateDataSourceMock implements TemplateDataSource {
   constructor() {
     this.init();
   }
-  getTemplateExport(templateId: number): Promise<TemplateExport> {
-    throw new Error('Method not implemented.');
+  async getTemplateAsJson(templateId: number): Promise<string> {
+    return JSON.stringify(dummyProposalTemplate);
   }
 
   async getGroup(groupId: TemplateGroupId): Promise<TemplateGroup> {
