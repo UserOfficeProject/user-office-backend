@@ -8,6 +8,7 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
+  TemplateExport,
   TemplateGroupId,
   TemplatesHasQuestions,
   TemplateStep,
@@ -170,6 +171,25 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
 
         return createProposalTemplateObject(resultSet[0]);
       });
+  }
+
+  async getTemplateExport(templateId: number): Promise<TemplateExport> {
+    const VERSION = '1.0.0';
+    const EXPORT_DATE = new Date();
+
+    const template = await this.getTemplate(templateId);
+    const templateSteps = await this.getTemplateSteps(templateId);
+    const questions = await this.getQuestionsInTemplate(templateId);
+
+    const object = {
+      version: VERSION,
+      exportDate: EXPORT_DATE,
+      template,
+      templateSteps,
+      questions,
+    };
+
+    return new TemplateExport(VERSION, EXPORT_DATE, JSON.stringify(object));
   }
 
   async getQuestionsDependencies(
@@ -753,5 +773,19 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       .select('*')
       .first()
       .then((row: TemplateGroupRecord) => createTemplateGroupObject(row));
+  }
+
+  async getQuestionsInTemplate(templateId: number): Promise<Question[]> {
+    const rows: QuestionRecord[] = await database('templates_has_questions')
+      .where({ template_id: templateId })
+      .leftJoin(
+        'questions',
+        'questions.question_id',
+        'templates_has_questions.question_id'
+      )
+      .orderBy('sort_order')
+      .select('*');
+
+    return rows.map((row) => createQuestionObject(row));
   }
 }

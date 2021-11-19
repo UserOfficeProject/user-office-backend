@@ -9,6 +9,7 @@ import {
   TemplatesHasQuestions,
   TemplateStep,
   Topic,
+  TemplateExport,
 } from '../models/Template';
 import { CreateTemplateArgs } from '../resolvers/mutations/CreateTemplateMutation';
 import { CreateTopicArgs } from '../resolvers/mutations/CreateTopicMutation';
@@ -25,6 +26,7 @@ export interface TemplateDataSource {
   // Template
   createTemplate(args: CreateTemplateArgs): Promise<Template>;
   getTemplate(templateId: number): Promise<Template | null>;
+  getTemplateExport(templateId: number): Promise<TemplateExport>;
   getTemplates(args?: TemplatesArgs): Promise<Template[]>;
   updateTemplate(values: UpdateTemplateArgs): Promise<Template | null>;
   deleteTemplate(id: number): Promise<Template>;
@@ -54,6 +56,7 @@ export interface TemplateDataSource {
   deleteQuestion(questionId: string): Promise<Question>;
   getComplementaryQuestions(templateId: number): Promise<Question[] | null>;
   getQuestions(filter?: QuestionsFilter): Promise<Question[]>;
+  getQuestionsInTemplate(templateId: number): Promise<Question[]>;
 
   // TemplateField rel
   getQuestionTemplateRelation(

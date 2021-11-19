@@ -8,6 +8,7 @@ import {
   Template,
   TemplateCategory,
   TemplateCategoryId,
+  TemplateExport,
   TemplateGroup,
   TemplateGroupId,
   TemplatesHasQuestions,
@@ -126,6 +127,10 @@ export class TemplateDataSourceMock implements TemplateDataSource {
   constructor() {
     this.init();
   }
+  getTemplateExport(templateId: number): Promise<TemplateExport> {
+    throw new Error('Method not implemented.');
+  }
+
   async getGroup(groupId: TemplateGroupId): Promise<TemplateGroup> {
     return new TemplateGroup(groupId, TemplateCategoryId.PROPOSAL_QUESTIONARY);
   }
@@ -359,5 +364,11 @@ export class TemplateDataSourceMock implements TemplateDataSource {
 
   async getQuestions(filter?: QuestionsFilter): Promise<Question[]> {
     return [dummyQuestionFactory()];
+  }
+
+  async getQuestionsInTemplate(templateId: number): Promise<Question[]> {
+    return dummyTemplateSteps.flatMap((step) =>
+      step.fields.map((field) => field.question)
+    );
   }
 }
