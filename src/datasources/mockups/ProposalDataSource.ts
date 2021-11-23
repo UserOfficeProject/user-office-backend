@@ -90,10 +90,13 @@ export class ProposalDataSourceMock implements ProposalDataSource {
   }
 
   async getProposalsFromView(
-    filter?: ProposalsFilter | undefined
-  ): Promise<ProposalView[]> {
-    return [];
+    filter?: ProposalsFilter | undefined,
+    first?: number,
+    offset?: number
+  ): Promise<{ totalCount: number; proposalViews: ProposalView[] }> {
+    return { totalCount: 0, proposalViews: [] };
   }
+
   public init() {
     dummyProposal = dummyProposalFactory({ primaryKey: 1 });
     dummyProposalSubmitted = dummyProposalFactory({

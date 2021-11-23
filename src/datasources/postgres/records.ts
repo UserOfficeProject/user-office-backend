@@ -115,6 +115,7 @@ export interface ProposalViewRecord {
   readonly call_id: number;
   readonly submitted: boolean;
   readonly allocation_time_unit: AllocationTimeUnits;
+  readonly full_count: number;
 }
 
 export interface TopicRecord {

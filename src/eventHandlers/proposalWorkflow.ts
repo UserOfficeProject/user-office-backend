@@ -468,9 +468,12 @@ export default function createHandler() {
               callId: event.call.id,
             });
 
-          if (allProposalsOnCall && allProposalsOnCall.length) {
+          if (
+            allProposalsOnCall.proposalViews &&
+            allProposalsOnCall.totalCount
+          ) {
             await Promise.all(
-              allProposalsOnCall.map(
+              allProposalsOnCall.proposalViews.map(
                 async (proposalOnCall) =>
                   await markProposalEventAsDoneAndCallWorkflowEngine(
                     event.type,

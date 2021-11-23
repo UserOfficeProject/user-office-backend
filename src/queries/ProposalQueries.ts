@@ -86,15 +86,20 @@ export default class ProposalQueries {
   }
 
   @Authorized([Roles.USER_OFFICER])
-  async getAllView(agent: UserWithRole | null, filter?: ProposalsFilter) {
+  async getAllView(
+    agent: UserWithRole | null,
+    filter?: ProposalsFilter,
+    first?: number,
+    offset?: number
+  ) {
     try {
       // leave await here because getProposalsFromView might thrown an exception
       // and we want to handle it here
-      return await this.dataSource.getProposalsFromView(filter);
+      return await this.dataSource.getProposalsFromView(filter, first, offset);
     } catch (e) {
       logger.logException('Method getAllView failed', e as Error, { filter });
 
-      return [];
+      return { totalCount: 0, proposalViews: [] };
     }
   }
 
