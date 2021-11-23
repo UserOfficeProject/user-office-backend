@@ -60,8 +60,10 @@ export interface ProposalDataSource {
 
   setProposalUsers(proposalPk: number, users: number[]): Promise<void>;
 
-  submitProposal(primaryKey: number): Promise<Proposal>;
-
+  submitProposal(
+    primaryKey: number,
+    referenceNumber?: string
+  ): Promise<Proposal>;
   deleteProposal(primaryKey: number): Promise<Proposal>;
 
   markEventAsDoneOnProposal(

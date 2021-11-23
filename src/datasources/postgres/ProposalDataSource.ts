@@ -78,76 +78,84 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     return response;
   }
 
-  async submitProposal(primaryKey: number): Promise<Proposal> {
-    const proposal = await database.transaction(async (trx) => {
-      try {
-        const call = await database
-          .select(
-            'c.call_id',
-            'c.reference_number_format',
-            'c.proposal_sequence'
-          )
-          .from('call as c')
-          .join('proposals as p', { 'p.call_id': 'c.call_id' })
-          .where('p.proposal_pk', primaryKey)
-          .first()
-          .forUpdate()
-          .transacting(trx);
+  async submitProposal(
+    primaryKey: number,
+    referenceNumber?: string
+  ): Promise<Proposal> {
+    const proposal: ProposalRecord[] | undefined = await database.transaction(
+      async (trx) => {
+        try {
+          const call = await database
+            .select(
+              'c.call_id',
+              'c.reference_number_format',
+              'c.proposal_sequence'
+            )
+            .from('call as c')
+            .join('proposals as p', { 'p.call_id': 'c.call_id' })
+            .where('p.proposal_pk', primaryKey)
+            .first()
+            .forUpdate()
+            .transacting(trx);
 
-        let referenceNumber: string | null;
-        if (call.reference_number_format) {
-          referenceNumber = await calculateReferenceNumber(
-            call.reference_number_format,
-            call.proposal_sequence
-          );
+          let ref: string | null;
 
-          if (!referenceNumber) {
-            throw new Error(
-              `Failed to calculate reference number for proposal with id '${primaryKey}' using format '${call.reference_number_format}'`
+          if (referenceNumber !== undefined) {
+            ref = referenceNumber;
+          } else if (call.reference_number_format) {
+            ref = await calculateReferenceNumber(
+              call.reference_number_format,
+              call.proposal_sequence
             );
-          } else if (referenceNumber.length > 16) {
-            throw new Error(
-              `The reference number calculated is too long ('${referenceNumber.length} characters)`
-            );
-          }
-        }
 
-        await database
-          .update({
-            proposal_sequence: (call.proposal_sequence ?? 0) + 1,
-          })
-          .from('call as c')
-          .where('c.call_id', call.call_id)
-          .transacting(trx);
-
-        const proposalUpdate = await database
-          .from('proposals')
-          .returning('*')
-          .where('proposal_pk', primaryKey)
-          .modify((query) => {
-            if (referenceNumber) {
-              query.update({
-                proposal_id: referenceNumber,
-                reference_number_sequence: call.proposal_sequence ?? 0,
-                submitted: true,
-              });
-            } else {
-              query.update({
-                reference_number_sequence: call.proposal_sequence ?? 0,
-                submitted: true,
-              });
+            if (!ref) {
+              throw new Error(
+                `Failed to calculate reference number for proposal with id '${primaryKey}' using format '${call.reference_number_format}'`
+              );
+            } else if (ref.length > 16) {
+              throw new Error(
+                `The reference number calculated is too long ('${ref.length} characters)`
+              );
             }
-          })
-          .transacting(trx);
+          }
 
-        return await trx.commit(proposalUpdate);
-      } catch (error) {
-        logger.logException(
-          `Failed to submit proposal with id '${primaryKey}'`,
-          error
-        );
+          await database
+            .update({
+              proposal_sequence: (call.proposal_sequence ?? 0) + 1,
+            })
+            .from('call as c')
+            .where('c.call_id', call.call_id)
+            .transacting(trx);
+
+          const proposalUpdate = await database
+            .from('proposals')
+            .returning('*')
+            .where('proposal_pk', primaryKey)
+            .modify((query) => {
+              if (ref) {
+                query.update({
+                  proposal_id: ref,
+                  reference_number_sequence: call.proposal_sequence ?? 0,
+                  submitted: true,
+                });
+              } else {
+                query.update({
+                  reference_number_sequence: call.proposal_sequence ?? 0,
+                  submitted: true,
+                });
+              }
+            })
+            .transacting(trx);
+
+          return await trx.commit(proposalUpdate);
+        } catch (error) {
+          logger.logException(
+            `Failed to submit proposal with id '${primaryKey}'`,
+            error
+          );
+        }
       }
-    });
+    );
 
     if (proposal?.length !== 1) {
       throw new Error(`Failed to submit proposal with id '${primaryKey}'`);
@@ -595,40 +603,46 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   async cloneProposal(sourceProposal: Proposal): Promise<Proposal> {
     const [newProposal]: ProposalRecord[] = (
       await database.raw(`
-          INSERT INTO proposals
-          (title,
-           abstract,
-           status_id,
-           proposer_id,
-           created_at,
-           updated_at,
-           final_status,
-           call_id,
-           questionary_id,
-           comment_for_management,
-           comment_for_user,
-           notified,
-           submitted,
-           management_decision_submitted,
-           management_time_allocation)
-          SELECT title,
-                 abstract,
-                 status_id,
-                 proposer_id,
-                 created_at,
-                 updated_at,
-                 final_status,
-                 call_id,
-                 questionary_id,
-                 comment_for_management,
-                 comment_for_user,
-                 notified,
-                 submitted,
-                 management_decision_submitted,
-                 management_time_allocation
-          FROM proposals
-          WHERE proposal_pk = ${sourceProposal.primaryKey} RETURNING *
-      `)
+      INSERT INTO proposals
+      (
+        title,
+        abstract,
+        status_id,
+        proposer_id,
+        created_at,
+        updated_at,
+        final_status,
+        call_id,
+        questionary_id,
+        comment_for_management,
+        comment_for_user,
+        notified,
+        submitted,
+        management_decision_submitted,
+        management_time_allocation
+      )
+      SELECT
+        title,
+        abstract,
+        status_id,
+        proposer_id,
+        created_at,
+        updated_at,
+        final_status,
+        call_id,
+        questionary_id,
+        comment_for_management,
+        comment_for_user,
+        notified,
+        submitted,
+        management_decision_submitted,
+        management_time_allocation
+      FROM
+        proposals
+      WHERE
+        proposal_pk = ${sourceProposal.primaryKey}
+      RETURNING *
+    `)
     ).rows;
 
     return createProposalObject(newProposal);
@@ -655,19 +669,21 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
 
     const proposalEventsToReset: StatusChangingEventRecord[] = (
       await database.raw(`
-          SELECT *
-          FROM proposal_workflow_connections AS pwc
-                   JOIN
-               status_changing_events
-               ON
-                       status_changing_events.proposal_workflow_connection_id = pwc.proposal_workflow_connection_id
-          WHERE pwc.proposal_workflow_connection_id >= (
-              SELECT proposal_workflow_connection_id
-              FROM proposal_workflow_connections
-              WHERE proposal_workflow_id = ${proposalCall.proposal_workflow_id}
-                AND proposal_status_id = ${statusId}
-          )
-            AND pwc.proposal_workflow_id = ${proposalCall.proposal_workflow_id};
+        SELECT
+          *
+        FROM
+          proposal_workflow_connections AS pwc
+        JOIN
+          status_changing_events
+        ON
+          status_changing_events.proposal_workflow_connection_id = pwc.proposal_workflow_connection_id
+        WHERE pwc.proposal_workflow_connection_id >= (
+          SELECT proposal_workflow_connection_id
+          FROM proposal_workflow_connections
+          WHERE proposal_workflow_id = ${proposalCall.proposal_workflow_id}
+          AND proposal_status_id = ${statusId}
+        )
+        AND pwc.proposal_workflow_id = ${proposalCall.proposal_workflow_id};
       `)
     ).rows;
 
@@ -846,3 +862,5 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
     }
   }
 }
+
+

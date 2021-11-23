@@ -10,7 +10,7 @@ import { UserDataSource } from '../UserDataSource';
 import UOWSSoapClient from './UOWSSoapInterface';
 
 const postgresUserDataSource = new PostgresUserDataSource();
-const client = new UOWSSoapClient(process.env.UOWS_URL);
+const client = new UOWSSoapClient(process.env.EXTERNAL_AUTH_SERVICE_URL);
 const token = process.env.EXTERNAL_AUTH_TOKEN;
 
 type StfcRolesToEssRole = { [key: string]: Roles[] };
@@ -275,7 +275,7 @@ export class StfcUserDataSource implements UserDataSource {
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
     if (stfcUser != null) {
-      this.ensureDummyUserExists(stfcUser.userNumber);
+      await this.ensureDummyUserExists(stfcUser.userNumber);
     }
 
     return stfcUser ? toEssUser(stfcUser) : null;
