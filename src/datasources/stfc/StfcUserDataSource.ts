@@ -275,7 +275,7 @@ export class StfcUserDataSource implements UserDataSource {
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
     if (stfcUser != null) {
-      this.ensureDummyUserExists(stfcUser.userNumber);
+      await this.ensureDummyUserExists(stfcUser.userNumber);
     }
 
     return stfcUser ? toEssUser(stfcUser) : null;
@@ -447,5 +447,11 @@ export class StfcUserDataSource implements UserDataSource {
     }
 
     return;
+  }
+
+  async isExternalTokenValid(token: string): Promise<boolean> {
+    const result = await client.isTokenValid(token);
+
+    return result.return;
   }
 }
