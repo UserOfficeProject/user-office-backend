@@ -168,7 +168,7 @@ export default class FeedbackMutations {
     const hasRights = await this.feedbackAuth.hasWriteRights(user, feedbackId);
     if (hasRights === false) {
       return rejection(
-        'Can not update feedback because of insufficient permissions',
+        'Can not delete feedback because of insufficient permissions',
         { user, feedbackId }
       );
     }
