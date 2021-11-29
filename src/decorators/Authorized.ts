@@ -1,9 +1,11 @@
+import { logger } from '@esss-swap/duo-logger';
+import { AuthenticationError } from 'apollo-server-core';
 import { container } from 'tsyringe';
 
+import { UserAuthorization } from '../auth/UserAuthorization';
 import { Rejection, rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
-import { UserAuthorization } from '../utils/UserAuthorization';
 
 const Authorized = (roles: Roles[] = []) => {
   return (
@@ -33,6 +35,21 @@ const Authorized = (roles: Roles[] = []) => {
 
       if (!agent) {
         return isMutation ? rejection('NOT_LOGGED_IN') : null;
+      }
+
+      if (
+        agent.externalToken &&
+        !(await userAuthorization.isExternalTokenValid(agent.externalToken))
+      ) {
+        logger.logWarn('External token invalid/Expired', {
+          externalToken: agent.externalToken,
+        });
+
+        return isMutation
+          ? rejection('EXTERNAL_TOKEN_INVALID')
+          : new AuthenticationError('EXTERNAL_TOKEN_INVALID', {
+              externalToken: agent.externalToken,
+            });
       }
 
       if (roles.length === 0) {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { logger } from '@esss-swap/duo-logger';
 import { Knex } from 'knex';
 
 import { Role, Roles } from '../../models/Role';
@@ -373,10 +374,12 @@ export default class PostgresUserDataSource implements UserDataSource {
         })
         .returning(['*'])
         .into('users');
+
+      logger.logInfo('Creating dummy user', { userId });
     }
 
     if (!user || user.length == 0) {
-      throw new Error('Could not create user');
+      throw new Error(`Could not create user ${userId}`);
     }
 
     return createUserObject(user[0]);
@@ -641,5 +644,17 @@ export default class PostgresUserDataSource implements UserDataSource {
         (role: RoleRecord) =>
           new Role(role.role_id, role.short_code, role.title)
       );
+  }
+
+  async externalTokenLogin(token: string): Promise<null> {
+    return null;
+  }
+
+  async logout(token: string): Promise<void> {
+    return;
+  }
+
+  async isExternalTokenValid(token: string): Promise<boolean> {
+    return true;
   }
 }

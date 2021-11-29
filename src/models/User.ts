@@ -5,7 +5,9 @@ export type AuthJwtPayload = {
   user: User;
   roles: Role[];
   currentRole: Role;
+  externalToken?: string;
 };
+
 export type AuthJwtApiTokenPayload = { accessTokenId?: string };
 
 type SpecialActionJwtPayload = {
@@ -52,6 +54,7 @@ export interface UserWithRole extends User {
   currentRole: Role | undefined;
   accessPermissions?: any;
   isApiAccessToken?: boolean;
+  externalToken?: string;
 }
 
 export enum UserRole {

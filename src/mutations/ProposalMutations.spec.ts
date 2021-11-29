@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
@@ -16,13 +15,18 @@ import {
   dummyUserWithRole,
 } from '../datasources/mockups/UserDataSource';
 import { Proposal } from '../models/Proposal';
-import { isRejection } from '../models/Rejection';
+import { isRejection, Rejection } from '../models/Rejection';
 import ProposalMutations from './ProposalMutations';
 
 const proposalMutations = container.resolve(ProposalMutations);
 
+let dataSource: ProposalDataSourceMock;
+
 beforeEach(() => {
-  container.resolve<ProposalDataSourceMock>(Tokens.ProposalDataSource).init();
+  dataSource = container.resolve<ProposalDataSourceMock>(
+    Tokens.ProposalDataSource
+  );
+  dataSource.init();
 });
 
 test('A user on the proposal can update its title if it is in edit mode', () => {
@@ -42,10 +46,7 @@ test('A user on the proposal can not update its title if it is not in edit mode'
       proposalPk: dummyProposalSubmitted.primaryKey,
       title: '',
     })
-  ).resolves.toHaveProperty(
-    'reason',
-    'Can not update proposal after submission'
-  );
+  ).resolves.toBeInstanceOf(Rejection);
 });
 
 test('A user-officer can update a proposal', async () => {
@@ -110,10 +111,7 @@ test('A user can not update a proposals score mode', async () => {
       proposalPk: dummyProposalSubmitted.primaryKey,
       proposerId: newProposerId,
     })
-  ).resolves.toHaveProperty(
-    'reason',
-    'Can not update proposal after submission'
-  );
+  ).resolves.toBeInstanceOf(Rejection);
 });
 
 test('A user not on a proposal can not update it', () => {
@@ -122,7 +120,7 @@ test('A user not on a proposal can not update it', () => {
       proposalPk: 1,
       proposerId: dummyUserNotOnProposal.id,
     })
-  ).resolves.toHaveProperty('reason', 'Unauthorized proposal update');
+  ).resolves.toBeInstanceOf(Rejection);
 });
 
 //Submit
@@ -237,6 +235,69 @@ test('User cannot set final status of a proposal', () => {
     proposalMutations.admin(dummyUserNotOnProposalWithRole, {
       proposalPk: 1,
       finalStatus: 1,
+    })
+  ).resolves.not.toBeInstanceOf(Proposal);
+});
+
+test('User cannot import a proposal', () => {
+  return expect(
+    proposalMutations.import(dummyUserWithRole, {
+      submitterId: 1,
+      referenceNumber: '21219999',
+      callId: 1,
+    })
+  ).resolves.not.toBeInstanceOf(Proposal);
+});
+
+test('User Officer can import a legacy proposal', () => {
+  return expect(
+    proposalMutations.import(dummyUserOfficerWithRole, {
+      submitterId: 1,
+      referenceNumber: '21219999',
+      callId: 1,
+    })
+  ).resolves.toBeInstanceOf(Proposal);
+});
+
+test('Proposal import is creating a proposal', () => {
+  return expect(
+    proposalMutations.import(dummyUserOfficerWithRole, {
+      submitterId: 1,
+      referenceNumber: '21219999',
+      callId: 1,
+    })
+  ).resolves.toHaveProperty('proposerId', 1);
+});
+
+test('Proposal import is updating the proposal', async () => {
+  await proposalMutations.import(dummyUserOfficerWithRole, {
+    submitterId: 1,
+    referenceNumber: '21219999',
+    callId: 1,
+    title: 'new title',
+  });
+
+  return expect(
+    dataSource.proposalsUpdated[0] //Hacky
+  ).toHaveProperty('title', 'new title');
+});
+
+test('Proposal import is submitting the proposal', () => {
+  return expect(
+    proposalMutations.import(dummyUserOfficerWithRole, {
+      submitterId: 1,
+      referenceNumber: '21219999',
+      callId: 1,
+    })
+  ).resolves.toHaveProperty('proposalId', '21219999');
+});
+
+test('Proposal cannot be submitted without a call', () => {
+  return expect(
+    proposalMutations.import(dummyUserOfficerWithRole, {
+      submitterId: 1,
+      referenceNumber: '21219999',
+      callId: -1,
     })
   ).resolves.not.toBeInstanceOf(Proposal);
 });
