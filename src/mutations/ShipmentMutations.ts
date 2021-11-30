@@ -1,3 +1,4 @@
+import { logger } from '@esss-swap/duo-logger';
 import { container, inject, injectable } from 'tsyringe';
 
 import { SampleAuthorization } from '../auth/SampleAuthorization';
@@ -130,6 +131,12 @@ export default class ShipmentMutations {
         })
         .then((shipment) => shipment);
     } catch (error) {
+      logger.logException(
+        'Error occurred while registering asset into EAM',
+        error as Error,
+        { agent, args }
+      );
+
       return rejection(
         'Could not submit shipment because an error occurred',
         { args },
