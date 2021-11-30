@@ -5,11 +5,10 @@ import { ModuleOptions, ResourceOwnerPassword } from 'simple-oauth2';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../../config/Tokens';
+import { AnswerBasic } from '../../models/Questionary';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
-import { ScheduledEventDataSource } from './../../datasources/ScheduledEventDataSource';
 import { ShipmentDataSource } from './../../datasources/ShipmentDataSource';
-import { VisitDataSource } from './../../datasources/VisitDataSource';
 import getAddAssetEquipmentReq from './requests/AddAssetEquipment';
 import getCreateTicketReq from './requests/AddCaseManagement';
 
@@ -29,6 +28,10 @@ const WIDTH_QUESTION_ID = 'parcel_width';
 const HEIGHT_QUESTION_ID = 'parcel_height';
 const LENGTH_QUESTION_ID = 'parcel_length';
 
+const getAnswerForNumberInput = (
+  answerBasic: AnswerBasic
+): number | undefined => answerBasic.answer?.value?.value;
+
 @injectable()
 export class EAMAssetRegistrar implements AssetRegistrar {
   constructor(
@@ -37,11 +40,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource,
-    @inject(Tokens.ScheduledEventDataSource)
-    private scheduledEventDataSource: ScheduledEventDataSource,
-    @inject(Tokens.VisitDataSource)
-    private visitDataSource: VisitDataSource
+    private questionaryDataSource: QuestionaryDataSource
   ) {}
 
   getEnvOrThrow(envVariable: EnvVars) {
@@ -60,14 +59,6 @@ export class EAMAssetRegistrar implements AssetRegistrar {
   async performApiRequest(request: string) {
     const accessToken = await this.getToken();
 
-    console.log(
-      `${this.getEnvOrThrow(
-        'EAM_API_URL'
-      )}/infor/CustomerApi/EAMWS/EAMTESTAPI/EWSConnector`
-    );
-
-    console.log(`Authorization: Bearer ${accessToken?.token.access_token}`);
-
     const response = await axios({
       method: 'post',
       url: `${this.getEnvOrThrow(
@@ -77,8 +68,11 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       headers: {
         'Content-Type': 'text/xml',
         'Content-Length': `${request.length}`,
-        Authorization: `Bearer ${accessToken?.token.access_token}`,
+        Authorization: `Bearer ${accessToken.token.access_token}`,
       },
+    }).catch((error) => {
+      logger.logError('Error while calling EAM API', { error });
+      throw new Error('Error while calling EAM API');
     });
 
     if (response.status !== 200) {
@@ -89,15 +83,28 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     return response.data as string;
   }
 
-  private async createTicket(containerId: string) {
-    const shpiment = await this.shipmentDataSource.getShipments({});
+  private async createTicket(shipmentId: number, containerId: string) {
+    const shipment = await this.shipmentDataSource.getShipment(shipmentId);
+    if (!shipment) {
+      logger.logError('Shipment not found', { shipmentId });
+      throw new Error('Shipment not found');
+    }
+
+    const proposal = await this.proposalDataSource.get(shipment.proposalPk);
+    if (!proposal) {
+      logger.logError('Proposal for shipment not found', { shipment });
+      throw new Error('Proposal not found');
+    }
+
     const request = getCreateTicketReq(
-      'proposalTitle',
+      proposal.title,
       containerId,
       new Date(),
       new Date(),
       new Date()
     );
+
+    await this.performApiRequest(request);
   }
   /**
    * Creates container in EAM
@@ -141,12 +148,28 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       throw new Error('Could not create shipment');
     }
 
+    const weightAnswer = getAnswerForNumberInput(weight);
+    const widthAnswer = getAnswerForNumberInput(width);
+    const heightAnswer = getAnswerForNumberInput(height);
+    const lengthAnswer = getAnswerForNumberInput(length);
+
+    if (!weightAnswer || !widthAnswer || !heightAnswer || !lengthAnswer) {
+      logger.logError('Can not create shipment because answer is missing', {
+        shipmentId,
+        weight,
+        width,
+        height,
+        length,
+      });
+      throw new Error('Could not create shipment');
+    }
+
     const request = getAddAssetEquipmentReq(
       proposal.title,
-      weight.answer.value,
-      width.answer.value,
-      height.answer.value,
-      length.answer.value
+      weightAnswer,
+      widthAnswer,
+      heightAnswer,
+      lengthAnswer
     );
 
     const response = await this.performApiRequest(request);
@@ -165,7 +188,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
 
   async register(shipmentId: number) {
     const containerId = await this.createContainer(shipmentId);
-    //await this.createTicket(containerId);
+    await this.createTicket(shipmentId, containerId);
 
     return containerId;
   }
