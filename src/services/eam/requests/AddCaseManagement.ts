@@ -1,4 +1,14 @@
+/**
+ * Add ticket request
+ * @param proposalTitle proposal title
+ * @param containerId  container id
+ * @param experimentStartDate experiment start date
+ * @param experimentEndDate experiment end date
+ * @param dateRequested experiment date requested
+ * @returns the SOAP request
+ */
 const getRequest = (
+  proposalId: string,
   proposalTitle: string,
   containerId: string,
   experimentStartDate: Date,
@@ -98,7 +108,7 @@ const getRequest = (
         </TrackingDetails>		
         <StandardUserDefinedFields xmlns="http://schemas.datastream.net/MP_fields">         
           <UDFCHAR03>Delivery Address</UDFCHAR03>
-          <UDFCHAR04>Proposal ID</UDFCHAR04>
+          <UDFCHAR04>${proposalId}</UDFCHAR04>
 		  <UDFCHAR05>Responsible Phone Number</UDFCHAR05>          
         </StandardUserDefinedFields>
       </CaseManagement>

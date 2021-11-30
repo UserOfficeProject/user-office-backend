@@ -10,6 +10,7 @@ const PART_CODE = 12413;
  * @returns the SOAP request
  */
 const getRequest = (
+  proposalId: string,
   proposalTitle: string,
   weightKilograms: number,
   widthMeters: number,
@@ -140,6 +141,9 @@ const getRequest = (
 							</LOVSETTINGS>
 					</CUSTOMFIELD>
 				</USERDEFINEDAREA>
+				<UserDefinedFields>
+					<UDFCHAR22 xmlns="http://schemas.datastream.net/MP_fields">${proposalId}</UDFCHAR22>
+				</UserDefinedFields>
 			</AssetEquipment>
 		</MP0301_AddAssetEquipment_001>
 	</Body>

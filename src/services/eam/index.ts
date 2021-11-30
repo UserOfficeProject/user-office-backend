@@ -97,11 +97,12 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     }
 
     const request = getCreateTicketReq(
+      proposal.proposalId,
       proposal.title,
       containerId,
-      new Date(),
-      new Date(),
-      new Date()
+      new Date(), // TODO: insert here the experiment start date. blocked by #SWAP-2065
+      new Date(), // TODO: insert here the experiment end date. blocked by #SWAP-2065
+      new Date() // TODO: insert here the experiment end date blocked by #SWAP-2065
     );
 
     await this.performApiRequest(request);
@@ -165,6 +166,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     }
 
     const request = getAddAssetEquipmentReq(
+      proposal.proposalId,
       proposal.title,
       weightAnswer,
       widthAnswer,
