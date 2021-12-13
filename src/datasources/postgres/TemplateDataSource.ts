@@ -978,24 +978,24 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         const conflictResolution = conflictResolutions.find(
           (resolution) => resolution.questionId === question.id
         );
-        if (
-          conflictResolution?.strategy === ConflictResolutionStrategy.USE_NEW
-        ) {
-          await this.upsertQuestion(
-            question.categoryId,
-            question.id,
-            question.naturalKey,
-            question.dataType,
-            question.question,
-            createConfig<any>(question.dataType as DataType, question.config)
-          );
-        } else if (
-          conflictResolution?.strategy ===
-          ConflictResolutionStrategy.USE_EXISTING
-        ) {
-          console.log('Using existing question');
-        } else {
-          throw new Error('Could not resolve conflict');
+        switch (conflictResolution?.strategy) {
+          case ConflictResolutionStrategy.USE_NEW:
+            await this.upsertQuestion(
+              question.categoryId,
+              question.id,
+              question.naturalKey,
+              question.dataType,
+              question.question,
+              createConfig<any>(question.dataType as DataType, question.config)
+            );
+            break;
+
+          case ConflictResolutionStrategy.USE_EXISTING:
+            break;
+          case ConflictResolutionStrategy.UNRESOLVED:
+            throw new Error('No conflict resolution strategy provided');
+          default:
+            throw new Error('Unknown conflict resolution strategy');
         }
       })
     );
