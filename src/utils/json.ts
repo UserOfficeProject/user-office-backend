@@ -1,13 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export default function jsonDeepEqual(a: any, b: any): boolean {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (typeof a != 'object' || typeof b != 'object') return false;
-  if (Object.keys(a).length != Object.keys(b).length) return false;
-
-  for (const key in a) {
-    if (!jsonDeepEqual(a[key], b[key])) return false;
+export function deepEqual<T>(a: T, b: T): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a instanceof Date && b instanceof Date) {
+    return a.getTime() === b.getTime();
+  }
+  if (a !== Object(a) || b !== Object(b)) {
+    return false;
+  }
+  const props = Object.keys(a);
+  if (props.length !== Object.keys(b).length) {
+    return false;
   }
 
-  return true;
+  return props.every(function (prop) {
+    return deepEqual(
+      (a as Record<string, unknown>)[prop],
+      (b as Record<string, unknown>)[prop]
+    );
+  });
 }
