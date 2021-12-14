@@ -26,7 +26,7 @@ import { UpdateQuestionTemplateRelationSettingsArgs } from '../../resolvers/muta
 import { UpdateTemplateArgs } from '../../resolvers/mutations/UpdateTemplateMutation';
 import { QuestionsFilter } from '../../resolvers/queries/QuestionsQuery';
 import { TemplatesArgs } from '../../resolvers/queries/TemplatesQuery';
-import jsonDeepEqual from '../../utils/json';
+import { deepEqual } from '../../utils/json';
 import { isBelowVersion, isAboveVersion } from '../../utils/version';
 import { TemplateDataSource } from '../TemplateDataSource';
 import {
@@ -294,7 +294,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           conflictResolutionStrategy: ConflictResolutionStrategy.USE_NEW,
         });
       } else {
-        if (jsonDeepEqual(newQuestion, existingQuestion)) {
+        if (deepEqual(newQuestion, existingQuestion)) {
           questionComparisons.push({
             existingQuestion: existingQuestion,
             newQuestion: newQuestion,
