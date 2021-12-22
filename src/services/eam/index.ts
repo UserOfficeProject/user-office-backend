@@ -8,7 +8,10 @@ import { Tokens } from '../../config/Tokens';
 import { AnswerBasic } from '../../models/Questionary';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
+import { ScheduledEventDataSource } from './../../datasources/ScheduledEventDataSource';
 import { ShipmentDataSource } from './../../datasources/ShipmentDataSource';
+import { UserDataSource } from './../../datasources/UserDataSource';
+import { VisitDataSource } from './../../datasources/VisitDataSource';
 import getAddAssetEquipmentReq from './requests/AddAssetEquipment';
 import getCreateTicketReq from './requests/AddCaseManagement';
 
@@ -40,7 +43,13 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource
+    private questionaryDataSource: QuestionaryDataSource,
+    @inject(Tokens.ScheduledEventDataSource)
+    private scheduledEventDataSource: ScheduledEventDataSource,
+    @inject(Tokens.VisitDataSource)
+    private visitDataSource: VisitDataSource,
+    @inject(Tokens.UserDataSource)
+    private userDataSource: UserDataSource
   ) {}
 
   getEnvOrThrow(envVariable: EnvVars) {
@@ -96,13 +105,39 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       throw new Error('Proposal not found');
     }
 
+    // TODO: After shipment is attached to scheduled event,
+    // we can skip getting the visit and get the scheduled event from the shipment
+    // blocked by #SWAP-2065. For now, we need to get the visit from the shipment
+    const visit = await this.visitDataSource.getVisit(shipment.visitId);
+    if (!visit) {
+      logger.logError('Visit for shipment not found', { shipment });
+      throw new Error('Visit not found');
+    }
+
+    const scheduledEvent =
+      await this.scheduledEventDataSource.getScheduledEvent(
+        visit.scheduledEventId
+      );
+    if (!scheduledEvent) {
+      logger.logError('Scheduled event for visit not found', { visit });
+      throw new Error('Scheduled event not found');
+    }
+
+    let localContact = null;
+    if (scheduledEvent.localContactId) {
+      localContact = await this.userDataSource.getUser(
+        scheduledEvent.localContactId
+      );
+    }
+
     const request = getCreateTicketReq(
       proposal.proposalId,
       proposal.title,
       containerId,
-      new Date(), // TODO: insert here the experiment start date. blocked by #SWAP-2065
-      new Date(), // TODO: insert here the experiment end date. blocked by #SWAP-2065
-      new Date() // TODO: insert here the experiment end date blocked by #SWAP-2065
+      scheduledEvent.startsAt,
+      scheduledEvent.endsAt,
+      scheduledEvent.startsAt,
+      localContact?.email ?? 'not set'
     );
 
     await this.performApiRequest(request);
