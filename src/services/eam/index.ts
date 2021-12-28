@@ -80,7 +80,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
         Authorization: `Bearer ${accessToken.token.access_token}`,
       },
     }).catch((error) => {
-      const { message, request, response } = error;
+      const { message, response } = error;
       logger.logError('Error while calling EAM API', {
         message,
         requestData,
