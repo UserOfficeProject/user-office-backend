@@ -65,7 +65,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     return value;
   }
 
-  async performApiRequest(request: string) {
+  async performApiRequest(requestData: string) {
     const accessToken = await this.getToken();
 
     const response = await axios({
@@ -73,14 +73,19 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       url: `${this.getEnvOrThrow(
         'EAM_API_URL'
       )}/infor/CustomerApi/EAMWS/EAMTESTAPI/EWSConnector`,
-      data: request,
+      data: requestData,
       headers: {
         'Content-Type': 'text/xml',
-        'Content-Length': `${request.length}`,
+        'Content-Length': `${requestData.length}`,
         Authorization: `Bearer ${accessToken.token.access_token}`,
       },
     }).catch((error) => {
-      logger.logError('Error while calling EAM API', { error });
+      const { message, request, response } = error;
+      logger.logError('Error while calling EAM API', {
+        message,
+        requestData,
+        responseData: response?.data,
+      });
       throw new Error('Error while calling EAM API');
     });
 

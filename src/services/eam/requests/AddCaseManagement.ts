@@ -79,8 +79,8 @@ const getRequest = (
             <TIMEZONE xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getTimezoneOffset()}</TIMEZONE>
           </DATEREQUESTED>
           <PERSONRESPONSIBLE xmlns="http://schemas.datastream.net/MP_fields">
-            <EMPLOYEECODE>11314</EMPLOYEECODE>
-			      <DESCRIPTION>Nagaman Singh</DESCRIPTION>             
+            <EMPLOYEECODE></EMPLOYEECODE>
+			      <DESCRIPTION></DESCRIPTION>             
             <ORGANIZATIONID entity="Location">
               <ORGANIZATIONCODE>*</ORGANIZATIONCODE>              
             </ORGANIZATIONID>
