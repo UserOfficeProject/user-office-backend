@@ -67,7 +67,6 @@ export interface ScheduledEventRecord {
   readonly proposal_pk: number;
   readonly status: ProposalBookingStatusCore;
   readonly local_contact: number | null;
-  readonly feedback_requests: number;
 }
 
 export interface ProposalRecord {
@@ -1006,8 +1005,7 @@ export const createScheduledEventObject = (
     scheduledEvent.proposal_pk,
     scheduledEvent.proposal_booking_id,
     scheduledEvent.status,
-    scheduledEvent.local_contact,
-    scheduledEvent.feedback_requests
+    scheduledEvent.local_contact
   );
 
 export const createFeedbackObject = (scheduledEvent: FeedbackRecord) =>

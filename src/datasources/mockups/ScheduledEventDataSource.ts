@@ -26,8 +26,7 @@ export default class ScheduledEventDataSourceMock
         1,
         1,
         ProposalBookingStatusCore.ACTIVE,
-        1,
-        0
+        1
       ),
       new ScheduledEventCore(
         2,
@@ -37,7 +36,6 @@ export default class ScheduledEventDataSourceMock
         2,
         2,
         ProposalBookingStatusCore.ACTIVE,
-        1,
         1
       ),
     ];
