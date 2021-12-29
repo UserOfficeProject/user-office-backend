@@ -108,10 +108,10 @@ class PostgresFeedbackDataSource implements FeedbackDataSource {
   }
 
   async createFeedbackRequest(
-    scheduledEventIds: number
+    scheduledEventId: number
   ): Promise<FeedbackRequest> {
     return database('feedback_requests')
-      .insert({ scheduled_event_id: scheduledEventIds })
+      .insert({ scheduled_event_id: scheduledEventId })
       .returning('*')
       .then((result: FeedbackRequestRecord[]) =>
         createFeedbackRequestObject(result[0])
