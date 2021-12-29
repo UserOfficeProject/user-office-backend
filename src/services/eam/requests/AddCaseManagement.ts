@@ -13,8 +13,7 @@ const getRequest = (
   containerId: string,
   experimentStartDate: Date,
   experimentEndDate: Date,
-  dateRequested: Date,
-  localContactEmail: string
+  dateRequested: Date
 ) => `<?xml version="1.0" encoding="utf-8"?>
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Header>
@@ -79,13 +78,13 @@ const getRequest = (
             <TIMEZONE xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getTimezoneOffset()}</TIMEZONE>
           </DATEREQUESTED>
           <PERSONRESPONSIBLE xmlns="http://schemas.datastream.net/MP_fields">
-            <EMPLOYEECODE></EMPLOYEECODE>
-			      <DESCRIPTION></DESCRIPTION>             
+            <EMPLOYEECODE>11314</EMPLOYEECODE>
+			<DESCRIPTION>Nagaman Singh</DESCRIPTION>             
             <ORGANIZATIONID entity="Location">
               <ORGANIZATIONCODE>*</ORGANIZATIONCODE>              
             </ORGANIZATIONID>
           </PERSONRESPONSIBLE>
-          <EMAIL xmlns="http://schemas.datastream.net/MP_fields">${localContactEmail}</EMAIL>         
+          <EMAIL xmlns="http://schemas.datastream.net/MP_fields">nagaman.singh@ess.eu</EMAIL>         
           <SCHEDULEDSTARTDATE qualifier="ACCOUNTING" xmlns="http://schemas.datastream.net/MP_fields">
           <YEAR xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getFullYear()}</YEAR>
           <MONTH xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getMonth()}</MONTH>

@@ -8,10 +8,7 @@ import { Tokens } from '../../config/Tokens';
 import { AnswerBasic } from '../../models/Questionary';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
-import { ScheduledEventDataSource } from './../../datasources/ScheduledEventDataSource';
 import { ShipmentDataSource } from './../../datasources/ShipmentDataSource';
-import { UserDataSource } from './../../datasources/UserDataSource';
-import { VisitDataSource } from './../../datasources/VisitDataSource';
 import getAddAssetEquipmentReq from './requests/AddAssetEquipment';
 import getCreateTicketReq from './requests/AddCaseManagement';
 
@@ -43,13 +40,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource,
-    @inject(Tokens.ScheduledEventDataSource)
-    private scheduledEventDataSource: ScheduledEventDataSource,
-    @inject(Tokens.VisitDataSource)
-    private visitDataSource: VisitDataSource,
-    @inject(Tokens.UserDataSource)
-    private userDataSource: UserDataSource
+    private questionaryDataSource: QuestionaryDataSource
   ) {}
 
   getEnvOrThrow(envVariable: EnvVars) {
@@ -65,7 +56,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     return value;
   }
 
-  async performApiRequest(requestData: string) {
+  async performApiRequest(request: string) {
     const accessToken = await this.getToken();
 
     const response = await axios({
@@ -73,19 +64,14 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       url: `${this.getEnvOrThrow(
         'EAM_API_URL'
       )}/infor/CustomerApi/EAMWS/EAMTESTAPI/EWSConnector`,
-      data: requestData,
+      data: request,
       headers: {
         'Content-Type': 'text/xml',
-        'Content-Length': `${requestData.length}`,
+        'Content-Length': `${request.length}`,
         Authorization: `Bearer ${accessToken.token.access_token}`,
       },
     }).catch((error) => {
-      const { message, response } = error;
-      logger.logError('Error while calling EAM API', {
-        message,
-        requestData,
-        responseData: response?.data,
-      });
+      logger.logError('Error while calling EAM API', { error });
       throw new Error('Error while calling EAM API');
     });
 
@@ -110,39 +96,13 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       throw new Error('Proposal not found');
     }
 
-    // TODO: After shipment is attached to scheduled event,
-    // we can skip getting the visit and get the scheduled event from the shipment
-    // blocked by #SWAP-2065. For now, we need to get the visit from the shipment
-    const visit = await this.visitDataSource.getVisit(shipment.visitId);
-    if (!visit) {
-      logger.logError('Visit for shipment not found', { shipment });
-      throw new Error('Visit not found');
-    }
-
-    const scheduledEvent =
-      await this.scheduledEventDataSource.getScheduledEvent(
-        visit.scheduledEventId
-      );
-    if (!scheduledEvent) {
-      logger.logError('Scheduled event for visit not found', { visit });
-      throw new Error('Scheduled event not found');
-    }
-
-    let localContact = null;
-    if (scheduledEvent.localContactId) {
-      localContact = await this.userDataSource.getUser(
-        scheduledEvent.localContactId
-      );
-    }
-
     const request = getCreateTicketReq(
       proposal.proposalId,
       proposal.title,
       containerId,
-      scheduledEvent.startsAt,
-      scheduledEvent.endsAt,
-      scheduledEvent.startsAt,
-      localContact?.email ?? 'not set'
+      new Date(), // TODO: insert here the experiment start date. blocked by #SWAP-2065
+      new Date(), // TODO: insert here the experiment end date. blocked by #SWAP-2065
+      new Date() // TODO: insert here the experiment end date blocked by #SWAP-2065
     );
 
     await this.performApiRequest(request);
