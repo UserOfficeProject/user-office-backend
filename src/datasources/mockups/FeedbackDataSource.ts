@@ -8,6 +8,7 @@ import { dummyUserWithRole } from './UserDataSource';
 
 export class FeedbackDataSourceMock implements FeedbackDataSource {
   private feedbacks: Feedback[];
+  private feedbackRequests: FeedbackRequest[];
   init() {
     this.feedbacks = [
       new Feedback(
@@ -20,6 +21,8 @@ export class FeedbackDataSourceMock implements FeedbackDataSource {
         new Date()
       ),
     ];
+
+    this.feedbackRequests = [new FeedbackRequest(1, 1, new Date())];
   }
 
   async getFeedback(feedbackId: number): Promise<Feedback | null> {
@@ -57,13 +60,30 @@ export class FeedbackDataSourceMock implements FeedbackDataSource {
   async getFeedbackRequests(
     scheduledEventId: number
   ): Promise<FeedbackRequest[]> {
-    throw new Error('Method not implemented.');
+    return this.feedbackRequests.reduce(
+      (matchingFeedbackRequests, currentFeedbackRequest) => {
+        if (currentFeedbackRequest.scheduledEventId === scheduledEventId) {
+          matchingFeedbackRequests.push(currentFeedbackRequest);
+        }
+
+        return matchingFeedbackRequests;
+      },
+      new Array<FeedbackRequest>()
+    );
   }
 
   async createFeedbackRequest(
     scheduledEventId: number
   ): Promise<FeedbackRequest> {
-    throw new Error('Method not implemented.');
+    const newFeedbackRequest = new FeedbackRequest(
+      this.feedbacks.length,
+      scheduledEventId,
+      new Date()
+    );
+
+    this.feedbackRequests.push(newFeedbackRequest);
+
+    return newFeedbackRequest;
   }
 
   async createFeedback({

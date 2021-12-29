@@ -11,13 +11,13 @@ import {
 export default class ScheduledEventDataSourceMock
   implements ScheduledEventDataSource
 {
-  esis: ScheduledEventCore[];
+  scheduledEvents: ScheduledEventCore[];
   constructor() {
     this.init();
   }
 
   public init() {
-    this.esis = [
+    this.scheduledEvents = [
       new ScheduledEventCore(
         1,
         ScheduledEventBookingType.USER_OPERATIONS,
@@ -42,28 +42,26 @@ export default class ScheduledEventDataSourceMock
   }
 
   async getScheduledEvent(id: number): Promise<ScheduledEventCore | null> {
-    return this.esis.find((esi) => esi.id === id) || null;
+    return this.scheduledEvents.find((esi) => esi.id === id) || null;
   }
 
-  getScheduledEvents(
+  async getScheduledEvents(
     filter: ScheduledEventsFilter
   ): Promise<ScheduledEventCore[]> {
-    return Promise.resolve(
-      this.esis
-        .filter((esi) => {
-          if (filter.endsBefore) {
-            return esi.endsAt < filter.endsBefore;
-          }
+    return this.scheduledEvents
+      .filter((esi) => {
+        if (filter.endsBefore) {
+          return esi.endsAt < filter.endsBefore;
+        }
 
-          return true;
-        })
-        .filter((esi) => {
-          if (filter.endsAfter) {
-            return esi.endsAt > filter.endsAfter;
-          }
+        return true;
+      })
+      .filter((esi) => {
+        if (filter.endsAfter) {
+          return esi.endsAt > filter.endsAfter;
+        }
 
-          return true;
-        })
-    );
+        return true;
+      });
   }
 }
