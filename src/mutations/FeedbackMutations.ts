@@ -226,7 +226,7 @@ export default class FeedbackMutations {
       );
     }
 
-    // Check if scheduled event is completed
+    // Check if visit exists
     const visit = await this.visitDataSource.getVisitByScheduledEventId(
       scheduledEvent.id
     );
@@ -236,7 +236,7 @@ export default class FeedbackMutations {
       });
     }
 
-    // Get teamlead user id
+    // Get teamlead user
     const teamLead = await this.userDataSource.getUser(visit.teamLeadUserId);
     if (!teamLead || !teamLead.email) {
       return rejection(
@@ -253,7 +253,7 @@ export default class FeedbackMutations {
       });
     }
 
-    if (await this.isEventTooOld(scheduledEvent)) {
+    if (await this.hasAlreadyRequested(scheduledEvent)) {
       return rejection(
         'Will not ask for feedback because already recently requested',
         {

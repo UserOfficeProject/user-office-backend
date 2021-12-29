@@ -1,7 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { ScheduledEventDataSource } from '../datasources/ScheduledEventDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
@@ -13,10 +12,7 @@ import { ScheduledEventCore } from './../resolvers/types/ScheduledEvent';
 export default class ScheduledEventQueries {
   constructor(
     @inject(Tokens.ScheduledEventDataSource)
-    public dataSource: ScheduledEventDataSource,
-
-    @inject(Tokens.QuestionaryDataSource)
-    public questionaryDataSource: QuestionaryDataSource
+    public dataSource: ScheduledEventDataSource
   ) {}
 
   @Authorized([Roles.USER_OFFICER])
