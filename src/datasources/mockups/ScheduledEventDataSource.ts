@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
+import { ScheduledEventsFilter } from '../../resolvers/queries/ScheduledEventsQuery';
 import { ScheduledEventDataSource } from '../ScheduledEventDataSource';
 import {
   ScheduledEventBookingType,
@@ -25,7 +26,8 @@ export default class ScheduledEventDataSourceMock
         1,
         1,
         ProposalBookingStatusCore.ACTIVE,
-        1
+        1,
+        0
       ),
       new ScheduledEventCore(
         2,
@@ -35,6 +37,7 @@ export default class ScheduledEventDataSourceMock
         2,
         2,
         ProposalBookingStatusCore.ACTIVE,
+        1,
         1
       ),
     ];
@@ -42,5 +45,27 @@ export default class ScheduledEventDataSourceMock
 
   async getScheduledEvent(id: number): Promise<ScheduledEventCore | null> {
     return this.esis.find((esi) => esi.id === id) || null;
+  }
+
+  getScheduledEvents(
+    filter: ScheduledEventsFilter
+  ): Promise<ScheduledEventCore[]> {
+    return Promise.resolve(
+      this.esis
+        .filter((esi) => {
+          if (filter.endsBefore) {
+            return esi.endsAt < filter.endsBefore;
+          }
+
+          return true;
+        })
+        .filter((esi) => {
+          if (filter.endsAfter) {
+            return esi.endsAt > filter.endsAfter;
+          }
+
+          return true;
+        })
+    );
   }
 }

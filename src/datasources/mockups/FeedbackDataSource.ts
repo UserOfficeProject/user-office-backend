@@ -1,4 +1,5 @@
 import { Feedback, FeedbackStatus } from '../../models/Feedback';
+import { FeedbackRequest } from '../../models/FeedbackRequest';
 import { CreateFeedbackArgs } from '../../resolvers/mutations/CreateFeedbackMutation';
 import { UpdateFeedbackArgs } from '../../resolvers/mutations/UpdateFeedbackMutation';
 import { FeedbacksFilter } from '../../resolvers/queries/FeedbacksQuery';
@@ -51,6 +52,18 @@ export class FeedbackDataSourceMock implements FeedbackDataSource {
         (feedback) => feedback.scheduledEventId === eventId
       ) ?? null
     );
+  }
+
+  async getFeedbackRequests(
+    scheduledEventId: number
+  ): Promise<FeedbackRequest[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async createFeedbackRequest(
+    scheduledEventId: number
+  ): Promise<FeedbackRequest> {
+    throw new Error('Method not implemented.');
   }
 
   async createFeedback({
