@@ -22,6 +22,7 @@ import { TemplateDataSource } from './../datasources/TemplateDataSource';
 import { UserDataSource } from './../datasources/UserDataSource';
 import { VisitDataSource } from './../datasources/VisitDataSource';
 import { FeedbackRequest } from './../resolvers/types/FeedbackRequest';
+import { ScheduledEventCore } from './../resolvers/types/ScheduledEvent';
 
 @injectable()
 export default class FeedbackMutations {
@@ -186,72 +187,83 @@ export default class FeedbackMutations {
     return this.dataSource.deleteFeedback(feedbackId);
   }
 
+  isEventTooOld(scheduledEvent: ScheduledEventCore) {
+    return moment(scheduledEvent.endsAt).isBefore(
+      moment().subtract(3, 'months')
+    );
+  }
+
+  async hasAlreadyRequested(scheduledEvent: ScheduledEventCore) {
+    const feedbackRequests = await this.dataSource.getFeedbackRequests(
+      scheduledEvent.id
+    );
+    const mostRecentRequest = feedbackRequests.sort((a, b) => {
+      return moment(a.requestedAt).isBefore(b.requestedAt) ? 1 : -1;
+    })[0];
+
+    return (
+      mostRecentRequest &&
+      moment(mostRecentRequest.requestedAt).isAfter(
+        moment().subtract(2, 'weeks')
+      )
+    );
+  }
+
   @Authorized([Roles.USER_OFFICER])
   async requestFeedback(
     user: UserWithRole | null,
     scheduledEventId: number
   ): Promise<FeedbackRequest | Rejection> {
+    // Check if scheduled event exists
+    const scheduledEvent =
+      await this.scheduledEventDataSource.getScheduledEvent(scheduledEventId);
+    if (!scheduledEvent) {
+      return rejection(
+        'Can not create feedback because scheduled event does not exist',
+        {
+          args: { scheduledEventId },
+        }
+      );
+    }
+
+    // Check if scheduled event is completed
+    const visit = await this.visitDataSource.getVisitByScheduledEventId(
+      scheduledEvent.id
+    );
+    if (visit === null) {
+      return rejection('Can not create feedback because visit does not exist', {
+        args: { scheduledEventId },
+      });
+    }
+
+    // Get teamlead user id
+    const teamLead = await this.userDataSource.getUser(visit.teamLeadUserId);
+    if (!teamLead || !teamLead.email) {
+      return rejection(
+        'Can not create feedback because teamlead does not exist or it has no email',
+        {
+          args: { scheduledEventId, teamLead },
+        }
+      );
+    }
+
+    if (this.isEventTooOld(scheduledEvent)) {
+      return rejection('Will not ask for feedback because it is too old', {
+        args: { scheduledEventId, teamLead },
+      });
+    }
+
+    if (await this.isEventTooOld(scheduledEvent)) {
+      return rejection(
+        'Will not ask for feedback because already recently requested',
+        {
+          args: { scheduledEventId, teamLead },
+        }
+      );
+    }
+
     try {
-      const scheduledEvent =
-        await this.scheduledEventDataSource.getScheduledEvent(scheduledEventId);
-      if (!scheduledEvent) {
-        return rejection(
-          'Can not create feedback because scheduled event does not exist',
-          {
-            args: { scheduledEventId },
-          }
-        );
-      }
-
-      const visit = await this.visitDataSource.getVisitByScheduledEventId(
-        scheduledEvent.id
-      );
-
-      if (visit === null) {
-        return rejection(
-          'Can not create feedback because visit does not exist',
-          {
-            args: { scheduledEventId },
-          }
-        );
-      }
-
-      const teamLead = await this.userDataSource.getUser(visit.teamLeadUserId);
-      if (!teamLead || !teamLead.email) {
-        return rejection(
-          'Can not create feedback because teamlead does not exist or it has no email',
-          {
-            args: { scheduledEventId, teamLead },
-          }
-        );
-      }
-
-      const feedbackRequests = await this.dataSource.getFeedbackRequests(
-        scheduledEventId
-      );
-      const mostRecentRequest = feedbackRequests.sort((a, b) => {
-        return moment(a.requestedAt).isBefore(b.requestedAt) ? 1 : -1;
-      })[0];
-
-      const isTooOld = moment(scheduledEvent.endsAt).isBefore(
-        moment().subtract(3, 'months')
-      );
-      const hasRecentlyRequested =
-        mostRecentRequest &&
-        moment(mostRecentRequest.requestedAt).isAfter(
-          moment().subtract(2, 'weeks')
-        );
-
-      if (isTooOld || hasRecentlyRequested) {
-        return rejection(
-          'Will not ask for feedback because it is too old or recently requested',
-          {
-            args: { scheduledEventId, teamLead },
-          }
-        );
-      }
-
-      const sendResult = await this.mailService.sendMail({
+      const { results } = await this.mailService.sendMail({
         content: {
           template_id: 'user-office-registration-invitation',
         },
@@ -265,9 +277,14 @@ export default class FeedbackMutations {
         },
         recipients: [{ address: teamLead.email }],
       });
-      logger.logInfo('Feedback request email success', { sendResult });
 
-      return this.dataSource.createFeedbackRequest(scheduledEvent.id);
+      if (results.total_rejected_recipients === 0) {
+        logger.logInfo('Feedback request email success', { results });
+
+        return this.dataSource.createFeedbackRequest(scheduledEvent.id);
+      } else {
+        return rejection('Could not send feedback request email', { results });
+      }
     } catch (error) {
       logger.logException('Feedback request email failure', error);
 

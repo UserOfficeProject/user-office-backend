@@ -13,12 +13,12 @@ export default class PostgresScheduledEventDataSource
     return database
       .select('*')
       .from('scheduled_events')
-      .where(function () {
+      .where((query) => {
         if (filter.endsBefore) {
-          this.where('ends_at', '<', filter.endsBefore);
+          query.where('ends_at', '<', filter.endsBefore);
         }
         if (filter.endsAfter) {
-          this.where('ends_at', '>', filter.endsAfter);
+          query.where('ends_at', '>', filter.endsAfter);
         }
       })
       .then((rows: ScheduledEventRecord[]) =>
