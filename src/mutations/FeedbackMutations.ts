@@ -265,15 +265,12 @@ export default class FeedbackMutations {
     try {
       const { results } = await this.mailService.sendMail({
         content: {
-          template_id: 'user-office-registration-invitation',
+          template_id: 'feedback-request',
         },
         substitution_data: {
-          firstname: '',
-          lastname: '',
-          email: '',
-          inviterName: '',
-          inviterLastname: '',
-          inviterOrg: '',
+          teamleadPreferredname: teamLead.preferredname,
+          teamleadLastname: teamLead.lastname,
+          feedbackurl: `${process.env.baseURL}/CreateFeedback/${scheduledEventId}`,
         },
         recipients: [{ address: teamLead.email }],
       });
