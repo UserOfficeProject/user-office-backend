@@ -9,7 +9,7 @@ import { QuestionaryDataSource } from '../datasources/QuestionaryDataSource';
 import { ScheduledEventDataSource } from '../datasources/ScheduledEventDataSource';
 import { Authorized } from '../decorators';
 import { MailService } from '../eventHandlers/MailService/MailService';
-import { Feedback } from '../models/Feedback';
+import { Feedback, FeedbackStatus } from '../models/Feedback';
 import { rejection } from '../models/Rejection';
 import { Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
@@ -23,6 +23,10 @@ import { UserDataSource } from './../datasources/UserDataSource';
 import { VisitDataSource } from './../datasources/VisitDataSource';
 import { FeedbackRequest } from './../resolvers/types/FeedbackRequest';
 import { ScheduledEventCore } from './../resolvers/types/ScheduledEvent';
+
+const MAX_FEEDBACK_REQUESTS = 2;
+const FEEDBACK_REQUEST_FREQUENCY_WEEKS = 2;
+const FEEDBACK_REQUEST_EXPIRY_MONTHS = 3;
 
 @injectable()
 export default class FeedbackMutations {
@@ -187,16 +191,30 @@ export default class FeedbackMutations {
     return this.dataSource.deleteFeedback(feedbackId);
   }
 
+  /**
+   * Checks if the scheduled event is too old to have feedback
+   * @param scheduledEvent event
+   * @returns true if event is too old
+   */
   isEventTooOld(scheduledEvent: ScheduledEventCore) {
     return moment(scheduledEvent.endsAt).isBefore(
-      moment().subtract(3, 'months')
+      moment().subtract(FEEDBACK_REQUEST_EXPIRY_MONTHS, 'months')
     );
   }
 
+  /**
+   * Checks if feedback is already requested
+   * @param scheduledEvent event
+   * @returns true if feedback is already requested
+   */
   async hasAlreadyRequested(scheduledEvent: ScheduledEventCore) {
     const feedbackRequests = await this.dataSource.getFeedbackRequests(
       scheduledEvent.id
     );
+
+    if (feedbackRequests.length >= MAX_FEEDBACK_REQUESTS) {
+      return true;
+    }
     const mostRecentRequest = feedbackRequests.sort((a, b) => {
       return moment(a.requestedAt).isBefore(b.requestedAt) ? 1 : -1;
     })[0];
@@ -204,9 +222,26 @@ export default class FeedbackMutations {
     return (
       mostRecentRequest &&
       moment(mostRecentRequest.requestedAt).isAfter(
-        moment().subtract(2, 'weeks')
+        moment().subtract(FEEDBACK_REQUEST_FREQUENCY_WEEKS, 'weeks')
       )
     );
+  }
+
+  /**
+   * Checks if feedback is already provided
+   * @param scheduledEvent event
+   * @returns true if feedback is already provided
+   */
+  async hasProvidedFeedback(scheduledEvent: ScheduledEventCore) {
+    const feedbacks = await this.dataSource.getFeedbacks({
+      scheduledEventId: scheduledEvent.id,
+    });
+
+    if (feedbacks.length === 0) {
+      return false;
+    } else {
+      return feedbacks[0].status === FeedbackStatus.SUBMITTED;
+    }
   }
 
   @Authorized([Roles.USER_OFFICER])
@@ -243,6 +278,15 @@ export default class FeedbackMutations {
         'Can not create feedback because teamlead does not exist or it has no email',
         {
           args: { scheduledEventId, teamLead },
+        }
+      );
+    }
+
+    if (await this.hasProvidedFeedback(scheduledEvent)) {
+      return rejection(
+        'Will not ask for feedback because already been provided',
+        {
+          args: { scheduledEventId },
         }
       );
     }

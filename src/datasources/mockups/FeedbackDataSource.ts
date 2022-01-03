@@ -11,11 +11,22 @@ export class FeedbackDataSourceMock implements FeedbackDataSource {
   private feedbackRequests: FeedbackRequest[];
   init() {
     this.feedbacks = [
+      // Finished feedback
       new Feedback(
-        1,
-        1,
+        3,
+        3,
+        FeedbackStatus.SUBMITTED,
+        3,
+        dummyUserWithRole.id,
+        new Date(),
+        new Date()
+      ),
+      // Unfinished feedback
+      new Feedback(
+        4,
+        4,
         FeedbackStatus.DRAFT,
-        1,
+        4,
         dummyUserWithRole.id,
         new Date(),
         new Date()

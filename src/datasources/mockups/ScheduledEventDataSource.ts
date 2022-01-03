@@ -38,6 +38,28 @@ export default class ScheduledEventDataSourceMock
         ProposalBookingStatusCore.ACTIVE,
         1
       ),
+      // old completed event
+      new ScheduledEventCore(
+        3,
+        ScheduledEventBookingType.USER_OPERATIONS,
+        moment().subtract(366, 'days').toDate(),
+        moment().subtract(365, 'days').toDate(),
+        3,
+        3,
+        ProposalBookingStatusCore.COMPLETED,
+        1
+      ),
+      // recent completed event
+      new ScheduledEventCore(
+        4,
+        ScheduledEventBookingType.USER_OPERATIONS,
+        moment().subtract(28, 'days').toDate(),
+        moment().subtract(27, 'days').toDate(),
+        4,
+        4,
+        ProposalBookingStatusCore.COMPLETED,
+        1
+      ),
     ];
   }
 

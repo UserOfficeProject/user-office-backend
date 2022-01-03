@@ -20,10 +20,37 @@ export class VisitDataSourceMock implements VisitDataSource {
       new Visit(
         1,
         1,
-        VisitStatus.DRAFT,
+        VisitStatus.SUBMITTED,
         1,
         dummyUserWithRole.id,
         1,
+        new Date()
+      ),
+      new Visit(
+        2,
+        2,
+        VisitStatus.SUBMITTED,
+        2,
+        dummyUserWithRole.id,
+        2,
+        new Date()
+      ),
+      new Visit(
+        3,
+        3,
+        VisitStatus.SUBMITTED,
+        3,
+        dummyUserWithRole.id,
+        3,
+        new Date()
+      ),
+      new Visit(
+        4,
+        4,
+        VisitStatus.SUBMITTED,
+        4,
+        dummyUserWithRole.id,
+        4,
         new Date()
       ),
     ];
@@ -64,7 +91,9 @@ export class VisitDataSourceMock implements VisitDataSource {
   }
 
   async getVisitByScheduledEventId(eventId: number): Promise<Visit | null> {
-    throw new Error('Method not implemented');
+    return (
+      this.visits.find((visit) => visit.scheduledEventId === eventId) ?? null
+    );
   }
 
   async getRegistration(
