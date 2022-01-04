@@ -27,15 +27,6 @@ export class VisitDataSourceMock implements VisitDataSource {
         new Date()
       ),
       new Visit(
-        2,
-        2,
-        VisitStatus.SUBMITTED,
-        2,
-        dummyUserWithRole.id,
-        2,
-        new Date()
-      ),
-      new Visit(
         3,
         3,
         VisitStatus.SUBMITTED,

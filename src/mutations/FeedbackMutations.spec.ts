@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { container } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { AdminDataSourceMock } from '../datasources/mockups/AdminDataSource';
 import { dummyUserOfficerWithRole } from '../datasources/mockups/UserDataSource';
 import { VisitDataSourceMock } from '../datasources/mockups/VisitDataSource';
 import { FeedbackRequest } from '../models/FeedbackRequest';
@@ -15,6 +16,7 @@ describe('Test Admin Mutations', () => {
   beforeEach(() => {
     container.resolve<FeedbackDataSourceMock>(Tokens.FeedbackDataSource).init();
     container.resolve<VisitDataSourceMock>(Tokens.VisitDataSource).init();
+    container.resolve<AdminDataSourceMock>(Tokens.AdminDataSource).init();
   });
 
   test('Should not ask for feedback for unfinished experiments', async () => {
