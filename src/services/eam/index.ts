@@ -5,6 +5,7 @@ import { ModuleOptions, ResourceOwnerPassword } from 'simple-oauth2';
 import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../../config/Tokens';
+import { ScheduledEventDataSource } from '../../datasources/ScheduledEventDataSource';
 import { AnswerBasic } from '../../models/Questionary';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
@@ -40,7 +41,9 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
     @inject(Tokens.QuestionaryDataSource)
-    private questionaryDataSource: QuestionaryDataSource
+    private questionaryDataSource: QuestionaryDataSource,
+    @inject(Tokens.ScheduledEventDataSource)
+    private scheduledEventDataSource: ScheduledEventDataSource
   ) {}
 
   getEnvOrThrow(envVariable: EnvVars) {
@@ -96,13 +99,22 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       throw new Error('Proposal not found');
     }
 
+    const scheduledEvent =
+      await this.scheduledEventDataSource.getScheduledEvent(
+        shipment.scheduledEventId
+      );
+    if (!scheduledEvent) {
+      logger.logError('Scheduled event for shipment not found', { shipment });
+      throw new Error('Scheduled event not found');
+    }
+
     const request = getCreateTicketReq(
       proposal.proposalId,
       proposal.title,
       containerId,
-      new Date(), // TODO: insert here the experiment start date. blocked by #SWAP-2065
-      new Date(), // TODO: insert here the experiment end date. blocked by #SWAP-2065
-      new Date() // TODO: insert here the experiment end date blocked by #SWAP-2065
+      scheduledEvent.startsAt,
+      scheduledEvent.endsAt,
+      scheduledEvent.startsAt // This is not correct, but we need a design decision to fix this
     );
 
     await this.performApiRequest(request);
