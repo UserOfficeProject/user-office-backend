@@ -8,14 +8,15 @@ import { Tokens } from '../../config/Tokens';
 import { ScheduledEventDataSource } from '../../datasources/ScheduledEventDataSource';
 import { AnswerBasic } from '../../models/Questionary';
 import {
-  WEIGHT_QID,
-  WIDTH_QID,
-  HEIGHT_QID,
-  LENGTH_QID,
+  WEIGHT_KEY,
+  WIDTH_KEY,
+  HEIGHT_KEY,
+  LENGTH_KEY,
 } from '../../models/Shipment';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
 import { ShipmentDataSource } from './../../datasources/ShipmentDataSource';
+import { UserDataSource } from './../../datasources/UserDataSource';
 import getAddAssetEquipmentReq from './requests/AddAssetEquipment';
 import getCreateTicketReq from './requests/AddCaseManagement';
 
@@ -44,7 +45,9 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     @inject(Tokens.QuestionaryDataSource)
     private questionaryDataSource: QuestionaryDataSource,
     @inject(Tokens.ScheduledEventDataSource)
-    private scheduledEventDataSource: ScheduledEventDataSource
+    private scheduledEventDataSource: ScheduledEventDataSource,
+    @inject(Tokens.UserDataSource)
+    private userDataSource: UserDataSource
   ) {}
 
   getEnvOrThrow(envVariable: EnvVars) {
@@ -60,7 +63,7 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     return value;
   }
 
-  async performApiRequest(request: string) {
+  async performApiRequest(requestData: string) {
     const accessToken = await this.getToken();
 
     const response = await axios({
@@ -68,14 +71,19 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       url: `${this.getEnvOrThrow(
         'EAM_API_URL'
       )}/infor/CustomerApi/EAMWS/EAMTESTAPI/EWSConnector`,
-      data: request,
+      data: requestData,
       headers: {
         'Content-Type': 'text/xml',
-        'Content-Length': `${request.length}`,
+        'Content-Length': `${requestData.length}`,
         Authorization: `Bearer ${accessToken.token.access_token}`,
       },
     }).catch((error) => {
-      logger.logError('Error while calling EAM API', { error });
+      const { message, response } = error;
+      logger.logError('Error while calling EAM API', {
+        message,
+        requestData,
+        responseData: response?.data,
+      });
       throw new Error('Error while calling EAM API');
     });
 
@@ -109,13 +117,20 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       throw new Error('Scheduled event not found');
     }
 
+    let localContact = null;
+    if (scheduledEvent.localContactId) {
+      localContact = await this.userDataSource.getUser(
+        scheduledEvent.localContactId
+      );
+    }
     const request = getCreateTicketReq(
       proposal.proposalId,
       proposal.title,
       containerId,
       scheduledEvent.startsAt,
       scheduledEvent.endsAt,
-      scheduledEvent.startsAt // This is not correct, but we need a design decision to fix this
+      scheduledEvent.startsAt, // This is not correct, but we need a design decision to fix this
+      localContact?.email ?? 'not set'
     );
 
     await this.performApiRequest(request);
@@ -139,19 +154,19 @@ export class EAMAssetRegistrar implements AssetRegistrar {
 
     const weight = await this.questionaryDataSource.getAnswer(
       shipment.questionaryId,
-      WEIGHT_QID
+      WEIGHT_KEY
     );
     const width = await this.questionaryDataSource.getAnswer(
       shipment.questionaryId,
-      WIDTH_QID
+      WIDTH_KEY
     );
     const height = await this.questionaryDataSource.getAnswer(
       shipment.questionaryId,
-      HEIGHT_QID
+      HEIGHT_KEY
     );
     const length = await this.questionaryDataSource.getAnswer(
       shipment.questionaryId,
-      LENGTH_QID
+      LENGTH_KEY
     );
 
     if (!weight || !width || !height || !length) {

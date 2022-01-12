@@ -152,7 +152,7 @@ export default class ShipmentMutations {
       );
 
       return rejection(
-        'Could not submit shipment because an error occurred',
+        'Could not submit shipment because an error occurred. Please try again later.',
         { args },
         error
       );
