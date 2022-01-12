@@ -70,7 +70,9 @@ const getRequest = (
         <TrackingDetails>          
           <DATEREQUESTED qualifier="ACCOUNTING" xmlns="http://schemas.datastream.net/MP_fields">
             <YEAR xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getFullYear()}</YEAR>
-            <MONTH xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getMonth()}</MONTH>
+            <MONTH xmlns="http://www.openapplications.org/oagis_fields">${
+              dateRequested.getMonth() + 1 // month is zero-based
+            }</MONTH>
             <DAY xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getDay()}</DAY>
             <HOUR xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getHours()}</HOUR>
             <MINUTE xmlns="http://www.openapplications.org/oagis_fields">${dateRequested.getMinutes()}</MINUTE>
@@ -88,7 +90,9 @@ const getRequest = (
           <EMAIL xmlns="http://schemas.datastream.net/MP_fields">${localContactEmail}</EMAIL>         
           <SCHEDULEDSTARTDATE qualifier="ACCOUNTING" xmlns="http://schemas.datastream.net/MP_fields">
           <YEAR xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getFullYear()}</YEAR>
-          <MONTH xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getMonth()}</MONTH>
+          <MONTH xmlns="http://www.openapplications.org/oagis_fields">${
+            experimentStartDate.getMonth() + 1 // month is zero-based
+          }</MONTH>
           <DAY xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getDay()}</DAY>
           <HOUR xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getHours()}</HOUR>
           <MINUTE xmlns="http://www.openapplications.org/oagis_fields">${experimentStartDate.getMinutes()}</MINUTE>
@@ -98,7 +102,9 @@ const getRequest = (
           </SCHEDULEDSTARTDATE>
           <SCHEDULEDENDDATE qualifier="ACCOUNTING" xmlns="http://schemas.datastream.net/MP_fields">
           <YEAR xmlns="http://www.openapplications.org/oagis_fields">${experimentEndDate.getFullYear()}</YEAR>
-          <MONTH xmlns="http://www.openapplications.org/oagis_fields">${experimentEndDate.getMonth()}</MONTH>
+          <MONTH xmlns="http://www.openapplications.org/oagis_fields">${
+            experimentEndDate.getMonth() + 1 // month is zero-based
+          }</MONTH>
           <DAY xmlns="http://www.openapplications.org/oagis_fields">${experimentEndDate.getDay()}</DAY>
           <HOUR xmlns="http://www.openapplications.org/oagis_fields">${experimentEndDate.getHours()}</HOUR>
           <MINUTE xmlns="http://www.openapplications.org/oagis_fields">${experimentEndDate.getMinutes()}</MINUTE>
