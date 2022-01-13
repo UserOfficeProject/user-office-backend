@@ -1,9 +1,13 @@
 import { ScheduledEventCore } from '../models/ScheduledEventCore';
-import { ScheduledEventsFilter } from '../resolvers/queries/ScheduledEventsQuery';
+import { UpdateScheduledEventArgs } from '../resolvers/mutations/UpdateScheduledEventCoreMutation';
+import { ScheduledEventsCoreFilter } from '../resolvers/queries/ScheduledEventsCoreQuery';
 
 export interface ScheduledEventDataSource {
   getScheduledEvents(
-    filter: ScheduledEventsFilter
+    filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]>;
   getScheduledEvent(id: number): Promise<ScheduledEventCore | null>;
+  updateScheduledEvent(
+    args: UpdateScheduledEventArgs
+  ): Promise<ScheduledEventCore>;
 }

@@ -13,6 +13,7 @@ import QuestionaryMutations from '../mutations/QuestionaryMutations';
 import ReviewMutations from '../mutations/ReviewMutations';
 import SampleEsiMutations from '../mutations/SampleEsiMutations';
 import SampleMutations from '../mutations/SampleMutations';
+import ScheduledEventMutations from '../mutations/ScheduledEventMutations';
 import SEPMutations from '../mutations/SEPMutations';
 import ShipmentMutations from '../mutations/ShipmentMutations';
 import TemplateMutations from '../mutations/TemplateMutations';
@@ -78,6 +79,7 @@ interface ResolverContextMutations {
   review: ReviewMutations;
   sample: SampleMutations;
   sampleEsi: SampleEsiMutations;
+  scheduledEvent: ScheduledEventMutations;
   sep: SEPMutations;
   shipment: ShipmentMutations;
   template: TemplateMutations;

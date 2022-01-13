@@ -312,6 +312,7 @@ export function createListenToRabbitMQHandler() {
           proposalPk: scheduledEvent.proposalPk,
           status: scheduledEvent.status,
           localContactId: scheduledEvent.localContactId,
+          isShipmentDeclared: scheduledEvent.isShipmentDeclared,
         }));
 
         await proposalDataSource.removeProposalBookingScheduledEvents(

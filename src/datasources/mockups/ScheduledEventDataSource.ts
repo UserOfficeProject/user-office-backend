@@ -1,7 +1,8 @@
 import moment from 'moment';
 
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
-import { ScheduledEventsFilter } from '../../resolvers/queries/ScheduledEventsQuery';
+import { UpdateScheduledEventArgs } from '../../resolvers/mutations/UpdateScheduledEventCoreMutation';
+import { ScheduledEventsCoreFilter } from '../../resolvers/queries/ScheduledEventsCoreQuery';
 import { ScheduledEventDataSource } from '../ScheduledEventDataSource';
 import {
   ScheduledEventBookingType,
@@ -15,6 +16,19 @@ export default class ScheduledEventDataSourceMock
   constructor() {
     this.init();
   }
+  async updateScheduledEvent(
+    args: UpdateScheduledEventArgs
+  ): Promise<ScheduledEventCore> {
+    let evt = this.scheduledEvents.find(
+      (esi) => esi.id === args.scheduledEventId
+    );
+    if (!evt) {
+      throw new Error('Scheduled event not found');
+    }
+    evt = { ...evt, ...args };
+
+    return evt;
+  }
 
   public init() {
     this.scheduledEvents = [
@@ -26,7 +40,8 @@ export default class ScheduledEventDataSourceMock
         1,
         1,
         ProposalBookingStatusCore.ACTIVE,
-        1
+        1,
+        false
       ),
       new ScheduledEventCore(
         2,
@@ -36,7 +51,8 @@ export default class ScheduledEventDataSourceMock
         2,
         2,
         ProposalBookingStatusCore.ACTIVE,
-        1
+        1,
+        false
       ),
       // old completed event
       new ScheduledEventCore(
@@ -47,7 +63,8 @@ export default class ScheduledEventDataSourceMock
         3,
         3,
         ProposalBookingStatusCore.COMPLETED,
-        1
+        1,
+        false
       ),
       // recent completed event
       new ScheduledEventCore(
@@ -58,7 +75,8 @@ export default class ScheduledEventDataSourceMock
         4,
         4,
         ProposalBookingStatusCore.COMPLETED,
-        1
+        1,
+        false
       ),
     ];
   }
@@ -68,7 +86,7 @@ export default class ScheduledEventDataSourceMock
   }
 
   async getScheduledEvents(
-    filter: ScheduledEventsFilter
+    filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]> {
     return this.scheduledEvents
       .filter((esi) => {

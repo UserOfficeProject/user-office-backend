@@ -1,5 +1,6 @@
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
-import { ScheduledEventsFilter } from '../../resolvers/queries/ScheduledEventsQuery';
+import { UpdateScheduledEventArgs } from '../../resolvers/mutations/UpdateScheduledEventCoreMutation';
+import { ScheduledEventsCoreFilter } from '../../resolvers/queries/ScheduledEventsCoreQuery';
 import { ScheduledEventDataSource } from '../ScheduledEventDataSource';
 import database from './database';
 import { createScheduledEventObject, ScheduledEventRecord } from './records';
@@ -8,7 +9,7 @@ export default class PostgresScheduledEventDataSource
   implements ScheduledEventDataSource
 {
   async getScheduledEvents(
-    filter: ScheduledEventsFilter
+    filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]> {
     return database
       .select('*')
@@ -33,6 +34,20 @@ export default class PostgresScheduledEventDataSource
       .first()
       .then((row: ScheduledEventRecord) =>
         row ? createScheduledEventObject(row) : null
+      );
+  }
+
+  async updateScheduledEvent(
+    args: UpdateScheduledEventArgs
+  ): Promise<ScheduledEventCore> {
+    return database('scheduled_events')
+      .update({
+        is_shipment_declared: args.isShipmentDeclared,
+      })
+      .where({ scheduled_event_id: args.scheduledEventId })
+      .returning('*')
+      .then((row: ScheduledEventRecord[]) =>
+        createScheduledEventObject(row[0])
       );
   }
 }
