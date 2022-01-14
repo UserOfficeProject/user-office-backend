@@ -7,7 +7,7 @@ import { createScheduledEventObject, ScheduledEventRecord } from './records';
 export default class PostgresScheduledEventDataSource
   implements ScheduledEventDataSource
 {
-  async getScheduledEvents(
+  async getScheduledEventsCore(
     filter: ScheduledEventsFilter
   ): Promise<ScheduledEventCore[]> {
     return database
@@ -25,7 +25,7 @@ export default class PostgresScheduledEventDataSource
         rows.map((row) => createScheduledEventObject(row))
       );
   }
-  async getScheduledEvent(id: number): Promise<ScheduledEventCore | null> {
+  async getScheduledEventCore(id: number): Promise<ScheduledEventCore | null> {
     return database
       .select('*')
       .from('scheduled_events')
