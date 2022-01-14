@@ -11,7 +11,6 @@ import {
 
 import { Tokens } from '../../config/Tokens';
 import { ResolverContext } from '../../context';
-import { FeedbackDataSource } from '../../datasources/FeedbackDataSource';
 import { TzLessDateTime } from '../CustomScalars';
 import { FeedbackDataSource } from './../../datasources/FeedbackDataSource';
 import { BasicUserDetails } from './BasicUserDetails';
