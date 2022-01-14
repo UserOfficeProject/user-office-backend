@@ -35,6 +35,21 @@ export class ShipmentAuthorization {
     return shipment;
   }
 
+  async isShipmentReadOnly(shipment: Shipment): Promise<boolean> {
+    const scheduledEvent =
+      await this.scheduledEventDataSource.getScheduledEvent(
+        shipment.scheduledEventId
+      );
+    if (!scheduledEvent) {
+      return true;
+    }
+    if (scheduledEvent.isShipmentDeclared) {
+      return true;
+    }
+
+    return false;
+  }
+
   async hasReadRights(
     agent: UserWithRole | null,
     shipment: Shipment
@@ -80,15 +95,8 @@ export class ShipmentAuthorization {
       return false;
     }
 
-    // check if shipment is declared and read-only
-    const scheduledEvent =
-      await this.scheduledEventDataSource.getScheduledEvent(
-        shipment.scheduledEventId
-      );
-    if (!scheduledEvent) {
-      return false;
-    }
-    if (scheduledEvent.isShipmentDeclared) {
+    const isReadOnly = await this.isShipmentReadOnly(shipment);
+    if (isReadOnly) {
       return false;
     }
 
