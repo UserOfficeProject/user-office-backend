@@ -228,6 +228,11 @@ export function createPostToRabbitMQHandler() {
       }
       case Event.PROPOSAL_CREATED: {
         const json = await getProposalMessageData(event.proposal);
+        await rabbitMQ.sendMessage(
+          Queue.PROPOSAL,
+          event.type,
+          'RABBITMQ TEST ' + json
+        );
 
         await rabbitMQ.sendBroadcast(Event.PROPOSAL_CREATED, json);
         break;
