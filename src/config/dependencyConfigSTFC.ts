@@ -23,8 +23,8 @@ import StfcProposalDataSource from '../datasources/stfc/StfcProposalDataSource';
 import { StfcUserDataSource } from '../datasources/stfc/StfcUserDataSource';
 import { SMTPMailService } from '../eventHandlers/MailService/SMTPMailService';
 import {
-  createSkipListeningHandler,
-  createSkipPostingHandler,
+  createListenToRabbitMQHandler,
+  createPostToRabbitMQHandler,
 } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../services/eam';
 import { configureSTFCEnvironment } from './stfc/configureSTFCEnvironment';
@@ -57,7 +57,7 @@ mapClass(Tokens.AssetRegistrar, SkipAssetRegistrar);
 
 mapClass(Tokens.MailService, SMTPMailService);
 
-mapValue(Tokens.PostToMessageQueue, createSkipPostingHandler());
-mapValue(Tokens.ListenToMessageQueue, createSkipListeningHandler());
+mapValue(Tokens.PostToMessageQueue, createPostToRabbitMQHandler());
+mapValue(Tokens.ListenToMessageQueue, createListenToRabbitMQHandler());
 
 mapValue(Tokens.ConfigureEnvironment, configureSTFCEnvironment);
