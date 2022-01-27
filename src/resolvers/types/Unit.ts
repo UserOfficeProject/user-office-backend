@@ -9,4 +9,10 @@ export class Unit implements Partial<UnitOrigin> {
 
   @Field()
   name: string;
+
+  @Field()
+  siUnit: string;
+
+  @Field()
+  siConversionFormula: string;
 }
