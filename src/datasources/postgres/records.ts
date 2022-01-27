@@ -22,6 +22,7 @@ import { SEP, SEPProposal, SEPAssignment, SEPReviewer } from '../../models/SEP';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
 import { Settings, SettingsId } from '../../models/Settings';
 import { Shipment, ShipmentStatus } from '../../models/Shipment';
+import { SiUnit } from '../../models/SiUnit';
 import {
   DataType,
   FieldCondition,
@@ -304,8 +305,15 @@ export interface InstitutionRecord {
 export interface UnitRecord {
   readonly unit_id: number;
   readonly unit: string;
+  readonly si_unit: string;
+  readonly si_conversion_formula: string;
 }
-
+export interface SiUnitRecord {
+  readonly si_unit_id: number;
+  readonly quantity: string;
+  readonly name: string;
+  readonly symbol: string;
+}
 export interface CountryRecord {
   readonly country_id: number;
   readonly country: string;
@@ -1027,3 +1035,6 @@ export const createFeedbackRequestObject = (
     feedbackRequest.scheduled_event_id,
     feedbackRequest.requested_at
   );
+
+export const createSiUnitObject = (siUnit: SiUnitRecord) =>
+  new SiUnit(siUnit.si_unit_id, siUnit.quantity, siUnit.name, siUnit.symbol);

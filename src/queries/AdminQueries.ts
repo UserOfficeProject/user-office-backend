@@ -41,6 +41,10 @@ export default class AdminQueries {
     return await this.dataSource.getFeatures();
   }
 
+  async getSiUnits() {
+    return await this.dataSource.getSiUnits();
+  }
+
   async getSettings() {
     return await this.dataSource.getSettings();
   }

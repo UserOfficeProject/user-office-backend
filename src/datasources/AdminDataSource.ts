@@ -3,6 +3,7 @@ import { Feature, FeatureId } from '../models/Feature';
 import { Institution } from '../models/Institution';
 import { Permissions } from '../models/Permissions';
 import { Settings, SettingsId } from '../models/Settings';
+import { SiUnit } from '../models/SiUnit';
 import { Unit } from '../models/Unit';
 import { BasicUserDetails } from '../models/User';
 import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
@@ -31,6 +32,7 @@ export interface AdminDataSource {
   createUnit(unit: Unit): Promise<Unit | null>;
   deleteUnit(id: number): Promise<Unit>;
   getUnits(): Promise<Unit[]>;
+  getSiUnits(): Promise<SiUnit[]>;
   createApiAccessToken(
     args: CreateApiAccessTokenInput,
     accessTokenId: string,

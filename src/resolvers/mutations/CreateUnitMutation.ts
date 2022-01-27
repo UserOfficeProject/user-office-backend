@@ -6,8 +6,14 @@ import { wrapResponse } from '../wrapResponse';
 
 @ArgsType()
 export class CreateUnitArgs {
-  @Field(() => String)
+  @Field()
   name: string;
+
+  @Field()
+  siUnit: string;
+
+  @Field()
+  siConversionFormula: string;
 }
 
 @Resolver()

@@ -100,7 +100,7 @@ export default class AdminMutations {
 
   @Authorized([Roles.USER_OFFICER])
   async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
-    const unit = new Unit(0, args.name);
+    const unit = new Unit(0, args.name, args.siUnit, args.siConversionFormula);
 
     return await this.dataSource.createUnit(unit);
   }

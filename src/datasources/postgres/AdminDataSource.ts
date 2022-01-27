@@ -9,6 +9,7 @@ import { Feature } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
 import { Settings } from '../../models/Settings';
+import { SiUnit } from '../../models/SiUnit';
 import { Unit } from '../../models/Unit';
 import { BasicUserDetails } from '../../models/User';
 import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
@@ -26,11 +27,13 @@ import {
   createInstitutionObject,
   createPageObject,
   createSettingsObject,
+  createSiUnitObject,
   FeatureRecord,
   InstitutionRecord,
   NationalityRecord,
   PageTextRecord,
   SettingsRecord,
+  SiUnitRecord,
   TokensAndPermissionsRecord,
   UnitRecord,
   UserRecord,
@@ -45,6 +48,8 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     const [unitRecord]: UnitRecord[] = await database
       .insert({
         unit: unit.name,
+        si_unit: unit.siUnit,
+        si_conversion_formula: unit.siConversionFormula,
       })
       .into('units')
       .returning('*');
@@ -56,6 +61,8 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     return {
       id: unitRecord.unit_id,
       name: unitRecord.unit,
+      siUnit: unitRecord.si_unit,
+      siConversionFormula: unitRecord.si_conversion_formula,
     };
   }
 
@@ -73,6 +80,8 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     return {
       id: unitRecord.unit_id,
       name: unitRecord.unit,
+      siUnit: unitRecord.si_unit,
+      siConversionFormula: unitRecord.si_conversion_formula,
     };
   }
   async getUnits(): Promise<Unit[]> {
@@ -85,10 +94,25 @@ export default class PostgresAdminDataSource implements AdminDataSource {
           return {
             id: int.unit_id,
             name: int.unit,
+            siUnit: int.si_unit,
+            siConversionFormula: int.si_conversion_formula,
           };
         })
       );
   }
+
+  async getSiUnits(): Promise<SiUnit[]> {
+    return await database
+      .select()
+      .from('si_units')
+      .orderBy('quantity', 'asc')
+      .then((records: SiUnitRecord[]) =>
+        records.map((record) => {
+          return createSiUnitObject(record);
+        })
+      );
+  }
+
   async updateInstitution(
     institution: Institution
   ): Promise<Institution | null> {
