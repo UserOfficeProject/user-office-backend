@@ -78,8 +78,7 @@ const dummyScheduledEventCore = new ScheduledEventCore(
   1,
   1,
   ProposalBookingStatusCore.ACTIVE,
-  1,
-  false
+  1
 );
 
 export class ProposalDataSourceMock implements ProposalDataSource {
