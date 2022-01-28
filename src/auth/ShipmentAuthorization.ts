@@ -35,18 +35,6 @@ export class ShipmentAuthorization {
     return shipment;
   }
 
-  async isShipmentReadOnly(shipment: Shipment): Promise<boolean> {
-    const scheduledEvent =
-      await this.scheduledEventDataSource.getScheduledEventCore(
-        shipment.scheduledEventId
-      );
-    if (!scheduledEvent) {
-      return true;
-    }
-
-    return false;
-  }
-
   async hasReadRights(
     agent: UserWithRole | null,
     shipment: Shipment
@@ -89,11 +77,6 @@ export class ShipmentAuthorization {
 
     const shipment = await this.resolveShipment(shipmentOrShipmentId);
     if (!shipment) {
-      return false;
-    }
-
-    const isReadOnly = await this.isShipmentReadOnly(shipment);
-    if (isReadOnly) {
       return false;
     }
 
