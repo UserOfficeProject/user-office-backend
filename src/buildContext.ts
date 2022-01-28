@@ -15,7 +15,6 @@ import QuestionaryMutations from './mutations/QuestionaryMutations';
 import ReviewMutations from './mutations/ReviewMutations';
 import SampleEsiMutations from './mutations/SampleEsiMutations';
 import SampleMutations from './mutations/SampleMutations';
-import ScheduledEventMutations from './mutations/ScheduledEventMutations';
 import SEPMutations from './mutations/SEPMutations';
 import ShipmentMutations from './mutations/ShipmentMutations';
 import TemplateMutations from './mutations/TemplateMutations';
@@ -82,7 +81,6 @@ const context: BasicResolverContext = {
     review: container.resolve(ReviewMutations),
     sample: container.resolve(SampleMutations),
     sampleEsi: container.resolve(SampleEsiMutations),
-    scheduledEvent: container.resolve(ScheduledEventMutations),
     sep: container.resolve(SEPMutations),
     shipment: container.resolve(ShipmentMutations),
     template: container.resolve(TemplateMutations),
