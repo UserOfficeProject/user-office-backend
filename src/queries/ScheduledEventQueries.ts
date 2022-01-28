@@ -6,7 +6,7 @@ import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { ScheduledEventsCoreFilter } from '../resolvers/queries/ScheduledEventsCoreQuery';
-import { ScheduledEventCore } from '../resolvers/types/ScheduledEvent';
+import { ScheduledEventCore } from './../resolvers/types/ScheduledEvent';
 
 @injectable()
 export default class ScheduledEventQueries {
@@ -16,11 +16,13 @@ export default class ScheduledEventQueries {
   ) {}
 
   @Authorized([Roles.USER_OFFICER])
-  async getScheduledEvents(
+  async getScheduledEventsCore(
     user: UserWithRole | null,
     filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]> {
-    const scheduledEvents = await this.dataSource.getScheduledEvents(filter);
+    const scheduledEvents = await this.dataSource.getScheduledEventsCore(
+      filter
+    );
 
     return scheduledEvents;
   }
@@ -30,7 +32,7 @@ export default class ScheduledEventQueries {
     user: UserWithRole | null,
     scheduledEventId: number
   ): Promise<ScheduledEventCore | null> {
-    const scheduledEvents = await this.dataSource.getScheduledEvent(
+    const scheduledEvents = await this.dataSource.getScheduledEventCore(
       scheduledEventId
     );
 

@@ -1,5 +1,4 @@
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
-import { UpdateScheduledEventArgs } from '../../resolvers/mutations/UpdateScheduledEventCoreMutation';
 import { ScheduledEventsCoreFilter } from '../../resolvers/queries/ScheduledEventsCoreQuery';
 import { ScheduledEventDataSource } from '../ScheduledEventDataSource';
 import database from './database';
@@ -8,7 +7,7 @@ import { createScheduledEventObject, ScheduledEventRecord } from './records';
 export default class PostgresScheduledEventDataSource
   implements ScheduledEventDataSource
 {
-  async getScheduledEvents(
+  async getScheduledEventsCore(
     filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]> {
     return database
@@ -26,7 +25,7 @@ export default class PostgresScheduledEventDataSource
         rows.map((row) => createScheduledEventObject(row))
       );
   }
-  async getScheduledEvent(id: number): Promise<ScheduledEventCore | null> {
+  async getScheduledEventCore(id: number): Promise<ScheduledEventCore | null> {
     return database
       .select('*')
       .from('scheduled_events')
@@ -34,20 +33,6 @@ export default class PostgresScheduledEventDataSource
       .first()
       .then((row: ScheduledEventRecord) =>
         row ? createScheduledEventObject(row) : null
-      );
-  }
-
-  async updateScheduledEvent(
-    args: UpdateScheduledEventArgs
-  ): Promise<ScheduledEventCore> {
-    return database('scheduled_events')
-      .update({
-        is_shipment_declared: args.isShipmentDeclared,
-      })
-      .where({ scheduled_event_id: args.scheduledEventId })
-      .returning('*')
-      .then((row: ScheduledEventRecord[]) =>
-        createScheduledEventObject(row[0])
       );
   }
 }

@@ -20,7 +20,7 @@ export class ScheduledEventsCoreQuery {
     @Args() filter: ScheduledEventsCoreFilter,
     @Ctx() context: ResolverContext
   ): Promise<ScheduledEventCore[] | null> {
-    return context.queries.scheduledEvent.getScheduledEvents(
+    return context.queries.scheduledEvent.getScheduledEventsCore(
       context.user,
       filter
     );

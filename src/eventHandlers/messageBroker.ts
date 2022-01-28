@@ -226,6 +226,12 @@ export function createPostToRabbitMQHandler() {
         await rabbitMQ.sendBroadcast(Event.PROPOSAL_UPDATED, json);
         break;
       }
+      case Event.PROPOSAL_DELETED: {
+        const json = await getProposalMessageData(event.proposal);
+
+        await rabbitMQ.sendMessage(Queue.SCHEDULING_PROPOSAL, event.type, json);
+        break;
+      }
       case Event.PROPOSAL_CREATED: {
         const json = await getProposalMessageData(event.proposal);
 
@@ -355,13 +361,13 @@ export function createListenToRabbitMQHandler() {
 }
 
 export function createSkipPostingHandler() {
-  return async (event: ApplicationEvent) => {
+  return async () => {
     // no op
   };
 }
 
 export function createSkipListeningHandler() {
-  return async (event: ApplicationEvent) => {
+  return async () => {
     // no op
   };
 }

@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
-import { UpdateScheduledEventArgs } from '../../resolvers/mutations/UpdateScheduledEventCoreMutation';
 import { ScheduledEventsCoreFilter } from '../../resolvers/queries/ScheduledEventsCoreQuery';
 import { ScheduledEventDataSource } from '../ScheduledEventDataSource';
 import {
@@ -15,19 +14,6 @@ export default class ScheduledEventDataSourceMock
   scheduledEvents: ScheduledEventCore[];
   constructor() {
     this.init();
-  }
-  async updateScheduledEvent(
-    args: UpdateScheduledEventArgs
-  ): Promise<ScheduledEventCore> {
-    let evt = this.scheduledEvents.find(
-      (esi) => esi.id === args.scheduledEventId
-    );
-    if (!evt) {
-      throw new Error('Scheduled event not found');
-    }
-    evt = { ...evt, ...args };
-
-    return evt;
   }
 
   public init() {
@@ -81,11 +67,11 @@ export default class ScheduledEventDataSourceMock
     ];
   }
 
-  async getScheduledEvent(id: number): Promise<ScheduledEventCore | null> {
+  async getScheduledEventCore(id: number): Promise<ScheduledEventCore | null> {
     return this.scheduledEvents.find((esi) => esi.id === id) || null;
   }
 
-  async getScheduledEvents(
+  async getScheduledEventsCore(
     filter: ScheduledEventsCoreFilter
   ): Promise<ScheduledEventCore[]> {
     return this.scheduledEvents
