@@ -40,6 +40,7 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/subgraph": "^0.1.5",
+    "@types/sax": "^1.2.3",
     "@types/validator": "^13.7.0",
     "@user-office-software/duo-localisation": "^1.2.0",
     "@user-office-software/duo-logger": "^2.0.2",
