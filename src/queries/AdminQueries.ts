@@ -26,6 +26,10 @@ export default class AdminQueries {
     return await this.dataSource.getUnits();
   }
 
+  async getQuantities() {
+    return await this.dataSource.getQuantities();
+  }
+
   async getCountries() {
     return await this.dataSource.getCountries();
   }
@@ -39,10 +43,6 @@ export default class AdminQueries {
 
   async getFeatures() {
     return await this.dataSource.getFeatures();
-  }
-
-  async getSiUnits() {
-    return await this.dataSource.getSiUnits();
   }
 
   async getSettings() {

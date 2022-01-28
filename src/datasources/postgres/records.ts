@@ -12,6 +12,7 @@ import { GenericTemplate } from '../../models/GenericTemplate';
 import { Institution } from '../../models/Institution';
 import { Proposal, ProposalEndStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
+import { Quantity } from '../../models/Quantity';
 import { AnswerBasic, Questionary } from '../../models/Questionary';
 import { createConfig } from '../../models/questionTypes/QuestionRegistry';
 import { Role } from '../../models/Role';
@@ -22,7 +23,6 @@ import { SEP, SEPProposal, SEPAssignment, SEPReviewer } from '../../models/SEP';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
 import { Settings, SettingsId } from '../../models/Settings';
 import { Shipment, ShipmentStatus } from '../../models/Shipment';
-import { SiUnit } from '../../models/SiUnit';
 import {
   DataType,
   FieldCondition,
@@ -35,6 +35,7 @@ import {
   TemplateGroupId,
   Topic,
 } from '../../models/Template';
+import { Unit } from '../../models/Unit';
 import { BasicUserDetails, User } from '../../models/User';
 import { Visit, VisitStatus } from '../../models/Visit';
 import { VisitRegistration } from '../../models/VisitRegistration';
@@ -303,16 +304,11 @@ export interface InstitutionRecord {
 }
 
 export interface UnitRecord {
-  readonly unit_id: number;
+  readonly unit_id: string;
   readonly unit: string;
-  readonly si_unit: string;
-  readonly si_conversion_formula: string;
-}
-export interface SiUnitRecord {
-  readonly si_unit_id: number;
   readonly quantity: string;
-  readonly name: string;
   readonly symbol: string;
+  readonly si_conversion_formula: string;
 }
 export interface CountryRecord {
   readonly country_id: number;
@@ -592,6 +588,10 @@ export interface FeedbackRequestRecord {
   readonly feedback_request_id: number;
   readonly scheduled_event_id: number;
   readonly requested_at: Date;
+}
+
+export interface QuantityRecord {
+  readonly id: string;
 }
 
 export const createTopicObject = (record: TopicRecord) => {
@@ -1036,5 +1036,14 @@ export const createFeedbackRequestObject = (
     feedbackRequest.requested_at
   );
 
-export const createSiUnitObject = (siUnit: SiUnitRecord) =>
-  new SiUnit(siUnit.si_unit_id, siUnit.quantity, siUnit.name, siUnit.symbol);
+export const createUnitObject = (unit: UnitRecord) =>
+  new Unit(
+    unit.unit_id,
+    unit.unit,
+    unit.quantity,
+    unit.symbol,
+    unit.si_conversion_formula
+  );
+
+export const createQuantityObject = (quantity: QuantityRecord) =>
+  new Quantity(quantity.id);

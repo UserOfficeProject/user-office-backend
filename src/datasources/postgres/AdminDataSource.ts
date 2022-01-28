@@ -8,11 +8,12 @@ import { Page } from '../../models/Admin';
 import { Feature } from '../../models/Feature';
 import { Institution } from '../../models/Institution';
 import { Permissions } from '../../models/Permissions';
+import { Quantity } from '../../models/Quantity';
 import { Settings } from '../../models/Settings';
-import { SiUnit } from '../../models/SiUnit';
 import { Unit } from '../../models/Unit';
 import { BasicUserDetails } from '../../models/User';
 import { CreateApiAccessTokenInput } from '../../resolvers/mutations/CreateApiAccessTokenMutation';
+import { CreateUnitArgs } from '../../resolvers/mutations/CreateUnitMutation';
 import { MergeInstitutionsInput } from '../../resolvers/mutations/MergeInstitutionsMutation';
 import { UpdateApiAccessTokenInput } from '../../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { AdminDataSource, Entry } from '../AdminDataSource';
@@ -26,14 +27,15 @@ import {
   createFeatureObject,
   createInstitutionObject,
   createPageObject,
+  createQuantityObject,
   createSettingsObject,
-  createSiUnitObject,
+  createUnitObject,
   FeatureRecord,
   InstitutionRecord,
   NationalityRecord,
   PageTextRecord,
+  QuantityRecord,
   SettingsRecord,
-  SiUnitRecord,
   TokensAndPermissionsRecord,
   UnitRecord,
   UserRecord,
@@ -44,11 +46,13 @@ const seedsPath = path.join(dbPatchesFolderPath, 'db_seeds');
 
 @injectable()
 export default class PostgresAdminDataSource implements AdminDataSource {
-  async createUnit(unit: Unit): Promise<Unit | null> {
+  async createUnit(unit: CreateUnitArgs): Promise<Unit | null> {
     const [unitRecord]: UnitRecord[] = await database
       .insert({
-        unit: unit.name,
-        si_unit: unit.siUnit,
+        unit_id: unit.id,
+        unit: unit.unit,
+        quantity: unit.quantity,
+        symbol: unit.symbol,
         si_conversion_formula: unit.siConversionFormula,
       })
       .into('units')
@@ -58,12 +62,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       throw new Error('Could not create unit');
     }
 
-    return {
-      id: unitRecord.unit_id,
-      name: unitRecord.unit,
-      siUnit: unitRecord.si_unit,
-      siConversionFormula: unitRecord.si_conversion_formula,
-    };
+    return createUnitObject(unitRecord);
   }
 
   async deleteUnit(id: number): Promise<Unit> {
@@ -77,39 +76,26 @@ export default class PostgresAdminDataSource implements AdminDataSource {
       throw new Error(`Could not delete unit with id:${id}`);
     }
 
-    return {
-      id: unitRecord.unit_id,
-      name: unitRecord.unit,
-      siUnit: unitRecord.si_unit,
-      siConversionFormula: unitRecord.si_conversion_formula,
-    };
+    return createUnitObject(unitRecord);
   }
+
   async getUnits(): Promise<Unit[]> {
     return await database
       .select()
       .from('units')
       .orderBy('unit', 'asc')
-      .then((intDB: UnitRecord[]) =>
-        intDB.map((int) => {
-          return {
-            id: int.unit_id,
-            name: int.unit,
-            siUnit: int.si_unit,
-            siConversionFormula: int.si_conversion_formula,
-          };
-        })
+      .then((records: UnitRecord[]) =>
+        records.map((unit) => createUnitObject(unit))
       );
   }
 
-  async getSiUnits(): Promise<SiUnit[]> {
+  async getQuantities(): Promise<Quantity[]> {
     return await database
       .select()
-      .from('si_units')
-      .orderBy('quantity', 'asc')
-      .then((records: SiUnitRecord[]) =>
-        records.map((record) => {
-          return createSiUnitObject(record);
-        })
+      .from('quantities')
+      .orderBy('unit', 'asc')
+      .then((records: QuantityRecord[]) =>
+        records.map((quantity) => createQuantityObject(quantity))
       );
   }
 

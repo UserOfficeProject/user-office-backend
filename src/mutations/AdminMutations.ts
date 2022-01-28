@@ -13,7 +13,6 @@ import { Page } from '../models/Admin';
 import { Institution } from '../models/Institution';
 import { rejection, Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
-import { Unit } from '../models/Unit';
 import { UserWithRole } from '../models/User';
 import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
 import { CreateInstitutionsArgs } from '../resolvers/mutations/CreateInstitutionsMutation';
@@ -100,9 +99,7 @@ export default class AdminMutations {
 
   @Authorized([Roles.USER_OFFICER])
   async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
-    const unit = new Unit(0, args.name, args.siUnit, args.siConversionFormula);
-
-    return await this.dataSource.createUnit(unit);
+    return await this.dataSource.createUnit(args);
   }
 
   @Authorized([Roles.USER_OFFICER])

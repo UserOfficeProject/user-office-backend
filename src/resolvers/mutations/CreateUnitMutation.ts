@@ -7,10 +7,16 @@ import { wrapResponse } from '../wrapResponse';
 @ArgsType()
 export class CreateUnitArgs {
   @Field()
-  name: string;
+  id: string;
 
   @Field()
-  siUnit: string;
+  unit: string;
+
+  @Field()
+  quantity: string;
+
+  @Field()
+  symbol: string;
 
   @Field()
   siConversionFormula: string;
