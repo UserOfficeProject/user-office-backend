@@ -43,9 +43,6 @@ export class ShipmentAuthorization {
     if (!scheduledEvent) {
       return true;
     }
-    if (scheduledEvent.isShipmentDeclared) {
-      return true;
-    }
 
     return false;
   }

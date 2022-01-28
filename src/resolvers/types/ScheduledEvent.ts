@@ -46,9 +46,6 @@ export class ScheduledEventCore {
 
   @Field(() => Int, { nullable: true })
   proposalPk: number | null;
-
-  @Field(() => Boolean)
-  isShipmentDeclared: boolean;
 }
 
 @Resolver(() => ScheduledEventCore)
