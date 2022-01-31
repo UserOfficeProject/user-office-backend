@@ -12,6 +12,18 @@ import {
   WIDTH_KEY,
   HEIGHT_KEY,
   LENGTH_KEY,
+  IS_DANGEROUS_GOODS_KEY,
+  DANGEROUS_GOODS_UN_NUMBER_KEY,
+  DANGEROUS_GOODS_DETAILS_KEY,
+  SHIPMENT_SAMPLE_RISKS_KEY,
+  PARCEL_VALUE_KEY,
+  SHIPMENT_SENDER_COMPANY_KEY,
+  SHIPMENT_SENDER_STREET_ADDRESS_KEY,
+  SHIPMENT_SENDER_ZIP_CODE_KEY,
+  SHIPMENT_SENDER_CITY_COUNTRY_KEY,
+  SHIPMENT_SENDER_NAME_KEY,
+  SHIPMENT_SENDER_EMAIL_KEY,
+  SHIPMENT_SENDER_PHONE_KEY,
 } from '../../models/Shipment';
 import { ProposalDataSource } from './../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from './../../datasources/QuestionaryDataSource';
@@ -32,8 +44,16 @@ type EnvVars =
   | 'EAM_AUTH_PASS';
 
 const getAnswerForNumberInput = (
-  answerBasic: AnswerBasic
-): number | undefined => answerBasic.answer?.value?.value;
+  answerBasic: AnswerBasic | null
+): number | undefined => answerBasic?.answer?.value?.value;
+
+const getAnswerForStringInput = (
+  answerBasic: AnswerBasic | null
+): string | undefined => answerBasic?.answer?.value;
+
+const getAnswerForBooleanInput = (
+  answerBasic: AnswerBasic | null
+): boolean | undefined => answerBasic?.answer?.value;
 
 @injectable()
 export class EAMAssetRegistrar implements AssetRegistrar {
@@ -181,7 +201,71 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       LENGTH_KEY
     );
 
-    if (!weight || !width || !height || !length) {
+    const isDangerousGoods = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      IS_DANGEROUS_GOODS_KEY
+    );
+    const dangerousGoodsUnNumber = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      DANGEROUS_GOODS_UN_NUMBER_KEY
+    );
+    const dangerousGoodsDetails = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      DANGEROUS_GOODS_DETAILS_KEY
+    );
+    const shipmentSampleRisks = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SAMPLE_RISKS_KEY
+    );
+    const parcelValue = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      PARCEL_VALUE_KEY
+    );
+    const shipmentSenderCompany = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SENDER_COMPANY_KEY
+    );
+    const shipmentSenderStreetAddress =
+      await this.questionaryDataSource.getAnswer(
+        shipment.questionaryId,
+        SHIPMENT_SENDER_STREET_ADDRESS_KEY
+      );
+    const shipmentSenderZipCode = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SENDER_ZIP_CODE_KEY
+    );
+    const shipmentSenderCityCountry =
+      await this.questionaryDataSource.getAnswer(
+        shipment.questionaryId,
+        SHIPMENT_SENDER_CITY_COUNTRY_KEY
+      );
+    const shipmentSenderName = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SENDER_NAME_KEY
+    );
+    const shipmentSenderEmail = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SENDER_EMAIL_KEY
+    );
+    const shipmentSenderPhone = await this.questionaryDataSource.getAnswer(
+      shipment.questionaryId,
+      SHIPMENT_SENDER_PHONE_KEY
+    );
+
+    if (
+      !weight ||
+      !width ||
+      !height ||
+      !length ||
+      !parcelValue ||
+      !shipmentSenderCompany ||
+      !shipmentSenderStreetAddress ||
+      !shipmentSenderZipCode ||
+      !shipmentSenderCityCountry ||
+      !shipmentSenderName ||
+      !shipmentSenderEmail ||
+      !shipmentSenderPhone
+    ) {
       throw this.createAndLogError('Template is not properly configured', {
         shipmentId,
         weight,
@@ -195,14 +279,65 @@ export class EAMAssetRegistrar implements AssetRegistrar {
     const widthAnswer = getAnswerForNumberInput(width);
     const heightAnswer = getAnswerForNumberInput(height);
     const lengthAnswer = getAnswerForNumberInput(length);
+    const isDangerousGoodsAnswer = getAnswerForBooleanInput(isDangerousGoods);
+    const dangerousGoodsUnNumberAnswer = getAnswerForStringInput(
+      dangerousGoodsUnNumber
+    );
+    const dangerousGoodsDetailsAnswer = getAnswerForStringInput(
+      dangerousGoodsDetails
+    );
+    const shipmentSampleRisksAnswer =
+      getAnswerForStringInput(shipmentSampleRisks);
+    const parcelValueAnswer = getAnswerForStringInput(parcelValue);
+    const shipmentSenderCompanyAnswer = getAnswerForStringInput(
+      shipmentSenderCompany
+    );
+    const shipmentSenderStreetAddressAnswer = getAnswerForStringInput(
+      shipmentSenderStreetAddress
+    );
+    const shipmentSenderZipCodeAnswer = getAnswerForStringInput(
+      shipmentSenderZipCode
+    );
+    const shipmentSenderCityCountryAnswer = getAnswerForStringInput(
+      shipmentSenderCityCountry
+    );
+    const shipmentSenderNameAnswer =
+      getAnswerForStringInput(shipmentSenderName);
+    const shipmentSenderEmailAnswer =
+      getAnswerForStringInput(shipmentSenderEmail);
+    const shipmentSenderPhoneAnswer =
+      getAnswerForStringInput(shipmentSenderPhone);
 
-    if (!weightAnswer || !widthAnswer || !heightAnswer || !lengthAnswer) {
+    if (
+      !weightAnswer ||
+      !widthAnswer ||
+      !heightAnswer ||
+      !lengthAnswer ||
+      !shipmentSampleRisksAnswer ||
+      !parcelValueAnswer ||
+      !shipmentSenderCompanyAnswer ||
+      !shipmentSenderStreetAddressAnswer ||
+      !shipmentSenderZipCodeAnswer ||
+      !shipmentSenderCityCountryAnswer ||
+      !shipmentSenderNameAnswer ||
+      !shipmentSenderEmailAnswer ||
+      !shipmentSenderPhoneAnswer
+    ) {
       throw this.createAndLogError('Answer is missing for shipment creation', {
         shipmentId,
         weight,
         width,
         height,
         length,
+        shipmentSampleRisksAnswer,
+        parcelValueAnswer,
+        shipmentSenderCompanyAnswer,
+        shipmentSenderStreetAddressAnswer,
+        shipmentSenderZipCodeAnswer,
+        shipmentSenderCityCountryAnswer,
+        shipmentSenderNameAnswer,
+        shipmentSenderEmailAnswer,
+        shipmentSenderPhoneAnswer,
       });
     }
 
@@ -212,7 +347,19 @@ export class EAMAssetRegistrar implements AssetRegistrar {
       weightAnswer,
       widthAnswer,
       heightAnswer,
-      lengthAnswer
+      lengthAnswer,
+      isDangerousGoodsAnswer ? 'true' : 'false',
+      dangerousGoodsUnNumberAnswer ?? 'No UN Number',
+      dangerousGoodsDetailsAnswer ?? 'No details',
+      shipmentSampleRisksAnswer ?? 'No information',
+      parcelValueAnswer ?? 'No value',
+      shipmentSenderCompanyAnswer ?? 'No value',
+      shipmentSenderStreetAddressAnswer ?? 'No value',
+      shipmentSenderZipCodeAnswer ?? 'No value',
+      shipmentSenderCityCountryAnswer ?? 'No value',
+      shipmentSenderNameAnswer ?? 'No value',
+      shipmentSenderEmailAnswer ?? 'No value',
+      shipmentSenderPhoneAnswer ?? 'No value'
     );
 
     const response = await this.performApiRequest(request);

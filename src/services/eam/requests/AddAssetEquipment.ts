@@ -15,7 +15,19 @@ const getRequest = (
   weightKilograms: number,
   widthMeters: number,
   heightMeters: number,
-  lengthMeters: number
+  lengthMeters: number,
+  isDangerousGoods: string,
+  dangerousGoodsUnNumber: string,
+  dangerousGoodsDetails: string,
+  shipmentSampleRisks: string,
+  parcelValue: string,
+  shipmentSenderCompany: string,
+  shipmentSenderStreetAddress: string,
+  shipmentSenderZipCode: string,
+  shipmentSenderCityCountry: string,
+  shipmentSenderName: string,
+  shipmentSenderEmail: string,
+  shipmentSenderPhone: string
 ) => `<?xml version="1.0" encoding="utf-8"?>
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Header>
@@ -48,8 +60,8 @@ const getRequest = (
 				<DEPARTMENTID xmlns="http://schemas.datastream.net/MP_fields">
 					<DEPARTMENTCODE>SMPL</DEPARTMENTCODE>
 					<ORGANIZATIONID entity="Group">
-						<ORGANIZATIONCODE>*</ORGANIZATIONCODE>						
-					</ORGANIZATIONID>					
+						<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+					</ORGANIZATIONID>
 				</DEPARTMENTID>
 				<COMMISSIONDATE qualifier="ACCOUNTING" xmlns="http://schemas.datastream.net/MP_fields">
 					<YEAR xmlns="http://www.openapplications.org/oagis_fields">${date.getUTCFullYear()}</YEAR>
@@ -141,6 +153,186 @@ const getRequest = (
 								<LOV_TYPE>-</LOV_TYPE>
 								<LOV_VALIDATE>-</LOV_VALIDATE>
 							</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="50" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000001</PROPERTYCODE>
+						<PROPERTYLABEL>Dangerous Goods</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${isDangerousGoods}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="60" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000002</PROPERTYCODE>
+						<PROPERTYLABEL>Dangerous Goods UN Number</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${dangerousGoodsUnNumber}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="70" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000003</PROPERTYCODE>
+						<PROPERTYLABEL>Specify all dangerous goods in detail</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${dangerousGoodsDetails}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="80" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000004</PROPERTYCODE>
+						<PROPERTYLABEL>Specify risks for shipment associated with samples, if any</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSampleRisks}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="90" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000005</PROPERTYCODE>
+						<PROPERTYLABEL>Value (EUR)</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${parcelValue}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="100" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000006</PROPERTYCODE>
+						<PROPERTYLABEL>Sender Company</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderCompany}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="110" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000007</PROPERTYCODE>
+						<PROPERTYLABEL>Sender street address</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderStreetAddress}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="120" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000008</PROPERTYCODE>
+						<PROPERTYLABEL>Sender Zip code</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderZipCode}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="130" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000009</PROPERTYCODE>
+						<PROPERTYLABEL>Sender City / Country</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderCityCountry}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="140" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000010</PROPERTYCODE>
+						<PROPERTYLABEL>Sender Name</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderName}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="150" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000011</PROPERTYCODE>
+						<PROPERTYLABEL>Sender Email</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderEmail}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
+					</CUSTOMFIELD>
+					<CUSTOMFIELD index="160" entity="OBJ" type="CHAR">
+						<PROPERTYCODE>SM000012</PROPERTYCODE>
+						<PROPERTYLABEL>Sender Phone Number</PROPERTYLABEL>
+						<CLASSID>
+							<CLASSCODE>SMPCON</CLASSCODE>
+							<ORGANIZATIONID>
+								<ORGANIZATIONCODE>*</ORGANIZATIONCODE>
+							</ORGANIZATIONID>
+						</CLASSID>
+						<TEXTFIELD>${shipmentSenderPhone}</TEXTFIELD>
+						<LOVSETTINGS>
+							<LOV_TYPE>-</LOV_TYPE>
+							<LOV_VALIDATE>-</LOV_VALIDATE>
+						</LOVSETTINGS>
 					</CUSTOMFIELD>
 				</USERDEFINEDAREA>
 				<UserDefinedFields>
