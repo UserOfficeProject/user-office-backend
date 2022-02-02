@@ -82,11 +82,13 @@ INSERT INTO units (unit_id, unit, quantity, symbol, si_conversion_formula)
 SELECT unit, unit, 'mass', '', 'x'
 FROM units_backup;
 
+DROP TABLE units_backup;
+
 INSERT INTO units (unit_id, quantity, unit, symbol)
 VALUES ('length', 'length', 'meter', 'm'),
   ('mass', 'mass', 'kilogram', 'kg'),
   ('time', 'time', 'second', 's'),
-  ('electric', 'electric current', 'ampere', 'A'),
+  ('electric_current', 'electric current', 'ampere', 'A'),
   (
     'temperature',
     'thermodynamic temperature',
@@ -94,7 +96,7 @@ VALUES ('length', 'length', 'meter', 'm'),
     'K'
   ),
   (
-    'substance_amount',
+    'amount_of_substance',
     'amount of substance',
     'mole',
     'mol'
@@ -214,7 +216,7 @@ VALUES ('length', 'length', 'meter', 'm'),
     'W/m2'
   ),
   (
-    'entropy',
+    'heat_capacity',
     'heat capacity, entropy',
     'joule per kelvin',
     'J/K'
