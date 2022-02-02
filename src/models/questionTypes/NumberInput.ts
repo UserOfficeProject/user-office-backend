@@ -35,7 +35,7 @@ export const numberInputDefinition: Question = {
     config.small_label = '';
     config.required = false;
     config.tooltip = '';
-    config.units = null;
+    config.units = [];
 
     return config;
   },

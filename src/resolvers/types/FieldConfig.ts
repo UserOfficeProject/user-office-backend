@@ -144,8 +144,8 @@ export class SampleDeclarationConfig extends SubTemplateConfig {
 }
 @ObjectType()
 export class IntervalConfig extends ConfigBase {
-  @Field(() => [Unit], { nullable: true })
-  units: Unit[] | null;
+  @Field(() => [Unit])
+  units: Unit[];
 }
 
 export enum NumberValueConstraint {
@@ -156,8 +156,8 @@ export enum NumberValueConstraint {
 
 @ObjectType()
 export class NumberInputConfig extends ConfigBase {
-  @Field(() => [Unit], { nullable: true })
-  units: Unit[] | null;
+  @Field(() => [Unit])
+  units: Unit[];
 
   @Field(() => NumberValueConstraint, { nullable: true })
   numberValueConstraint: NumberValueConstraint | null;
