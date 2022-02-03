@@ -31,7 +31,7 @@ export interface AdminDataSource {
   getSettings(): Promise<Settings[]>;
   getSetting(id: SettingsId): Promise<Settings>;
   createUnit(unit: CreateUnitArgs): Promise<Unit | null>;
-  deleteUnit(id: number): Promise<Unit>;
+  deleteUnit(id: string): Promise<Unit>;
   getUnits(): Promise<Unit[]>;
   getQuantities(): Promise<Quantity[]>;
   createApiAccessToken(

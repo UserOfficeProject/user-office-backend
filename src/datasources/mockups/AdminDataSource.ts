@@ -44,7 +44,7 @@ export class AdminDataSourceMock implements AdminDataSource {
   async createUnit(unit: CreateUnitArgs): Promise<Unit | null> {
     return dummyUnit;
   }
-  async deleteUnit(id: number): Promise<Unit> {
+  async deleteUnit(id: string): Promise<Unit> {
     return dummyUnit;
   }
   async getUnits(): Promise<Unit[]> {

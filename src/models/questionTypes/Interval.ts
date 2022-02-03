@@ -40,12 +40,12 @@ export const intervalDefinition: Question = {
     switch (filter.compareOperator) {
       case QuestionFilterCompareOperator.LESS_THAN:
         return queryBuilder.andWhereRaw(
-          "(answers.answer->'value'->>'max')::float < ?",
+          "(answers.answer->'value'->>'siMax')::float < ?",
           value
         );
       case QuestionFilterCompareOperator.GREATER_THAN:
         return queryBuilder.andWhereRaw(
-          "(answers.answer->'value'->>'min')::float > ?",
+          "(answers.answer->'value'->>'siMin')::float > ?",
           value
         );
       default:

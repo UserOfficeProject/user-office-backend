@@ -65,7 +65,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     return createUnitObject(unitRecord);
   }
 
-  async deleteUnit(id: number): Promise<Unit> {
+  async deleteUnit(id: string): Promise<Unit> {
     const [unitRecord]: UnitRecord[] = await database('units')
       .where('units.unit_id', id)
       .del()

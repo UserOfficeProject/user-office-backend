@@ -44,17 +44,17 @@ export const numberInputDefinition: Question = {
     switch (filter.compareOperator) {
       case QuestionFilterCompareOperator.LESS_THAN:
         return queryBuilder.andWhereRaw(
-          "(answers.answer->'value'->>'value')::float < ?",
+          "(answers.answer->'value'->>'siValue')::float < ?",
           value
         );
       case QuestionFilterCompareOperator.EQUALS:
         return queryBuilder.andWhereRaw(
-          "(answers.answer->'value'->>'value')::float = ?",
+          "(answers.answer->'value'->>'siValue')::float = ?",
           value
         );
       case QuestionFilterCompareOperator.GREATER_THAN:
         return queryBuilder.andWhereRaw(
-          "(answers.answer->'value'->>'value')::float > ?",
+          "(answers.answer->'value'->>'siValue')::float > ?",
           value
         );
       default:
