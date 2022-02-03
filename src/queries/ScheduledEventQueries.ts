@@ -38,6 +38,6 @@ export default class ScheduledEventQueries {
 
     // TODO check if user has access to this scheduled event
 
-    return scheduledEvents;
+    return scheduledEvent;
   }
 }
