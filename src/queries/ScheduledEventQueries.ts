@@ -32,12 +32,13 @@ export default class ScheduledEventQueries {
     user: UserWithRole | null,
     scheduledEventId: number
   ): Promise<ScheduledEventCore | null> {
-    const scheduledEvents = await this.dataSource.getScheduledEventCore(
+
+    const scheduledEvent = await this.dataSource.getScheduledEventCore(
       scheduledEventId
     );
 
     // TODO check if user has access to this scheduled event
 
-    return scheduledEvents;
+    return scheduledEvent;
   }
 }
