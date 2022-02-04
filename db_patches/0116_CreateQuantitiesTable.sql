@@ -60,10 +60,13 @@ VALUES
   ('permeability'),
   ('molar energy'),
   ('molar entropy, molar heat capacity'),
-  ('exposure (x and gamma rays) '),
+  ('exposure (x and gamma rays)'),
   ('absorbed dose rate'),
   ('radiant intensity'),
   ('radiance'),
+  ('dose equivalent'),
+  ('activity (of a radionuclide)'),
+  ('absorbed dose, specific energy (imparted), kerma'),
   ('catalytic (activity) concentration');
 
 
@@ -285,7 +288,7 @@ VALUES ('length', 'length', 'meter', 'm'),
   ),
   (
     'exposure',
-    'exposure (x and gamma rays) ',
+    'exposure (x and gamma rays)',
     'coulomb per kilogram',
     'C/kg'
   ),
@@ -308,11 +311,30 @@ VALUES ('length', 'length', 'meter', 'm'),
     'W/(m2·sr)'
   ),
   (
+    'sievert',
+    'dose equivalent',
+    'sievert',
+    'Sv'
+  ),
+  (
+    'becquerel',
+    'activity (of a radionuclide)',
+    'becquerel',
+    'Bq'
+  ),
+   (
+    'gray',
+    'absorbed dose, specific energy (imparted), kerma',
+    'gray',
+    'Gy'
+  ),
+  (
     'catalytic_concentration',
     'catalytic (activity) concentration',
     'katal per cubic meter',
     'kat/m3'
   );
+
 END;
 END IF;
 END;
