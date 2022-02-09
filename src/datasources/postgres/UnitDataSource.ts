@@ -61,9 +61,19 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     return await database
       .select()
       .from('quantities')
-      .orderBy('unit', 'asc')
+      .orderBy('quantity_id', 'asc')
       .then((records: QuantityRecord[]) =>
         records.map((quantity) => createQuantityObject(quantity))
       );
+  }
+
+  async getUnitsAsJson(): Promise<string> {
+    const units = await this.getUnits();
+    const quantities = await this.getQuantities();
+
+    return JSON.stringify({
+      units,
+      quantities,
+    });
   }
 }

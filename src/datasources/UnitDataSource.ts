@@ -7,4 +7,5 @@ export interface UnitDataSource {
   deleteUnit(id: string): Promise<Unit>;
   getUnits(): Promise<Unit[]>;
   getQuantities(): Promise<Quantity[]>;
+  getUnitsAsJson(): Promise<string>;
 }

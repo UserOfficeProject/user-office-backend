@@ -32,6 +32,10 @@ export default class AdminQueries {
     return await this.unitDataSource.getQuantities();
   }
 
+  async getUnitsAsJson() {
+    return await this.unitDataSource.getUnitsAsJson();
+  }
+
   async getCountries() {
     return await this.adminDataSource.getCountries();
   }
