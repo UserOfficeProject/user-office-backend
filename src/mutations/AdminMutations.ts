@@ -8,7 +8,6 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { AdminDataSource } from '../datasources/AdminDataSource';
-import { UnitDataSource } from '../datasources/UnitDataSource';
 import { Authorized, ValidateArgs } from '../decorators';
 import { Page } from '../models/Admin';
 import { Institution } from '../models/Institution';
@@ -17,7 +16,6 @@ import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
 import { CreateApiAccessTokenInput } from '../resolvers/mutations/CreateApiAccessTokenMutation';
 import { CreateInstitutionsArgs } from '../resolvers/mutations/CreateInstitutionsMutation';
-import { CreateUnitArgs } from '../resolvers/mutations/CreateUnitMutation';
 import { DeleteApiAccessTokenInput } from '../resolvers/mutations/DeleteApiAccessTokenMutation';
 import { MergeInstitutionsInput } from '../resolvers/mutations/MergeInstitutionsMutation';
 import { UpdateApiAccessTokenInput } from '../resolvers/mutations/UpdateApiAccessTokenMutation';
@@ -29,8 +27,7 @@ const IS_BACKEND_VALIDATION = true;
 @injectable()
 export default class AdminMutations {
   constructor(
-    @inject(Tokens.AdminDataSource) private adminDataSource: AdminDataSource,
-    @inject(Tokens.UnitDataSource) private unitDataSource: UnitDataSource
+    @inject(Tokens.AdminDataSource) private adminDataSource: AdminDataSource
   ) {}
 
   @Authorized([Roles.USER_OFFICER])
@@ -97,16 +94,6 @@ export default class AdminMutations {
     const institution = new Institution(0, args.name, args.verified);
 
     return await this.adminDataSource.createInstitution(institution);
-  }
-
-  @Authorized([Roles.USER_OFFICER])
-  async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
-    return await this.unitDataSource.createUnit(args);
-  }
-
-  @Authorized([Roles.USER_OFFICER])
-  async deleteUnit(agent: UserWithRole | null, id: string) {
-    return await this.unitDataSource.deleteUnit(id);
   }
 
   @Authorized([Roles.USER_OFFICER])

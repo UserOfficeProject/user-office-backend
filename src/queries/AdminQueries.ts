@@ -6,57 +6,43 @@ import { AdminDataSource } from '../datasources/AdminDataSource';
 import { Authorized } from '../decorators';
 import { Roles } from '../models/Role';
 import { UserWithRole } from '../models/User';
-import { UnitDataSource } from './../datasources/UnitDataSource';
 import { InstitutionsFilter } from './../resolvers/queries/InstitutionsQuery';
 
 @injectable()
 export default class AdminQueries {
   constructor(
-    @inject(Tokens.AdminDataSource) private adminDataSource: AdminDataSource,
-    @inject(Tokens.UnitDataSource) private unitDataSource: UnitDataSource
+    @inject(Tokens.AdminDataSource) private dataSource: AdminDataSource
   ) {}
 
   async getPageText(id: number): Promise<string | null> {
-    return await this.adminDataSource.get(id);
+    return await this.dataSource.get(id);
   }
 
   async getNationalities() {
-    return await this.adminDataSource.getNationalities();
-  }
-
-  async getUnits() {
-    return await this.unitDataSource.getUnits();
-  }
-
-  async getQuantities() {
-    return await this.unitDataSource.getQuantities();
-  }
-
-  async getUnitsAsJson() {
-    return await this.unitDataSource.getUnitsAsJson();
+    return await this.dataSource.getNationalities();
   }
 
   async getCountries() {
-    return await this.adminDataSource.getCountries();
+    return await this.dataSource.getCountries();
   }
   async getInstitutions(filter?: InstitutionsFilter) {
-    return await this.adminDataSource.getInstitutions(filter);
+    return await this.dataSource.getInstitutions(filter);
   }
 
   async getInstitution(id: number) {
-    return await this.adminDataSource.getInstitution(id);
+    return await this.dataSource.getInstitution(id);
   }
 
   async getFeatures() {
-    return await this.adminDataSource.getFeatures();
+    return await this.dataSource.getFeatures();
   }
 
   async getSettings() {
-    return await this.adminDataSource.getSettings();
+    return await this.dataSource.getSettings();
   }
 
   async getPermissionsByToken(accessToken: string) {
-    return await this.adminDataSource.getTokenAndPermissionsById(accessToken);
+    return await this.dataSource.getTokenAndPermissionsById(accessToken);
   }
 
   @Authorized([Roles.USER_OFFICER])
@@ -64,12 +50,12 @@ export default class AdminQueries {
     agent: UserWithRole | null,
     accessTokenId: string
   ) {
-    return await this.adminDataSource.getTokenAndPermissionsById(accessTokenId);
+    return await this.dataSource.getTokenAndPermissionsById(accessTokenId);
   }
 
   @Authorized([Roles.USER_OFFICER])
   async getAllTokensAndPermissions(agent: UserWithRole | null) {
-    return await this.adminDataSource.getAllTokensAndPermissions();
+    return await this.dataSource.getAllTokensAndPermissions();
   }
 
   @Authorized([Roles.USER_OFFICER])

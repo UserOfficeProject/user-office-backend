@@ -6,6 +6,6 @@ import { ResolverContext } from '../../context';
 export class UnitsAsJsonQuery {
   @Query(() => String, { nullable: true })
   unitsAsJson(@Ctx() context: ResolverContext) {
-    return context.queries.admin.getUnitsAsJson();
+    return context.queries.unit.getUnitsAsJson();
   }
 }

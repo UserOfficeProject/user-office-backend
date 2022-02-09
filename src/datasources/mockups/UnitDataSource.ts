@@ -18,4 +18,14 @@ export class UnitDataSourceMock implements UnitDataSource {
   async getQuantities(): Promise<Quantity[]> {
     return [];
   }
+
+  async getUnitsAsJson(): Promise<string> {
+    const units = await this.getUnits();
+    const quantities = await this.getQuantities();
+
+    return JSON.stringify({
+      units,
+      quantities,
+    });
+  }
 }

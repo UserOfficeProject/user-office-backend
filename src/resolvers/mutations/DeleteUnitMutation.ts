@@ -12,7 +12,7 @@ export class DeleteUnitlMutation {
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
-      context.mutations.admin.deleteUnit(context.user, id),
+      context.mutations.unit.deleteUnit(context.user, id),
       UnitResponseWrap
     );
   }
