@@ -12,6 +12,8 @@ import {
   UnitRecord,
 } from './records';
 
+const EXPORT_VERSION = '1.0.0';
+
 @injectable()
 export default class PostgresUnitDataSource implements UnitDataSource {
   async createUnit(unit: CreateUnitArgs): Promise<Unit | null> {
@@ -68,10 +70,14 @@ export default class PostgresUnitDataSource implements UnitDataSource {
   }
 
   async getUnitsAsJson(): Promise<string> {
+    const EXPORT_DATE = new Date();
+
     const units = await this.getUnits();
     const quantities = await this.getQuantities();
 
     return JSON.stringify({
+      version: EXPORT_VERSION,
+      exportDate: EXPORT_DATE,
       units,
       quantities,
     });
