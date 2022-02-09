@@ -8,6 +8,7 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { AdminDataSource } from '../datasources/AdminDataSource';
+import { UnitDataSource } from '../datasources/UnitDataSource';
 import { Authorized, ValidateArgs } from '../decorators';
 import { Page } from '../models/Admin';
 import { Institution } from '../models/Institution';
@@ -28,7 +29,8 @@ const IS_BACKEND_VALIDATION = true;
 @injectable()
 export default class AdminMutations {
   constructor(
-    @inject(Tokens.AdminDataSource) private dataSource: AdminDataSource
+    @inject(Tokens.AdminDataSource) private adminDataSource: AdminDataSource,
+    @inject(Tokens.UnitDataSource) private unitDataSource: UnitDataSource
   ) {}
 
   @Authorized([Roles.USER_OFFICER])
@@ -39,7 +41,7 @@ export default class AdminMutations {
     if (process.env.NODE_ENV === 'development') {
       logger.logWarn('Resetting database', {});
 
-      const log = await this.dataSource.resetDB(includeSeeds);
+      const log = await this.adminDataSource.resetDB(includeSeeds);
       container.resolve<() => void>(Tokens.ConfigureEnvironment)();
 
       return log;
@@ -52,7 +54,7 @@ export default class AdminMutations {
   async applyPatches(agent: UserWithRole | null): Promise<string | Rejection> {
     logger.logWarn('Applying patches', {});
 
-    return this.dataSource.applyPatches();
+    return this.adminDataSource.applyPatches();
   }
 
   @ValidateArgs(setPageTextValidationSchema, ['text'])
@@ -61,7 +63,7 @@ export default class AdminMutations {
     agent: UserWithRole | null,
     { id, text }: { id: number; text: string }
   ): Promise<Page | Rejection> {
-    return this.dataSource
+    return this.adminDataSource
       .setPageText(id, text)
       .then((page) => {
         return page;
@@ -76,7 +78,7 @@ export default class AdminMutations {
     agent: UserWithRole | null,
     args: UpdateInstitutionsArgs
   ) {
-    const institution = await this.dataSource.getInstitution(args.id);
+    const institution = await this.adminDataSource.getInstitution(args.id);
     if (!institution) {
       return rejection('Could not retrieve institutions');
     }
@@ -84,7 +86,7 @@ export default class AdminMutations {
     institution.name = args.name ?? institution.name;
     institution.verified = args.verified ?? institution.verified;
 
-    return await this.dataSource.updateInstitution(institution);
+    return await this.adminDataSource.updateInstitution(institution);
   }
 
   @Authorized([Roles.USER_OFFICER])
@@ -94,32 +96,32 @@ export default class AdminMutations {
   ) {
     const institution = new Institution(0, args.name, args.verified);
 
-    return await this.dataSource.createInstitution(institution);
+    return await this.adminDataSource.createInstitution(institution);
   }
 
   @Authorized([Roles.USER_OFFICER])
   async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
-    return await this.dataSource.createUnit(args);
+    return await this.unitDataSource.createUnit(args);
   }
 
   @Authorized([Roles.USER_OFFICER])
   async deleteUnit(agent: UserWithRole | null, id: string) {
-    return await this.dataSource.deleteUnit(id);
+    return await this.unitDataSource.deleteUnit(id);
   }
 
   @Authorized([Roles.USER_OFFICER])
   async deleteInstitutions(agent: UserWithRole | null, id: number) {
-    const institution = await this.dataSource.getInstitution(id);
+    const institution = await this.adminDataSource.getInstitution(id);
     if (!institution) {
       return rejection('Institution not found');
     }
 
-    const institutionUsers = await this.dataSource.getInstitutionUsers(id);
+    const institutionUsers = await this.adminDataSource.getInstitutionUsers(id);
     if (institutionUsers.length !== 0) {
       return rejection('There are users associated with this institution');
     }
 
-    return await this.dataSource.deleteInstitution(id);
+    return await this.adminDataSource.deleteInstitution(id);
   }
 
   async addClientLog(error: string) {
@@ -141,7 +143,7 @@ export default class AdminMutations {
       { expiresIn: '100y' } // API access token should have long life
     );
 
-    const result = await this.dataSource.createApiAccessToken(
+    const result = await this.adminDataSource.createApiAccessToken(
       { accessPermissions, name: args.name },
       accessTokenId,
       generatedAccessToken
@@ -163,7 +165,7 @@ export default class AdminMutations {
     try {
       const accessPermissions = JSON.parse(args.accessPermissions);
 
-      return await this.dataSource.updateApiAccessToken({
+      return await this.adminDataSource.updateApiAccessToken({
         ...args,
         accessPermissions,
       });
@@ -182,7 +184,9 @@ export default class AdminMutations {
     args: DeleteApiAccessTokenInput
   ) {
     try {
-      return await this.dataSource.deleteApiAccessToken(args.accessTokenId);
+      return await this.adminDataSource.deleteApiAccessToken(
+        args.accessTokenId
+      );
     } catch (error) {
       return rejection(
         'Could not remove api access token',
@@ -197,13 +201,13 @@ export default class AdminMutations {
     agent: UserWithRole | null,
     args: MergeInstitutionsInput
   ): Promise<Institution | Rejection> {
-    const institution = await this.dataSource.mergeInstitutions(args);
+    const institution = await this.adminDataSource.mergeInstitutions(args);
 
     if (!institution) {
       return rejection('Could not merge institutions', { agent, args });
     }
 
-    const updatedInstitution = await this.dataSource.updateInstitution({
+    const updatedInstitution = await this.adminDataSource.updateInstitution({
       ...institution,
       name: args.newTitle,
     });
