@@ -37,6 +37,7 @@ import { Template } from './Template';
 import { TemplateImportWithValidation } from './TemplateImportWithValidation';
 import { Topic } from './Topic';
 import { Unit } from './Unit';
+import { UnitsImportWithValidation } from './UnitsImportWithValidation';
 import { User } from './User';
 import { Visit } from './Visit';
 import { VisitRegistration } from './VisitRegistration';
@@ -374,4 +375,11 @@ export class ScheduledEventResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => ScheduledEventCore, { nullable: true })
   public scheduledEvent: ScheduledEventCore;
+}
+
+@ObjectType()
+export class UnitsImportWithValidationWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => UnitsImportWithValidation, { nullable: true })
+  public validationResult: UnitsImportWithValidation;
 }

@@ -1,5 +1,5 @@
 import { Quantity } from '../models/Quantity';
-import { Unit } from '../models/Unit';
+import { Unit, UnitsImportWithValidation } from '../models/Unit';
 import { CreateUnitArgs } from '../resolvers/mutations/CreateUnitMutation';
 
 export interface UnitDataSource {
@@ -8,4 +8,5 @@ export interface UnitDataSource {
   getUnits(): Promise<Unit[]>;
   getQuantities(): Promise<Quantity[]>;
   getUnitsAsJson(): Promise<string>;
+  validateUnitsImport(unitsAsJson: string): Promise<UnitsImportWithValidation>;
 }

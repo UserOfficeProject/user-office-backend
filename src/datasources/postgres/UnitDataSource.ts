@@ -1,8 +1,19 @@
 import { injectable } from 'tsyringe';
 
 import { Quantity } from '../../models/Quantity';
-import { Unit } from '../../models/Unit';
+import {
+  ComparisonStatus,
+  ConflictResolutionStrategy,
+} from '../../models/Template';
+import {
+  Unit,
+  UnitComparison,
+  UnitsExport,
+  UnitsImportWithValidation,
+} from '../../models/Unit';
 import { CreateUnitArgs } from '../../resolvers/mutations/CreateUnitMutation';
+import { deepEqual } from '../../utils/json';
+import { isAboveVersion, isBelowVersion } from '../../utils/version';
 import { UnitDataSource } from '../UnitDataSource';
 import database from './database';
 import {
@@ -13,6 +24,7 @@ import {
 } from './records';
 
 const EXPORT_VERSION = '1.0.0';
+const MIN_SUPPORTED_VERSION = '1.0.0';
 
 @injectable()
 export default class PostgresUnitDataSource implements UnitDataSource {
@@ -81,5 +93,112 @@ export default class PostgresUnitDataSource implements UnitDataSource {
       units,
       quantities,
     });
+  }
+
+  async upsertQuantity(quantity: Quantity): Promise<Quantity> {
+    const [quantityRecord]: QuantityRecord[] = await database
+      .insert({
+        quantity_id: quantity.id,
+      })
+      .into('quantities')
+      .returning('*')
+      .onConflict('quantity_id')
+      .ignore();
+
+    if (!quantityRecord) {
+      throw new Error('Could not create quantity');
+    }
+
+    return createQuantityObject(quantityRecord);
+  }
+
+  convertStringToUnitsExport = (string: string): UnitsExport => {
+    const object = JSON.parse(string);
+    object.exportDate = new Date(object.exportDate);
+
+    return object;
+  };
+
+  async validateUnitsImport(json: string): Promise<UnitsImportWithValidation> {
+    const unitsExport = this.convertStringToUnitsExport(json);
+    const errors: string[] = [];
+    const questionComparisons: UnitComparison[] = [];
+
+    if (isBelowVersion(unitsExport.version, MIN_SUPPORTED_VERSION)) {
+      errors.push(
+        `Units version ${unitsExport.version} is below the minimum supported version ${MIN_SUPPORTED_VERSION}.`
+      );
+    }
+
+    if (isAboveVersion(unitsExport.version, EXPORT_VERSION)) {
+      errors.push(
+        `Units version ${unitsExport.version} is above the current supported version ${EXPORT_VERSION}.`
+      );
+    }
+
+    if (!unitsExport.units) {
+      errors.push('Units field is missing');
+    }
+
+    if (!unitsExport.quantities) {
+      errors.push('Quantities field is missing');
+    }
+
+    const unitIds = unitsExport.units.map((unit) => unit.id);
+
+    const existingUnits = (await this.getUnits()).filter((unit) =>
+      unitIds.includes(unit.id)
+    );
+
+    const newUnits = unitsExport.units.map(
+      (unit) =>
+        new Unit(
+          unit.id,
+          unit.unit,
+          unit.quantity,
+          unit.symbol,
+          unit.siConversionFormula
+        )
+    );
+
+    for await (const newUnit of newUnits) {
+      const existingUnit =
+        existingUnits.find((existingUnit) => existingUnit.id === newUnit.id) ||
+        null;
+
+      if (!existingUnit) {
+        questionComparisons.push({
+          existingUnit: null,
+          newUnit: newUnit,
+          status: ComparisonStatus.NEW,
+          conflictResolutionStrategy: ConflictResolutionStrategy.USE_NEW,
+        });
+      } else {
+        if (deepEqual(newUnit, existingUnit)) {
+          questionComparisons.push({
+            existingUnit: existingUnit,
+            newUnit: newUnit,
+            status: ComparisonStatus.SAME,
+            conflictResolutionStrategy: ConflictResolutionStrategy.USE_EXISTING,
+          });
+        } else {
+          questionComparisons.push({
+            existingUnit: existingUnit,
+            newUnit: newUnit,
+            status: ComparisonStatus.DIFFERENT,
+            conflictResolutionStrategy: ConflictResolutionStrategy.UNRESOLVED,
+          });
+        }
+      }
+    }
+
+    return {
+      json: json,
+      version: unitsExport.version,
+      exportDate: unitsExport.exportDate,
+      errors: errors,
+      unitComparisons: questionComparisons,
+      isValid: errors.length === 0,
+    };
   }
 }
