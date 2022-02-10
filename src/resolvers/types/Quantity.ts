@@ -1,9 +1,9 @@
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
 import { Quantity as QuantityOrigin } from '../../models/Quantity';
 
 @ObjectType()
 export class Quantity implements Partial<QuantityOrigin> {
-  @Field(() => Int)
+  @Field(() => String)
   id: string;
 }

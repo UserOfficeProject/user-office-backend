@@ -591,7 +591,7 @@ export interface FeedbackRequestRecord {
 }
 
 export interface QuantityRecord {
-  readonly id: string;
+  readonly quantity_id: string;
 }
 
 export const createTopicObject = (record: TopicRecord) => {
@@ -1046,4 +1046,4 @@ export const createUnitObject = (unit: UnitRecord) =>
   );
 
 export const createQuantityObject = (quantity: QuantityRecord) =>
-  new Quantity(quantity.id);
+  new Quantity(quantity.quantity_id);

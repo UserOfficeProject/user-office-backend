@@ -93,7 +93,7 @@ export default class PostgresAdminDataSource implements AdminDataSource {
     return await database
       .select()
       .from('quantities')
-      .orderBy('unit', 'asc')
+      .orderBy('quantity_id', 'asc')
       .then((records: QuantityRecord[]) =>
         records.map((quantity) => createQuantityObject(quantity))
       );
