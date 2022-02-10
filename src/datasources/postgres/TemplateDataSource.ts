@@ -6,7 +6,7 @@ import {
   FieldDependency,
   Question,
   QuestionComparison,
-  QuestionComparisonStatus,
+  ComparisonStatus,
   QuestionTemplateRelation,
   Template,
   TemplateCategory,
@@ -290,7 +290,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
         questionComparisons.push({
           existingQuestion: null,
           newQuestion: newQuestion,
-          status: QuestionComparisonStatus.NEW,
+          status: ComparisonStatus.NEW,
           conflictResolutionStrategy: ConflictResolutionStrategy.USE_NEW,
         });
       } else {
@@ -298,7 +298,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           questionComparisons.push({
             existingQuestion: existingQuestion,
             newQuestion: newQuestion,
-            status: QuestionComparisonStatus.SAME,
+            status: ComparisonStatus.SAME,
             conflictResolutionStrategy: ConflictResolutionStrategy.USE_EXISTING,
           });
         } else {
@@ -310,7 +310,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
           questionComparisons.push({
             existingQuestion: existingQuestion,
             newQuestion: newQuestion,
-            status: QuestionComparisonStatus.DIFFERENT,
+            status: ComparisonStatus.DIFFERENT,
             conflictResolutionStrategy: ConflictResolutionStrategy.UNRESOLVED,
           });
         }
