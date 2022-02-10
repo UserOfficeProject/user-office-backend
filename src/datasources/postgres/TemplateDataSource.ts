@@ -50,8 +50,8 @@ import {
   TopicRecord,
 } from './records';
 
-const EXPORT_VERSION = '1.0.0';
-const MIN_SUPPORTED_VERSION = '1.0.0';
+const EXPORT_VERSION = '1.1.0';
+const MIN_SUPPORTED_VERSION = '1.1.0';
 
 export default class PostgresTemplateDataSource implements TemplateDataSource {
   async getTemplateCategories(): Promise<TemplateCategory[]> {
@@ -1010,7 +1010,11 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
       sortOrder: step.topic.sortOrder,
     });
 
-    for (const field of step.fields) {
+    // we need to import questions that depend on other questions last
+    const orderedStepsByDependency = step.fields.sort(
+      (a, b) => a.dependencies.length - b.dependencies.length
+    );
+    for await (const field of orderedStepsByDependency) {
       await this.importQuestionTemplatRelation(templateId, newTopic.id, field);
     }
 

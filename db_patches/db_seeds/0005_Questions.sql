@@ -7,7 +7,7 @@ BEGIN
 	VALUES 
     ( 'number_question' 
     , 'NUMBER_INPUT'
-    , 'Number question'
+    , 'Number question from seeds'
     , '{
         "units": [
             {
@@ -26,7 +26,7 @@ BEGIN
             }
         ],
         "tooltip": "",
-        "required": true,
+        "required": false,
         "small_label": "",
         "numberValueConstraint": null
         }'
@@ -60,7 +60,7 @@ BEGIN
             }
         ],
         "tooltip": "",
-        "required": true,
+        "required": false,
         "small_label": "",
         "numberValueConstraint": null
       }'
