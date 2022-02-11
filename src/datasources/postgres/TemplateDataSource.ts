@@ -20,12 +20,12 @@ import {
 import { CreateTemplateArgs } from '../../resolvers/mutations/CreateTemplateMutation';
 import { CreateTopicArgs } from '../../resolvers/mutations/CreateTopicMutation';
 import { DeleteQuestionTemplateRelationArgs } from '../../resolvers/mutations/DeleteQuestionTemplateRelationMutation';
-import { ConflictResolution } from '../../resolvers/mutations/ImportTemplateMutation';
 import { SetActiveTemplateArgs } from '../../resolvers/mutations/SetActiveTemplateMutation';
 import { UpdateQuestionTemplateRelationSettingsArgs } from '../../resolvers/mutations/UpdateQuestionTemplateRelationSettingsMutation';
 import { UpdateTemplateArgs } from '../../resolvers/mutations/UpdateTemplateMutation';
 import { QuestionsFilter } from '../../resolvers/queries/QuestionsQuery';
 import { TemplatesArgs } from '../../resolvers/queries/TemplatesQuery';
+import { ConflictResolution } from '../../resolvers/types/ConflictResolution';
 import { deepEqual } from '../../utils/json';
 import { isBelowVersion, isAboveVersion } from '../../utils/version';
 import { TemplateDataSource } from '../TemplateDataSource';
@@ -1036,7 +1036,7 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     await Promise.all(
       questions.map(async (question) => {
         const conflictResolution = conflictResolutions.find(
-          (resolution) => resolution.questionId === question.id
+          (resolution) => resolution.itemId === question.id
         );
         switch (conflictResolution?.strategy) {
           case ConflictResolutionStrategy.USE_NEW:

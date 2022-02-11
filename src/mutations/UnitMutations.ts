@@ -5,8 +5,10 @@ import { UnitDataSource } from '../datasources/UnitDataSource';
 import { Authorized } from '../decorators';
 import { rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
+import { Unit } from '../models/Unit';
 import { UserWithRole } from '../models/User';
 import { CreateUnitArgs } from '../resolvers/mutations/CreateUnitMutation';
+import { ImportUnitsArgs } from '../resolvers/mutations/ImportUnitsMutation';
 
 @injectable()
 export default class UnitMutations {
@@ -39,5 +41,12 @@ export default class UnitMutations {
         error
       );
     }
+  }
+  @Authorized([Roles.USER_OFFICER])
+  async importUnits(
+    user: UserWithRole | null,
+    args: ImportUnitsArgs
+  ): Promise<Unit[]> {
+    return this.unitDataSource.importUnits(args);
   }
 }

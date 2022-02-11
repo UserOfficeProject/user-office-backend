@@ -1,6 +1,7 @@
 import { Quantity } from '../../models/Quantity';
 import { Unit, UnitsImportWithValidation } from '../../models/Unit';
 import { CreateUnitArgs } from '../../resolvers/mutations/CreateUnitMutation';
+import { ImportUnitsArgs } from '../../resolvers/mutations/ImportUnitsMutation';
 import { UnitDataSource } from '../UnitDataSource';
 export const dummyUnit = new Unit('minute', 'Minute', 'time', 'm', 'x/60');
 
@@ -31,6 +32,17 @@ export class UnitDataSourceMock implements UnitDataSource {
   async validateUnitsImport(
     unitsAsJson: string
   ): Promise<UnitsImportWithValidation> {
-    throw new Error('Method not implemented.');
+    return new UnitsImportWithValidation(
+      unitsAsJson,
+      '1.0.0',
+      new Date(),
+      true,
+      [],
+      []
+    );
+  }
+
+  async importUnits(args: ImportUnitsArgs): Promise<Unit[]> {
+    return [];
   }
 }

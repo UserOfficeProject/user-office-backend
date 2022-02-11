@@ -12,6 +12,7 @@ import {
   UnitsImportWithValidation,
 } from '../../models/Unit';
 import { CreateUnitArgs } from '../../resolvers/mutations/CreateUnitMutation';
+import { ImportUnitsArgs } from '../../resolvers/mutations/ImportUnitsMutation';
 import { deepEqual } from '../../utils/json';
 import { isAboveVersion, isBelowVersion } from '../../utils/version';
 import { UnitDataSource } from '../UnitDataSource';
@@ -96,20 +97,15 @@ export default class PostgresUnitDataSource implements UnitDataSource {
   }
 
   async upsertQuantity(quantity: Quantity): Promise<Quantity> {
-    const [quantityRecord]: QuantityRecord[] = await database
+    await database
       .insert({
         quantity_id: quantity.id,
       })
       .into('quantities')
-      .returning('*')
       .onConflict('quantity_id')
       .ignore();
 
-    if (!quantityRecord) {
-      throw new Error('Could not create quantity');
-    }
-
-    return createQuantityObject(quantityRecord);
+    return quantity;
   }
 
   convertStringToUnitsExport = (string: string): UnitsExport => {
@@ -200,5 +196,37 @@ export default class PostgresUnitDataSource implements UnitDataSource {
       unitComparisons: questionComparisons,
       isValid: errors.length === 0,
     };
+  }
+
+  async importUnits(args: ImportUnitsArgs): Promise<Unit[]> {
+    const { json, conflictResolutions } = args;
+    const { units, quantities } = this.convertStringToUnitsExport(json);
+
+    await Promise.all(
+      quantities.map(async (quantity) => this.upsertQuantity(quantity))
+    );
+
+    await Promise.all(
+      units.map(async (unit) => {
+        const conflictResolution = conflictResolutions.find(
+          (resolution) => resolution.itemId === unit.id
+        );
+        switch (conflictResolution?.strategy) {
+          case ConflictResolutionStrategy.USE_NEW:
+            await this.deleteUnit(unit.id);
+            await this.createUnit(unit);
+            break;
+
+          case ConflictResolutionStrategy.USE_EXISTING:
+            break;
+          case ConflictResolutionStrategy.UNRESOLVED:
+            throw new Error('No conflict resolution strategy provided');
+          default:
+            throw new Error('Unknown conflict resolution strategy');
+        }
+      })
+    );
+
+    return this.getUnits();
   }
 }
