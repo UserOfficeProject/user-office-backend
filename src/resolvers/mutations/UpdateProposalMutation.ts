@@ -28,6 +28,9 @@ export class UpdateProposalArgs {
 
   @Field(() => Int, { nullable: true })
   public proposerId?: number;
+
+  @Field(() => Boolean, { nullable: true })
+  public submitted?: boolean;
 }
 
 @Resolver()

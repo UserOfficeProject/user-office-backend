@@ -1,7 +1,6 @@
 import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
-import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
@@ -27,8 +26,6 @@ export class ProposalAuthorization {
     private sepDataSource: SEPDataSource,
     @inject(Tokens.VisitDataSource)
     private visitDataSource: VisitDataSource,
-    @inject(Tokens.CallDataSource)
-    private callDataSource: CallDataSource,
     @inject(Tokens.ProposalSettingsDataSource)
     private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}
@@ -227,12 +224,10 @@ export class ProposalAuthorization {
       return true;
     }
 
-    const callId = proposal.callId;
     const isMemberOfProposal = await this.isMemberOfProposal(agent, proposal);
-    const isCallActive = await this.callDataSource.checkActiveCall(callId);
     const isProposalEditable = await this.isProposalEditable(proposal);
 
-    if (isMemberOfProposal && isCallActive && isProposalEditable) {
+    if (isMemberOfProposal && isProposalEditable) {
       return true;
     }
 

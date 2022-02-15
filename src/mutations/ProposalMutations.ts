@@ -142,7 +142,7 @@ export default class ProposalMutations {
     agent: UserWithRole | null,
     { proposal, args }: { proposal: Proposal; args: UpdateProposalArgs }
   ): Promise<Proposal | Rejection> {
-    const { proposalPk, title, abstract, users, proposerId } = args;
+    const { proposalPk, title, abstract, users, proposerId, submitted } = args;
 
     if (title !== undefined) {
       proposal.title = title;
@@ -166,6 +166,10 @@ export default class ProposalMutations {
 
     if (proposerId !== undefined) {
       proposal.proposerId = proposerId;
+    }
+
+    if (submitted !== undefined && this.userAuth.isUserOfficer(agent)) {
+      proposal.submitted = submitted; // only userofficer can change the status
     }
 
     try {
