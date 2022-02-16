@@ -1,6 +1,7 @@
 import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
+import { CallDataSource } from '../datasources/CallDataSource';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
@@ -26,6 +27,8 @@ export class ProposalAuthorization {
     private sepDataSource: SEPDataSource,
     @inject(Tokens.VisitDataSource)
     private visitDataSource: VisitDataSource,
+    @inject(Tokens.CallDataSource)
+    private callDataSource: CallDataSource,
     @inject(Tokens.ProposalSettingsDataSource)
     private proposalSettingsDataSource: ProposalSettingsDataSource
   ) {}
@@ -183,16 +186,21 @@ export class ProposalAuthorization {
   }
 
   private async isProposalEditable(proposal: Proposal): Promise<boolean> {
-    const proposalStatus =
-      await this.proposalSettingsDataSource.getProposalStatus(
-        proposal.statusId
-      );
+    const callId = proposal.callId;
+    const isCallActive = await this.callDataSource.checkActiveCall(callId);
+    const proposalStatus = (
+      await this.proposalSettingsDataSource.getProposalStatus(proposal.statusId)
+    )?.shortCode;
 
-    return (
-      proposal.submitted === false ||
-      proposalStatus?.shortCode ===
-        ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED
-    );
+    if (proposalStatus === ProposalStatusDefaultShortCodes.EDITABLE_SUBMITTED) {
+      return true;
+    }
+
+    if (isCallActive) {
+      return proposalStatus === ProposalStatusDefaultShortCodes.DRAFT;
+    } else {
+      return false;
+    }
   }
 
   async hasWriteRights(
