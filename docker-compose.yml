@@ -30,8 +30,6 @@ services:
       - 5432:5432
     volumes:
       - ./db_patches/:/docker-entrypoint-initdb.d/
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   scheduler-db:
     image: postgres:11-alpine
@@ -50,8 +48,6 @@ services:
       - "5672:5672"
     volumes:
       - ./rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   factory:
     image: dmsc/duo-factory:develop
@@ -81,8 +77,6 @@ services:
     labels:
       - "traefik.frontend.rule=PathPrefix:/gateway"
       - "traefik.port=4100"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   scheduler-frontend:
     image: "dmsc/duo-scheduler-frontend:develop"
@@ -106,5 +100,3 @@ services:
       - scheduler-db
     ports:
       - 44000:4000 # avoid collision
-    extra_hosts:
-      - "host.docker.internal:host-gateway"

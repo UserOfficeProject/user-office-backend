@@ -1,7 +1,7 @@
 DO
 $DO$
 BEGIN
-  IF register_patch('MigrateAnswersNumberInput.sql', 'Jekabs Karklins', 'Associate shipment with scheduled event', '2022-01-05') THEN
+  IF register_patch('MigrateAnswersNumberInput.sql', 'Jekabs Karklins', 'Converting questions and answers and templates to use new unit format', '2022-01-05') THEN
   BEGIN
 
     ALTER table questions 
