@@ -7,3 +7,9 @@ export class VisitRegistration {
     public trainingExpiryDate: Date | null
   ) {}
 }
+
+export enum TrainingStatus {
+  ACTIVE = 'active',
+  EXPIRED = 'expired',
+  NONE = 'none',
+}

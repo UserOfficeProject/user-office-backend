@@ -25,6 +25,7 @@ import {
 } from '../models/Template';
 import { UserRole } from '../models/User';
 import { VisitStatus } from '../models/Visit';
+import { TrainingStatus } from '../models/VisitRegistration';
 import { NumberValueConstraint } from './types/FieldConfig';
 import {
   EquipmentAssignmentStatus,
@@ -79,8 +80,10 @@ export const registerEnums = () => {
   registerEnumType(QuestionComparisonStatus, {
     name: 'QuestionComparisonStatus',
   });
-
   registerEnumType(ConflictResolutionStrategy, {
     name: 'ConflictResolutionStrategy',
+  });
+  registerEnumType(TrainingStatus, {
+    name: 'TrainingStatus',
   });
 };

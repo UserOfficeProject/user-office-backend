@@ -17,6 +17,7 @@ import { BasicUserDetails } from './BasicUserDetails';
 import { ExperimentSafetyInput } from './ExperimentSafetyInput';
 import { Feedback } from './Feedback';
 import { FeedbackRequest } from './FeedbackRequest';
+import { Proposal } from './Proposal';
 import {
   ProposalBookingStatusCore,
   ScheduledEventBookingType,
@@ -113,5 +114,17 @@ export class ScheduledEventResolver {
     return context.queries.shipment.getShipments(context.user, {
       filter: { scheduledEventId: event.id },
     });
+  }
+
+  @FieldResolver(() => Proposal)
+  async proposal(
+    @Root() event: ScheduledEventCore,
+    @Ctx() context: ResolverContext
+  ): Promise<Proposal | null> {
+    if (!event.proposalPk) {
+      return null;
+    }
+
+    return context.queries.proposal.get(context.user, event.proposalPk);
   }
 }
