@@ -25,7 +25,7 @@ import { rejection, Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
 import { SEP } from '../models/SEP';
 import { SepMeetingDecision } from '../models/SepMeetingDecision';
-import { UserWithRole, UserRole, User } from '../models/User';
+import { UserWithRole, UserRole } from '../models/User';
 import {
   UpdateMemberSEPArgs,
   AssignSepReviewersToProposalArgs,
@@ -185,9 +185,21 @@ export default class SEPMutations {
       );
     }
 
+    const sepMemberRoles = await this.userDataSource.getUserRoles(
+      args.memberId
+    );
+    const roleToRemove = sepMemberRoles.find((role) => role.id === args.roleId);
+
+    if (!roleToRemove) {
+      return rejection(
+        'Could not remove member from SEP because specified role not found on user',
+        { agent, args }
+      );
+    }
+
     const isMemberChairOrSecretaryOfSEP =
       await this.userAuth.isChairOrSecretaryOfSEP(
-        { id: args.memberId } as User,
+        { id: args.memberId, currentRole: roleToRemove } as UserWithRole,
         args.sepId
       );
 
