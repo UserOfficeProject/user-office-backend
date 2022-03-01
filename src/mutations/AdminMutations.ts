@@ -22,6 +22,7 @@ import { MergeInstitutionsInput } from '../resolvers/mutations/MergeInstitutions
 import { UpdateApiAccessTokenInput } from '../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { UpdateInstitutionsArgs } from '../resolvers/mutations/UpdateInstitutionsMutation';
 import { generateUniqueId } from '../utils/helperFunctions';
+import { isSiConversionFormulaValid } from '../utils/isSiConversionFormulaValid';
 import { signToken } from '../utils/jwt';
 
 const IS_BACKEND_VALIDATION = true;
@@ -99,6 +100,10 @@ export default class AdminMutations {
 
   @Authorized([Roles.USER_OFFICER])
   async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
+    if (isSiConversionFormulaValid(args.siConversionFormula) === false) {
+      return rejection('The SI conversion formula is not valid', { args });
+    }
+
     return await this.dataSource.createUnit(args);
   }
 
