@@ -4,7 +4,7 @@ import { Tokens } from '../config/Tokens';
 import { UnitDataSource } from '../datasources/UnitDataSource';
 
 @injectable()
-export default class AdminQueries {
+export default class UnitQueries {
   constructor(
     @inject(Tokens.UnitDataSource) private unitDataSource: UnitDataSource
   ) {}
