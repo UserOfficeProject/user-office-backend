@@ -1,5 +1,5 @@
-import { fileUploadQuestionValidationSchema } from '@user-office-software/duo-validation';
 /* eslint-disable quotes */
+import { fileUploadQuestionValidationSchema } from '@user-office-software/duo-validation';
 
 import { FileUploadConfig } from '../../resolvers/types/FieldConfig';
 import { QuestionTemplateRelation } from '../../resolvers/types/QuestionTemplateRelation';
