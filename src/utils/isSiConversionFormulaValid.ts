@@ -8,5 +8,5 @@ export function isSiConversionFormulaValid(expression?: string): boolean {
     return true;
   }
 
-  return expression.match(/[^0-9\+\-\*\/\(\)\sx]/g) === null;
+  return expression.match(/[^0-9\+\-\*\/\(\)\s\.x]/g) === null;
 }
