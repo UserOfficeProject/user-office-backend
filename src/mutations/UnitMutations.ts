@@ -36,7 +36,7 @@ export default class UnitMutations {
       return response;
     } catch (error) {
       return rejection(
-        'Could not validate units import',
+        `Could not validate units import. ${error}`,
         { agent, unitsAsJson },
         error
       );

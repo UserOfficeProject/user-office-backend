@@ -121,13 +121,13 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     const questionComparisons: UnitComparison[] = [];
 
     if (isBelowVersion(unitsExport.version, MIN_SUPPORTED_VERSION)) {
-      errors.push(
+      throw new Error(
         `Units version ${unitsExport.version} is below the minimum supported version ${MIN_SUPPORTED_VERSION}.`
       );
     }
 
     if (isAboveVersion(unitsExport.version, EXPORT_VERSION)) {
-      errors.push(
+      throw new Error(
         `Units version ${unitsExport.version} is above the current supported version ${EXPORT_VERSION}.`
       );
     }
