@@ -239,27 +239,27 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     }
 
     if (!templateExport.template) {
-      errors.push('Template is missing');
+      throw new Error('Template is missing');
     }
 
     if (!templateExport.templateSteps) {
-      errors.push('TemplateSteps is missing');
+      throw new Error('TemplateSteps is missing');
     }
 
     if (!templateExport.questions) {
-      errors.push('Questions is missing');
+      throw new Error('Questions is missing');
     }
 
     if (!templateExport.template.name) {
-      errors.push('Template name is missing');
+      throw new Error('Template name is missing');
     }
 
     if (!templateExport.template.description) {
-      errors.push('Template description is missing');
+      throw new Error('Template description is missing');
     }
 
     if (!templateExport.template.groupId) {
-      errors.push('Template group is missing');
+      throw new Error('Template group is missing');
     }
 
     const questionIds = templateExport.questions.map((question) => question.id);

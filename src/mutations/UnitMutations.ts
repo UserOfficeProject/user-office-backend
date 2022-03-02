@@ -9,6 +9,7 @@ import { Unit } from '../models/Unit';
 import { UserWithRole } from '../models/User';
 import { CreateUnitArgs } from '../resolvers/mutations/CreateUnitMutation';
 import { ImportUnitsArgs } from '../resolvers/mutations/ImportUnitsMutation';
+import { isSiConversionFormulaValid } from '../utils/isSiConversionFormulaValid';
 
 @injectable()
 export default class UnitMutations {
@@ -18,6 +19,10 @@ export default class UnitMutations {
 
   @Authorized([Roles.USER_OFFICER])
   async createUnit(agent: UserWithRole | null, args: CreateUnitArgs) {
+    if (isSiConversionFormulaValid(args.siConversionFormula) === false) {
+      return rejection('The SI conversion formula is not valid', { args });
+    }
+
     return await this.unitDataSource.createUnit(args);
   }
 

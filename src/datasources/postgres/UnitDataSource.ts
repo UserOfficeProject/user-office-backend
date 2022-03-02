@@ -13,6 +13,7 @@ import {
 } from '../../models/Unit';
 import { CreateUnitArgs } from '../../resolvers/mutations/CreateUnitMutation';
 import { ImportUnitsArgs } from '../../resolvers/mutations/ImportUnitsMutation';
+import { isSiConversionFormulaValid } from '../../utils/isSiConversionFormulaValid';
 import { deepEqual } from '../../utils/json';
 import { isAboveVersion, isBelowVersion } from '../../utils/version';
 import { UnitDataSource } from '../UnitDataSource';
@@ -133,11 +134,13 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     }
 
     if (!unitsExport.units) {
-      errors.push('Units field is missing');
+      throw new Error('Units field is missing from file you are importing');
     }
 
     if (!unitsExport.quantities) {
-      errors.push('Quantities field is missing');
+      throw new Error(
+        'Quantities field is missing from file you are importing'
+      );
     }
 
     const unitIds = unitsExport.units.map((unit) => unit.id);
@@ -158,6 +161,12 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     );
 
     for await (const newUnit of newUnits) {
+      if (isSiConversionFormulaValid(newUnit.siConversionFormula) === false) {
+        errors.push(
+          `Unit "${newUnit.unit}" has an invalid SI conversion formula: "${newUnit.siConversionFormula}"`
+        );
+        continue;
+      }
       const existingUnit =
         existingUnits.find((existingUnit) => existingUnit.id === newUnit.id) ||
         null;
