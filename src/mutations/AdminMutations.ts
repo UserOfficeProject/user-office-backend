@@ -21,6 +21,7 @@ import { MergeInstitutionsInput } from '../resolvers/mutations/MergeInstitutions
 import { UpdateApiAccessTokenInput } from '../resolvers/mutations/UpdateApiAccessTokenMutation';
 import { UpdateInstitutionsArgs } from '../resolvers/mutations/UpdateInstitutionsMutation';
 import { generateUniqueId } from '../utils/helperFunctions';
+import { isSiConversionFormulaValid } from '../utils/isSiConversionFormulaValid';
 import { signToken } from '../utils/jwt';
 
 const IS_BACKEND_VALIDATION = true;
