@@ -259,11 +259,15 @@ BEGIN
 										"symbol":' || (unit_string)  || ', 
 										"siConversionFormula": "x"
 										}')::jsonb as new_unit_arr FROM
-								(SELECT jsonb_array_elements(config->'units')::varchar(1024) as unit_string
-								FROM templates_has_questions WHERE question_id=r.question_id) units_string) new_units)::jsonb)
+									(SELECT jsonb_array_elements(config->'units')::varchar(1024) as unit_string
+									 FROM templates_has_questions 
+									 WHERE question_id=r.question_id
+									 AND template_id=r.template_id) 
+								units_string) 
+							new_units)::jsonb)
 						ELSE  jsonb_set(config, '{units}', (config->'units'))
 						END)
-              	WHERE question_id=r.question_id;
+				WHERE question_id=r.question_id AND template_id=r.template_id;
                 RETURN NEXT r; -- return current row of SELECT
             END LOOP;
             RETURN;

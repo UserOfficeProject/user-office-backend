@@ -227,13 +227,13 @@ export default class PostgresTemplateDataSource implements TemplateDataSource {
     const questionComparisons: QuestionComparison[] = [];
 
     if (isBelowVersion(templateExport.version, MIN_SUPPORTED_VERSION)) {
-      errors.push(
+      throw new Error(
         `Template version ${templateExport.version} is below the minimum supported version ${MIN_SUPPORTED_VERSION}.`
       );
     }
 
     if (isAboveVersion(templateExport.version, EXPORT_VERSION)) {
-      errors.push(
+      throw new Error(
         `Template version ${templateExport.version} is above the current supported version ${EXPORT_VERSION}.`
       );
     }
