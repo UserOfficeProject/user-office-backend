@@ -33,20 +33,9 @@ export default class UnitMutations {
 
   @Authorized([Roles.USER_OFFICER])
   async validateUnitsImport(agent: UserWithRole | null, unitsAsJson: string) {
-    try {
-      const response = await this.unitDataSource.validateUnitsImport(
-        unitsAsJson
-      );
-
-      return response;
-    } catch (error) {
-      return rejection(
-        `Could not validate units import. ${error}`,
-        { agent, unitsAsJson },
-        error
-      );
-    }
+    return this.unitDataSource.validateUnitsImport(unitsAsJson);
   }
+
   @Authorized([Roles.USER_OFFICER])
   async importUnits(
     user: UserWithRole | null,

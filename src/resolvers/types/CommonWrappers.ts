@@ -135,7 +135,7 @@ export class QuestionaryResponseWrap extends ResponseWrapBase {
 @ObjectType()
 export class SamplesResponseWrap extends ResponseWrapBase {
   @Response()
-  @Field(() => [Sample])
+  @Field(() => [Sample], { nullable: true })
   public samples: Sample[];
 }
 
@@ -317,7 +317,7 @@ export class ApiAccessTokenResponseWrap extends ResponseWrapBase {
 @ObjectType()
 export class ProposalsResponseWrap extends ResponseWrapBase {
   @Response()
-  @Field(() => [Proposal])
+  @Field(() => [Proposal], { nullable: true })
   public proposals: Proposal[];
 }
 
