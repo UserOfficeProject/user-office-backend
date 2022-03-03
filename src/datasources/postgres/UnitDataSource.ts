@@ -30,7 +30,7 @@ const MIN_SUPPORTED_VERSION = '1.0.0';
 
 @injectable()
 export default class PostgresUnitDataSource implements UnitDataSource {
-  async createUnit(unit: CreateUnitArgs): Promise<Unit | null> {
+  async createUnit(unit: CreateUnitArgs): Promise<Unit> {
     const [unitRecord]: UnitRecord[] = await database
       .insert({
         unit_id: unit.id,
@@ -49,7 +49,7 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     return createUnitObject(unitRecord);
   }
 
-  async deleteUnit(id: string): Promise<Unit> {
+  async deleteUnit(id: string): Promise<Unit | null> {
     const [unitRecord]: UnitRecord[] = await database('units')
       .where('units.unit_id', id)
       .del()
@@ -57,7 +57,7 @@ export default class PostgresUnitDataSource implements UnitDataSource {
       .returning('*');
 
     if (!unitRecord) {
-      throw new Error(`Could not delete unit with id:${id}`);
+      return null;
     }
 
     return createUnitObject(unitRecord);
@@ -116,6 +116,16 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     return object;
   };
 
+  isUnitValid = (unit: Unit): boolean => {
+    return (
+      unit.unit !== undefined &&
+      unit.quantity !== undefined &&
+      unit.symbol !== undefined &&
+      unit.siConversionFormula !== undefined &&
+      isSiConversionFormulaValid(unit.siConversionFormula) === true
+    );
+  };
+
   async validateUnitsImport(json: string): Promise<UnitsImportWithValidation> {
     const unitsExport = this.convertStringToUnitsExport(json);
     const errors: string[] = [];
@@ -161,9 +171,9 @@ export default class PostgresUnitDataSource implements UnitDataSource {
     );
 
     for await (const newUnit of newUnits) {
-      if (isSiConversionFormulaValid(newUnit.siConversionFormula) === false) {
+      if (this.isUnitValid(newUnit) === false) {
         errors.push(
-          `Unit "${newUnit.unit}" has an invalid SI conversion formula: "${newUnit.siConversionFormula}"`
+          `Unit "${newUnit.unit}" is not valid: "${JSON.stringify(newUnit)}"`
         );
         continue;
       }

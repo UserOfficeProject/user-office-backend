@@ -205,7 +205,7 @@ export class UnitResponseWrap extends ResponseWrapBase {
 @ObjectType()
 export class UnitsResponseWrap extends ResponseWrapBase {
   @Response()
-  @Field(() => [Unit])
+  @Field(() => [Unit], { nullable: true })
   public units: Unit[];
 }
 

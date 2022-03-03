@@ -6,10 +6,10 @@ import { UnitDataSource } from '../UnitDataSource';
 export const dummyUnit = new Unit('minute', 'Minute', 'time', 'm', 'x/60');
 
 export class UnitDataSourceMock implements UnitDataSource {
-  async createUnit(unit: CreateUnitArgs): Promise<Unit | null> {
+  async createUnit(unit: CreateUnitArgs): Promise<Unit> {
     return dummyUnit;
   }
-  async deleteUnit(id: string): Promise<Unit> {
+  async deleteUnit(id: string): Promise<Unit | null> {
     return dummyUnit;
   }
   async getUnits(): Promise<Unit[]> {

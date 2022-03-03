@@ -4,11 +4,11 @@ import { CreateUnitArgs } from '../resolvers/mutations/CreateUnitMutation';
 import { ImportUnitsArgs } from '../resolvers/mutations/ImportUnitsMutation';
 
 export interface UnitDataSource {
-  createUnit(unit: CreateUnitArgs): Promise<Unit | null>;
-  deleteUnit(id: string): Promise<Unit>;
+  createUnit(unit: CreateUnitArgs): Promise<Unit>;
+  deleteUnit(id: string): Promise<Unit | null>;
   getUnits(): Promise<Unit[]>;
   getQuantities(): Promise<Quantity[]>;
   getUnitsAsJson(): Promise<string>;
   validateUnitsImport(unitsAsJson: string): Promise<UnitsImportWithValidation>;
-  importUnits(args: ImportUnitsArgs): Unit[] | PromiseLike<Unit[]>;
+  importUnits(args: ImportUnitsArgs): Promise<Unit[]>;
 }

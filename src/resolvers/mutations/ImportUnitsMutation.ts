@@ -1,9 +1,9 @@
 import { Args, ArgsType, Ctx, Field, Mutation, Resolver } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
-import { UnitsResponseWrap } from '../types/CommonWrappers';
 import { ConflictResolution } from '../types/ConflictResolution';
 import { wrapResponse } from '../wrapResponse';
+import { UnitsResponseWrap } from './../types/CommonWrappers';
 
 @ArgsType()
 export class ImportUnitsArgs {

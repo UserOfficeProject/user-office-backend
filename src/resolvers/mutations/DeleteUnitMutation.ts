@@ -5,7 +5,7 @@ import { UnitResponseWrap } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
 
 @Resolver()
-export class DeleteUnitlMutation {
+export class DeleteUnitMutation {
   @Mutation(() => UnitResponseWrap)
   deleteUnit(
     @Arg('id', () => String) id: string,
