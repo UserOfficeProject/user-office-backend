@@ -11,6 +11,7 @@ import {
 
 import { Tokens } from '../../config/Tokens';
 import { ResolverContext } from '../../context';
+import { TzLessDateTime } from '../CustomScalars';
 import { FeedbackDataSource } from './../../datasources/FeedbackDataSource';
 import { BasicUserDetails } from './BasicUserDetails';
 import { ExperimentSafetyInput } from './ExperimentSafetyInput';
@@ -32,10 +33,10 @@ export class ScheduledEventCore {
   @Field(() => ScheduledEventBookingType)
   bookingType: ScheduledEventBookingType;
 
-  @Field(() => Date)
+  @Field(() => TzLessDateTime)
   startsAt: Date;
 
-  @Field(() => Date)
+  @Field(() => TzLessDateTime)
   endsAt: Date;
 
   @Field(() => ProposalBookingStatusCore)
