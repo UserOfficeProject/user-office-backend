@@ -24,7 +24,7 @@ Your app is ready to be deployed!
 Lints typescript code and log if there are any errors.<br>
 `npm run lint:fix` should be used if you want to fix all autofixable errors and warnings.
 
-## Development helper scripts
+## Development helper scripts.
 
 In the project directory, you can also run:
 
