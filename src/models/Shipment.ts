@@ -38,4 +38,3 @@ export const SHIPMENT_SENDER_PHONE_KEY = 'shipment_sender_phone';
 export const STORAGE_TEMPERATURE_KEY = 'storage_temperature';
 export const IS_FRAGILE_KEY = 'is_fragile';
 export const LOCAL_CONTACT_KEY = 'shipment_local_contact';
-export const IS_DANGEROUS_KEY = 'is_dangerous';

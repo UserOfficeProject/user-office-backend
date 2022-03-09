@@ -4,7 +4,6 @@ import baseContext from '../../buildContext';
 import { Tokens } from '../../config/Tokens';
 import { ProposalDataSource } from '../../datasources/ProposalDataSource';
 import { QuestionaryDataSource } from '../../datasources/QuestionaryDataSource';
-import { Shipment } from '../../models/Shipment';
 import { DataType, Question } from '../../models/Template';
 import { UserWithRole } from '../../models/User';
 import { CallDataSource } from './../../datasources/CallDataSource';
@@ -13,13 +12,14 @@ import { TemplateDataSource } from './../../datasources/TemplateDataSource';
 import { AnswerBasic } from './../../models/Questionary';
 import {
   HEIGHT_KEY,
+  IS_DANGEROUS_GOODS_KEY,
+  IS_FRAGILE_KEY,
   LENGTH_KEY,
+  LOCAL_CONTACT_KEY,
+  Shipment,
+  STORAGE_TEMPERATURE_KEY,
   WEIGHT_KEY,
   WIDTH_KEY,
-  STORAGE_TEMPERATURE_KEY,
-  IS_FRAGILE_KEY,
-  LOCAL_CONTACT_KEY,
-  IS_DANGEROUS_KEY,
 } from './../../models/Shipment';
 
 export type ShipmentPDFData = {
@@ -88,7 +88,7 @@ const getQuestionaryData = async (questionaryId: number) => {
   );
   const isFragile = await getAnswer(questionaryId, IS_FRAGILE_KEY);
   const localContact = await getAnswer(questionaryId, LOCAL_CONTACT_KEY);
-  const isDangerous = await getAnswer(questionaryId, IS_DANGEROUS_KEY);
+  const isDangerous = await getAnswer(questionaryId, IS_DANGEROUS_GOODS_KEY);
 
   return {
     weight,
