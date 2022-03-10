@@ -53,7 +53,7 @@ VALUES
     'date_question', 'DATE', 'Date question from seeds', 
     '{
         "tooltip": "",
-        "required": true,
+        "required": false,
         "small_label": ""
         }', 
     '2022-02-08 10:23:10.285415+00', 
@@ -66,7 +66,7 @@ INSERT INTO templates_has_questions(
 ) 
 VALUES 
   (
-    'date_question', 1, 5, 5, '{ "tooltip": "","required": true,"small_label": "" }'
+    'date_question', 1, 5, 5, '{ "tooltip": "","required": false,"small_label": "" }'
   );
 INSERT INTO answers(
   questionary_id, question_id, answer
@@ -85,7 +85,7 @@ VALUES
   (
     'embellishment_question', 'EMBELLISHMENT', 
     'Embellishment question from seeds', 
-    '{ "tooltip": "","required": true,"small_label": "" }', 
+    '{ "tooltip": "","required": false,"small_label": "" }', 
     '2022-02-08 10:23:10.285415+00', 
     '2022-02-08 10:23:10.285415+00', 
     'embellishment_question', 1
@@ -97,7 +97,7 @@ INSERT INTO templates_has_questions(
 VALUES 
   (
     'embellishment_question', 1, 5, 9, 
-    '{ "tooltip": "", "required": true, "small_label": "" }'
+    '{ "tooltip": "", "required": false, "small_label": "" }'
   );
 INSERT INTO answers(
   questionary_id, question_id, answer
@@ -116,7 +116,7 @@ VALUES
   (
     'file_upload_question', 'FILE_UPLOAD', 
     'File upload question from seeds', 
-    '{ "tooltip": "","required": true,"small_label": "" }', 
+    '{ "tooltip": "","required": false,"small_label": "" }', 
     '2022-02-08 10:23:10.285415+00', 
     '2022-02-08 10:23:10.285415+00', 
     'file_upload_question', 1
@@ -127,7 +127,7 @@ INSERT INTO templates_has_questions(
 ) 
 VALUES 
   (
-    'file_upload_question', 1, 5, 8, '{ "tooltip": "", "required": true, "small_label": "" }'
+    'file_upload_question', 1, 5, 8, '{ "tooltip": "", "required": false, "small_label": "" }'
   );
 INSERT INTO answers(
   questionary_id, question_id, answer
@@ -292,7 +292,7 @@ VALUES
   (
     'rich_text_input_question', 'RICH_TEXT_INPUT', 
     'Rich text input question from seeds', 
-    '{ "tooltip": "","required": true,"small_label": "" }', 
+    '{ "tooltip": "","required": false,"small_label": "" }', 
     '2022-02-08 10:23:10.285415+00', 
     '2022-02-08 10:23:10.285415+00', 
     'rich_text_input_question', 1
@@ -304,7 +304,7 @@ INSERT INTO templates_has_questions(
 VALUES 
   (
     'rich_text_input_question', 1, 5, 
-    8, '{ "tooltip": "", "required": true, "small_label": "" }'
+    8, '{ "tooltip": "", "required": false, "small_label": "" }'
   );
 INSERT INTO answers(
   questionary_id, question_id, answer
@@ -356,7 +356,7 @@ VALUES
   (
     'text_input_question', 'TEXT_INPUT', 
     'Text input question from seeds', 
-    '{ "tooltip": "","required": true,"small_label": "" }', 
+    '{ "tooltip": "","required": false,"small_label": "" }', 
     '2022-02-08 10:23:10.285415+00', 
     '2022-02-08 10:23:10.285415+00', 
     'text_input_question', 1
@@ -367,7 +367,7 @@ INSERT INTO templates_has_questions(
 ) 
 VALUES 
   (
-    'text_input_question', 1, 5, 7, '{ "tooltip": "", "required": true, "small_label": "" }'
+    'text_input_question', 1, 5, 7, '{ "tooltip": "", "required": false, "small_label": "" }'
   );
 INSERT INTO answers(
   questionary_id, question_id, answer
