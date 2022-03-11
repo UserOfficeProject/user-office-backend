@@ -28,9 +28,6 @@ export class QuestionFilterInput {
 
   @Field(() => DataType)
   public dataType: DataType;
-
-  @Field(() => Boolean, { nullable: true })
-  public isNot?: boolean;
 }
 
 @InputType()

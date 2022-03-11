@@ -287,7 +287,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
       });
   }
 
-  addAnswersFilter(
+  addQuestionFilter(
     query: Knex.QueryBuilder,
     questionFilter: QuestionFilterInput
   ) {
@@ -349,14 +349,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         if (filter?.questionFilter) {
           const questionFilter = filter.questionFilter;
 
-          if (filter.questionFilter.isNot) {
-            query.whereNotIn('proposal_pk', (subQuery) => {
-              subQuery.select('proposal_pk').from('proposal_table_view');
-              this.addAnswersFilter(subQuery, questionFilter);
-            });
-          } else {
-            this.addAnswersFilter(query, questionFilter);
-          }
+          this.addQuestionFilter(query, questionFilter);
         }
       })
       .then((proposals: ProposalViewRecord[]) => {
@@ -492,14 +485,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         if (filter?.questionFilter) {
           const questionFilter = filter.questionFilter;
 
-          if (filter.questionFilter.isNot) {
-            query.whereNotIn('proposal_pk', (subQuery) => {
-              subQuery.select('proposal_pk').from('proposal_table_view');
-              this.addAnswersFilter(subQuery, questionFilter);
-            });
-          } else {
-            this.addAnswersFilter(query, questionFilter);
-          }
+          this.addQuestionFilter(query, questionFilter);
         }
 
         if (first) {
