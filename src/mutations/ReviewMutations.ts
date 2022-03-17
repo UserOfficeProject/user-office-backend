@@ -169,17 +169,7 @@ export default class ReviewMutations {
       )
     ) {
       return rejection(
-        'Can not submit proposal review because of insufficient premissions',
-        { agent, args }
-      );
-    }
-
-    if (
-      review.status === ReviewStatus.SUBMITTED &&
-      !this.userAuth.isUserOfficer(agent)
-    ) {
-      return rejection(
-        'Can not submit proposal review because review already submitted',
+        'Can not submit proposal review because of insufficient permissions',
         { agent, args }
       );
     }
@@ -227,13 +217,6 @@ export default class ReviewMutations {
 
     const shouldUpdateReview = !!technicalReview?.id;
 
-    if (!this.userAuth.isUserOfficer(agent) && technicalReview?.submitted) {
-      return rejection(
-        'Can not set technical review because review already submitted',
-        { agent, args }
-      );
-    }
-
     if (args.reviewerId !== undefined && args.reviewerId !== agent?.id) {
       return rejection('Request is impersonating another user', {
         args,
@@ -246,7 +229,7 @@ export default class ReviewMutations {
       .then((review) => review)
       .catch((err) => {
         return rejection(
-          'Can not set technical review because review already submitted',
+          'An error occurred while trying to submit a technical review',
           { agent, args },
           err
         );

@@ -9,8 +9,9 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
+import { isRejection, rejection } from '../../models/Rejection';
 import { TechnicalReviewStatus } from '../../models/TechnicalReview';
-import { TechnicalReviewResponseWrap } from '../types/CommonWrappers';
+import { SuccessResponseWrap } from '../types/CommonWrappers';
 import { TechnicalReview } from '../types/TechnicalReview';
 import { wrapResponse } from '../wrapResponse';
 
@@ -38,20 +39,36 @@ export class SubmitTechnicalReviewInput implements Partial<TechnicalReview> {
   public reviewerId: number;
 }
 
+@InputType()
+export class SubmitTechnicalReviewsInput {
+  @Field(() => [SubmitTechnicalReviewInput])
+  public technicalReviews: SubmitTechnicalReviewInput[];
+}
+
 @Resolver()
 export class SubmitTechnicalReviewMutation {
-  @Mutation(() => TechnicalReviewResponseWrap)
-  submitTechnicalReview(
-    @Arg('submitTechnicalReviewInput')
-    submitTechnicalReviewInput: SubmitTechnicalReviewInput,
+  @Mutation(() => SuccessResponseWrap)
+  async submitTechnicalReviews(
+    @Arg('submitTechnicalReviewsInput')
+    submitTechnicalReviewsInput: SubmitTechnicalReviewsInput,
     @Ctx() context: ResolverContext
   ) {
+    const results = await Promise.all(
+      submitTechnicalReviewsInput.technicalReviews.map(
+        (submitTechnicalReviewInput) => {
+          return context.mutations.review.setTechnicalReview(
+            context.user,
+            submitTechnicalReviewInput
+          );
+        }
+      )
+    );
+
     return wrapResponse(
-      context.mutations.review.setTechnicalReview(
-        context.user,
-        submitTechnicalReviewInput
-      ),
-      TechnicalReviewResponseWrap
+      results.some((result) => isRejection(result))
+        ? Promise.resolve(rejection('REJECTED'))
+        : Promise.resolve(true),
+      SuccessResponseWrap
     );
   }
 }
