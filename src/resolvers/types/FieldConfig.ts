@@ -37,14 +37,14 @@ export class BooleanConfig extends ConfigBase {}
 
 @ObjectType()
 export class DateConfig extends ConfigBase {
-  @Field({ nullable: true })
-  minDate: Date;
+  @Field(() => String, { nullable: true })
+  minDate: string | null;
 
-  @Field({ nullable: true })
-  maxDate: Date;
+  @Field(() => String, { nullable: true })
+  maxDate: string | null;
 
-  @Field({ nullable: true })
-  defaultDate: Date;
+  @Field(() => String, { nullable: true })
+  defaultDate: string | null;
 
   @Field(() => Boolean)
   includeTime: boolean;
