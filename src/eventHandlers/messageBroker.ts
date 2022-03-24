@@ -238,6 +238,12 @@ export function createPostToRabbitMQHandler() {
         await rabbitMQ.sendBroadcast(Event.PROPOSAL_CREATED, json);
         break;
       }
+      case Event.INSTRUMENT_DELETED: {
+        const json = JSON.stringify(event.instrument);
+
+        await rabbitMQ.sendMessage(Queue.SCHEDULING_PROPOSAL, event.type, json);
+        break;
+      }
       case Event.TOPIC_ANSWERED: {
         const proposal = await proposalDataSource.getProposals({
           questionaryIds: [event.questionarystep.questionaryId],
