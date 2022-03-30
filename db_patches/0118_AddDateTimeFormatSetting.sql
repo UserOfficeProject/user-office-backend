@@ -10,7 +10,7 @@ BEGIN
 		  INSERT INTO 
 			settings(settings_id, description)
 		  VALUES
-			('DATE_TIME_FORMAT', 'Format used to represent date with time whouut seconds.');
+			('DATE_TIME_FORMAT', 'Format used to represent date with time without seconds.');
 		END;
 	END IF;
 END;
