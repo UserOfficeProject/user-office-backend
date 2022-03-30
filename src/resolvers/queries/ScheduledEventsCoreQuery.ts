@@ -10,7 +10,6 @@ import {
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
-import { TzLessDateTime } from '../CustomScalars';
 import { ScheduledEventCore } from '../types/ScheduledEvent';
 
 @InputType()
@@ -23,10 +22,10 @@ class TimeSpan {
 }
 @InputType()
 export class ScheduledEventsCoreFilter {
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   endsBefore?: Date;
 
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   endsAfter?: Date;
 
   @Field(() => TzLessDateTime, { nullable: true })
