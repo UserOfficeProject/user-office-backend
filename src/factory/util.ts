@@ -35,7 +35,7 @@ export const bufferRequestBody = (req: request.Request) =>
     req.on('complete', () => resolve(Buffer.concat(buffer).toString()));
   });
 
-const DATE_TIMESTAMP_FORMAT = 'YYYY-MM-DD_hhmmss';
+const DATE_TIMESTAMP_FORMAT = 'yyyy-MM-dd_HHmmss';
 
 export const getCurrentTimestamp = () =>
   DateTime.now().toUTC().toFormat(DATE_TIMESTAMP_FORMAT);
