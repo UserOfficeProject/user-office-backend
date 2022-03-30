@@ -14,10 +14,10 @@ import { ScheduledEventCore } from '../types/ScheduledEvent';
 
 @InputType()
 class TimeSpan {
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   from?: Date;
 
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   to?: Date;
 }
 @InputType()
@@ -28,10 +28,10 @@ export class ScheduledEventsCoreFilter {
   @Field({ nullable: true })
   endsAfter?: Date;
 
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   startsBefore?: Date;
 
-  @Field(() => TzLessDateTime, { nullable: true })
+  @Field({ nullable: true })
   startsAfter?: Date;
 
   @Field(() => Int, { nullable: true })
