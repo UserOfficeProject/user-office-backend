@@ -112,10 +112,7 @@ export default class UserMutations {
 
     const existingUser = await this.dataSource.getByEmail(args.email);
     const userExists = existingUser != null;
-    const userHasRole = await this.userAuth.hasRole(
-      existingUser?.id,
-      UserRoleShortCodeMap[role]
-    );
+    const userHasRole = await this.userAuth.hasRole(existingUser?.id, role);
 
     // If user exists but has different role, return rejection
     if (userExists && !userHasRole) {

@@ -7,8 +7,8 @@ import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
-import { Roles } from '../models/Role';
-import { User, UserWithRole } from '../models/User';
+import { Role, Roles } from '../models/Role';
+import { User, UserRole, UserWithRole } from '../models/User';
 
 @injectable()
 export class UserAuthorization {
@@ -36,21 +36,32 @@ export class UserAuthorization {
     return agent?.currentRole?.shortCode === Roles.USER;
   }
 
-  async hasRole(userOrId: Maybe<UserWithRole>, role: Roles): Promise<boolean>;
-  async hasRole(userOrId: Maybe<number>, role: Roles): Promise<boolean>;
+  async hasRole(
+    userOrId: Maybe<UserWithRole>,
+    roleOrRoleId: Maybe<Role | UserRole>
+  ): Promise<boolean>;
+  async hasRole(
+    userOrId: Maybe<number>,
+    roleOrRoleId: Maybe<Role | UserRole>
+  ): Promise<boolean>;
   async hasRole(
     userOrId: Maybe<UserWithRole> | Maybe<number>,
-    role: Roles
+    roleOrRoleId: Maybe<Role | UserRole>
   ): Promise<boolean> {
-    if (userOrId === null || userOrId === undefined) {
+    if (userOrId == null || roleOrRoleId == null) {
       return false;
     }
 
     const userId = typeof userOrId === 'number' ? userOrId : userOrId.id;
+    const roles = await this.userDataSource.getUserRoles(userId);
 
-    return this.userDataSource.getUserRoles(userId).then((roles) => {
-      return roles.some((roleItem) => roleItem.shortCode === role);
-    });
+    if (typeof roleOrRoleId === 'number') {
+      return roles.some((roleItem) => roleItem.id === roleOrRoleId);
+    } else {
+      return roles.some(
+        (roleItem) => roleItem.shortCode === roleOrRoleId.shortCode
+      );
+    }
   }
 
   isInstrumentScientist(agent: UserWithRole | null) {

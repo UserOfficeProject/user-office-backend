@@ -2,7 +2,6 @@ import jsonwebtoken from 'jsonwebtoken';
 import { container } from 'tsyringe';
 
 import {
-  dummyPlaceHolderUser,
   dummyUser,
   dummyUserNotOnProposal,
   dummyUserOfficer,
@@ -42,12 +41,6 @@ const badToken = jsonwebtoken.sign(
 const userMutations = container.resolve(UserMutations);
 
 test('A user can invite another user by email', () => {
-  const emailInviteResponse = new EmailInviteResponse(
-    5,
-    dummyUser.id,
-    UserRole.USER
-  );
-
   return expect(
     userMutations.createUserByEmailInvite(dummyUserWithRole, {
       firstname: 'firstname',
@@ -55,7 +48,7 @@ test('A user can invite another user by email', () => {
       email: 'email@google.com',
       userRole: UserRole.USER,
     })
-  ).resolves.toStrictEqual(emailInviteResponse);
+  ).resolves.toBeInstanceOf(EmailInviteResponse);
 });
 
 test('A user must be logged in to invite another user by email', () => {
@@ -79,42 +72,30 @@ test('A user cannot invite another user by email if the user already has an acco
     })
   ).resolves.toHaveProperty(
     'reason',
-    'Can not create account because account already exists'
+    'Can not create account because account with different role already exists'
   );
 });
 
 test('A user can reinvite another user by email if the user has not created an account', () => {
-  const emailInviteResponse = new EmailInviteResponse(
-    dummyPlaceHolderUser.id,
-    dummyUser.id,
-    UserRole.USER
-  );
-
   return expect(
     userMutations.createUserByEmailInvite(dummyUserWithRole, {
       firstname: 'firstname',
       lastname: 'lastname',
-      email: dummyPlaceHolderUser.email,
+      email: 'email@gmail.com',
       userRole: UserRole.USER,
     })
-  ).resolves.toStrictEqual(emailInviteResponse);
+  ).resolves.toBeInstanceOf(EmailInviteResponse);
 });
 
 test('A user officer can invite a reviewer by email', () => {
-  const emailInviteResponse = new EmailInviteResponse(
-    dummyPlaceHolderUser.id,
-    dummyUserOfficer.id,
-    UserRole.SEP_REVIEWER
-  );
-
   return expect(
     userMutations.createUserByEmailInvite(dummyUserOfficerWithRole, {
       firstname: 'firstname',
       lastname: 'lastname',
-      email: dummyPlaceHolderUser.email,
+      email: 'email@gmail.com',
       userRole: UserRole.SEP_REVIEWER,
     })
-  ).resolves.toStrictEqual(emailInviteResponse);
+  ).resolves.toBeInstanceOf(EmailInviteResponse);
 });
 
 test('A user cannot invite a reviewer by email', () => {

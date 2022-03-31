@@ -54,10 +54,8 @@ const Authorized = (roles: Roles[] = []) => {
       }
 
       const hasAccessRights =
-        (await userAuthorization.hasRole(
-          agent,
-          agent.currentRole?.shortCode as string
-        )) && roles.some((role) => role === agent.currentRole?.shortCode);
+        (await userAuthorization.hasRole(agent, agent.currentRole)) &&
+        roles.some((role) => role === agent.currentRole?.shortCode);
 
       if (hasAccessRights) {
         return await originalMethod?.apply(this, args);
