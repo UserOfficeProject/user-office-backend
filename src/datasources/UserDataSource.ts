@@ -1,12 +1,12 @@
 import { Role, Roles } from '../models/Role';
 import { User, BasicUserDetails, UserRole } from '../models/User';
 import { AddUserRoleArgs } from '../resolvers/mutations/AddUserRoleMutation';
-import { CreateUserByEmailInviteArgs } from '../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { EmailInviteInput } from '../resolvers/mutations/CreateUserByEmailInviteMutation';
 
 export interface UserDataSource {
   delete(id: number): Promise<User | null>;
   addUserRole(args: AddUserRoleArgs): Promise<boolean>;
-  createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number>;
+  createInviteUser(args: EmailInviteInput): Promise<BasicUserDetails>;
   getBasicUserInfo(id: number): Promise<BasicUserDetails | null>;
   getBasicUserDetailsByEmail(
     email: string,

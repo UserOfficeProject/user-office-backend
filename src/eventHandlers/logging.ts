@@ -45,7 +45,7 @@ export default function createHandler() {
             event.loggedInUserId,
             event.type,
             json,
-            event.emailinviteresponse.userId.toString()
+            event.emailinviteresponse.user.id.toString()
           );
           break;
         case Event.PROPOSAL_INSTRUMENT_SELECTED:

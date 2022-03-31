@@ -6,7 +6,7 @@ import {
   UserWithRole,
 } from '../../models/User';
 import { AddUserRoleArgs } from '../../resolvers/mutations/AddUserRoleMutation';
-import { CreateUserByEmailInviteArgs } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { EmailInviteInput } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
 import { UserDataSource } from '../UserDataSource';
 
 export const basicDummyUser = new BasicUserDetails(
@@ -187,8 +187,17 @@ export class UserDataSourceMock implements UserDataSource {
   getByOrcID(orcID: string): Promise<User | null> {
     throw new Error('Method not implemented.');
   }
-  async createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number> {
-    return 5;
+  async createInviteUser(args: EmailInviteInput): Promise<BasicUserDetails> {
+    return new BasicUserDetails(
+      5,
+      'John',
+      'Smith',
+      'John',
+      'ESS',
+      'Manager',
+      new Date('2019-07-17 08:25:12.23043+00'),
+      false
+    );
   }
   async createOrganisation(name: string, verified: boolean): Promise<number> {
     return 1;

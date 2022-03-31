@@ -10,7 +10,7 @@ import {
   UserRoleShortCodeMap,
 } from '../../models/User';
 import { AddUserRoleArgs } from '../../resolvers/mutations/AddUserRoleMutation';
-import { CreateUserByEmailInviteArgs } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { EmailInviteInput } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
 import { UserDataSource } from '../UserDataSource';
 import database from './database';
 import {
@@ -135,7 +135,7 @@ export default class PostgresUserDataSource implements UserDataSource {
 
     return createUserObject(userRecord);
   }
-  async createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number> {
+  async createInviteUser(args: EmailInviteInput): Promise<BasicUserDetails> {
     const { firstname, lastname, email } = args;
 
     return database
@@ -160,9 +160,9 @@ export default class PostgresUserDataSource implements UserDataSource {
         telephone_alt: '',
         placeholder: true,
       })
-      .returning(['user_id'])
+      .returning('*')
       .into('users')
-      .then((user: UserRecord[]) => user[0].user_id);
+      .then((user: UserRecord[]) => createBasicUserObject(user[0]));
   }
 
   async getRoles(): Promise<Role[]> {

@@ -1,9 +1,8 @@
 import {
-  Args,
-  ArgsType,
+  Arg,
   Ctx,
   Field,
-  Int,
+  InputType,
   Mutation,
   ObjectType,
   Resolver,
@@ -15,9 +14,10 @@ import { UserRole } from '../../models/User';
 import { Response } from '../Decorators';
 import { ResponseWrapBase } from '../types/CommonWrappers';
 import { wrapResponse } from '../wrapResponse';
+import { BasicUserDetails } from './../types/BasicUserDetails';
 
-@ArgsType()
-export class CreateUserByEmailInviteArgs {
+@InputType()
+export class EmailInviteInput {
   @Field()
   public firstname: string;
 
@@ -34,21 +34,21 @@ export class CreateUserByEmailInviteArgs {
 @ObjectType()
 class CreateUserByEmailInviteResponseWrap extends ResponseWrapBase {
   @Response()
-  @Field(() => Int, { nullable: true })
-  public id: number;
+  @Field(() => BasicUserDetails, { nullable: true })
+  public user: BasicUserDetails;
 }
 
 @Resolver()
 export class CreateUserByEmailInviteMutation {
   @Mutation(() => CreateUserByEmailInviteResponseWrap)
   createUserByEmailInvite(
-    @Args() args: CreateUserByEmailInviteArgs,
+    @Arg('emailInvite', () => EmailInviteInput) emailInvite: EmailInviteInput,
     @Ctx() context: ResolverContext
   ) {
     return wrapResponse(
       context.mutations.user
-        .createUserByEmailInvite(context.user, args)
-        .then((res) => (isRejection(res) ? res : res.userId)),
+        .createUserByEmailInvite(context.user, emailInvite)
+        .then((res) => (isRejection(res) ? res : res.user)),
       CreateUserByEmailInviteResponseWrap
     );
   }

@@ -1,3 +1,4 @@
+import { logger } from '@user-office-software/duo-logger';
 import {
   deleteUserValidationSchema,
   createUserByEmailInviteValidationSchema,
@@ -14,7 +15,6 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { inject, injectable } from 'tsyringe';
 
-import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { AdminDataSource } from '../datasources/AdminDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
@@ -36,13 +36,14 @@ import {
 import { UserRole } from '../models/User';
 import { UserLinkResponse } from '../models/UserLinkResponse';
 import { AddUserRoleArgs } from '../resolvers/mutations/AddUserRoleMutation';
-import { CreateUserByEmailInviteArgs } from '../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { EmailInviteInput } from '../resolvers/mutations/CreateUserByEmailInviteMutation';
 import { CreateUserArgs } from '../resolvers/mutations/CreateUserMutation';
 import {
   UpdateUserArgs,
   UpdateUserRolesArgs,
 } from '../resolvers/mutations/UpdateUserMutation';
 import { signToken, verifyToken } from '../utils/jwt';
+import { UserAuthorization } from './../auth/UserAuthorization';
 
 @injectable()
 export default class UserMutations {
@@ -54,7 +55,7 @@ export default class UserMutations {
     @inject(Tokens.UserDataSource) private dataSource: UserDataSource,
     @inject(Tokens.AdminDataSource) private adminDataSource: AdminDataSource
   ) {
-    adminDataSource.getFeatures().then((features) => {
+    this.adminDataSource.getFeatures().then((features) => {
       this.externalAuth = features.filter(
         (feature) => feature.id == FeatureId.EXTERNAL_AUTH
       )[0].isEnabled;
@@ -90,8 +91,12 @@ export default class UserMutations {
     return user;
   }
 
-  createEmailInviteResponse(userId: number, agentId: number, role: UserRole) {
-    return new EmailInviteResponse(userId, agentId, role);
+  createEmailInviteResponse(
+    user: BasicUserDetails,
+    agentId: number,
+    role: UserRole
+  ) {
+    return new EmailInviteResponse(user, agentId, role);
   }
 
   @ValidateArgs(createUserByEmailInviteValidationSchema(UserRole))
@@ -99,72 +104,117 @@ export default class UserMutations {
   @EventBus(Event.EMAIL_INVITE)
   async createUserByEmailInvite(
     agent: UserWithRole | null,
-    args: CreateUserByEmailInviteArgs
+    args: EmailInviteInput
   ): Promise<EmailInviteResponse | Rejection> {
-    let userId: number | null = null;
+    let newUser: BasicUserDetails | null = null;
     let role: UserRole = args.userRole;
     // Check if email exist in database and if user has been invited before
-    const user = await this.dataSource.getByEmail(args.email);
-    if (user && user.placeholder) {
-      userId = user.id;
 
-      return this.createEmailInviteResponse(userId, (agent as User).id, role);
-    } else if (user) {
+    const existingUser = await this.dataSource.getByEmail(args.email);
+    const userExists = existingUser != null;
+    const userHasRole = await this.userAuth.hasRole(
+      existingUser?.id,
+      UserRoleShortCodeMap[role]
+    );
+
+    // If user exists but has different role, return rejection
+    if (userExists && !userHasRole) {
       return rejection(
-        'Can not create account because account already exists',
+        'Can not create account because account with different role already exists',
         { args }
       );
     }
 
+    // If users exists and has the role, return the user
+    if (userExists && userHasRole) {
+      const basicUserInfo = await this.dataSource.getBasicUserInfo(
+        existingUser.id
+      );
+      if (!basicUserInfo) {
+        return rejection('Could not get basic user info', {
+          existingUser,
+          args,
+        });
+      }
+
+      return this.createEmailInviteResponse(
+        basicUserInfo,
+        (agent as User).id,
+        role
+      );
+    }
+
+    // If user does not exist, create user
     if (
       args.userRole === UserRole.SEP_REVIEWER &&
       this.userAuth.isUserOfficer(agent)
     ) {
-      userId = await this.dataSource.createInviteUser(args);
+      newUser = await this.dataSource.createInviteUser(args);
 
       const newUserRole = await this.dataSource.getRoleByShortCode(
         UserRoleShortCodeMap[role]
       );
 
-      await this.dataSource.setUserRoles(userId, [newUserRole.id]);
+      await this.dataSource.setUserRoles(newUser.id, [newUserRole.id]);
       role = UserRole.SEP_REVIEWER;
     } else if (args.userRole === UserRole.USER) {
-      userId = await this.dataSource.createInviteUser(args);
+      newUser = await this.dataSource.createInviteUser(args);
 
       const newUserRole = await this.dataSource.getRoleByShortCode(
         UserRoleShortCodeMap[role]
       );
 
-      await this.dataSource.setUserRoles(userId, [newUserRole.id]);
+      await this.dataSource.setUserRoles(newUser.id, [newUserRole.id]);
       role = UserRole.USER;
     } else if (
       args.userRole === UserRole.SEP_CHAIR &&
       this.userAuth.isUserOfficer(agent)
     ) {
       // NOTE: For inviting SEP_CHAIR and SEP_SECRETARY we do not setUserRoles because they are set right after in separate call.
-      userId = await this.dataSource.createInviteUser(args);
+      newUser = await this.dataSource.createInviteUser(args);
       role = UserRole.SEP_CHAIR;
     } else if (
       args.userRole === UserRole.SEP_SECRETARY &&
       this.userAuth.isUserOfficer(agent)
     ) {
-      userId = await this.dataSource.createInviteUser(args);
+      newUser = await this.dataSource.createInviteUser(args);
       role = UserRole.SEP_SECRETARY;
     } else if (
       args.userRole === UserRole.INSTRUMENT_SCIENTIST &&
       this.userAuth.isUserOfficer(agent)
     ) {
-      userId = await this.dataSource.createInviteUser(args);
+      newUser = await this.dataSource.createInviteUser(args);
       role = UserRole.INSTRUMENT_SCIENTIST;
     }
 
-    if (!userId) {
+    if (!newUser) {
       return rejection('Can not create user for this role', {
         args,
       });
     } else {
-      return this.createEmailInviteResponse(userId, (agent as User).id, role);
+      return this.createEmailInviteResponse(newUser, (agent as User).id, role);
     }
+  }
+
+  @Authorized()
+  async createUsersByEmailInvite(
+    user: UserWithRole | null,
+    invites: EmailInviteInput[]
+  ) {
+    return Promise.all(
+      invites.map(async (invite) => {
+        const result = await this.createUserByEmailInvite(user, invite);
+        if (result instanceof EmailInviteResponse) {
+          return result.user;
+        } else {
+          logger.logError('Could not create user for email invite', {
+            result,
+            user,
+            invites,
+          });
+        }
+      })
+    );
   }
 
   @ValidateArgs(createUserValidationSchema)

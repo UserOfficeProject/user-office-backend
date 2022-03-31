@@ -9,6 +9,7 @@ import { SEP } from '../models/SEP';
 import { SepMeetingDecision } from '../models/SepMeetingDecision';
 import { TechnicalReview } from '../models/TechnicalReview';
 import { User, UserRole } from '../models/User';
+import { BasicUserDetails } from './../resolvers/types/BasicUserDetails';
 import { Event } from './event.enum';
 
 interface GeneralEvent {
@@ -208,7 +209,7 @@ interface UserDeletedEvent extends GeneralEvent {
 interface EmailInvite extends GeneralEvent {
   type: Event.EMAIL_INVITE;
   emailinviteresponse: {
-    userId: number;
+    user: BasicUserDetails;
     inviterId: number;
     role: UserRole;
   };

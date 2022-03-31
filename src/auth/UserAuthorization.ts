@@ -1,3 +1,4 @@
+import { Maybe } from 'graphql/jsutils/Maybe';
 import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
 
@@ -35,12 +36,19 @@ export class UserAuthorization {
     return agent?.currentRole?.shortCode === Roles.USER;
   }
 
-  async hasRole(agent: UserWithRole | null, role: string): Promise<boolean> {
-    if (agent == null) {
+  async hasRole(userOrId: Maybe<UserWithRole>, role: Roles): Promise<boolean>;
+  async hasRole(userOrId: Maybe<number>, role: Roles): Promise<boolean>;
+  async hasRole(
+    userOrId: Maybe<UserWithRole> | Maybe<number>,
+    role: Roles
+  ): Promise<boolean> {
+    if (userOrId === null || userOrId === undefined) {
       return false;
     }
 
-    return this.userDataSource.getUserRoles(agent.id).then((roles) => {
+    const userId = typeof userOrId === 'number' ? userOrId : userOrId.id;
+
+    return this.userDataSource.getUserRoles(userId).then((roles) => {
       return roles.some((roleItem) => roleItem.shortCode === role);
     });
   }

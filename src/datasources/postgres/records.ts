@@ -196,12 +196,12 @@ export interface TemplateRecord {
 
 export interface UserRecord {
   readonly user_id: number;
-  readonly user_title: string;
+  readonly user_title: string | null;
   readonly firstname: string;
-  readonly middlename: string;
+  readonly middlename: string | null;
   readonly lastname: string;
   readonly username: string;
-  readonly preferredname: string;
+  readonly preferredname: string | null;
   readonly orcid: string;
   readonly gender: string;
   readonly nationality: number;
@@ -214,7 +214,7 @@ export interface UserRecord {
   readonly email_verified: boolean;
   readonly password: string;
   readonly telephone: string;
-  readonly telephone_alt: string;
+  readonly telephone_alt: string | null;
   readonly created_at: Date;
   readonly updated_at: Date;
   readonly full_count: number;
@@ -733,12 +733,12 @@ export const createQuestionTemplateRelationObject = (
 export const createUserObject = (user: UserRecord) => {
   return new User(
     user.user_id,
-    user.user_title,
+    user.user_title ?? '',
     user.firstname,
-    user.middlename,
+    user.middlename ?? '',
     user.lastname,
     user.username,
-    user.preferredname,
+    user.preferredname ?? '',
     user.orcid,
     user.orcid_refreshtoken,
     user.gender,
@@ -750,7 +750,7 @@ export const createUserObject = (user: UserRecord) => {
     user.email,
     user.email_verified,
     user.telephone,
-    user.telephone_alt,
+    user.telephone_alt ?? '',
     user.placeholder,
     user.created_at.toISOString(),
     user.updated_at.toISOString()
@@ -762,8 +762,8 @@ export const createBasicUserObject = (user: UserRecord) => {
     user.user_id,
     user.firstname,
     user.lastname,
-    user.preferredname,
-    user.institution,
+    user.preferredname ?? '',
+    user.institution ?? '',
     user.position,
     user.created_at,
     user.placeholder

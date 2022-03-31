@@ -56,7 +56,7 @@ export default function createHandler() {
 
       case Event.EMAIL_INVITE: {
         const user = await userDataSource.getUser(
-          event.emailinviteresponse.userId
+          event.emailinviteresponse.user.id
         );
         const inviter = await userDataSource.getBasicUserInfo(
           event.emailinviteresponse.inviterId

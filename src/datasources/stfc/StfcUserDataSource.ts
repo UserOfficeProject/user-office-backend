@@ -2,7 +2,7 @@ import { Role } from '../../models/Role';
 import { Roles } from '../../models/Role';
 import { BasicUserDetails, User } from '../../models/User';
 import { AddUserRoleArgs } from '../../resolvers/mutations/AddUserRoleMutation';
-import { CreateUserByEmailInviteArgs } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { EmailInviteInput } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
 import PostgresUserDataSource from '../postgres/UserDataSource';
 import { UserDataSource } from '../UserDataSource';
 import UOWSSoapClient from './UOWSSoapInterface';
@@ -68,7 +68,7 @@ function toEssUser(stfcUser: StfcBasicPersonDetails): User {
     Number(stfcUser.userNumber),
     stfcUser.title ?? '',
     stfcUser.givenName ?? '',
-    undefined,
+    '',
     stfcUser.familyName ?? '',
     stfcUser.email ?? '',
     stfcUser.firstNameKnownAs ?? '',
@@ -103,7 +103,7 @@ export class StfcUserDataSource implements UserDataSource {
     throw new Error('Method not implemented.');
   }
 
-  async createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number> {
+  async createInviteUser(args: EmailInviteInput): Promise<BasicUserDetails> {
     throw new Error('Method not implemented.');
   }
 
