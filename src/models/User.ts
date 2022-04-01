@@ -43,7 +43,7 @@ export class User {
     public email: string,
     public emailVerified: boolean,
     public telephone: string,
-    public telephone_alt: string | undefined,
+    public telephone_alt: string,
     public placeholder: boolean,
     public created: string,
     public updated: string
