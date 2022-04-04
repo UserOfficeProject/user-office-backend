@@ -173,20 +173,9 @@ export default class ReviewMutations {
     agent: UserWithRole | null,
     args: AddTechnicalReviewInput | SubmitTechnicalReviewInput
   ): Promise<TechnicalReview | Rejection> {
-    const technicalReview = await this.dataSource.getTechnicalReview(
-      args.proposalPk
-    );
-
-    if (!technicalReview) {
-      return rejection(
-        'Can not set technical review because technical review was not found',
-        { args }
-      );
-    }
-
     const hasWriteRights = await this.technicalReviewAuth.hasWriteRights(
       agent,
-      technicalReview
+      args.proposalPk
     );
     if (!hasWriteRights) {
       return rejection(
@@ -195,7 +184,12 @@ export default class ReviewMutations {
       );
     }
 
-    const shouldUpdateReview = !!technicalReview?.id;
+    const technicalReview = await this.dataSource.getTechnicalReview(
+      args.proposalPk
+    );
+    const technicalReviewExists = technicalReview !== null;
+
+    const shouldUpdateReview = technicalReviewExists ? true : false;
 
     if (args.reviewerId !== undefined && args.reviewerId !== agent?.id) {
       return rejection('Request is impersonating another user', {

@@ -90,45 +90,43 @@ export class TechnicalReviewAuthorization {
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    technicalreviewId: number
+    proposalPk: number
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    technicalreviewOrTechnicalReviewId: TechnicalReview | number
+    technicalreviewOrProposalPk: TechnicalReview | number
   ): Promise<boolean> {
-    if (this.userAuth.isUserOfficer(agent)) {
-      return true;
-    }
+    const proposalPk =
+      typeof technicalreviewOrProposalPk === 'number'
+        ? technicalreviewOrProposalPk
+        : technicalreviewOrProposalPk.proposalPk;
 
-    const technicalreview = await this.resolveTechnicalReview(
-      technicalreviewOrTechnicalReviewId
-    );
-    if (!technicalreview) {
-      return false;
+    const isUserOfficer = await this.userAuth.isUserOfficer(agent);
+    if (isUserOfficer) {
+      return true;
     }
 
     const isScientistToProposal = await this.proposalAuth.isScientistToProposal(
       agent,
-      technicalreview.proposalPk
+      proposalPk
     );
     if (isScientistToProposal) {
       return true;
     }
 
     const isChairOrSecretaryOfProposal =
-      await this.proposalAuth.isChairOrSecretaryOfProposal(
-        agent,
-        technicalreview.proposalPk
-      );
+      await this.proposalAuth.isChairOrSecretaryOfProposal(agent, proposalPk);
     if (isChairOrSecretaryOfProposal) {
       return true;
     }
 
     const isReviewerOfProposal = await this.proposalAuth.isReviewerOfProposal(
       agent,
-      technicalreview.proposalPk
+      proposalPk
     );
-    if (isReviewerOfProposal && technicalreview.submitted === false) {
+
+    const technicalReview = await this.resolveTechnicalReview(proposalPk);
+    if (isReviewerOfProposal && technicalReview?.submitted !== true) {
       return true;
     }
 
