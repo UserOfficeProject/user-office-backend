@@ -2,6 +2,7 @@ import { UserAuthorization } from '../auth/UserAuthorization';
 import { UserWithRole } from '../models/User';
 import AdminMutations from '../mutations/AdminMutations';
 import CallMutations from '../mutations/CallMutations';
+import FacilityMutations from '../mutations/FacilityMutations';
 import FeedbackMutations from '../mutations/FeedbackMutations';
 import FileMutations from '../mutations/FileMutations';
 import GenericTemplateMutations from '../mutations/GenericTemplateMutations';
@@ -22,6 +23,7 @@ import VisitMutations from '../mutations/VisitMutations';
 import AdminQueries from '../queries/AdminQueries';
 import CallQueries from '../queries/CallQueries';
 import EventLogQueries from '../queries/EventLogQueries';
+import FacilityQueries from '../queries/FacilityQueries';
 import FeedbackQueries from '../queries/FeedbackQueries';
 import FileQueries from '../queries/FileQueries';
 import GenericTemplateQueries from '../queries/GenericTemplateQueries';
@@ -46,6 +48,7 @@ interface ResolverContextQueries {
   admin: AdminQueries;
   call: CallQueries;
   eventLogs: EventLogQueries;
+  facility: FacilityQueries;
   feedback: FeedbackQueries;
   file: FileQueries;
   genericTemplate: GenericTemplateQueries;
@@ -70,6 +73,7 @@ interface ResolverContextQueries {
 interface ResolverContextMutations {
   admin: AdminMutations;
   call: CallMutations;
+  facility: FacilityMutations;
   feedback: FeedbackMutations;
   file: FileMutations;
   genericTemplate: GenericTemplateMutations;

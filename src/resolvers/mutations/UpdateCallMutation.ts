@@ -6,6 +6,8 @@ import {
   Int,
   InputType,
   Arg,
+  ArgsType,
+  Args,
 } from 'type-graphql';
 
 import { ResolverContext } from '../../context';
@@ -112,6 +114,24 @@ export class RemoveAssignedInstrumentFromCallInput {
   callId: number;
 }
 
+@ArgsType()
+export class AssignFacilitiesToCallArgs {
+  @Field(() => [Int])
+  facilityIds: number[];
+
+  @Field(() => Int)
+  callId: number;
+}
+
+@ArgsType()
+export class RemoveAssignedFacilitiesFromCallArgs {
+  @Field(() => [Int])
+  facilityIds: number[];
+
+  @Field(() => Int)
+  callId: number;
+}
+
 @Resolver()
 export class UpdateCallMutation {
   @Mutation(() => CallResponseWrap)
@@ -151,6 +171,36 @@ export class UpdateCallMutation {
       context.mutations.call.removeAssignedInstrumentFromCall(
         context.user,
         removeAssignedInstrumentFromCallInput
+      ),
+      CallResponseWrap
+    );
+  }
+
+  @Mutation(() => CallResponseWrap)
+  assignFacilitiesToCall(
+    @Args() args: AssignFacilitiesToCallArgs,
+    @Ctx() context: ResolverContext
+  ) {
+    return wrapResponse(
+      context.mutations.call.assignFacilitiesToCall(
+        context.user,
+        args.facilityIds,
+        args.callId
+      ),
+      CallResponseWrap
+    );
+  }
+
+  @Mutation(() => CallResponseWrap)
+  removeAssignedFacilitiesFromCall(
+    @Args() args: RemoveAssignedFacilitiesFromCallArgs,
+    @Ctx() context: ResolverContext
+  ) {
+    return wrapResponse(
+      context.mutations.call.removeAssignedFacilitiesFromCall(
+        context.user,
+        args.facilityIds,
+        args.callId
       ),
       CallResponseWrap
     );

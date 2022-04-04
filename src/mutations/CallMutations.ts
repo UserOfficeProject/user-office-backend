@@ -143,4 +143,40 @@ export default class CallMutations {
         );
       });
   }
+
+  //@ValidateArgs(assignInstrumentsToCallValidationSchema)
+  @Authorized([Roles.USER_OFFICER])
+  async assignFacilitiesToCall(
+    agent: UserWithRole | null,
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call | Rejection> {
+    return this.dataSource
+      .assignFacilitiesToCall(facilityIds, callId)
+      .catch((error) => {
+        return rejection(
+          'Could not assign facility to call',
+          { agent, facilityIds, callId },
+          error
+        );
+      });
+  }
+
+  //@ValidateArgs(removeAssignedInstrumentFromCallValidationSchema)
+  @Authorized([Roles.USER_OFFICER])
+  async removeAssignedFacilitiesFromCall(
+    agent: UserWithRole | null,
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call | Rejection> {
+    return this.dataSource
+      .removeAssignedFacilitiesFromCall(facilityIds, callId)
+      .catch((error) => {
+        return rejection(
+          'Could not remove assigned facility from call',
+          { agent, facilityIds, callId },
+          error
+        );
+      });
+  }
 }

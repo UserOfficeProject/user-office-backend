@@ -13,6 +13,7 @@ import {
 import { ResolverContext } from '../../context';
 import TemplateDataSource from '../../datasources/postgres/TemplateDataSource';
 import { AllocationTimeUnits, Call as CallOrigin } from '../../models/Call';
+import { FacilityWithAvailabilityTime } from './Facility';
 import { InstrumentWithAvailabilityTime } from './Instrument';
 import { ProposalWorkflow } from './ProposalWorkflow';
 import { Template } from './Template';
@@ -97,6 +98,11 @@ export class CallInstrumentsResolver {
     return context.queries.instrument.dataSource.getInstrumentsByCallId([
       call.id,
     ]);
+  }
+
+  @FieldResolver(() => [FacilityWithAvailabilityTime])
+  async facilities(@Root() call: Call, @Ctx() context: ResolverContext) {
+    return context.queries.facility.dataSource.getByCallId([call.id]);
   }
 
   @FieldResolver(() => ProposalWorkflow, { nullable: true })

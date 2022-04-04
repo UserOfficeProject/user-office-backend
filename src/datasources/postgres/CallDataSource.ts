@@ -1,5 +1,6 @@
 import { logger } from '@user-office-software/duo-logger';
 import BluePromise from 'bluebird';
+import { CallHasFacilitiesRecord } from 'knex/types/tables';
 
 import { Call } from '../../models/Call';
 import { CreateCallInput } from '../../resolvers/mutations/CreateCallMutation';
@@ -248,6 +249,48 @@ export default class PostgresCallDataSource implements CallDataSource {
     }
 
     throw new Error(`Call not found ${args.callId}`);
+  }
+
+  async assignFacilitiesToCall(
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call> {
+    const valuesToInsert: CallHasFacilitiesRecord[] = facilityIds.map(
+      (facilityId) => ({
+        facility_id: facilityId,
+        call_id: callId,
+        availability_time: 0,
+      })
+    );
+
+    return database('call_has_facilities')
+      .insert(valuesToInsert)
+      .then(() => this.getCall(callId))
+      .then((call) => {
+        if (!call) {
+          throw new Error(`Call not found ${callId}`);
+        }
+
+        return call;
+      });
+  }
+
+  async removeAssignedFacilitiesFromCall(
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call> {
+    return database('call_has_facilities')
+      .del()
+      .whereIn('facility_id', facilityIds)
+      .andWhere({ call_id: callId })
+      .then(() => this.getCall(callId))
+      .then((call) => {
+        if (!call) {
+          throw new Error(`Call not found ${callId}`);
+        }
+
+        return call;
+      });
   }
 
   async getCallsByInstrumentScientist(scientistId: number): Promise<Call[]> {

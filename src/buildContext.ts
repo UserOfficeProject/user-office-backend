@@ -4,6 +4,7 @@ import { UserAuthorization } from './auth/UserAuthorization';
 import { BasicResolverContext } from './context';
 import AdminMutations from './mutations/AdminMutations';
 import CallMutations from './mutations/CallMutations';
+import FacilityMutations from './mutations/FacilityMutations';
 import FeedbackMutations from './mutations/FeedbackMutations';
 import FileMutations from './mutations/FileMutations';
 import GenericTemplateMutations from './mutations/GenericTemplateMutations';
@@ -24,6 +25,7 @@ import VisitMutations from './mutations/VisitMutations';
 import AdminQueries from './queries/AdminQueries';
 import CallQueries from './queries/CallQueries';
 import EventLogQueries from './queries/EventLogQueries';
+import FacilityQueries from './queries/FacilityQueries';
 import FeedbackQueries from './queries/FeedbackQueries';
 import FileQueries from './queries/FileQueries';
 import GenericTemplateQueries from './queries/GenericTemplateQueries';
@@ -50,6 +52,7 @@ const context: BasicResolverContext = {
     admin: container.resolve(AdminQueries),
     call: container.resolve(CallQueries),
     eventLogs: container.resolve(EventLogQueries),
+    facility: container.resolve(FacilityQueries),
     feedback: container.resolve(FeedbackQueries),
     file: container.resolve(FileQueries),
     genericTemplate: container.resolve(GenericTemplateQueries),
@@ -73,6 +76,7 @@ const context: BasicResolverContext = {
   mutations: {
     admin: container.resolve(AdminMutations),
     call: container.resolve(CallMutations),
+    facility: container.resolve(FacilityMutations),
     feedback: container.resolve(FeedbackMutations),
     file: container.resolve(FileMutations),
     genericTemplate: container.resolve(GenericTemplateMutations),

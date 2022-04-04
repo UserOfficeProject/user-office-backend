@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AllocationTimeUnits, Call } from '../../models/Call';
 import { CreateCallInput } from '../../resolvers/mutations/CreateCallMutation';
 import {
@@ -146,6 +147,20 @@ export class CallDataSourceMock implements CallDataSource {
   async removeAssignedInstrumentFromCall(
     args: RemoveAssignedInstrumentFromCallInput
   ) {
+    return dummyCall;
+  }
+
+  async assignFacilitiesToCall(
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call> {
+    return dummyCall;
+  }
+
+  async removeAssignedFacilitiesFromCall(
+    facilityIds: number[],
+    callId: number
+  ): Promise<Call> {
     return dummyCall;
   }
 

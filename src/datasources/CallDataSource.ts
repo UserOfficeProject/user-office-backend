@@ -14,8 +14,13 @@ export interface CallDataSource {
   update(args: UpdateCallInput): Promise<Call>;
   delete(id: number): Promise<Call>;
   assignInstrumentsToCall(args: AssignInstrumentsToCallInput): Promise<Call>;
+  assignFacilitiesToCall(facilityIds: number[], callId: number): Promise<Call>;
   removeAssignedInstrumentFromCall(
     args: RemoveAssignedInstrumentFromCallInput
+  ): Promise<Call>;
+  removeAssignedFacilitiesFromCall(
+    facilityIds: number[],
+    callId: number
   ): Promise<Call>;
   getCallsByInstrumentScientist(scientistId: number): Promise<Call[]>;
   checkActiveCall(callId: number): Promise<boolean>;

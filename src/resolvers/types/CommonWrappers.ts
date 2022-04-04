@@ -7,6 +7,7 @@ import { AnswerBasic } from './AnswerBasic';
 import { BasicUserDetails } from './BasicUserDetails';
 import { Call } from './Call';
 import { ExperimentSafetyInput } from './ExperimentSafetyInput';
+import { Facility } from './Facility';
 import { Feedback } from './Feedback';
 import { FeedbackRequest } from './FeedbackRequest';
 import { GenericTemplate } from './GenericTemplate';
@@ -102,6 +103,13 @@ export class InstrumentResponseWrap extends ResponseWrapBase {
   @Response()
   @Field(() => Instrument, { nullable: true })
   public instrument: Instrument;
+}
+
+@ObjectType()
+export class FacilityResponseWrap extends ResponseWrapBase {
+  @Response()
+  @Field(() => Facility, { nullable: true })
+  public facility: Facility;
 }
 
 @ObjectType()

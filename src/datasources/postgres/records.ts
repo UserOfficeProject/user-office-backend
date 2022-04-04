@@ -46,6 +46,24 @@ import {
 import { ExperimentSafetyInput } from './../../models/ExperimentSafetyInput';
 import { FeedbackStatus } from './../../models/Feedback';
 
+declare module 'knex/types/tables' {
+  interface FacilityRecord {
+    readonly id: number;
+    readonly name: string;
+  }
+
+  interface CallHasFacilitiesRecord {
+    readonly facility_id: number;
+    readonly call_id: number;
+    readonly availability_time: number;
+  }
+
+  interface Tables {
+    facility: FacilityRecord;
+    call_has_facilities: CallHasFacilitiesRecord;
+  }
+}
+
 // Interfaces corresponding exactly to database tables
 
 export interface ProposalUserRecord {

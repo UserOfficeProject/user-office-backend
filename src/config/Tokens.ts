@@ -6,6 +6,7 @@ export const Tokens = {
   ConfigureEnvironment: Symbol('ConfigureEnvironment'),
   ConfigureLogger: Symbol('ConfigureLogger'),
   EventLogsDataSource: Symbol('EventLogsDataSource'),
+  FacilityDataSource: Symbol('FacilityDataSource'),
   FeedbackDataSource: Symbol('FeedbackDataSource'),
   FileDataSource: Symbol('FileDataSource'),
   GenericTemplateDataSource: Symbol('GenericTemplateDataSource'),
