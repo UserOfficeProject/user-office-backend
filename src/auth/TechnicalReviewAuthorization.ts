@@ -45,15 +45,16 @@ export class TechnicalReviewAuthorization {
     agent: UserWithRole | null,
     technicalreviewOrTechnicalReviewId: TechnicalReview | number
   ): Promise<boolean> {
-    if (this.userAuth.isUserOfficer(agent)) {
-      return true;
-    }
-
     const technicalreview = await this.resolveTechnicalReview(
       technicalreviewOrTechnicalReviewId
     );
     if (!technicalreview) {
       return false;
+    }
+
+    const isUserOfficer = await this.userAuth.isUserOfficer(agent);
+    if (isUserOfficer) {
+      return true;
     }
 
     const isScientistToProposal = await this.proposalAuth.isScientistToProposal(
