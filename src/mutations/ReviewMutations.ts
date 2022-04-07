@@ -152,7 +152,7 @@ export default class ReviewMutations {
     const isReviewValid = await proposalGradeValidationSchema.isValid(review);
     if (isReviewValid === false) {
       return rejection(
-        'can not submit proposal review because grade or comment is missing',
+        'Can not submit proposal review because review fields are not valid.',
         { args }
       );
     }
