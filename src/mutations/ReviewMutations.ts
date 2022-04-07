@@ -149,7 +149,8 @@ export default class ReviewMutations {
       );
     }
 
-    if (!review.grade || !review.comment) {
+    const isReviewValid = await proposalGradeValidationSchema.isValid(review);
+    if (isReviewValid === false) {
       return rejection(
         'can not submit proposal review because grade or comment is missing',
         { args }
