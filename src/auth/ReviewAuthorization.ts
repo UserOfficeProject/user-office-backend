@@ -2,7 +2,6 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
-import { ReviewStatus } from '../models/Review';
 import { UserWithRole } from '../models/User';
 import { Review } from '../resolvers/types/Review';
 import { ProposalAuthorization } from './ProposalAuthorization';
@@ -94,7 +93,7 @@ export class ReviewAuthorization {
       return false;
     }
 
-    const isUserOfficer = await this.userAuth.isUserOfficer(agent);
+    const isUserOfficer = this.userAuth.isUserOfficer(agent);
     if (isUserOfficer) {
       return true;
     }
@@ -111,7 +110,7 @@ export class ReviewAuthorization {
       agent,
       review.proposalPk
     );
-    if (isReviewerOfProposal && review.status !== ReviewStatus.SUBMITTED) {
+    if (isReviewerOfProposal) {
       return true;
     }
 

@@ -74,6 +74,15 @@ export default class ReviewMutations {
       );
     }
 
+    const reviewAlreadySubmitted = review.status === ReviewStatus.SUBMITTED;
+
+    if (reviewAlreadySubmitted) {
+      return rejection(
+        'Can not update review because it is already submitted',
+        { agent, args }
+      );
+    }
+
     return this.dataSource
       .updateReview(args)
       .then(async (review) => {
