@@ -2,10 +2,13 @@ import {
   proposalGradeValidationSchema,
   proposalTechnicalReviewValidationSchema,
   addUserForReviewValidationSchema,
+  submitProposalReviewValidationSchema,
 } from '@user-office-software/duo-validation';
 import { container, inject, injectable } from 'tsyringe';
 
 import { ProposalAuthorization } from '../auth/ProposalAuthorization';
+import { ReviewAuthorization } from '../auth/ReviewAuthorization';
+import { TechnicalReviewAuthorization } from '../auth/TechnicalReviewAuthorization';
 import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -33,6 +36,8 @@ import { checkAllReviewsSubmittedOnProposal } from '../utils/helperFunctions';
 
 @injectable()
 export default class ReviewMutations {
+  private technicalReviewAuth = container.resolve(TechnicalReviewAuthorization);
+  private reviewAuth = container.resolve(ReviewAuthorization);
   private userAuth = container.resolve(UserAuthorization);
   private proposalAuth = container.resolve(ProposalAuthorization);
 
@@ -60,33 +65,11 @@ export default class ReviewMutations {
       });
     }
 
-    const isChairOrSecretaryOfSEP = await this.userAuth.isChairOrSecretaryOfSEP(
-      agent,
-      review.sepID
-    );
+    const hasWriteRights = await this.reviewAuth.hasWriteRights(agent, review);
 
-    if (
-      !(
-        (await this.proposalAuth.isReviewerOfProposal(
-          agent,
-          review.proposalPk
-        )) ||
-        isChairOrSecretaryOfSEP ||
-        this.userAuth.isUserOfficer(agent)
-      )
-    ) {
+    if (!hasWriteRights) {
       return rejection(
         'Can not update review because of insufficient permissions',
-        { agent, args }
-      );
-    }
-
-    if (
-      review.status === ReviewStatus.SUBMITTED &&
-      !(this.userAuth.isUserOfficer(agent) || isChairOrSecretaryOfSEP)
-    ) {
-      return rejection(
-        'Can not update review because review already submitted',
         { agent, args }
       );
     }
@@ -142,7 +125,7 @@ export default class ReviewMutations {
   }
 
   @EventBus(Event.PROPOSAL_SEP_REVIEW_SUBMITTED)
-  @ValidateArgs(proposalGradeValidationSchema, ['comment'])
+  @ValidateArgs(submitProposalReviewValidationSchema)
   @Authorized()
   async submitProposalReview(
     agent: UserWithRole | null,
@@ -158,29 +141,19 @@ export default class ReviewMutations {
       );
     }
 
-    if (
-      !(
-        (await this.proposalAuth.isReviewerOfProposal(
-          agent,
-          review.proposalPk
-        )) ||
-        (await this.userAuth.isChairOrSecretaryOfSEP(agent, review.sepID)) ||
-        this.userAuth.isUserOfficer(agent)
-      )
-    ) {
+    const hasWriteRights = await this.reviewAuth.hasWriteRights(agent, review);
+    if (!hasWriteRights) {
       return rejection(
-        'Can not submit proposal review because of insufficient premissions',
+        'Can not submit proposal review because of insufficient permissions',
         { agent, args }
       );
     }
 
-    if (
-      review.status === ReviewStatus.SUBMITTED &&
-      !this.userAuth.isUserOfficer(agent)
-    ) {
+    const isReviewValid = await proposalGradeValidationSchema.isValid(review);
+    if (isReviewValid === false) {
       return rejection(
-        'Can not submit proposal review because review already submitted',
-        { agent, args }
+        'Can not submit proposal review because review fields are not valid.',
+        { args }
       );
     }
 
@@ -209,12 +182,11 @@ export default class ReviewMutations {
     agent: UserWithRole | null,
     args: AddTechnicalReviewInput | SubmitTechnicalReviewInput
   ): Promise<TechnicalReview | Rejection> {
-    if (
-      !(
-        this.userAuth.isUserOfficer(agent) ||
-        (await this.proposalAuth.isScientistToProposal(agent, args.proposalPk))
-      )
-    ) {
+    const hasWriteRights = await this.technicalReviewAuth.hasWriteRights(
+      agent,
+      args.proposalPk
+    );
+    if (!hasWriteRights) {
       return rejection(
         'Can not set technical review because of insufficient permissions',
         { agent, args }
@@ -224,15 +196,9 @@ export default class ReviewMutations {
     const technicalReview = await this.dataSource.getTechnicalReview(
       args.proposalPk
     );
+    const technicalReviewExists = technicalReview !== null;
 
-    const shouldUpdateReview = !!technicalReview?.id;
-
-    if (!this.userAuth.isUserOfficer(agent) && technicalReview?.submitted) {
-      return rejection(
-        'Can not set technical review because review already submitted',
-        { agent, args }
-      );
-    }
+    const shouldUpdateReview = technicalReviewExists ? true : false;
 
     if (args.reviewerId !== undefined && args.reviewerId !== agent?.id) {
       return rejection('Request is impersonating another user', {
