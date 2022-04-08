@@ -78,15 +78,18 @@ export class ReviewAuthorization {
 
   async hasWriteRights(
     agent: UserWithRole | null,
-    review: Review
+    review: Review,
+    reviewAlreadySubmitted?: boolean
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    reviewId: number
+    reviewId: number,
+    reviewAlreadySubmitted?: boolean
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    reviewOrReviewId: Review | number
+    reviewOrReviewId: Review | number,
+    reviewAlreadySubmitted = false
   ): Promise<boolean> {
     const review = await this.resolveReview(reviewOrReviewId);
     if (!review) {
@@ -110,7 +113,7 @@ export class ReviewAuthorization {
       agent,
       review.proposalPk
     );
-    if (isReviewerOfProposal) {
+    if (isReviewerOfProposal && !reviewAlreadySubmitted) {
       return true;
     }
 

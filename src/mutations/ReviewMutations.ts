@@ -65,20 +65,16 @@ export default class ReviewMutations {
       });
     }
 
-    const hasWriteRights = await this.reviewAuth.hasWriteRights(agent, review);
+    const reviewAlreadySubmitted = review.status === ReviewStatus.SUBMITTED;
+    const hasWriteRights = await this.reviewAuth.hasWriteRights(
+      agent,
+      review,
+      reviewAlreadySubmitted
+    );
 
     if (!hasWriteRights) {
       return rejection(
         'Can not update review because of insufficient permissions',
-        { agent, args }
-      );
-    }
-
-    const reviewAlreadySubmitted = review.status === ReviewStatus.SUBMITTED;
-
-    if (reviewAlreadySubmitted) {
-      return rejection(
-        'Can not update review because it is already submitted',
         { agent, args }
       );
     }
