@@ -56,20 +56,22 @@ export class SubmitTechnicalReviewMutation {
     submitTechnicalReviewsInput: SubmitTechnicalReviewsInput,
     @Ctx() context: ResolverContext
   ) {
-    const results = await Promise.all(
-      submitTechnicalReviewsInput.technicalReviews.map(
-        (submitTechnicalReviewInput) => {
-          return context.mutations.review.setTechnicalReview(
-            context.user,
-            submitTechnicalReviewInput
-          );
-        }
-      )
-    );
+    const failedReviews = [];
+    for await (const technicalReview of submitTechnicalReviewsInput.technicalReviews) {
+      const submitResult = await context.mutations.review.submitTechnicalReview(
+        context.user,
+        technicalReview
+      );
+      if (isRejection(submitResult)) {
+        failedReviews.push(technicalReview);
+      }
+    }
 
     return wrapResponse(
-      results.some((result) => isRejection(result))
-        ? Promise.resolve(rejection('REJECTED'))
+      failedReviews.length > 0
+        ? Promise.resolve(
+            rejection('Failed to submit one or more technical reviews')
+          )
         : Promise.resolve(true),
       SuccessResponseWrap
     );
