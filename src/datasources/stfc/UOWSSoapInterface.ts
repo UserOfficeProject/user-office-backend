@@ -8,7 +8,8 @@
 
          public constructor(wsdlUrl?: string) {
               if(wsdlUrl == null)
-                  this.wsdlUrl = 'https://devapis.facilities.rl.ac.uk/ws/UserOfficeWebService?wsdl';
+                  this.wsdlUrl = 'http://172.17.0.1:1080/ws/UserOfficeWebService?wsdl';
+                //   this.wsdlUrl = 'https://devapis.facilities.rl.ac.uk/ws/UserOfficeWebService?wsdl';
               else
                   this.wsdlUrl = wsdlUrl;
           }
@@ -16,7 +17,7 @@
 
 
           public async getBasicPeopleDetailsFromSurname(Token: any, Surname: any, FuzzySearch: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPeopleDetailsFromSurname', Token, Surname, FuzzySearch);
                       return client['getBasicPeopleDetailsFromSurnameAsync'](argsObj);
                   }).then(result => {
@@ -37,7 +38,7 @@
               }
 
     public async getAgeRangeOptions() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAgeRangeOptions');
                       return client['getAgeRangeOptionsAsync'](argsObj);
                   }).then(result => {
@@ -58,7 +59,7 @@
               }
 
     public async getBasicPersonDetailsByEncryptedId(token: any, encryptedId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsByEncryptedId', token, encryptedId);
                       return client['getBasicPersonDetailsByEncryptedIdAsync'](argsObj);
                   }).then(result => {
@@ -79,7 +80,7 @@
               }
 
     public async getSearchableBasicPeopleDetailsFromSurname(Token: any, Surname: any, FuzzySearch: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getSearchableBasicPeopleDetailsFromSurname', Token, Surname, FuzzySearch);
                       return client['getSearchableBasicPeopleDetailsFromSurnameAsync'](argsObj);
                   }).then(result => {
@@ -100,7 +101,7 @@
               }
 
     public async unlinkAlternativeIdentifierToUser(Token: any, AlternativeIdentifier: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('unlinkAlternativeIdentifierToUser', Token, AlternativeIdentifier);
                       return client['unlinkAlternativeIdentifierToUserAsync'](argsObj);
                   }).then(result => {
@@ -121,7 +122,7 @@
               }
 
     public async getPrivacyDTO(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPrivacyDTO', token, userNumber);
                       return client['getPrivacyDTOAsync'](argsObj);
                   }).then(result => {
@@ -142,7 +143,7 @@
               }
 
     public async getEstablishmentDTO(establishmentId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEstablishmentDTO', establishmentId);
                       return client['getEstablishmentDTOAsync'](argsObj);
                   }).then(result => {
@@ -163,7 +164,7 @@
               }
 
     public async getPersonDetailsFromSessionId(SessionId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonDetailsFromSessionId', SessionId);
                       return client['getPersonDetailsFromSessionIdAsync'](argsObj);
                   }).then(result => {
@@ -184,7 +185,7 @@
               }
 
     public async getInductionsFacilityAwarenessForUser(arg0: any, arg1: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getInductionsFacilityAwarenessForUser', arg0, arg1);
                       return client['getInductionsFacilityAwarenessForUserAsync'](argsObj);
                   }).then(result => {
@@ -205,7 +206,7 @@
               }
 
     public async getPersonsFacilities(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonsFacilities', token, userNumber);
                       return client['getPersonsFacilitiesAsync'](argsObj);
                   }).then(result => {
@@ -226,7 +227,7 @@
               }
 
     public async getEstablishmentDTOsBySearchDetails(searchDetails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEstablishmentDTOsBySearchDetails', searchDetails);
                       return client['getEstablishmentDTOsBySearchDetailsAsync'](argsObj);
                   }).then(result => {
@@ -247,7 +248,7 @@
               }
 
     public async getPeopleDetailsFromUserNumbers(Token: any, UserNumbers: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPeopleDetailsFromUserNumbers', Token, UserNumbers);
                       return client['getPeopleDetailsFromUserNumbersAsync'](argsObj);
                   }).then(result => {
@@ -268,7 +269,7 @@
               }
 
     public async getSearchableBasicPersonDetailsFromUserNumber(Token: any, UserNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getSearchableBasicPersonDetailsFromUserNumber', Token, UserNumber);
                       return client['getSearchableBasicPersonDetailsFromUserNumberAsync'](argsObj);
                   }).then(result => {
@@ -289,7 +290,7 @@
               }
 
     public async deleteEstablishmentById(Token: any, EstablishmentId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('deleteEstablishmentById', Token, EstablishmentId);
                       return client['deleteEstablishmentByIdAsync'](argsObj);
                   }).then(result => {
@@ -310,7 +311,7 @@
               }
 
     public async getAllTitles() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllTitles');
                       return client['getAllTitlesAsync'](argsObj);
                   }).then(result => {
@@ -331,7 +332,7 @@
               }
 
     public async updatePersonByDTO(token: any, person: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updatePersonByDTO', token, person);
                       return client['updatePersonByDTOAsync'](argsObj);
                   }).then(result => {
@@ -352,7 +353,7 @@
               }
 
     public async getBasicPeopleDetailsFromEmails(Token: any, Emails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPeopleDetailsFromEmails', Token, Emails);
                       return client['getBasicPeopleDetailsFromEmailsAsync'](argsObj);
                   }).then(result => {
@@ -373,7 +374,7 @@
               }
 
     public async loginWithAlternativeIdentifier(SystemSessionId: any, Uuid: any, Provider: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('loginWithAlternativeIdentifier', SystemSessionId, Uuid, Provider);
                       return client['loginWithAlternativeIdentifierAsync'](argsObj);
                   }).then(result => {
@@ -394,7 +395,7 @@
               }
 
     public async getPersonDTOByMarketingEmail(token: any, marketingEmail: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonDTOByMarketingEmail', token, marketingEmail);
                       return client['getPersonDTOByMarketingEmailAsync'](argsObj);
                   }).then(result => {
@@ -415,7 +416,7 @@
               }
 
     public async getSearchableBasicPeopleDetailsFromUserNumbers(Token: any, UserNumbers: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getSearchableBasicPeopleDetailsFromUserNumbers', Token, UserNumbers);
                       return client['getSearchableBasicPeopleDetailsFromUserNumbersAsync'](argsObj);
                   }).then(result => {
@@ -436,7 +437,7 @@
               }
 
     public async isTokenValid(Token: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('isTokenValid', Token);
                       return client['isTokenValidAsync'](argsObj);
                   }).then(result => {
@@ -457,7 +458,7 @@
               }
 
     public async getSearchableBasicPeopleDetailsFromEmails(Token: any, Emails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getSearchableBasicPeopleDetailsFromEmails', Token, Emails);
                       return client['getSearchableBasicPeopleDetailsFromEmailsAsync'](argsObj);
                   }).then(result => {
@@ -478,7 +479,7 @@
               }
 
     public async updatePersonsFacilities(token: any, userNumber: any, facilities: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updatePersonsFacilities', token, userNumber, facilities);
                       return client['updatePersonsFacilitiesAsync'](argsObj);
                   }).then(result => {
@@ -499,7 +500,7 @@
               }
 
     public async getMonitorDTO(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getMonitorDTO', token, userNumber);
                       return client['getMonitorDTOAsync'](argsObj);
                   }).then(result => {
@@ -520,7 +521,7 @@
               }
 
     public async resetPassword(encryptedResetId: any, password: any, ipAddress: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('resetPassword', encryptedResetId, password, ipAddress);
                       return client['resetPasswordAsync'](argsObj);
                   }).then(result => {
@@ -541,7 +542,7 @@
               }
 
     public async getDataUsages() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getDataUsages');
                       return client['getDataUsagesAsync'](argsObj);
                   }).then(result => {
@@ -562,7 +563,7 @@
               }
 
     public async updateEmergencyContactDTO(token: any, userNumber: any, emergencyContactDTO: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updateEmergencyContactDTO', token, userNumber, emergencyContactDTO);
                       return client['updateEmergencyContactDTOAsync'](argsObj);
                   }).then(result => {
@@ -583,7 +584,7 @@
               }
 
     public async sendAccountActivationEmail(Token: any, Email: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('sendAccountActivationEmail', Token, Email);
                       return client['sendAccountActivationEmailAsync'](argsObj);
                   }).then(result => {
@@ -604,7 +605,7 @@
               }
 
     public async getDisabilities() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getDisabilities');
                       return client['getDisabilitiesAsync'](argsObj);
                   }).then(result => {
@@ -625,7 +626,7 @@
               }
 
     public async getEstablishmentsBySearchDetails(searchDetails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEstablishmentsBySearchDetails', searchDetails);
                       return client['getEstablishmentsBySearchDetailsAsync'](argsObj);
                   }).then(result => {
@@ -646,10 +647,25 @@
               }
 
     public async getRolesForUser(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const options = {
+                      wsdl_options: {
+                          //disableCache: true,
+                          overrideImportLocation: () => {
+                              return 'http://172.17.0.1:1080/ws/UserOfficeWebService';
+                          }
+                      },
+                      disableCache: true,
+                  };
+
+                  //const content = 'Some content! yooo'
+
+                  //fs.writeFile('C:\ Users\ wdo36736\ Desktop\ testing.txt', content, { flag: 'a+' }, err => {})
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getRolesForUser', token, userNumber);
                       return client['getRolesForUserAsync'](argsObj);
                   }).then(result => {
+                    //   const test = '\n' + JSON.stringify(result[0]);
+                      //fs.writeFile('C:\ Users\ wdo36736\ Desktop\ testing.txt', '\n' + JSON.stringify(result[0]), { flag: 'a+' }, err => {})
                       return result[0];
                   }).catch(result => {
                       const response = result?.response;
@@ -667,7 +683,7 @@
               }
 
     public async resetPasswordWithOldPassword(sessionId: any, oldPassword: any, newPassword: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('resetPasswordWithOldPassword', sessionId, oldPassword, newPassword);
                       return client['resetPasswordWithOldPasswordAsync'](argsObj);
                   }).then(result => {
@@ -688,7 +704,7 @@
               }
 
     public async getUsersPermissionUserGroupDTOs(Token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getUsersPermissionUserGroupDTOs', Token, userNumber);
                       return client['getUsersPermissionUserGroupDTOsAsync'](argsObj);
                   }).then(result => {
@@ -709,7 +725,7 @@
               }
 
     public async deactivatePerson(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('deactivatePerson', token, userNumber);
                       return client['deactivatePersonAsync'](argsObj);
                   }).then(result => {
@@ -730,7 +746,7 @@
               }
 
     public async logout(SessionId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('logout', SessionId);
                       return client['logoutAsync'](argsObj);
                   }).then(result => {
@@ -751,7 +767,7 @@
               }
 
     public async setPrivacyDTO(token: any, userNumber: any, privacyDTO: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('setPrivacyDTO', token, userNumber, privacyDTO);
                       return client['setPrivacyDTOAsync'](argsObj);
                   }).then(result => {
@@ -772,7 +788,7 @@
               }
 
     public async getChangesSince(Token: any, Since: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getChangesSince', Token, Since);
                       return client['getChangesSinceAsync'](argsObj);
                   }).then(result => {
@@ -793,7 +809,7 @@
               }
 
     public async getGenders() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getGenders');
                       return client['getGendersAsync'](argsObj);
                   }).then(result => {
@@ -814,7 +830,7 @@
               }
 
     public async createPersonFromPersonDTO(token: any, person: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('createPersonFromPersonDTO', token, person);
                       return client['createPersonFromPersonDTOAsync'](argsObj);
                   }).then(result => {
@@ -835,7 +851,7 @@
               }
 
     public async loginWithAlternativeIdentifierECP(Provider: any, Username: any, Password: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('loginWithAlternativeIdentifierECP', Provider, Username, Password);
                       return client['loginWithAlternativeIdentifierECPAsync'](argsObj);
                   }).then(result => {
@@ -856,7 +872,7 @@
               }
 
     public async updateExpiredPassword(token: any, encryptedId: any, oldPassword: any, newPassword: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updateExpiredPassword', token, encryptedId, oldPassword, newPassword);
                       return client['updateExpiredPasswordAsync'](argsObj);
                   }).then(result => {
@@ -877,7 +893,7 @@
               }
 
     public async getDataLookup(Name: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getDataLookup', Name);
                       return client['getDataLookupAsync'](argsObj);
                   }).then(result => {
@@ -898,7 +914,7 @@
               }
 
     public async updateAlternativeIdentifiersForUser(Token: any, AlternativeIdentifiers: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updateAlternativeIdentifiersForUser', Token, AlternativeIdentifiers);
                       return client['updateAlternativeIdentifiersForUserAsync'](argsObj);
                   }).then(result => {
@@ -919,7 +935,7 @@
               }
 
     public async noLdapLogin(UserNumber: any, Password: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('noLdapLogin', UserNumber, Password);
                       return client['noLdapLoginAsync'](argsObj);
                   }).then(result => {
@@ -940,7 +956,7 @@
               }
 
     public async getFrequentGenders() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getFrequentGenders');
                       return client['getFrequentGendersAsync'](argsObj);
                   }).then(result => {
@@ -961,7 +977,7 @@
               }
 
     public async getEthnicities() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEthnicities');
                       return client['getEthnicitiesAsync'](argsObj);
                   }).then(result => {
@@ -982,7 +998,7 @@
               }
 
     public async getBasicPeopleDetailsSinceDate(Token: any, Date: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPeopleDetailsSinceDate', Token, Date);
                       return client['getBasicPeopleDetailsSinceDateAsync'](argsObj);
                   }).then(result => {
@@ -1003,7 +1019,7 @@
               }
 
     public async createEstablishmentFromEstablishmentDTO(token: any, establishment: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('createEstablishmentFromEstablishmentDTO', token, establishment);
                       return client['createEstablishmentFromEstablishmentDTOAsync'](argsObj);
                   }).then(result => {
@@ -1024,7 +1040,7 @@
               }
 
     public async getBasicPersonDetailsByEncryptedActivationId(token: any, encryptedActivationId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsByEncryptedActivationId', token, encryptedActivationId);
                       return client['getBasicPersonDetailsByEncryptedActivationIdAsync'](argsObj);
                   }).then(result => {
@@ -1045,7 +1061,7 @@
               }
 
     public async requestLinkExistingFedId(token: any, dob: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('requestLinkExistingFedId', token, dob, userNumber);
                       return client['requestLinkExistingFedIdAsync'](argsObj);
                   }).then(result => {
@@ -1066,7 +1082,7 @@
               }
 
     public async getBasicPersonDetailsFromEmail(Token: any, Email: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsFromEmail', Token, Email);
                       return client['getBasicPersonDetailsFromEmailAsync'](argsObj);
                   }).then(result => {
@@ -1087,7 +1103,7 @@
               }
 
     public async requestNewFedId(token: any, dob: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('requestNewFedId', token, dob, userNumber);
                       return client['requestNewFedIdAsync'](argsObj);
                   }).then(result => {
@@ -1108,7 +1124,7 @@
               }
 
     public async sendPasswordResetEmail(Token: any, Email: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('sendPasswordResetEmail', Token, Email);
                       return client['sendPasswordResetEmailAsync'](argsObj);
                   }).then(result => {
@@ -1129,7 +1145,7 @@
               }
 
     public async getAllEstablishmentDTOs() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllEstablishmentDTOs');
                       return client['getAllEstablishmentDTOsAsync'](argsObj);
                   }).then(result => {
@@ -1150,7 +1166,7 @@
               }
 
     public async getEstablishmentDTOsByQuery(searchQuery: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEstablishmentDTOsByQuery', searchQuery);
                       return client['getEstablishmentDTOsByQueryAsync'](argsObj);
                   }).then(result => {
@@ -1171,7 +1187,7 @@
               }
 
     public async acceptLatestDataProtectionAgreement(token: any, encryptedId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('acceptLatestDataProtectionAgreement', token, encryptedId);
                       return client['acceptLatestDataProtectionAgreementAsync'](argsObj);
                   }).then(result => {
@@ -1192,7 +1208,7 @@
               }
 
     public async setMonitorDTO(token: any, userNumber: any, monitorDTO: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('setMonitorDTO', token, userNumber, monitorDTO);
                       return client['setMonitorDTOAsync'](argsObj);
                   }).then(result => {
@@ -1213,7 +1229,7 @@
               }
 
     public async activateAccountWithoutPassword(encryptedActivationId: any, ipAddress: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('activateAccountWithoutPassword', encryptedActivationId, ipAddress);
                       return client['activateAccountWithoutPasswordAsync'](argsObj);
                   }).then(result => {
@@ -1234,7 +1250,7 @@
               }
 
     public async getBasicPersonDetailsFromFedId(Token: any, FedId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsFromFedId', Token, FedId);
                       return client['getBasicPersonDetailsFromFedIdAsync'](argsObj);
                   }).then(result => {
@@ -1255,7 +1271,7 @@
               }
 
     public async activateAccount(encryptedActivationId: any, password: any, ipAddress: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('activateAccount', encryptedActivationId, password, ipAddress);
                       return client['activateAccountAsync'](argsObj);
                   }).then(result => {
@@ -1276,7 +1292,7 @@
               }
 
     public async getBasicPeopleDetailsFromUserNumbers(Token: any, UserNumbers: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPeopleDetailsFromUserNumbers', Token, UserNumbers);
                       return client['getBasicPeopleDetailsFromUserNumbersAsync'](argsObj);
                   }).then(result => {
@@ -1297,7 +1313,7 @@
               }
 
     public async getAllCountries() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllCountries');
                       return client['getAllCountriesAsync'](argsObj);
                   }).then(result => {
@@ -1318,7 +1334,7 @@
               }
 
     public async getSearchableBasicPersonDetailsFromEmail(Token: any, Email: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getSearchableBasicPersonDetailsFromEmail', Token, Email);
                       return client['getSearchableBasicPersonDetailsFromEmailAsync'](argsObj);
                   }).then(result => {
@@ -1339,7 +1355,7 @@
               }
 
     public async getPersonDetailsFromUserNumber(Token: any, UserNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonDetailsFromUserNumber', Token, UserNumber);
                       return client['getPersonDetailsFromUserNumberAsync'](argsObj);
                   }).then(result => {
@@ -1360,7 +1376,7 @@
               }
 
     public async getPersonDetailsFromEmail(Token: any, Email: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonDetailsFromEmail', Token, Email);
                       return client['getPersonDetailsFromEmailAsync'](argsObj);
                   }).then(result => {
@@ -1381,7 +1397,7 @@
               }
 
     public async createFedId(token: any, fedIdUserName: any, fedIdLoginPassword: any, person: any, status: any, expiryDate: any, fedIdDob: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('createFedId', token, fedIdUserName, fedIdLoginPassword, person, status, expiryDate, fedIdDob);
                       return client['createFedIdAsync'](argsObj);
                   }).then(result => {
@@ -1402,7 +1418,7 @@
               }
 
     public async getAllFacilityNames() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllFacilityNames');
                       return client['getAllFacilityNamesAsync'](argsObj);
                   }).then(result => {
@@ -1423,7 +1439,7 @@
               }
 
     public async getPeopleDetailsFromEmails(Token: any, Emails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPeopleDetailsFromEmails', Token, Emails);
                       return client['getPeopleDetailsFromEmailsAsync'](argsObj);
                   }).then(result => {
@@ -1444,7 +1460,7 @@
               }
 
     public async isAlternativeIdentifierActive(Uuid: any, Provider: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('isAlternativeIdentifierActive', Uuid, Provider);
                       return client['isAlternativeIdentifierActiveAsync'](argsObj);
                   }).then(result => {
@@ -1465,7 +1481,7 @@
               }
 
     public async isAlternativeIdentifierLinked(Uuid: any, Provider: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('isAlternativeIdentifierLinked', Uuid, Provider);
                       return client['isAlternativeIdentifierLinkedAsync'](argsObj);
                   }).then(result => {
@@ -1486,7 +1502,7 @@
               }
 
     public async login(Account: any, Password: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('login', Account, Password);
                       return client['loginAsync'](argsObj);
                   }).then(result => {
@@ -1507,7 +1523,7 @@
               }
 
     public async linkAlternativeIdentifierToUser(Token: any, AlternativeIdentifier: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('linkAlternativeIdentifierToUser', Token, AlternativeIdentifier);
                       return client['linkAlternativeIdentifierToUserAsync'](argsObj);
                   }).then(result => {
@@ -1528,7 +1544,7 @@
               }
 
     public async getAlternativeIdentifiersForUser(Token: any, UserNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAlternativeIdentifiersForUser', Token, UserNumber);
                       return client['getAlternativeIdentifiersForUserAsync'](argsObj);
                   }).then(result => {
@@ -1549,7 +1565,7 @@
               }
 
     public async getBasicPeopleDetailsFromEstablishments(Token: any, SearchDetails: any[]) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPeopleDetailsFromEstablishments', Token, SearchDetails);
                       return client['getBasicPeopleDetailsFromEstablishmentsAsync'](argsObj);
                   }).then(result => {
@@ -1570,7 +1586,7 @@
               }
 
     public async getPersonDTOFromUserNumber(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPersonDTOFromUserNumber', token, userNumber);
                       return client['getPersonDTOFromUserNumberAsync'](argsObj);
                   }).then(result => {
@@ -1591,7 +1607,7 @@
               }
 
     public async getBasicPersonDetailsByEncryptedPasswordResetId(token: any, encryptedResetId: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsByEncryptedPasswordResetId', token, encryptedResetId);
                       return client['getBasicPersonDetailsByEncryptedPasswordResetIdAsync'](argsObj);
                   }).then(result => {
@@ -1612,7 +1628,7 @@
               }
 
     public async getAllEuCountries() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllEuCountries');
                       return client['getAllEuCountriesAsync'](argsObj);
                   }).then(result => {
@@ -1633,7 +1649,7 @@
               }
 
     public async isAccountActive(UserNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('isAccountActive', UserNumber);
                       return client['isAccountActiveAsync'](argsObj);
                   }).then(result => {
@@ -1654,7 +1670,7 @@
               }
 
     public async getAllPersonStatuses() : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getAllPersonStatuses');
                       return client['getAllPersonStatusesAsync'](argsObj);
                   }).then(result => {
@@ -1675,7 +1691,7 @@
               }
 
     public async getBasicPersonDetailsFromUserNumber(Token: any, UserNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getBasicPersonDetailsFromUserNumber', Token, UserNumber);
                       return client['getBasicPersonDetailsFromUserNumberAsync'](argsObj);
                   }).then(result => {
@@ -1696,7 +1712,7 @@
               }
 
     public async getPeopleDetailsFromSurname(Token: any, Surname: any, FuzzySearch: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getPeopleDetailsFromSurname', Token, Surname, FuzzySearch);
                       return client['getPeopleDetailsFromSurnameAsync'](argsObj);
                   }).then(result => {
@@ -1717,7 +1733,7 @@
               }
 
     public async getEmergencyContactDTO(token: any, userNumber: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('getEmergencyContactDTO', token, userNumber);
                       return client['getEmergencyContactDTOAsync'](argsObj);
                   }).then(result => {
@@ -1738,7 +1754,7 @@
               }
 
     public async updateFedId(token: any, fedIdUserName: any, fedIdLoginPassword: any, objid: any, objdomid: any, expiryDate: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updateFedId', token, fedIdUserName, fedIdLoginPassword, objid, objdomid, expiryDate);
                       return client['updateFedIdAsync'](argsObj);
                   }).then(result => {
@@ -1759,7 +1775,7 @@
               }
 
     public async updatePersonByDTOFromSource(token: any, person: any, updateSource: any) : Promise<any> {
-                  const refinedResult = soap.createClientAsync(this.wsdlUrl).then((client: soap.Client) => {
+                  const refinedResult = soap.createClientAsync(this.wsdlUrl, {}, 'http://172.17.0.1:1080/ws/UserOfficeWebService').then((client: soap.Client) => {
                       const argsObj = this.makeArgsObj('updatePersonByDTOFromSource', token, person, updateSource);
                       return client['updatePersonByDTOFromSourceAsync'](argsObj);
                   }).then(result => {

@@ -7,6 +7,7 @@ import { container } from 'tsyringe';
 import './src/env-loader.js';
 import './src/config';
 
+import { mockserver } from './mockServer';
 import { startAsyncJobs } from './src/asyncJobs/startAsyncJobs';
 import { Tokens } from './src/config/Tokens';
 import authorization from './src/middlewares/authorization';
@@ -18,6 +19,7 @@ import healthCheck from './src/middlewares/healthCheck';
 import readinessCheck from './src/middlewares/readinessCheck';
 
 async function bootstrap() {
+  mockserver();
   const PORT = process.env.PORT || 4000;
   const app = express();
 

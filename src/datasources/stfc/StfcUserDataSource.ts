@@ -7,8 +7,14 @@ import PostgresUserDataSource from '../postgres/UserDataSource';
 import { UserDataSource } from '../UserDataSource';
 import UOWSSoapClient from './UOWSSoapInterface';
 
+// let url = '';
+// if (process.env.NODE_ENV === 'test') {
+//   url = 'https://localhost:1080/ws/UserOfficeWebService?wsdl';
+// } else {
+//   url = 'https://devapis.facilities.rl.ac.uk/ws/UserOfficeWebService?wsdl';
+// }
 const postgresUserDataSource = new PostgresUserDataSource();
-const client = new UOWSSoapClient(process.env.EXTERNAL_AUTH_SERVICE_URL);
+const client = new UOWSSoapClient();
 const token = process.env.EXTERNAL_AUTH_TOKEN;
 
 type StfcRolesToEssRole = { [key: string]: Roles[] };
@@ -92,23 +98,23 @@ function toEssUser(stfcUser: StfcBasicPersonDetails): User {
 
 export class StfcUserDataSource implements UserDataSource {
   async delete(id: number): Promise<User | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. DELETE');
   }
 
   async addUserRole(args: AddUserRoleArgs): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. ROLE');
   }
 
   getByOrcID(orcID: string): Promise<User | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. ORC ID');
   }
 
   async createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. INVITE');
   }
 
   async createOrganisation(name: string, verified: boolean): Promise<number> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. CREATE ORG');
   }
 
   async getProposalUsersFull(proposalPk: number): Promise<User[]> {
@@ -151,7 +157,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async checkOrcIDExist(orcID: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. EXIST');
   }
 
   async checkEmailExist(email: string): Promise<boolean> {
@@ -159,11 +165,11 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getPasswordByEmail(email: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. PASSWORD');
   }
 
   setUserEmailVerified(id: number): Promise<User | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. SETUSER');
   }
 
   async setUserNotPlaceholder(id: number): Promise<User | null> {
@@ -174,7 +180,7 @@ export class StfcUserDataSource implements UserDataSource {
     id: number,
     password: string
   ): Promise<BasicUserDetails> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. SET PASS');
   }
 
   async getByEmail(email: string): Promise<User | null> {
@@ -199,11 +205,11 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getPasswordByUsername(username: string): Promise<string | null> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. USERNAME');
   }
 
   async setUserRoles(id: number, roles: number[]): Promise<void> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.SET ROLES');
   }
 
   async getUserRoles(id: number): Promise<Role[]> {
@@ -257,7 +263,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async update(user: User): Promise<User> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. UPDATE');
   }
 
   async me(id: number) {
@@ -420,7 +426,7 @@ export class StfcUserDataSource implements UserDataSource {
     telephone: string,
     telephone_alt: string | undefined
   ): Promise<User> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented. CREATE I GUESS');
   }
 
   async getRoleByShortCode(roleShortCode: Roles): Promise<Role> {
