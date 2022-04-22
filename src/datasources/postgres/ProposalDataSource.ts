@@ -517,7 +517,7 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
             .where('title', 'ilike', `%${filter.text}%`)
             .orWhere('abstract', 'ilike', `%${filter.text}%`);
         }
-        if (filter?.reviewer === ReviewerFilter.YOU) {
+        if (filter?.reviewer === ReviewerFilter.ME) {
           query.where(
             'proposal_table_view.technical_review_assignee',
             scientistId
