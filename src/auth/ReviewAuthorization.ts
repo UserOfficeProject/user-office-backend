@@ -83,22 +83,16 @@ export class ReviewAuthorization {
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    reviewId: number,
-    reviewAlreadySubmitted?: boolean
-  ): Promise<boolean>;
-  async hasWriteRights(
-    agent: UserWithRole | null,
-    reviewOrReviewId: Review | number,
+    review: Review,
     reviewAlreadySubmitted = false
   ): Promise<boolean> {
-    const review = await this.resolveReview(reviewOrReviewId);
-    if (!review) {
-      return false;
-    }
-
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
     if (isUserOfficer) {
       return true;
+    }
+
+    if (reviewAlreadySubmitted) {
+      return false;
     }
 
     const isChairOrSecretaryOfSEP = await this.userAuth.isChairOrSecretaryOfSEP(
@@ -113,7 +107,7 @@ export class ReviewAuthorization {
       agent,
       review.proposalPk
     );
-    if (isReviewerOfProposal && !reviewAlreadySubmitted) {
+    if (isReviewerOfProposal) {
       return true;
     }
 
