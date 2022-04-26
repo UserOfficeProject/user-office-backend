@@ -33,7 +33,7 @@ export default class StfcProposalDataSource extends PostgresProposalDataSource {
         if (filter?.instrumentId) {
           query.where('proposal_table_view.instrument_id', filter.instrumentId);
         }
-
+        // add filter based on current user role facility
         if (filter?.proposalStatusId) {
           query.where(
             'proposal_table_view.proposal_status_id',

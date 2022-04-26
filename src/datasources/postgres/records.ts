@@ -961,7 +961,7 @@ export const createSEPReviewerObject = (sepMember: SEPReviewerRecord) => {
 };
 
 export const createRoleObject = (role: RoleRecord) => {
-  return new Role(role.role_id, role.short_code, role.title);
+  return new Role(role.role_id, role.short_code, role.title, '');
 };
 
 export const createVisitObject = (visit: VisitRecord) => {

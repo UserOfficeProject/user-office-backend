@@ -12,9 +12,9 @@ beforeAll(() => {
   const mockGetRoles = jest.spyOn(userdataSource, 'getRoles');
   mockGetRoles.mockImplementation(() =>
     Promise.resolve([
-      new Role(1, Roles.USER, 'User'),
-      new Role(2, Roles.USER_OFFICER, 'User Officer'),
-      new Role(3, Roles.INSTRUMENT_SCIENTIST, 'Instrument Scientist'),
+      new Role(1, Roles.USER, 'User', ''),
+      new Role(2, Roles.USER_OFFICER, 'User Officer', ''),
+      new Role(3, Roles.INSTRUMENT_SCIENTIST, 'Instrument Scientist', ''),
     ])
   );
   const mockEnsureDummyUserExists = jest.spyOn(
@@ -33,16 +33,18 @@ test('When getting roles for a user, the User role is the first role in the list
   const roles = await userdataSource.getUserRoles(dummyUserNumber);
 
   return expect(roles[0]).toEqual(
-    expect.objectContaining(new Role(expect.any(Number), Roles.USER, 'User'))
+    expect.objectContaining(
+      new Role(expect.any(Number), Roles.USER, 'User', '')
+    )
   );
 });
 
 test('When getting roles for a user, STFC roles are translated into ESS roles', async () => {
   return expect(userdataSource.getUserRoles(dummyUserNumber)).resolves.toEqual(
     expect.arrayContaining([
-      new Role(1, Roles.USER, 'User'),
-      new Role(2, Roles.USER_OFFICER, 'User Officer'),
-      new Role(3, Roles.INSTRUMENT_SCIENTIST, 'Instrument Scientist'),
+      new Role(1, Roles.USER, 'User', ''),
+      new Role(2, Roles.USER_OFFICER, 'User Officer', ''),
+      new Role(3, Roles.INSTRUMENT_SCIENTIST, 'Instrument Scientist', ''),
     ])
   );
 });

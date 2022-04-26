@@ -120,6 +120,7 @@ export default class ProposalQueries {
     first?: number,
     offset?: number
   ) {
+    // we don't pass the agent beyond here
     return this.dataSource.getInstrumentScientistProposals(
       agent?.id as number,
       filter,

@@ -12,7 +12,15 @@ export class Role {
   @Field()
   public title: string;
 
-  constructor(initObj: { id: number; shortCode: string; title: string }) {
+  @Field()
+  public facility: string;
+
+  constructor(initObj: {
+    id: number;
+    shortCode: string;
+    title: string;
+    facility: string;
+  }) {
     Object.assign(this, initObj);
   }
 }

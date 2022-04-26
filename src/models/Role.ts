@@ -2,8 +2,16 @@ export class Role {
   constructor(
     public id: number,
     public shortCode: string,
-    public title: string
+    public title: string,
+    public facility: string
   ) {}
+
+  /**
+   * isValidForFacility
+   */
+  public isForFacility(facility: string): boolean {
+    return this.facility === '' || this.facility === facility;
+  }
 }
 
 export enum Roles {
