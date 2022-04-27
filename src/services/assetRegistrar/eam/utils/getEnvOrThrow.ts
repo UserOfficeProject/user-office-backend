@@ -6,7 +6,8 @@ type EnvVars =
   | 'EAM_AUTH_CLIENT_SECRET'
   | 'EAM_AUTH_HOST'
   | 'EAM_AUTH_PASS'
-  | 'EAM_AUTH_USER';
+  | 'EAM_AUTH_USER'
+  | 'EAM_PART_CODE';
 
 export function getEnvOrThrow(envVariable: EnvVars) {
   const value = process.env[envVariable];
