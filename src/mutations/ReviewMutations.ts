@@ -65,12 +65,7 @@ export default class ReviewMutations {
       });
     }
 
-    const reviewAlreadySubmitted = review.status === ReviewStatus.SUBMITTED;
-    const hasWriteRights = await this.reviewAuth.hasWriteRights(
-      agent,
-      review,
-      reviewAlreadySubmitted
-    );
+    const hasWriteRights = await this.reviewAuth.hasWriteRights(agent, review);
 
     if (!hasWriteRights) {
       return rejection(

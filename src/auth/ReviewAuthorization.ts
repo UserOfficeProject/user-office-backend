@@ -2,6 +2,7 @@ import { container, inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
+import { ReviewStatus } from '../models/Review';
 import { UserWithRole } from '../models/User';
 import { Review } from '../resolvers/types/Review';
 import { ProposalAuthorization } from './ProposalAuthorization';
@@ -78,20 +79,18 @@ export class ReviewAuthorization {
 
   async hasWriteRights(
     agent: UserWithRole | null,
-    review: Review,
-    reviewAlreadySubmitted?: boolean
+    review: Review
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    review: Review,
-    reviewAlreadySubmitted = false
+    review: Review
   ): Promise<boolean> {
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
     if (isUserOfficer) {
       return true;
     }
 
-    if (reviewAlreadySubmitted) {
+    if (review.status === ReviewStatus.SUBMITTED) {
       return false;
     }
 
