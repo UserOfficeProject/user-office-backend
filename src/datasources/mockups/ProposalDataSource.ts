@@ -84,7 +84,7 @@ const dummyScheduledEventCore = new ScheduledEventCore(
   1
 );
 
-const dummyProposalTechnicalReview = new TechnicalReview(
+export const dummyProposalTechnicalReview = new TechnicalReview(
   1,
   1,
   'Test comment',
