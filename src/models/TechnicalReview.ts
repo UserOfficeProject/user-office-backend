@@ -8,7 +8,8 @@ export class TechnicalReview {
     public status: TechnicalReviewStatus,
     public submitted: boolean,
     public reviewerId: number,
-    public files: string
+    public files: string,
+    public technicalReviewAssigneeId: number | null
   ) {}
 }
 

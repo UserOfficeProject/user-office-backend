@@ -44,6 +44,9 @@ export class TechnicalReview implements Partial<TechnicalReviewOrigin> {
 
   @Field(() => String, { nullable: true })
   public files: string;
+
+  @Field(() => Int, { nullable: true })
+  public technicalReviewAssigneeId: number | null;
 }
 
 @Resolver(() => TechnicalReview)
@@ -68,5 +71,18 @@ export class TechnicalReviewResolver {
       context.user,
       technicalReview.reviewerId
     );
+  }
+
+  @FieldResolver(() => BasicUserDetails, { nullable: true })
+  async technicalReviewAssignee(
+    @Root() technicalReview: TechnicalReview,
+    @Ctx() context: ResolverContext
+  ): Promise<BasicUserDetails | null> {
+    return technicalReview.technicalReviewAssigneeId
+      ? context.queries.user.getBasic(
+          context.user,
+          technicalReview.technicalReviewAssigneeId
+        )
+      : null;
   }
 }

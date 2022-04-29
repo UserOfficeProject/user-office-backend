@@ -6,7 +6,6 @@ import {
 } from '@user-office-software/duo-validation';
 import { container, inject, injectable } from 'tsyringe';
 
-import { ProposalAuthorization } from '../auth/ProposalAuthorization';
 import { ReviewAuthorization } from '../auth/ReviewAuthorization';
 import { TechnicalReviewAuthorization } from '../auth/TechnicalReviewAuthorization';
 import { UserAuthorization } from '../auth/UserAuthorization';
@@ -16,7 +15,6 @@ import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataS
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { Proposal } from '../models/Proposal';
 import { rejection, Rejection } from '../models/Rejection';
 import {
   Review,
@@ -39,7 +37,6 @@ export default class ReviewMutations {
   private technicalReviewAuth = container.resolve(TechnicalReviewAuthorization);
   private reviewAuth = container.resolve(ReviewAuthorization);
   private userAuth = container.resolve(UserAuthorization);
-  private proposalAuth = container.resolve(ProposalAuthorization);
 
   constructor(
     @inject(Tokens.ReviewDataSource) private dataSource: ReviewDataSource,
@@ -307,8 +304,8 @@ export default class ReviewMutations {
   ) {
     for await (const proposalPk of proposalPks) {
       const technicalReviewAssignee = (
-        await this.proposalDataSource.get(proposalPk)
-      )?.technicalReviewAssignee;
+        await this.dataSource.getTechnicalReview(proposalPk)
+      )?.technicalReviewAssigneeId;
       if (technicalReviewAssignee !== assigneeUserId) {
         return false;
       }
@@ -321,7 +318,7 @@ export default class ReviewMutations {
   async updateTechnicalReviewAssignee(
     agent: UserWithRole | null,
     args: UpdateTechnicalReviewAssigneeInput
-  ): Promise<Proposal[] | Rejection> {
+  ): Promise<TechnicalReview[] | Rejection> {
     if (
       !this.userAuth.isUserOfficer(agent) &&
       !this.isTechnicalReviewAssignee(args.proposalPks, agent?.id)
