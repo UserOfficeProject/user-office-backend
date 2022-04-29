@@ -664,7 +664,7 @@ export const createTechnicalReviewObject = (
     technicalReview.status,
     technicalReview.submitted,
     technicalReview.reviewer_id,
-    JSON.stringify(technicalReview.files),
+    technicalReview.files ? JSON.stringify(technicalReview.files) : null,
     technicalReview.technical_review_assignee_id
   );
 };

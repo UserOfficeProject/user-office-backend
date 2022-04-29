@@ -501,12 +501,12 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         database.raw('count(*) OVER() AS full_count'),
       ])
       .from('proposal_table_view')
-      .join('instrument_has_scientists', {
-        'instrument_has_scientists.instrument_id':
-          'proposal_table_view.instrument_id',
-      })
       .join('instruments', {
         'instruments.instrument_id': 'proposal_table_view.instrument_id',
+      })
+      .leftJoin('instrument_has_scientists', {
+        'instrument_has_scientists.instrument_id':
+          'proposal_table_view.instrument_id',
       })
       .where(function () {
         this.where('instrument_has_scientists.user_id', scientistId).orWhere(

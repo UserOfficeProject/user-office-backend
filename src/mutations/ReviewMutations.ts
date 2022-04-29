@@ -202,8 +202,18 @@ export default class ReviewMutations {
       });
     }
 
+    const shouldUpdateReview = technicalReview !== null;
+
+    /**
+     * TODO: This condition here is a special case because we usually create the review when proposal is assigned to the instrument.
+     * When user officer tries to submit technical review directly on unassigned proposal to instrument we should create instead of updating nonexisting review.
+     */
+    const updatedTechnicalReview = shouldUpdateReview
+      ? { ...technicalReview, ...args }
+      : { ...args };
+
     const isReviewValid = await proposalTechnicalReviewValidationSchema.isValid(
-      technicalReview
+      updatedTechnicalReview
     );
     if (isReviewValid === false) {
       return rejection(
@@ -211,8 +221,6 @@ export default class ReviewMutations {
         { args }
       );
     }
-
-    const shouldUpdateReview = technicalReview !== null;
 
     return this.dataSource
       .setTechnicalReview(args, shouldUpdateReview)
