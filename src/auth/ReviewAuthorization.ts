@@ -79,18 +79,20 @@ export class ReviewAuthorization {
 
   async hasWriteRights(
     agent: UserWithRole | null,
-    review: Review
+    review: Review,
+    canSubmitReview?: boolean
   ): Promise<boolean>;
   async hasWriteRights(
     agent: UserWithRole | null,
-    review: Review
+    review: Review,
+    canSubmitReview = false
   ): Promise<boolean> {
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
     if (isUserOfficer) {
       return true;
     }
 
-    if (review.status === ReviewStatus.SUBMITTED) {
+    if (review.status === ReviewStatus.SUBMITTED && !canSubmitReview) {
       return false;
     }
 
