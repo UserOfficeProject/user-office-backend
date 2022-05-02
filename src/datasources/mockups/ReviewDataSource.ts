@@ -7,6 +7,15 @@ import { ReviewDataSource } from '../ReviewDataSource';
 import { dummyProposalTechnicalReview } from './ProposalDataSource';
 
 export const dummyReview = new Review(4, 10, 1, 'Good proposal', 9, 0, 1);
+export const dummySubmittedReview = new Review(
+  5,
+  10,
+  1,
+  'Good proposal',
+  9,
+  1,
+  1
+);
 export const dummyReviewWithNextProposalStatus =
   new ReviewWithNextProposalStatus(4, 10, 1, 'Good proposal', 9, 0, 1, null);
 
@@ -33,8 +42,12 @@ export class ReviewDataSourceMock implements ReviewDataSource {
     return new Review(1, 1, 1, ' ', 1, 1, 1);
   }
   async getReview(id: number): Promise<Review | null> {
-    if (id == 1) {
+    if (id === 1) {
       return dummyReviewBad;
+    }
+
+    if (id === 5) {
+      return dummySubmittedReview;
     }
 
     return dummyReview;
