@@ -7,6 +7,7 @@ import {
 } from '../../models/User';
 import { AddUserRoleArgs } from '../../resolvers/mutations/AddUserRoleMutation';
 import { CreateUserByEmailInviteArgs } from '../../resolvers/mutations/CreateUserByEmailInviteMutation';
+import { UsersArgs } from '../../resolvers/queries/UsersQuery';
 import { UserDataSource } from '../UserDataSource';
 
 export const basicDummyUser = new BasicUserDetails(
@@ -318,9 +319,7 @@ export class UserDataSourceMock implements UserDataSource {
   }
 
   async getUsers(
-    filter?: string,
-    first?: number,
-    offset?: number
+    args: UsersArgs
   ): Promise<{ totalCount: number; users: BasicUserDetails[] }> {
     return {
       totalCount: 2,
