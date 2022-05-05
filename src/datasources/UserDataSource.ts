@@ -59,7 +59,11 @@ export interface UserDataSource {
     telephone_alt: string | undefined
   ): Promise<User>;
   ensureDummyUserExists(userId: number): Promise<User>;
-  createOrganisation(name: string, verified: boolean): Promise<number>;
+  createOrganisation(
+    name: string,
+    verified: boolean,
+    countryId?: number
+  ): Promise<number>;
   update(user: User): Promise<User>;
   setUserRoles(id: number, roles: number[]): Promise<void>;
   setUserPassword(id: number, password: string): Promise<BasicUserDetails>;

@@ -613,11 +613,16 @@ export default class PostgresUserDataSource implements UserDataSource {
         users.map((user) => createBasicUserObject(user))
       );
   }
-  async createOrganisation(name: string, verified: boolean): Promise<number> {
+  async createOrganisation(
+    name: string,
+    verified: boolean,
+    countryId: number | null = null
+  ): Promise<number> {
     const [institutionId]: number[] = await database
       .insert({
         institution: name,
         verified,
+        country_id: countryId,
       })
       .into('institutions')
       .returning('institution_id');
