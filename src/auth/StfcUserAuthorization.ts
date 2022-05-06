@@ -1,7 +1,12 @@
 import { logger } from '@user-office-software/duo-logger';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
+import { Tokens } from '../config/Tokens';
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
+import { SEPDataSource } from '../datasources/SEPDataSource';
 import UOWSSoapClient from '../datasources/stfc/UOWSSoapInterface';
+import { UserDataSource } from '../datasources/UserDataSource';
+import { VisitDataSource } from '../datasources/VisitDataSource';
 import { User } from '../models/User';
 import { UserAuthorization } from './UserAuthorization';
 
@@ -9,6 +14,15 @@ const client = new UOWSSoapClient(process.env.EXTERNAL_AUTH_SERVICE_URL);
 
 @injectable()
 export class StfcUserAuthorization extends UserAuthorization {
+  constructor(
+    @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
+    @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,
+    @inject(Tokens.ProposalDataSource)
+    protected proposalDataSource: ProposalDataSource,
+    @inject(Tokens.VisitDataSource) protected visitDataSource: VisitDataSource
+  ) {
+    super(userDataSource, sepDataSource, proposalDataSource, visitDataSource);
+  }
   async externalTokenLogin(token: string): Promise<User> {
     const stfcUser = await client
       .getPersonDetailsFromSessionId(token)

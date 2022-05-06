@@ -1,8 +1,13 @@
 import jsonwebtoken from 'jsonwebtoken';
 import 'reflect-metadata';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
-import { User } from '../models/User';
+import { Tokens } from '../config/Tokens';
+import { ProposalDataSource } from '../datasources/ProposalDataSource';
+import { SEPDataSource } from '../datasources/SEPDataSource';
+import { UserDataSource } from '../datasources/UserDataSource';
+import { VisitDataSource } from '../datasources/VisitDataSource';
+import { User, UserRole } from '../models/User';
 import { UserAuthorization } from './UserAuthorization';
 
 interface ExternalLoginJWT {
@@ -23,6 +28,16 @@ const ALGORITHM = 'HS256';
 
 @injectable()
 export class EssUserAuthorization extends UserAuthorization {
+  constructor(
+    @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
+    @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,
+    @inject(Tokens.ProposalDataSource)
+    protected proposalDataSource: ProposalDataSource,
+    @inject(Tokens.VisitDataSource) protected visitDataSource: VisitDataSource
+  ) {
+    super(userDataSource, sepDataSource, proposalDataSource, visitDataSource);
+  }
+
   private decode(token: string) {
     return jsonwebtoken.verify(token, SECRET, {
       algorithms: [ALGORITHM],
@@ -32,7 +47,38 @@ export class EssUserAuthorization extends UserAuthorization {
   async externalTokenLogin(token: string): Promise<User | null> {
     const decoded = this.decode(token);
 
-    return this.userDataSource.getByOrcID(decoded.ORCID);
+    const user = await this.userDataSource.getByOrcID(decoded.ORCID);
+    if (user) {
+      return user;
+    } else {
+      const newUser = await this.userDataSource.create(
+        'unspecified',
+        decoded.FirstName,
+        undefined,
+        decoded.LastName,
+        decoded.mail,
+        decoded.FirstName,
+        undefined,
+        decoded.ORCID,
+        '',
+        'male',
+        1,
+        new Date(),
+        1,
+        '',
+        '',
+        decoded.mail,
+        '',
+        undefined
+      );
+
+      await this.userDataSource.addUserRole({
+        userID: newUser.id,
+        roleID: UserRole.USER,
+      });
+
+      return newUser;
+    }
   }
 
   async logout(): Promise<void> {

@@ -12,6 +12,12 @@ import { UserAuthorization } from '../UserAuthorization';
 
 @injectable()
 export class UserAuthorizationMock extends UserAuthorization {
+  logout(token: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  isExternalTokenValid(externalToken: string): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
     @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,

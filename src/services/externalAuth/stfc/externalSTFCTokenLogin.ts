@@ -6,8 +6,9 @@ import { UserDataSource } from '../../../datasources/UserDataSource';
 import { rejection } from '../../../models/Rejection';
 import { AuthJwtPayload } from '../../../models/User';
 import { signToken } from '../../../utils/jwt';
+import { LoginWithExternalToken } from '../loginWithExternalToken';
 
-export default async function externalSTFCTokenLogin(externalToken: string) {
+async function externalSTFCTokenLogin(externalToken: string) {
   const userAuth = container.resolve<UserAuthorization>(
     Tokens.UserAuthorization
   );
@@ -30,3 +31,5 @@ export default async function externalSTFCTokenLogin(externalToken: string) {
 
   return proposalsToken;
 }
+
+export default externalSTFCTokenLogin as LoginWithExternalToken;

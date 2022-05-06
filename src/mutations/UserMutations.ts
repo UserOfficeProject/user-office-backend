@@ -454,7 +454,9 @@ export default class UserMutations {
         Tokens.LoginWithExternalToken
       );
 
-      return loginWithExternalToken(externalToken);
+      const uosToken = await loginWithExternalToken(externalToken);
+
+      return uosToken;
     } catch (error) {
       return rejection(
         'Error occurred during external authentication',
