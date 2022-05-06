@@ -30,6 +30,7 @@ import {
   createPostToRabbitMQHandler,
 } from '../eventHandlers/messageBroker';
 import { SkipAssetRegistrar } from '../services/assetRegistrar/skip/SkipAssetRegistrar';
+import externalSTFCTokenLogin from '../services/externalAuth/stfc/externalSTFCTokenLogin';
 import { configureSTFCEnvironment } from './stfc/configureSTFCEnvironment';
 import { Tokens } from './Tokens';
 import { mapClass, mapValue } from './utils';
@@ -68,3 +69,5 @@ mapValue(Tokens.ListenToMessageQueue, createListenToRabbitMQHandler());
 
 mapValue(Tokens.ConfigureEnvironment, configureSTFCEnvironment);
 mapValue(Tokens.ConfigureLogger, () => setLogger(new ConsoleLogger()));
+
+mapValue(Tokens.LoginWithExternalToken, externalSTFCTokenLogin);

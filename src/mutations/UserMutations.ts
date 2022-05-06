@@ -12,7 +12,7 @@ import {
   userPasswordFieldBEValidationSchema,
 } from '@user-office-software/duo-validation';
 import * as bcrypt from 'bcryptjs';
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 
 import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
@@ -43,6 +43,7 @@ import {
   UpdateUserRolesArgs,
 } from '../resolvers/mutations/UpdateUserMutation';
 import { signToken, verifyToken } from '../utils/jwt';
+import { LoginWithExternalToken } from './../services/externalAuth/loginWithExternalToken';
 
 @injectable()
 export default class UserMutations {
@@ -449,22 +450,11 @@ export default class UserMutations {
 
   async externalTokenLogin(externalToken: string): Promise<string | Rejection> {
     try {
-      const dummyUser = await this.userAuth.externalTokenLogin(externalToken);
+      const loginWithExternalToken = container.resolve<LoginWithExternalToken>(
+        Tokens.LoginWithExternalToken
+      );
 
-      if (!dummyUser) {
-        return rejection('User not found', { externalToken });
-      }
-
-      const roles = await this.dataSource.getUserRoles(dummyUser?.id);
-
-      const proposalsToken = signToken<AuthJwtPayload>({
-        user: dummyUser,
-        roles,
-        currentRole: roles[0], // User role
-        externalToken: externalToken,
-      });
-
-      return proposalsToken;
+      return loginWithExternalToken(externalToken);
     } catch (error) {
       return rejection(
         'Error occurred during external authentication',
