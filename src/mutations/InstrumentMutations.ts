@@ -13,6 +13,7 @@ import { inject, injectable } from 'tsyringe';
 import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
+import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
@@ -45,7 +46,10 @@ export default class InstrumentMutations {
     @inject(Tokens.SEPDataSource) private sepDataSource: SEPDataSource,
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
-    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
+
+    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization,
+    @inject(Tokens.ReviewDataSource)
+    private reviewDataSource: ReviewDataSource
   ) {}
 
   @ValidateArgs(createInstrumentValidationSchema)
@@ -155,10 +159,36 @@ export default class InstrumentMutations {
 
     const proposalPks = args.proposals.map((proposal) => proposal.primaryKey);
 
-    await this.proposalDataSource.updateProposalTechnicalReviewer({
-      userId: instrument.managerUserId,
-      proposalPks: proposalPks,
-    });
+    for await (const proposalPk of proposalPks) {
+      const technicalReview = await this.reviewDataSource.getTechnicalReview(
+        proposalPk
+      );
+
+      if (technicalReview) {
+        await this.proposalDataSource.updateProposalTechnicalReviewer({
+          userId: instrument.managerUserId,
+          proposalPks: [proposalPk],
+        });
+      } else {
+        await this.reviewDataSource.setTechnicalReview(
+          {
+            proposalPk: proposalPk,
+            comment: null,
+            publicComment: null,
+            reviewerId: instrument.managerUserId,
+            timeAllocation: null,
+            status: null,
+            files: null,
+            submitted: false,
+          },
+          false
+        );
+        await this.proposalDataSource.updateProposalTechnicalReviewer({
+          userId: instrument.managerUserId,
+          proposalPks: [proposalPk],
+        });
+      }
+    }
 
     return this.dataSource
       .assignProposalsToInstrument(proposalPks, args.instrumentId)
