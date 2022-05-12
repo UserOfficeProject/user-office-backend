@@ -15,7 +15,6 @@ import { ProposalSettingsDataSource } from '../datasources/ProposalSettingsDataS
 import { ReviewDataSource } from '../datasources/ReviewDataSource';
 import { Authorized, EventBus, ValidateArgs } from '../decorators';
 import { Event } from '../events/event.enum';
-import { Proposal } from '../models/Proposal';
 import { rejection, Rejection } from '../models/Rejection';
 import {
   Review,
@@ -205,8 +204,18 @@ export default class ReviewMutations {
       });
     }
 
+    const shouldUpdateReview = technicalReview !== null;
+
+    /**
+     * TODO: This condition here is a special case because we usually create the review when proposal is assigned to the instrument.
+     * When user officer tries to submit technical review directly on unassigned proposal to instrument we should create instead of updating nonexisting review.
+     */
+    const updatedTechnicalReview = shouldUpdateReview
+      ? { ...technicalReview, ...args }
+      : { ...args };
+
     const isReviewValid = await proposalTechnicalReviewValidationSchema.isValid(
-      technicalReview
+      updatedTechnicalReview
     );
     if (isReviewValid === false) {
       return rejection(
@@ -214,8 +223,6 @@ export default class ReviewMutations {
         { args }
       );
     }
-
-    const shouldUpdateReview = technicalReview !== null;
 
     return this.dataSource
       .setTechnicalReview(args, shouldUpdateReview)
@@ -307,8 +314,8 @@ export default class ReviewMutations {
   ) {
     for await (const proposalPk of proposalPks) {
       const technicalReviewAssignee = (
-        await this.proposalDataSource.get(proposalPk)
-      )?.technicalReviewAssignee;
+        await this.dataSource.getTechnicalReview(proposalPk)
+      )?.technicalReviewAssigneeId;
       if (technicalReviewAssignee !== assigneeUserId) {
         return false;
       }
@@ -321,7 +328,7 @@ export default class ReviewMutations {
   async updateTechnicalReviewAssignee(
     agent: UserWithRole | null,
     args: UpdateTechnicalReviewAssigneeInput
-  ): Promise<Proposal[] | Rejection> {
+  ): Promise<TechnicalReview[] | Rejection> {
     if (
       !this.userAuth.isUserOfficer(agent) &&
       !this.isTechnicalReviewAssignee(args.proposalPks, agent?.id)
