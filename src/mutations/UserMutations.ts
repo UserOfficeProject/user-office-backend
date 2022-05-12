@@ -12,7 +12,7 @@ import {
   userPasswordFieldBEValidationSchema,
 } from '@user-office-software/duo-validation';
 import * as bcrypt from 'bcryptjs';
-import { container, inject, injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { UserAuthorization } from '../auth/UserAuthorization';
 import { Tokens } from '../config/Tokens';
@@ -451,20 +451,13 @@ export default class UserMutations {
 
   async externalTokenLogin(externalToken: string): Promise<string | Rejection> {
     try {
-      const auth = container.resolve<UserAuthorization>(
-        Tokens.UserAuthorization
-      );
-      const dataSource = container.resolve<UserDataSource>(
-        Tokens.UserDataSource
-      );
-
-      const user = await auth.externalTokenLogin(externalToken);
+      const user = await this.userAuth.externalTokenLogin(externalToken);
 
       if (!user) {
         return rejection('User not found', { externalToken });
       }
 
-      const roles = await dataSource.getUserRoles(user.id);
+      const roles = await this.dataSource.getUserRoles(user.id);
 
       const uosToken = signToken<AuthJwtPayload>({
         user: user,
