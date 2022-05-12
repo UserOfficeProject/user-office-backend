@@ -408,6 +408,7 @@ export default class UserMutations {
   }
 
   @ValidateArgs(getTokenForUserValidationSchema)
+  @Authorized()
   async getTokenForUser(
     agent: UserWithRole | null,
     { userId }: { userId: number }
