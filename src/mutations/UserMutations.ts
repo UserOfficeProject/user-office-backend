@@ -43,7 +43,6 @@ import {
   UpdateUserRolesArgs,
 } from '../resolvers/mutations/UpdateUserMutation';
 import { signToken, verifyToken } from '../utils/jwt';
-import { LoginWithExternalToken } from './../services/externalAuth/loginWithExternalToken';
 
 @injectable()
 export default class UserMutations {
@@ -452,11 +451,27 @@ export default class UserMutations {
 
   async externalTokenLogin(externalToken: string): Promise<string | Rejection> {
     try {
-      const loginWithExternalToken = container.resolve<LoginWithExternalToken>(
-        Tokens.LoginWithExternalToken
+      const auth = container.resolve<UserAuthorization>(
+        Tokens.UserAuthorization
+      );
+      const dataSource = container.resolve<UserDataSource>(
+        Tokens.UserDataSource
       );
 
-      const uosToken = await loginWithExternalToken(externalToken);
+      const user = await auth.externalTokenLogin(externalToken);
+
+      if (!user) {
+        return rejection('User not found', { externalToken });
+      }
+
+      const roles = await dataSource.getUserRoles(user.id);
+
+      const uosToken = signToken<AuthJwtPayload>({
+        user: user,
+        roles,
+        currentRole: roles[0],
+        externalToken: externalToken,
+      });
 
       return uosToken;
     } catch (error) {

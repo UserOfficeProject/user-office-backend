@@ -29,7 +29,6 @@ import {
   createPostToRabbitMQHandler,
 } from '../eventHandlers/messageBroker';
 import { EAMAssetRegistrar } from '../services/assetRegistrar/eam/EAMAssetRegistrar';
-import externalPINGTokenLogin from '../services/externalAuth/ping/externalPingTokenLogin';
 import { configureESSDevelopmentEnvironment } from './ess/configureESSEnvironment';
 import { configureGraylogLogger } from './ess/configureGrayLogLogger';
 import { Tokens } from './Tokens';
@@ -74,5 +73,3 @@ mapValue(
   isProduction ? () => {} : configureESSDevelopmentEnvironment
 );
 mapValue(Tokens.ConfigureLogger, configureGraylogLogger);
-
-mapValue(Tokens.LoginWithExternalToken, externalPINGTokenLogin);
