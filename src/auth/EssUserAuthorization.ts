@@ -1,3 +1,4 @@
+import { logger } from '@user-office-software/duo-logger';
 import jsonwebtoken from 'jsonwebtoken';
 import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
@@ -22,10 +23,6 @@ interface ExternalLoginJWT {
   exp: number;
 }
 
-const SECRET =
-  '55a9c59afe9580c5769da3ed8f98aebc0c40af3a50f3301825a7f57fb070865c';
-const ALGORITHM = 'HS256';
-
 @injectable()
 export class EssUserAuthorization extends UserAuthorization {
   constructor(
@@ -39,8 +36,18 @@ export class EssUserAuthorization extends UserAuthorization {
   }
 
   private decode(token: string) {
-    return jsonwebtoken.verify(token, SECRET, {
-      algorithms: [ALGORITHM],
+    const PING_PUBLIC_CRT = process.env.PING_PUBLIC_CRT;
+    const PING_SIGNING_ALGORITHM = 'RS256';
+
+    if (!PING_PUBLIC_CRT) {
+      logger.logError('Environmental variable PING_PUBLIC_CRT is not defined', {
+        crt: PING_PUBLIC_CRT,
+      });
+      throw new Error('Authorization configuration error');
+    }
+
+    return jsonwebtoken.verify(token, PING_PUBLIC_CRT, {
+      algorithms: [PING_SIGNING_ALGORITHM],
     }) as ExternalLoginJWT;
   }
 
