@@ -414,19 +414,18 @@ export default class UserMutations {
     { userId }: { userId: number }
   ): Promise<string | Rejection> {
     const isUserOfficer = this.userAuth.isUserOfficer(agent);
-    const isImpersonatingUser =
-      agent?.impersonatingUserId === null ||
-      agent?.impersonatingUserId === undefined;
+    const isImpersonatedUser = typeof agent?.impersonatingUserId === 'number';
+    const shouldImpersonateUser = agent?.impersonatingUserId !== userId;
 
     // NOTE: This is checking if person trying to impersonate user is not user officer then reject.
-    if (isImpersonatingUser && !isUserOfficer) {
+    if (!isImpersonatedUser && !isUserOfficer) {
       return rejection(
         'Can not impersonate user because of insufficient permissions',
         { userId }
       );
     }
 
-    if (!isImpersonatingUser && isUserOfficer) {
+    if (isImpersonatedUser && isUserOfficer && shouldImpersonateUser) {
       return rejection(
         'Can not impersonate user with already impersonated user',
         { userId }
@@ -434,7 +433,7 @@ export default class UserMutations {
     }
 
     // NOTE: This is checking if person trying to impersonate another user is not the impersonating user then reject also.
-    if (!isImpersonatingUser && agent.impersonatingUserId !== userId) {
+    if (isImpersonatedUser && shouldImpersonateUser) {
       return rejection(
         'Can not impersonate user because of insufficient permissions',
         { userId }
@@ -455,7 +454,8 @@ export default class UserMutations {
       user,
       roles,
       currentRole: roles[0],
-      impersonatingUserId: isUserOfficer ? agent?.id : null,
+      impersonatingUserId:
+        isUserOfficer && shouldImpersonateUser ? agent?.id : undefined,
     });
 
     return token;
@@ -543,6 +543,7 @@ export default class UserMutations {
         roles: decoded.roles,
         currentRole,
         externalToken: decoded.externalToken,
+        impersonatingUserId: decoded.impersonatingUserId,
       });
 
       return tokenWithRole;
