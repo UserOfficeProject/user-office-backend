@@ -32,6 +32,12 @@ async function enableDefaultEssFeatures() {
       FeatureId.SHIPPING,
       FeatureId.RISK_ASSESSMENT,
       FeatureId.EMAIL_INVITE,
+      FeatureId.INSTRUMENT_MANAGEMENT,
+      FeatureId.TECHNICAL_REVIEW,
+      FeatureId.SEP_REVIEW,
+      FeatureId.USER_MANAGEMENT,
+      FeatureId.VISIT_MANAGEMENT,
+      FeatureId.SAMPLE_SAFETY,
     ],
     true
   );

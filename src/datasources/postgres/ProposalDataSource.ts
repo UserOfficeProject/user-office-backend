@@ -7,7 +7,9 @@ import { Event } from '../../events/event.enum';
 import { Proposal, ProposalPksWithNextStatus } from '../../models/Proposal';
 import { ProposalView } from '../../models/ProposalView';
 import { getQuestionDefinition } from '../../models/questionTypes/QuestionRegistry';
+import { ReviewerFilter } from '../../models/Review';
 import { ScheduledEventCore } from '../../models/ScheduledEventCore';
+import { TechnicalReview } from '../../models/TechnicalReview';
 import { UpdateTechnicalReviewAssigneeInput } from '../../resolvers/mutations/UpdateTechnicalReviewAssignee';
 import {
   ProposalBookingFilter,
@@ -25,11 +27,13 @@ import {
   createProposalObject,
   createProposalViewObject,
   createScheduledEventObject,
+  createTechnicalReviewObject,
   ProposalEventsRecord,
   ProposalRecord,
   ProposalViewRecord,
   ScheduledEventRecord,
   StatusChangingEventRecord,
+  TechnicalReviewRecord,
 } from './records';
 
 const fieldMap: { [key: string]: string } = {
@@ -84,13 +88,15 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
   async updateProposalTechnicalReviewer({
     userId,
     proposalPks,
-  }: UpdateTechnicalReviewAssigneeInput): Promise<Proposal[]> {
-    const response = await database('proposals')
-      .update('technical_review_assignee', userId)
+  }: UpdateTechnicalReviewAssigneeInput): Promise<TechnicalReview[]> {
+    const response = await database('technical_review')
+      .update('technical_review_assignee_id', userId)
       .whereIn('proposal_pk', proposalPks)
       .returning('*')
-      .then((proposals: ProposalRecord[]) => {
-        return proposals.map((proposal) => createProposalObject(proposal));
+      .then((technicalReviews: TechnicalReviewRecord[]) => {
+        return technicalReviews.map((technicalReview) =>
+          createTechnicalReviewObject(technicalReview)
+        );
       });
 
     return response;
@@ -495,12 +501,12 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
         database.raw('count(*) OVER() AS full_count'),
       ])
       .from('proposal_table_view')
-      .join('instrument_has_scientists', {
-        'instrument_has_scientists.instrument_id':
-          'proposal_table_view.instrument_id',
-      })
       .join('instruments', {
         'instruments.instrument_id': 'proposal_table_view.instrument_id',
+      })
+      .leftJoin('instrument_has_scientists', {
+        'instrument_has_scientists.instrument_id':
+          'proposal_table_view.instrument_id',
       })
       .where(function () {
         this.where('instrument_has_scientists.user_id', scientistId).orWhere(
@@ -515,6 +521,12 @@ export default class PostgresProposalDataSource implements ProposalDataSource {
           query
             .where('title', 'ilike', `%${filter.text}%`)
             .orWhere('abstract', 'ilike', `%${filter.text}%`);
+        }
+        if (filter?.reviewer === ReviewerFilter.ME) {
+          query.where(
+            'proposal_table_view.technical_review_assignee_id',
+            scientistId
+          );
         }
         if (filter?.callId) {
           query.where('proposal_table_view.call_id', filter.callId);

@@ -44,7 +44,6 @@ import { UpdateSEPArgs } from '../resolvers/mutations/UpdateSEPMutation';
 import { UpdateSEPTimeAllocationArgs } from '../resolvers/mutations/UpdateSEPProposalMutation';
 @injectable()
 export default class SEPMutations {
-  private userAuth = container.resolve(UserAuthorization);
   private proposalAuth = container.resolve(ProposalAuthorization);
   constructor(
     @inject(Tokens.SEPDataSource)
@@ -56,7 +55,8 @@ export default class SEPMutations {
     @inject(Tokens.ProposalSettingsDataSource)
     private proposalSettingsDataSource: ProposalSettingsDataSource,
     @inject(Tokens.ProposalDataSource)
-    private proposalDataSource: ProposalDataSource
+    private proposalDataSource: ProposalDataSource,
+    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
   @ValidateArgs(createSEPValidationSchema)
@@ -457,19 +457,23 @@ export default class SEPMutations {
     agent: UserWithRole | null,
     args: ReorderSepMeetingDecisionProposalsInput
   ): Promise<SepMeetingDecision | Rejection> {
-    const allSepDecisions = await Promise.all(
-      args.proposals.map((proposal) => {
-        return this.dataSource.saveSepMeetingDecision(proposal);
-      })
-    );
-
-    if (allSepDecisions.length !== args.proposals.length) {
-      return rejection(
-        'Can not reorder SEP meeting decision proposals because could not find all proposals',
-        { args }
+    try {
+      const allSepDecisions = await Promise.all(
+        args.proposals.map((proposal) => {
+          return this.dataSource.saveSepMeetingDecision(proposal);
+        })
       );
-    }
 
-    return allSepDecisions[0];
+      if (allSepDecisions.length !== args.proposals.length) {
+        return rejection(
+          'Can not reorder SEP meeting decision proposals because could not find all proposals',
+          { args }
+        );
+      }
+
+      return allSepDecisions[0];
+    } catch (error) {
+      return rejection('Something went wrong', { args, error });
+    }
   }
 }

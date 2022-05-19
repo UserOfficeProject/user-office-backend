@@ -23,7 +23,6 @@ import { UserAuthorization } from './../auth/UserAuthorization';
 
 @injectable()
 export default class VisitMutations {
-  private userAuth = container.resolve(UserAuthorization);
   private proposalAuth = container.resolve(ProposalAuthorization);
   private visitAuth = container.resolve(VisitAuthorization);
 
@@ -37,7 +36,8 @@ export default class VisitMutations {
     @inject(Tokens.TemplateDataSource)
     private templateDataSource: TemplateDataSource,
     @inject(Tokens.ScheduledEventDataSource)
-    private scheduledEventDataSource: ScheduledEventDataSource
+    private scheduledEventDataSource: ScheduledEventDataSource,
+    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
   @Authorized()
@@ -121,6 +121,19 @@ export default class VisitMutations {
       );
     }
 
+    const isTeamleadPartOfTheTeam = args.team.some(
+      (teamMember) => teamMember === args.teamLeadUserId
+    );
+
+    if (isTeamleadPartOfTheTeam === false) {
+      return rejection(
+        'Can not create visit because team lead is not part of the team',
+        {
+          args,
+          agent: user,
+        }
+      );
+    }
     try {
       const visit = await this.dataSource.createVisit(
         args,

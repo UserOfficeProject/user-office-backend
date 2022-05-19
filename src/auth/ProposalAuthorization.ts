@@ -1,4 +1,4 @@
-import { container, inject, injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { CallDataSource } from '../datasources/CallDataSource';
@@ -15,7 +15,6 @@ import { UserAuthorization } from './UserAuthorization';
 
 @injectable()
 export class ProposalAuthorization {
-  private userAuth = container.resolve(UserAuthorization);
   constructor(
     @inject(Tokens.ProposalDataSource)
     private proposalDataSource: ProposalDataSource,
@@ -30,7 +29,8 @@ export class ProposalAuthorization {
     @inject(Tokens.CallDataSource)
     private callDataSource: CallDataSource,
     @inject(Tokens.ProposalSettingsDataSource)
-    private proposalSettingsDataSource: ProposalSettingsDataSource
+    private proposalSettingsDataSource: ProposalSettingsDataSource,
+    @inject(Tokens.UserAuthorization) private userAuth: UserAuthorization
   ) {}
 
   private async resolveProposal(
@@ -110,12 +110,8 @@ export class ProposalAuthorization {
 
     const sepIdsUserIsMemberOf = sepsUserIsMemberOf.map((sep) => sep.id);
 
-    /**
-     * NOTE: Everybody who is on a(member of) SEP(Scientific evaluation panel) is able to view and review a proposal.
-     * If we like to limit that we can just send userId on the getUserReviews and query for reviews that are only on that specific user.
-     */
     return this.reviewDataSource
-      .getUserReviews(sepIdsUserIsMemberOf)
+      .getUserReviews(sepIdsUserIsMemberOf, agent.id)
       .then((reviews) => {
         return reviews.some((review) => review.proposalPk === proposalPk);
       });
@@ -128,6 +124,18 @@ export class ProposalAuthorization {
 
     return this.userDataSource
       .checkScientistToProposal(agent.id, proposalPk)
+      .then((result) => {
+        return result;
+      });
+  }
+
+  async isInstrumentManagerToProposal(agent: User | null, proposalPk: number) {
+    if (agent == null || !agent.id) {
+      return false;
+    }
+
+    return this.userDataSource
+      .checkInstrumentManagerToProposal(agent.id, proposalPk)
       .then((result) => {
         return result;
       });
@@ -180,6 +188,7 @@ export class ProposalAuthorization {
       (await this.isMemberOfProposal(agent, proposal)) ||
       (await this.isReviewerOfProposal(agent, proposal.primaryKey)) ||
       (await this.isScientistToProposal(agent, proposal.primaryKey)) ||
+      (await this.isInstrumentManagerToProposal(agent, proposal.primaryKey)) ||
       (await this.isChairOrSecretaryOfProposal(agent, proposal.primaryKey)) ||
       (await this.isVisitorOfProposal(agent, proposal.primaryKey))
     );

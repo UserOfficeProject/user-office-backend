@@ -23,6 +23,7 @@ import { SEP, SEPProposal, SEPAssignment, SEPReviewer } from '../../models/SEP';
 import { SepMeetingDecision } from '../../models/SepMeetingDecision';
 import { Settings, SettingsId } from '../../models/Settings';
 import { Shipment, ShipmentStatus } from '../../models/Shipment';
+import { TechnicalReview } from '../../models/TechnicalReview';
 import {
   DataType,
   FieldCondition,
@@ -82,9 +83,6 @@ export interface ProposalRecord {
   readonly full_count: number;
   readonly proposal_id: string;
   readonly final_status: number;
-  readonly excellence_score: number;
-  readonly safety_score: number;
-  readonly technical_score: number;
   readonly call_id: number;
   readonly questionary_id: number;
   readonly template_id: number;
@@ -95,7 +93,6 @@ export interface ProposalRecord {
   readonly reference_number_sequence: number;
   readonly management_time_allocation: number;
   readonly management_decision_submitted: boolean;
-  readonly technical_review_assignee: number;
 }
 export interface ProposalViewRecord {
   readonly proposal_pk: number;
@@ -111,7 +108,9 @@ export interface ProposalViewRecord {
   readonly notified: boolean;
   readonly technical_review_status: number;
   readonly technical_review_submitted: boolean;
-  readonly technical_review_assignee: number;
+  readonly technical_review_assignee_id: number;
+  readonly technical_review_assignee_firstname: string;
+  readonly technical_review_assignee_lastname: string;
   readonly instrument_name: string;
   readonly call_short_code: string;
   readonly sep_id: number;
@@ -259,6 +258,7 @@ export interface TechnicalReviewRecord {
   readonly submitted: boolean;
   readonly reviewer_id: number;
   readonly files: string;
+  readonly technical_review_assignee_id: number | null;
 }
 
 export interface CallRecord {
@@ -303,6 +303,7 @@ export interface NationalityRecord {
 export interface InstitutionRecord {
   readonly institution_id: number;
   readonly institution: string;
+  readonly country_id: number;
   readonly verified: boolean;
 }
 
@@ -647,8 +648,24 @@ export const createProposalObject = (proposal: ProposalRecord) => {
     proposal.submitted,
     proposal.reference_number_sequence,
     proposal.management_time_allocation,
-    proposal.management_decision_submitted,
-    proposal.technical_review_assignee
+    proposal.management_decision_submitted
+  );
+};
+
+export const createTechnicalReviewObject = (
+  technicalReview: TechnicalReviewRecord
+) => {
+  return new TechnicalReview(
+    technicalReview.technical_review_id,
+    technicalReview.proposal_pk,
+    technicalReview.comment,
+    technicalReview.public_comment,
+    technicalReview.time_allocation,
+    technicalReview.status,
+    technicalReview.submitted,
+    technicalReview.reviewer_id,
+    technicalReview.files ? JSON.stringify(technicalReview.files) : null,
+    technicalReview.technical_review_assignee_id
   );
 };
 
@@ -665,7 +682,9 @@ export const createProposalViewObject = (proposal: ProposalViewRecord) => {
     proposal.notified,
     proposal.technical_time_allocation,
     proposal.management_time_allocation,
-    proposal.technical_review_assignee,
+    proposal.technical_review_assignee_id,
+    proposal.technical_review_assignee_firstname,
+    proposal.technical_review_assignee_lastname,
     proposal.technical_review_status,
     proposal.technical_review_submitted,
     proposal.instrument_name,
@@ -1003,6 +1022,7 @@ export const createInstitutionObject = (institution: InstitutionRecord) => {
   return new Institution(
     institution.institution_id,
     institution.institution,
+    institution.country_id,
     institution.verified
   );
 };
