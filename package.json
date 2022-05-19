@@ -58,6 +58,7 @@
     "email-templates": "^8.0.9",
     "express": "^4.17.3",
     "express-jwt": "^6.1.1",
+    "fast-xml-parser": "^4.0.7",
     "graphql": "^15.8.0",
     "graphql-middleware": "^6.1.15",
     "graphql-tag": "^2.12.6",

@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import { logger } from '@user-office-software/duo-logger';
 import { mockServerClient } from 'mockserver-client';
+
 // import { start_mockserver, stop_mockserver } from 'mockserver-node';
 async function mockserver() {
   const isTestingMode = process.env.NODE_ENV === 'test';
@@ -89,6 +90,71 @@ async function mockserver() {
             body: request1,
           };
         }
+        if (name.includes('getBasicPersonDetailsFromEmail')) {
+          var emails = [
+            'service@useroffice.ess.eu',
+            'Javon4@hotmail.com',
+            'Aaron_Harris49@gmail.com',
+            'nils@ess.se',
+            'ben@inbox.com',
+            'unverified-user@example.com',
+            'david@teleworm.us',
+          ];
+          let regexp = '<Email>(.*?)<';
+          const match = name.match(regexp);
+          logger.logInfo('email match is' + match[1], {});
+
+          let file;
+
+          if (emails.includes(match)) {
+            logger.logInfo('here!!');
+            file = JSON.parse(
+              fs.readFileSync('responses/user/' + method + '.txt', 'utf8')
+            );
+          } else {
+            file = JSON.parse(
+              fs.readFileSync('responses/user/emailEmpty.txt', 'utf8')
+            );
+          }
+          const request1 = file.body.xml;
+
+          return {
+            body: request1,
+          };
+        }
+        if (name.includes('getSearchableBasicPersonDetailsFromEmail')) {
+          let regexp = '<Email>(.*?)<';
+          const match = name.match(regexp);
+          logger.logInfo('searchable match is' + match[1], {});
+
+          const file = JSON.parse(
+            fs.readFileSync(
+              'responses/user/' + method + '/' + match[1] + '.txt',
+              'utf8'
+            )
+          );
+          //const test = JSON.parse(file);
+          const request1 = file.body.xml;
+
+          return {
+            body: request1,
+          };
+        }
+        if (
+          name.includes('getBasicPeopleDetailsFromUserNumbers') &&
+          name.includes('<UserNumbers>')
+        ) {
+          logger.logInfo('Not empty repsonse');
+          const file = JSON.parse(
+            fs.readFileSync('responses/user/notEmptyResponse' + '.txt', 'utf8')
+          );
+          //const test = JSON.parse(file);
+          const request1 = file.body.xml;
+
+          return {
+            body: request1,
+          };
+        }
         const file = JSON.parse(
           fs.readFileSync('responses/user/' + method + '.txt', 'utf8')
         );
@@ -98,76 +164,6 @@ async function mockserver() {
         return {
           body: request1,
         };
-        // if (
-        //   String(request.body.xml).includes('getPersonDetailsFromSessionId')
-        // ) {
-        //   const name = String(request.body.xml);
-        //   let regexp = '<tns:(.*?)>';
-        //   const test = name.match(regexp);
-        //   const method = test[1];
-        //   logger.logInfo(
-        //     'the method name is:' + name + test + 'yo ' + method,
-        //     {}
-        //   );
-        //   const file = JSON.parse(
-        //     fs.readFileSync('C: Users wdo36736 Desktop testing.txt', 'utf8')
-        //   );
-        //   //const test = JSON.parse(file);
-        //   const request1 = file.httpResponse.body.xml;
-        //   return {
-        //     body: request1,
-        //   };
-        // } else if (String(request.body.xml).includes('getRolesForUser')) {
-        //   const name = String(request.body.xml);
-        //   let regexp = '<tns:(.*?)>';
-        //   const test = name.match(regexp);
-        //   const method = test[1];
-        //   logger.logInfo(
-        //     'the method name is:' + name + test + 'yo' + method,
-        //     {}
-        //   );
-        //   const file = JSON.parse(fs.readFileSync('roles.txt', 'utf8'));
-        //   //const test = JSON.parse(file);
-        //   const request1 = file.body.xml;
-        //   return {
-        //     body: request1,
-        //   };
-        // } else if (
-        //   String(request.body.xml).includes(
-        //     'getBasicPersonDetailsFromUserNumber'
-        //   )
-        // ) {
-        //   const name = String(request.body.xml);
-        //   let regexp = '<tns:(.*?)>';
-        //   const test = name.match(regexp);
-        //   const method = test[1];
-        //   logger.logInfo(
-        //     'the method name is:' + name + test + 'yo' + method,
-        //     {}
-        //   );
-        //   const file = JSON.parse(fs.readFileSync('userNumber.txt', 'utf8'));
-        //   //const test = JSON.parse(file);
-        //   const request1 = file.body.xml;
-        //   return {
-        //     body: request1,
-        //   };
-        // } else if (String(request.body.xml).includes('isTokenValid')) {
-        //   const name = String(request.body.xml);
-        //   let regexp = '<tns:(.*?)>';
-        //   const test = name.match(regexp);
-        //   const method = test[1];
-        //   logger.logInfo('the method name isp:' + test, {});
-        //   const file = JSON.parse(fs.readFileSync('valid.txt'));
-        //   //const test = JSON.parse(file);
-        //   const request1 = file.body.xml;
-        //   return {
-        //     body: request1,
-        //   };
-        // } else {
-        //   return {
-        //     statusCode: 401,
-        //   };
-        // }
       }
     };
     mockServerClient('172.17.0.1', 1080)
@@ -202,13 +198,8 @@ async function mockserver() {
         timeToLive: {
           unlimited: true,
         },
-        httpOverrideForwardedRequest: {
-          httpRequest: {
-            path: '/ws/UserOfficeWebService',
-            headers: {
-              Host: ['devapis.facilities.rl.ac.uk'],
-            },
-          },
+        httpResponse: {
+          body: fs.readFileSync('responses/UserOfficeWebService.wsdl', 'utf8'),
         },
       })
       .then(

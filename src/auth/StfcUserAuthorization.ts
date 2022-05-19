@@ -10,8 +10,13 @@ import { VisitDataSource } from '../datasources/VisitDataSource';
 import { User } from '../models/User';
 import { UserAuthorization } from './UserAuthorization';
 
-const client = new UOWSSoapClient(process.env.EXTERNAL_AUTH_SERVICE_URL);
-
+let externalUrl = '';
+if (process.env.STFCE2E === 'stfc') {
+  externalUrl = 'http://172.17.0.1:1080/ws/UserOfficeWebService?wsdl';
+} else {
+  externalUrl = process.env.EXTERNAL_AUTH_SERVICE_URL || '';
+}
+const client = new UOWSSoapClient(externalUrl);
 @injectable()
 export class StfcUserAuthorization extends UserAuthorization {
   constructor(

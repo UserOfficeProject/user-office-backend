@@ -1,3 +1,5 @@
+import { logger } from '@user-office-software/duo-logger';
+
 import { Role } from '../../models/Role';
 import { Roles } from '../../models/Role';
 import { BasicUserDetails, User } from '../../models/User';
@@ -7,14 +9,14 @@ import PostgresUserDataSource from '../postgres/UserDataSource';
 import { UserDataSource } from '../UserDataSource';
 import UOWSSoapClient from './UOWSSoapInterface';
 
-// let url = '';
-// if (process.env.NODE_ENV === 'test') {
-//   url = 'https://localhost:1080/ws/UserOfficeWebService?wsdl';
-// } else {
-//   url = 'https://devapis.facilities.rl.ac.uk/ws/UserOfficeWebService?wsdl';
-// }
+let externalUrl = '';
+if (process.env.STFCE2E === 'stfc') {
+  externalUrl = 'http://172.17.0.1:1080/ws/UserOfficeWebService?wsdl';
+} else {
+  externalUrl = process.env.EXTERNAL_AUTH_SERVICE_URL || '';
+}
 const postgresUserDataSource = new PostgresUserDataSource();
-const client = new UOWSSoapClient();
+const client = new UOWSSoapClient(externalUrl);
 const token = process.env.EXTERNAL_AUTH_TOKEN;
 
 type StfcRolesToEssRole = { [key: string]: Roles[] };
@@ -133,6 +135,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getBasicUserInfo(id: number): Promise<BasicUserDetails | null> {
+    logger.logInfo('Details: getBasicUserInfo', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
@@ -194,6 +197,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getByUsername(username: string): Promise<User | null> {
+    logger.logInfo('Details: getByUsername', { username });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, username)
     )?.return;
@@ -267,6 +271,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async me(id: number) {
+    logger.logDebug('Details: me', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
@@ -275,6 +280,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getUser(id: number) {
+    logger.logInfo('Details: getUser', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
