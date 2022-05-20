@@ -19,7 +19,7 @@ export abstract class UserAuthorization {
   ) {}
 
   isUserOfficer(agent: UserWithRole | null) {
-    if (agent == null) {
+    if (agent === null) {
       return false;
     }
 
@@ -27,15 +27,23 @@ export abstract class UserAuthorization {
   }
 
   isUser(agent: UserWithRole | null) {
-    if (agent == null) {
+    if (agent === null) {
       return false;
     }
 
     return agent?.currentRole?.shortCode === Roles.USER;
   }
 
+  isApiToken(agent: UserWithRole | null) {
+    if (agent === null) {
+      return false;
+    }
+
+    return agent?.isApiAccessToken;
+  }
+
   async hasRole(agent: UserWithRole | null, role: string): Promise<boolean> {
-    if (agent == null) {
+    if (agent === null) {
       return false;
     }
 
@@ -45,7 +53,7 @@ export abstract class UserAuthorization {
   }
 
   isInstrumentScientist(agent: UserWithRole | null) {
-    if (agent == null) {
+    if (agent === null) {
       return false;
     }
 
@@ -56,7 +64,7 @@ export abstract class UserAuthorization {
     agent: UserWithRole | null,
     sepId: number
   ): Promise<boolean> {
-    if (agent == null || !agent.id || !sepId) {
+    if (agent === null || !agent.id || !sepId) {
       return false;
     }
 
@@ -78,7 +86,7 @@ export abstract class UserAuthorization {
     agent: UserWithRole | null,
     sepId: number
   ): Promise<boolean> {
-    if (agent == null || !agent.currentRole) {
+    if (agent === null || !agent.currentRole) {
       return false;
     }
 
