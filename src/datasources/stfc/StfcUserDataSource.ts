@@ -1,5 +1,3 @@
-import { logger } from '@user-office-software/duo-logger';
-
 import { Role } from '../../models/Role';
 import { Roles } from '../../models/Role';
 import { BasicUserDetails, User } from '../../models/User';
@@ -101,23 +99,23 @@ function toEssUser(stfcUser: StfcBasicPersonDetails): User {
 
 export class StfcUserDataSource implements UserDataSource {
   async delete(id: number): Promise<User | null> {
-    throw new Error('Method not implemented. DELETE');
+    throw new Error('Method not implemented.');
   }
 
   async addUserRole(args: AddUserRoleArgs): Promise<boolean> {
-    throw new Error('Method not implemented. ROLE');
+    throw new Error('Method not implemented.');
   }
 
   getByOrcID(orcID: string): Promise<User | null> {
-    throw new Error('Method not implemented. ORC ID');
+    throw new Error('Method not implemented.');
   }
 
   async createInviteUser(args: CreateUserByEmailInviteArgs): Promise<number> {
-    throw new Error('Method not implemented. INVITE');
+    throw new Error('Method not implemented.');
   }
 
   async createOrganisation(name: string, verified: boolean): Promise<number> {
-    throw new Error('Method not implemented. CREATE ORG');
+    throw new Error('Method not implemented.');
   }
 
   async getProposalUsersFull(proposalPk: number): Promise<User[]> {
@@ -136,7 +134,6 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getBasicUserInfo(id: number): Promise<BasicUserDetails | null> {
-    logger.logInfo('Details: getBasicUserInfo', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
@@ -161,7 +158,7 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async checkOrcIDExist(orcID: string): Promise<boolean> {
-    throw new Error('Method not implemented. EXIST');
+    throw new Error('Method not implemented.');
   }
 
   async checkEmailExist(email: string): Promise<boolean> {
@@ -169,11 +166,11 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getPasswordByEmail(email: string): Promise<string> {
-    throw new Error('Method not implemented. PASSWORD');
+    throw new Error('Method not implemented.');
   }
 
   setUserEmailVerified(id: number): Promise<User | null> {
-    throw new Error('Method not implemented. SETUSER');
+    throw new Error('Method not implemented.');
   }
 
   async setUserNotPlaceholder(id: number): Promise<User | null> {
@@ -184,7 +181,7 @@ export class StfcUserDataSource implements UserDataSource {
     id: number,
     password: string
   ): Promise<BasicUserDetails> {
-    throw new Error('Method not implemented. SET PASS');
+    throw new Error('Method not implemented.');
   }
 
   async getByEmail(email: string): Promise<User | null> {
@@ -198,7 +195,6 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getByUsername(username: string): Promise<User | null> {
-    logger.logInfo('Details: getByUsername', { username });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, username)
     )?.return;
@@ -210,11 +206,11 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getPasswordByUsername(username: string): Promise<string | null> {
-    throw new Error('Method not implemented. USERNAME');
+    throw new Error('Method not implemented.');
   }
 
   async setUserRoles(id: number, roles: number[]): Promise<void> {
-    throw new Error('Method not implemented.SET ROLES');
+    throw new Error('Method not implemented.');
   }
 
   async getUserRoles(id: number): Promise<Role[]> {
@@ -268,11 +264,10 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async update(user: User): Promise<User> {
-    throw new Error('Method not implemented. UPDATE');
+    throw new Error('Method not implemented.');
   }
 
   async me(id: number) {
-    logger.logDebug('Details: me', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
@@ -281,7 +276,6 @@ export class StfcUserDataSource implements UserDataSource {
   }
 
   async getUser(id: number) {
-    logger.logInfo('Details: getUser', { id });
     const stfcUser = (
       await client.getBasicPersonDetailsFromUserNumber(token, id)
     )?.return;
@@ -442,7 +436,7 @@ export class StfcUserDataSource implements UserDataSource {
     telephone: string,
     telephone_alt: string | undefined
   ): Promise<User> {
-    throw new Error('Method not implemented. CREATE I GUESS');
+    throw new Error('Method not implemented.');
   }
 
   async getRoleByShortCode(roleShortCode: Roles): Promise<Role> {
