@@ -1,5 +1,5 @@
 import { logger } from '@user-office-software/duo-logger';
-import jsonwebtoken from 'jsonwebtoken';
+import jsonwebtoken, { Algorithm } from 'jsonwebtoken';
 import 'reflect-metadata';
 import { inject, injectable } from 'tsyringe';
 
@@ -25,6 +25,8 @@ interface ExternalLoginJWT {
 
 @injectable()
 export class EssUserAuthorization extends UserAuthorization {
+  private static PING_PUBLIC_CRT = process.env.PING_PUBLIC_CRT;
+  private static PING_SIGNING_ALGORITHM: Algorithm = 'RS256';
   constructor(
     @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
     @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,
@@ -36,18 +38,15 @@ export class EssUserAuthorization extends UserAuthorization {
   }
 
   private decode(token: string) {
-    const PING_PUBLIC_CRT = process.env.PING_PUBLIC_CRT;
-    const PING_SIGNING_ALGORITHM = 'RS256';
-
-    if (!PING_PUBLIC_CRT) {
+    if (!EssUserAuthorization.PING_PUBLIC_CRT) {
       logger.logError('Environmental variable PING_PUBLIC_CRT is not defined', {
-        crt: PING_PUBLIC_CRT,
+        crt: EssUserAuthorization.PING_PUBLIC_CRT,
       });
       throw new Error('Authorization configuration error');
     }
 
-    return jsonwebtoken.verify(token, PING_PUBLIC_CRT, {
-      algorithms: [PING_SIGNING_ALGORITHM],
+    return jsonwebtoken.verify(token, EssUserAuthorization.PING_PUBLIC_CRT, {
+      algorithms: [EssUserAuthorization.PING_SIGNING_ALGORITHM],
     }) as ExternalLoginJWT;
   }
 
