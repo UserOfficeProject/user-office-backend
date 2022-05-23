@@ -21,6 +21,12 @@ export const dummyApiAccessToken = new Permissions(
 
 export const dummyApiAccessTokens = [dummyApiAccessToken];
 
+export const dummyFeature = new Feature(
+  FeatureId.SHIPPING,
+  false,
+  'Shipping feature'
+);
+
 export class AdminDataSourceMock implements AdminDataSource {
   getCountry(id: number): Promise<Entry | null> {
     throw new Error('Method not implemented.');
