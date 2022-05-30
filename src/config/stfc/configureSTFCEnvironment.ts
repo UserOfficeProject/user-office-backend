@@ -69,7 +69,14 @@ async function setStfcColourTheme() {
 
 async function enableDefaultStfcFeatures() {
   const db = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
-  await db.setFeatures([FeatureId.EXTERNAL_AUTH, FeatureId.EMAIL_SEARCH], true);
+  await db.setFeatures(
+    [
+      FeatureId.EXTERNAL_AUTH,
+      FeatureId.EMAIL_SEARCH,
+      FeatureId.INSTRUMENT_MANAGEMENT,
+    ],
+    true
+  );
   await db.updateSettings({
     settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
     settingsValue: process.env.EXTERNAL_AUTH_LOGIN_URL,
