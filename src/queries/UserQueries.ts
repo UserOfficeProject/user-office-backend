@@ -190,7 +190,8 @@ export default class UserQueries {
 
     const returnableUserIds = await this.userAuth.listReadableUsers(
       agent,
-      userData.users.map((u) => u.id)
+      userData.users.map((u) => u.id),
+      args.sepId
     );
 
     const returnableUsers = userData.users.filter((u) =>
