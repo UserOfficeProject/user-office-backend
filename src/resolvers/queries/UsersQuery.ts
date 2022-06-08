@@ -45,9 +45,6 @@ export class UsersArgs {
 
   @Field(() => String, { nullable: true })
   orderDirection?: string;
-
-  @Field(() => Int, { nullable: true })
-  sepId?: number;
 }
 
 @ArgsType()

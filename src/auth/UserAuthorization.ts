@@ -70,7 +70,7 @@ export abstract class UserAuthorization {
     agent: UserWithRole | null,
     sepId?: number
   ): Promise<boolean> {
-    if (!agent || !agent.currentRole || !sepId) {
+    if (!agent || !agent.currentRole) {
       return false;
     }
 
@@ -81,8 +81,7 @@ export abstract class UserAuthorization {
 
   async listReadableUsers(
     agent: UserWithRole | null,
-    ids: number[],
-    sepId?: number
+    ids: number[]
   ): Promise<number[]> {
     if (!agent) {
       return [];
@@ -90,7 +89,7 @@ export abstract class UserAuthorization {
 
     const isUserOfficer = this.isUserOfficer(agent);
     const isInstrumentScientist = this.isInstrumentScientist(agent);
-    const isSEPMember = await this.isMemberOfSEP(agent, sepId);
+    const isSEPMember = await this.isMemberOfSEP(agent);
     if (isUserOfficer || isInstrumentScientist || isSEPMember) {
       return ids;
     }
