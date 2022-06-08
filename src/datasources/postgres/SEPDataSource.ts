@@ -4,7 +4,7 @@ import {
   ProposalEndStatus,
   ProposalPksWithNextStatus,
 } from '../../models/Proposal';
-import { ReviewStatus } from '../../models/Review';
+import { Review, ReviewStatus } from '../../models/Review';
 import { Role, Roles } from '../../models/Role';
 import {
   SEP,
@@ -40,6 +40,7 @@ import {
   RoleUserRecord,
   SepMeetingDecisionRecord,
   SepProposalWithReviewGradesAndRankingRecord,
+  createReviewObject,
 } from './records';
 
 export default class PostgresSEPDataSource implements SEPDataSource {
@@ -273,6 +274,22 @@ export default class PostgresSEPDataSource implements SEPDataSource {
       .then((result: { count?: string | undefined } | undefined) => {
         return parseInt(result?.count || '0');
       });
+  }
+
+  async getSEPReviewsByCallAndStatus(
+    callIds: number[],
+    status: ReviewStatus
+  ): Promise<Review[]> {
+    const sepReviews: ReviewRecord[] = await database
+      .select(['sr.*'])
+      .from('SEP_Reviews as sr')
+      .join('SEP_Proposals as sp', {
+        'sp.proposal_pk': 'sr.proposal_pk',
+      })
+      .whereIn('sp.call_id', callIds)
+      .andWhere('sr.status', status);
+
+    return sepReviews.map((sepReview) => createReviewObject(sepReview));
   }
 
   async getSEPProposal(
