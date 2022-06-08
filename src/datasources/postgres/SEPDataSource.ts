@@ -287,9 +287,35 @@ export default class PostgresSEPDataSource implements SEPDataSource {
         'sp.proposal_pk': 'sr.proposal_pk',
       })
       .whereIn('sp.call_id', callIds)
-      .andWhere('sr.status', status);
+      .andWhere('sr.status', status)
+      .andWhere('sr.notification_email_sent', false);
 
     return sepReviews.map((sepReview) => createReviewObject(sepReview));
+  }
+
+  async setSEPReviewNotificationEmailSent(
+    reviewId: number,
+    userId: number,
+    proposalPk: number
+  ): Promise<boolean> {
+    return database
+      .update(
+        {
+          notification_email_sent: true,
+        },
+        ['*']
+      )
+      .from('SEP_Reviews')
+      .where('review_id', reviewId)
+      .andWhere('user_id', userId)
+      .andWhere('proposal_pk', proposalPk)
+      .then((records: ReviewRecord[]) => {
+        if (records === undefined || !records.length) {
+          throw new Error(`SEP review not found ${reviewId}`);
+        }
+
+        return true;
+      });
   }
 
   async getSEPProposal(

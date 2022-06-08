@@ -300,6 +300,14 @@ export class SEPDataSourceMock implements SEPDataSource {
     return [dummySEPReview];
   }
 
+  async setSEPReviewNotificationEmailSent(
+    reviewId: number,
+    userId: number,
+    proposalPk: number
+  ) {
+    return true;
+  }
+
   async getSEPProposalsByInstrument(
     sepId: number,
     instrumentId: number,

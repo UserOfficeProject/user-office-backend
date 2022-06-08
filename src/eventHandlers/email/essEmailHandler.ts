@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 
 import { Tokens } from '../../config/Tokens';
 import { ProposalDataSource } from '../../datasources/ProposalDataSource';
+import { SEPDataSource } from '../../datasources/SEPDataSource';
 import { UserDataSource } from '../../datasources/UserDataSource';
 import { ApplicationEvent } from '../../events/applicationEvents';
 import { Event } from '../../events/event.enum';
@@ -16,6 +17,7 @@ export async function essEmailHandler(event: ApplicationEvent) {
   const proposalDataSource = container.resolve<ProposalDataSource>(
     Tokens.ProposalDataSource
   );
+  const sepDataSource = container.resolve<SEPDataSource>(Tokens.SEPDataSource);
   const userDataSource = container.resolve<UserDataSource>(
     Tokens.UserDataSource
   );
@@ -249,7 +251,7 @@ export async function essEmailHandler(event: ApplicationEvent) {
       return;
     }
     case Event.SEP_REVIEWER_NOTIFIED: {
-      const { userID, proposalPk } = event.sepReview;
+      const { id: reviewId, userID, proposalPk } = event.sepReview;
       const sepReviewer = await userDataSource.getUser(userID);
       const proposal = await proposalDataSource.get(proposalPk);
 
@@ -279,7 +281,12 @@ export async function essEmailHandler(event: ApplicationEvent) {
             },
           ],
         })
-        .then((res: any) => {
+        .then(async (res: any) => {
+          await sepDataSource.setSEPReviewNotificationEmailSent(
+            reviewId,
+            userID,
+            proposalPk
+          );
           logger.logInfo('Email sent on SEP reviewer notify:', {
             result: res,
             event,

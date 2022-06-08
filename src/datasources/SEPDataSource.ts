@@ -55,6 +55,11 @@ export interface SEPDataSource {
     callIds: number[],
     status: ReviewStatus
   ): Promise<Review[]>;
+  setSEPReviewNotificationEmailSent(
+    reviewId: number,
+    userId: number,
+    proposalPk: number
+  ): Promise<boolean>;
   getSEPProposals(sepId: number, callId: number | null): Promise<SEPProposal[]>;
   getSEPProposalCount(sepId: number): Promise<number>;
   getSEPReviewerProposalCount(reviewerId: number): Promise<number>;
