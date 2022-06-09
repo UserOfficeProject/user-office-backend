@@ -151,6 +151,7 @@ export default class SEPQueries {
       proposalPk
     );
 
+    // NOTE: If not officer, SEP Chair or SEP Secretary should return all proposal assignments only if everything is submitted. Otherwise for SEP Reviewer return only it's own proposal reviews.
     if (
       agent &&
       !this.userAuth.isUserOfficer(agent) &&
