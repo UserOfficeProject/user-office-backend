@@ -5,6 +5,7 @@ import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
 import { dummyUser } from '../datasources/mockups/UserDataSource';
 import { Instrument } from '../models/Instrument';
+import { LRUCache } from '../utils/LRUCache';
 import { StfcUserAuthorization } from './StfcUserAuthorization';
 
 jest.mock('../datasources/stfc/UOWSSoapInterface.ts');
@@ -35,7 +36,7 @@ const lsfInstrument = instruments[1];
 const nonExistingInstrumentName = 'NONEXISTING_INSTRUMENT';
 
 beforeAll(() => {
-  jest.mock('LRUCache');
+  jest.mock(LRUCache.name);
 
   jest
     .spyOn(instrumentDataSource, 'getInstrumentsByNames')
