@@ -8,6 +8,9 @@ jest.mock('../postgres/UserDataSource.ts');
 const dummyUserNumber = 12345;
 
 beforeAll(() => {
+  // Needed to avoid hang the tests while logging cache stats
+  jest.useFakeTimers();
+
   const mockGetRoles = jest.spyOn(StfcUserDataSource.prototype, 'getRoles');
   mockGetRoles.mockImplementation(() =>
     Promise.resolve([

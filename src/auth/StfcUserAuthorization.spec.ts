@@ -35,6 +35,9 @@ const lsfInstrument = instruments[1];
 const nonExistingInstrumentName = 'NONEXISTING_INSTRUMENT';
 
 beforeAll(() => {
+  // Needed to avoid hang the tests while logging cache stats
+  jest.useFakeTimers();
+
   jest
     .spyOn(instrumentDataSource, 'getInstrumentsByNames')
     .mockImplementation(async (instrumentNames: string[]) =>
