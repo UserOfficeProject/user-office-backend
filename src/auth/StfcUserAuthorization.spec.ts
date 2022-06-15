@@ -8,6 +8,7 @@ import { Instrument } from '../models/Instrument';
 import { StfcUserAuthorization } from './StfcUserAuthorization';
 
 jest.mock('../datasources/stfc/UOWSSoapInterface.ts');
+jest.mock('../utils/LRUCache');
 
 const userAuthorization = container.resolve(StfcUserAuthorization);
 
@@ -35,9 +36,6 @@ const lsfInstrument = instruments[1];
 const nonExistingInstrumentName = 'NONEXISTING_INSTRUMENT';
 
 beforeAll(() => {
-  // Needed to avoid hang the tests while logging cache stats
-  jest.useFakeTimers();
-
   jest
     .spyOn(instrumentDataSource, 'getInstrumentsByNames')
     .mockImplementation(async (instrumentNames: string[]) =>
