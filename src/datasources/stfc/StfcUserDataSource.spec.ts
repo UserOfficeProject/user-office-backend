@@ -8,8 +8,6 @@ jest.mock('../postgres/UserDataSource.ts');
 const dummyUserNumber = 12345;
 
 beforeAll(() => {
-  jest.mock('../../utils/LRUCache');
-
   const mockGetRoles = jest.spyOn(StfcUserDataSource.prototype, 'getRoles');
   mockGetRoles.mockImplementation(() =>
     Promise.resolve([

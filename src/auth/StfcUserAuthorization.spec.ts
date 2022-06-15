@@ -35,8 +35,6 @@ const lsfInstrument = instruments[1];
 const nonExistingInstrumentName = 'NONEXISTING_INSTRUMENT';
 
 beforeAll(() => {
-  jest.mock('../utils/LRUCache');
-
   jest
     .spyOn(instrumentDataSource, 'getInstrumentsByNames')
     .mockImplementation(async (instrumentNames: string[]) =>
