@@ -126,7 +126,7 @@ export default class CallMutations {
         );
       });
 
-    if (args.seps?.length) {
+    if (args.seps !== undefined) {
       await this.assignSepsToCall(args.id, args.seps);
     }
 
