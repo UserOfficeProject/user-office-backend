@@ -80,9 +80,15 @@ async function enableDefaultEssFeatures() {
       FeatureId.USER_MANAGEMENT,
       FeatureId.VISIT_MANAGEMENT,
       FeatureId.SAMPLE_SAFETY,
+      FeatureId.EXTERNAL_AUTH,
     ],
     true
   );
+
+  await db.updateSettings({
+    settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
+    settingsValue: process.env.EXTERNAL_AUTH_LOGIN_URL,
+  });
 }
 
 export async function configureESSDevelopmentEnvironment() {

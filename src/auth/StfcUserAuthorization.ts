@@ -1,17 +1,13 @@
 import { logger } from '@user-office-software/duo-logger';
-import { inject, injectable } from 'tsyringe';
+import { injectable, container } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { InstrumentDataSource } from '../datasources/InstrumentDataSource';
-import { ProposalDataSource } from '../datasources/ProposalDataSource';
-import { SEPDataSource } from '../datasources/SEPDataSource';
 import {
   StfcBasicPersonDetails,
   stfcRole,
 } from '../datasources/stfc/StfcUserDataSource';
 import UOWSSoapClient from '../datasources/stfc/UOWSSoapInterface';
-import { UserDataSource } from '../datasources/UserDataSource';
-import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Instrument } from '../models/Instrument';
 import { User } from '../models/User';
 import { LRUCache } from '../utils/LRUCache';
@@ -40,17 +36,9 @@ export class StfcUserAuthorization extends UserAuthorization {
     StfcUserAuthorization.tokenCacheSecondsToLive
   ).enableStatsLogging('uowsTokenCache');
 
-  constructor(
-    @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
-    @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,
-    @inject(Tokens.ProposalDataSource)
-    protected proposalDataSource: ProposalDataSource,
-    @inject(Tokens.VisitDataSource) protected visitDataSource: VisitDataSource,
-    @inject(Tokens.InstrumentDataSource)
-    protected instrumentDataSource: InstrumentDataSource
-  ) {
-    super(userDataSource, sepDataSource, proposalDataSource, visitDataSource);
-  }
+  protected instrumentDataSource: InstrumentDataSource = container.resolve(
+    Tokens.InstrumentDataSource
+  );
 
   getRequiredInstrumentForRole(roles: stfcRole[]) {
     return roles

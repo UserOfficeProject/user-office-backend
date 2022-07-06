@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { inject } from 'tsyringe';
+import { container } from 'tsyringe';
 
 import { Tokens } from '../config/Tokens';
 import { ProposalDataSource } from '../datasources/ProposalDataSource';
@@ -10,13 +10,18 @@ import { Roles } from '../models/Role';
 import { User, UserWithRole } from '../models/User';
 
 export abstract class UserAuthorization {
-  constructor(
-    @inject(Tokens.UserDataSource) protected userDataSource: UserDataSource,
-    @inject(Tokens.SEPDataSource) protected sepDataSource: SEPDataSource,
-    @inject(Tokens.ProposalDataSource)
-    protected proposalDataSource: ProposalDataSource,
-    @inject(Tokens.VisitDataSource) protected visitDataSource: VisitDataSource
-  ) {}
+  protected userDataSource: UserDataSource = container.resolve(
+    Tokens.UserDataSource
+  );
+  protected sepDataSource: SEPDataSource = container.resolve(
+    Tokens.SEPDataSource
+  );
+  protected proposalDataSource: ProposalDataSource = container.resolve(
+    Tokens.ProposalDataSource
+  );
+  protected visitDataSource: VisitDataSource = container.resolve(
+    Tokens.VisitDataSource
+  );
 
   isUserOfficer(agent: UserWithRole | null) {
     return agent?.currentRole?.shortCode === Roles.USER_OFFICER;
