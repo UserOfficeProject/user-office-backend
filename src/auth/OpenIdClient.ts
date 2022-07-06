@@ -1,7 +1,6 @@
 import { logger } from '@user-office-software/duo-logger';
 import { BaseClient, Issuer } from 'openid-client';
 
-
 export class OpenIdClient {
   private static instance: BaseClient;
 
@@ -14,7 +13,8 @@ export class OpenIdClient {
   }
 
   private static async createClient() {
-    const { discoveryUrl, clientId, clientSecret, redirectUrl } = this.getConfig();
+    const { discoveryUrl, clientId, clientSecret, redirectUrl } =
+      this.getConfig();
 
     if (!discoveryUrl || !clientId || !clientSecret || !redirectUrl) {
       logger.logError('One or more ENV variables not defined', {
@@ -51,7 +51,8 @@ export class OpenIdClient {
   }
 
   public static hasConfiguration() {
-    const { discoveryUrl, clientId, clientSecret, redirectUrl } = this.getConfig();
+    const { discoveryUrl, clientId, clientSecret, redirectUrl } =
+      this.getConfig();
 
     return discoveryUrl && clientId && clientSecret && redirectUrl;
   }

@@ -12,6 +12,10 @@ interface GoogleIdentityToken {
   sub: string;
 }
 
+/**
+ * Google Authorization class
+ * This is an example of how to implement an authorization class
+ */
 export class GoogleAuthorization extends OpenIdConnectAuthorization<GoogleIdentityToken> {
   isValidUserProfile(userProfile: GoogleIdentityToken): boolean {
     return (
