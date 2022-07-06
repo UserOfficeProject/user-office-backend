@@ -5,6 +5,7 @@ import { FeatureId } from '../../models/Feature';
 import { SettingsId } from '../../models/Settings';
 import { setTimezone, setDateTimeFormats } from '../setTimezoneAndFormat';
 import { Tokens } from '../Tokens';
+import { OpenIdClient } from './../../auth/OpenIdClient';
 
 async function setEssColourTheme() {
   const db = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
@@ -85,10 +86,13 @@ async function enableDefaultEssFeatures() {
     true
   );
 
-  await db.updateSettings({
-    settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
-    settingsValue: process.env.EXTERNAL_AUTH_LOGIN_URL,
-  });
+  if (OpenIdClient.hasConfiguration()) {
+    const client = await OpenIdClient.getInstance();
+    await db.updateSettings({
+      settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
+      settingsValue: client.authorizationUrl({ scope: 'profile email openid' }),
+    });
+  }
 }
 
 export async function configureESSDevelopmentEnvironment() {

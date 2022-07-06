@@ -11,6 +11,15 @@ interface PingIdentityToken {
 }
 
 export class PingAuthorization extends OpenIdConnectAuthorization<PingIdentityToken> {
+  isValidUserProfile(userProfile: PingIdentityToken): boolean {
+    return (
+      userProfile.FirstName !== undefined &&
+      userProfile.LastName !== undefined &&
+      userProfile.Email !== undefined &&
+      userProfile.ORCID !== undefined &&
+      userProfile.Company !== undefined
+    );
+  }
   async upsertUser(idToken: PingIdentityToken): Promise<User | null> {
     const user = await this.userDataSource.getByOrcID(idToken.ORCID);
     if (user) {

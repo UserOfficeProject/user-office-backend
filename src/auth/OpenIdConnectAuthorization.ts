@@ -1,53 +1,15 @@
 import { logger } from '@user-office-software/duo-logger';
-import { BaseClient, Issuer } from 'openid-client';
 import 'reflect-metadata';
 
 import { User } from '../models/User';
+import { OpenIdClient } from './OpenIdClient';
 import { UserAuthorization } from './UserAuthorization';
-
-class Client {
-  private static instance: BaseClient;
-
-  private static async createClient() {
-    const discoveryUrl = process.env.AUTH_DISCOVERY_URL;
-    const clientId = process.env.AUTH_CLIENT_ID;
-    const clientSecret = process.env.AUTH_CLIENT_SECRET;
-    const redirectUrl = process.env.AUTH_REDIRECT_URI;
-
-    if (!discoveryUrl || !clientId || !clientSecret || !redirectUrl) {
-      logger.logError('One or more ENV variables not defined', {
-        discoveryUrl,
-        clientId,
-        clientSecret: clientSecret ? '******' : undefined,
-        redirectUrl,
-      });
-      throw new Error('One or more ENV variables not defined');
-    }
-
-    const OpenIDIssuer = await Issuer.discover(discoveryUrl);
-
-    return new OpenIDIssuer.Client({
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uris: [redirectUrl],
-      response_types: ['code'],
-    });
-  }
-
-  static async getInstance() {
-    if (!this.instance) {
-      this.instance = await this.createClient();
-    }
-
-    return this.instance;
-  }
-}
 
 export abstract class OpenIdConnectAuthorization<T> extends UserAuthorization {
   public async externalTokenLogin(code: string): Promise<User | null> {
     try {
       const redirectUrl = process.env.AUTH_REDIRECT_URI; // URL that the user is redirected back to after login
-      const client = await Client.getInstance();
+      const client = await OpenIdClient.getInstance();
 
       /**
        * Making a request to the authorization server to exchange the code for a tokenset.
@@ -61,6 +23,14 @@ export abstract class OpenIdConnectAuthorization<T> extends UserAuthorization {
        */
       const userProfile = await client.userinfo<T>(tokenSet);
 
+      if (!this.isValidUserProfile(userProfile)) {
+        logger.logError('Invalid user profile returned from issuer', {
+          authorizer: this.constructor.name,
+          userProfile,
+        });
+        throw new Error('Invalid user profile returned from issuer');
+      }
+
       /**
        * If the user profile is valid, then we upsert the user and return it
        */
@@ -68,7 +38,9 @@ export abstract class OpenIdConnectAuthorization<T> extends UserAuthorization {
 
       return user;
     } catch (error) {
-      logger.logError('Error while logging in with external token', { error });
+      logger.logError('Error while logging in with external token', {
+        error: (error as Error)?.message,
+      });
 
       throw new Error('Error while logging in with external token');
     }
@@ -85,4 +57,5 @@ export abstract class OpenIdConnectAuthorization<T> extends UserAuthorization {
   }
 
   abstract upsertUser(idToken: T): Promise<User | null>;
+  abstract isValidUserProfile(userProfile: T): boolean;
 }
