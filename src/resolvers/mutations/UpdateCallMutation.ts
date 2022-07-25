@@ -95,6 +95,9 @@ export class UpdateCallInput {
 
   @Field(() => Boolean, { nullable: true })
   public isActive?: boolean;
+
+  @Field(() => [Int], { nullable: true })
+  public seps?: number[];
 }
 
 @InputType()
