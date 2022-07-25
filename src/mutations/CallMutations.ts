@@ -93,20 +93,16 @@ export default class CallMutations {
     agent: UserWithRole | null,
     args: CreateCallInput
   ): Promise<Call | Rejection> {
-    const createdCall = await this.dataSource.create(args);
+    try {
+      const createdCall = await this.dataSource.create(args);
 
-    if (!createdCall) {
+      return createdCall;
+    } catch (error) {
       return rejection('Could not create call', {
         agent,
         shortCode: args.shortCode,
       });
     }
-
-    if (args.seps?.length) {
-      await this.assignSepsToCall(createdCall.id, args.seps);
-    }
-
-    return createdCall;
   }
 
   @ValidateArgs(updateCallValidationSchema)
@@ -115,22 +111,17 @@ export default class CallMutations {
     agent: UserWithRole | null,
     args: UpdateCallInput
   ): Promise<Call | Rejection> {
-    const updatedCall = await this.dataSource
-      .update(args)
-      .then((result) => result)
-      .catch((error) => {
-        return rejection(
-          'Could not create call',
-          { agent, shortCode: args.shortCode },
-          error
-        );
-      });
+    try {
+      const updatedCall = await this.dataSource.update(args);
 
-    if (args.seps !== undefined) {
-      await this.assignSepsToCall(args.id, args.seps);
+      return updatedCall;
+    } catch (error) {
+      return rejection(
+        'Could not update call',
+        { agent, shortCode: args.shortCode },
+        error
+      );
     }
-
-    return updatedCall;
   }
 
   @ValidateArgs(assignInstrumentsToCallValidationSchema)
