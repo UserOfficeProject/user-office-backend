@@ -1,4 +1,3 @@
-import { logger } from '@user-office-software/duo-logger';
 import {
   createCallValidationSchemas,
   updateCallValidationSchemas,
@@ -68,20 +67,6 @@ export default class CallMutations {
           callId,
         },
         error
-      );
-    }
-  }
-
-  async assignSepsToCall(callId: number, sepIds: number[]) {
-    const sepsAssigned = await this.dataSource.assignSepsToCall({
-      callId,
-      sepIds,
-    });
-
-    if (!sepsAssigned) {
-      logger.logException(
-        `Call with id: '${callId}' updated but could not assign SEPs to a call. Please try again later. `,
-        new Error('Could not assign SEPs to a call')
       );
     }
   }
