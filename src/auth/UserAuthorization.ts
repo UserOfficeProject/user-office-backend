@@ -6,8 +6,9 @@ import { ProposalDataSource } from '../datasources/ProposalDataSource';
 import { SEPDataSource } from '../datasources/SEPDataSource';
 import { UserDataSource } from '../datasources/UserDataSource';
 import { VisitDataSource } from '../datasources/VisitDataSource';
+import { Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
-import { User, UserWithRole } from '../models/User';
+import { AuthJwtPayload, User, UserWithRole } from '../models/User';
 
 export abstract class UserAuthorization {
   protected userDataSource: UserDataSource = container.resolve(
@@ -138,7 +139,7 @@ export abstract class UserAuthorization {
 
   abstract externalTokenLogin(token: string): Promise<User | null>;
 
-  abstract logout(token: string): Promise<void>;
+  abstract logout(token: AuthJwtPayload): Promise<void | Rejection>;
 
   abstract isExternalTokenValid(externalToken: string): Promise<boolean>;
 }

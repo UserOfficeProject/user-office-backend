@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { injectable } from 'tsyringe';
 
 import { dummyUser } from '../../datasources/mockups/UserDataSource';
-import { User } from '../../models/User';
+import { AuthJwtPayload, User } from '../../models/User';
 import { UserAuthorization } from '../UserAuthorization';
 
 @injectable()
@@ -15,7 +15,7 @@ export class UserAuthorizationMock extends UserAuthorization {
     return null;
   }
 
-  async logout(token: string): Promise<void> {
+  async logout(token: AuthJwtPayload): Promise<void> {
     return;
   }
   async isExternalTokenValid(externalToken: string): Promise<boolean> {

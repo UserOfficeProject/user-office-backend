@@ -78,6 +78,7 @@ const createUsers = async () => {
       faker.name.firstName(),
       faker.random.uuid(),
       faker.random.uuid(),
+      faker.random.uuid(),
       dummy.gender(),
       dummy.positiveNumber(20),
       faker.date.past(30),

@@ -144,7 +144,7 @@ export default class UserQueries {
       return null;
     }
 
-    const user = await this.dataSource.getByOrcID(orcData.orcid);
+    const user = await this.dataSource.getByOIDCSub(orcData.orcid);
     if (user) {
       const roles = await this.dataSource.getUserRoles(user.id);
 

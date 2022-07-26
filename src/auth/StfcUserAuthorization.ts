@@ -9,7 +9,8 @@ import {
 } from '../datasources/stfc/StfcUserDataSource';
 import UOWSSoapClient from '../datasources/stfc/UOWSSoapInterface';
 import { Instrument } from '../models/Instrument';
-import { User } from '../models/User';
+import { Rejection, rejection } from '../models/Rejection';
+import { AuthJwtPayload, User } from '../models/User';
 import { LRUCache } from '../utils/LRUCache';
 import { UserAuthorization } from './UserAuthorization';
 
@@ -214,15 +215,23 @@ export class StfcUserAuthorization extends UserAuthorization {
     return dummyUser;
   }
 
-  async logout(token: string): Promise<void> {
-    this.uowsTokenCache.remove(token);
+  async logout(uosToken: AuthJwtPayload): Promise<void | Rejection> {
+    try {
+      const token = uosToken.externalToken;
+      if (token) {
+        this.uowsTokenCache.remove(token);
 
-    await client.logout(token).catch(() => {
-      logger.logWarn('Failed to log out user', { token });
-      throw new Error(`Failed to logout ${token}`);
-    });
+        await client.logout(token).catch(() => {
+          logger.logWarn('Failed to log out user', { token });
 
-    return;
+          return rejection('Failed to log out user', { token });
+        });
+      } else {
+        return rejection('No external token found in JWT', { token });
+      }
+    } catch (error) {
+      return rejection('Error occurred during external logout', {}, error);
+    }
   }
 
   async isExternalTokenValid(token: string): Promise<boolean> {

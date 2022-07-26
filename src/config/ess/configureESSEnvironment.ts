@@ -88,9 +88,26 @@ async function enableDefaultEssFeatures() {
 
   if (OpenIdClient.hasConfiguration()) {
     const client = await OpenIdClient.getInstance();
+    const scopes = OpenIdClient.getScopes().join(' ');
+
+    const authUrl = client.authorizationUrl({ scope: scopes });
+
+    let endSessionUrl;
+    try {
+      endSessionUrl = client.endSessionUrl(); // try obtaining the end session url the standard way
+    } catch (e) {
+      endSessionUrl =
+        (client.issuer.ping_end_session_endpoint as string) ?? '/'; // try using PING ping_end_session_endpoint
+    }
+
     await db.updateSettings({
       settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
-      settingsValue: client.authorizationUrl({ scope: 'profile email openid' }),
+      settingsValue: authUrl,
+    });
+
+    await db.updateSettings({
+      settingsId: SettingsId.EXTERNAL_AUTH_LOGOUT_URL,
+      settingsValue: endSessionUrl,
     });
   }
 }
