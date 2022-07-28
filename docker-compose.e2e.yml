@@ -36,3 +36,12 @@ services:
       - 5432:5432
     volumes:
       - "./${USER_OFFICE_BACKEND_DIR}/db_patches/:/docker-entrypoint-initdb.d/"
+  duo-oauth2-provider:
+    image: dmsc/duo-oauth2-provider:develop
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://duouser:duopassword@localhost:5432/duo
+      PORT: 5000
