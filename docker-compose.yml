@@ -102,7 +102,7 @@ services:
       - 44000:4000 # avoid collision
 
   duo-development-authorization-server:
-    image: dmsc/duo-development-authorization-server:develop
+    image: "dmsc/duo-development-authorization-server:develop"
     ports:
       - 5000:5000
     depends_on:
