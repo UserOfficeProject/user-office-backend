@@ -40,7 +40,7 @@ services:
     volumes:
       - "./${USER_OFFICE_BACKEND_DIR}/db_patches/:/docker-entrypoint-initdb.d/"
   development-authorization-server:
-    image: dmsc/duo-development-authorization-server::${USER_OFFICE_DEVELOPMENT_AUTHORIZATION_SERVER_TAG}
+    image: dmsc/duo-development-authorization-server:${USER_OFFICE_DEVELOPMENT_AUTHORIZATION_SERVER_TAG}
     ports:
       - 5000:5000
     depends_on:
