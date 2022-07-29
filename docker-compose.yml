@@ -100,8 +100,7 @@ services:
       - scheduler-db
     ports:
       - 44000:4000 # avoid collision
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+
   duo-development-authorization-server:
     image: dmsc/duo-development-authorization-server:develop
     ports:
