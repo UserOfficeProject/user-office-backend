@@ -108,5 +108,5 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://duouser:duopassword@localhost:5432/duo
+      DATABASE_URL: postgres://duouser:duopassword@db:5432/duo
       PORT: 5000
