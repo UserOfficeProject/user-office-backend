@@ -84,10 +84,25 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
     return true;
   }
 
+  private async getUserInstitutionId(userInfo: UserinfoResponse) {
+    if (userInfo.organisation) {
+      const institutions = await this.adminDataSource.getInstitutions({
+        name: userInfo.organisation as string,
+      });
+
+      if (institutions.length === 1) {
+        return institutions[0].id;
+      }
+    }
+
+    return undefined;
+  }
+
   private async upsertUser(
     userInfo: ValidUserInfo,
     tokenSet: ValidTokenSet
   ): Promise<User> {
+    const institutionId = await this.getUserInstitutionId(userInfo);
     const user = await this.userDataSource.getByOIDCSub(userInfo.sub);
     if (user) {
       await this.userDataSource.update({
@@ -101,6 +116,7 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
         department: userInfo.department as string,
         gender: userInfo.gender as string,
         user_title: userInfo.title as string,
+        organisation: institutionId ?? user.organisation,
       });
 
       return user;

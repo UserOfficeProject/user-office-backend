@@ -9,6 +9,7 @@ import { VisitDataSource } from '../datasources/VisitDataSource';
 import { Rejection } from '../models/Rejection';
 import { Roles } from '../models/Role';
 import { AuthJwtPayload, User, UserWithRole } from '../models/User';
+import { AdminDataSource } from './../datasources/AdminDataSource';
 
 export abstract class UserAuthorization {
   protected userDataSource: UserDataSource = container.resolve(
@@ -22,6 +23,10 @@ export abstract class UserAuthorization {
   );
   protected visitDataSource: VisitDataSource = container.resolve(
     Tokens.VisitDataSource
+  );
+
+  protected adminDataSource: AdminDataSource = container.resolve(
+    Tokens.AdminDataSource
   );
 
   isUserOfficer(agent: UserWithRole | null) {
