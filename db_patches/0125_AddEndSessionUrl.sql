@@ -1,7 +1,7 @@
 DO
 $$
 BEGIN
-    IF register_patch('AddEndSessionUrl.sql', 'Jekabs Karklins', 'Add end session endpoint', '2022-07-07') THEN
+    IF register_patch('AddEndSessionUrl.sql', 'Jekabs Karklins', 'Add setting for end session endpoint', '2022-07-07') THEN
 
     INSERT INTO 
         settings(settings_id, settings_value, description)

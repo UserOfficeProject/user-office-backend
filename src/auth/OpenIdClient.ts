@@ -29,7 +29,7 @@ export class OpenIdClient {
   /**
    * Get the issuer from the discovery url
    * if it fails to get the issuer, then it will try to get the issuer again
-   * after 2^n seconds, where n end_session_endpoints the number of fails
+   * after 2^n seconds, where n is the number of fails occurred so far
    * @returns {Promise<Issuer>}
    */
   private static async getIssuer(): Promise<Issuer<BaseClient>> {

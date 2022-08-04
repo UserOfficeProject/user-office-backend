@@ -177,7 +177,7 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
   }
 
   private validateTokenSet(tokenSet: TokenSet): ValidTokenSet {
-    tokenSet.refresh_token = tokenSet.refresh_token ?? 'abc'; // TODO Figure out why refresh token is not returned
+    tokenSet.refresh_token = tokenSet.refresh_token ?? ''; // refresh_token is optional
     if (!tokenSet.refresh_token || !tokenSet.access_token) {
       logger.logError('Invalid tokenSet', {
         authorizer: this.constructor.name,
