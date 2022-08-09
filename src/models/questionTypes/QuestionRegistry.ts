@@ -11,6 +11,7 @@ import { fileUploadDefinition } from './FileUpload';
 import { genericTemplateDefinition } from './GenericTemplate';
 import { genericTemplateBasisDefinition } from './GenericTemplateBasis';
 import { intervalDefinition } from './Interval';
+import { multiPartSelectionDefinition } from './MultiPartSelection';
 import { numberInputDefinition } from './NumberInput';
 import { proposalBasisDefinition } from './ProposalBasis';
 import { proposalEsiBasisDefinition } from './ProposalEsiBasis';
@@ -87,6 +88,7 @@ const registry = [
   shipmentBasis,
   textInputDefinition,
   visitBasisDefinition,
+  multiPartSelectionDefinition,
 ];
 
 Object.freeze(registry);

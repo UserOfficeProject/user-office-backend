@@ -87,6 +87,27 @@ export class SelectionFromOptionsConfig extends ConfigBase {
 }
 
 @ObjectType()
+export class MultiPartSelectionConfig extends ConfigBase {
+  @Field(() => String)
+  partOneVariant: string;
+
+  @Field(() => [String])
+  partOneOptions: string[];
+
+  @Field(() => String)
+  partTwoVariant: string;
+
+  @Field(() => [String])
+  partTwoOptions: string[];
+
+  @Field(() => Boolean)
+  isPartOneMultipleSelect: boolean;
+
+  @Field(() => Boolean)
+  isPartTwoMultipleSelect: boolean;
+}
+
+@ObjectType()
 export class TextInputConfig extends ConfigBase {
   @Field(() => Int, { nullable: true })
   min: number | null;
