@@ -5,7 +5,7 @@ import { PageName } from '../../models/Page';
 @Resolver()
 export class GetPageContentQuery {
   @Query(() => String, { nullable: true })
-  getPageContent(
+  pageContent(
     @Arg('id', () => PageName) id: PageName,
     @Ctx() context: ResolverContext
   ) {
