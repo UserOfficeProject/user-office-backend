@@ -69,7 +69,7 @@ test('User officer should get a list of templates', async () => {
 
 test('User officer should be able to get question by natural key', async () => {
   const question = await templateQueries.getQuestionByNaturalKey(
-    dummyUserWithRole,
+    dummyUserOfficerWithRole,
     'proposal_basis'
   );
 
