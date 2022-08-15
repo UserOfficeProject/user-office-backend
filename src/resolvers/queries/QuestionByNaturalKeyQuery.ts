@@ -5,8 +5,8 @@ import { Question } from '../types/Question';
 
 @Resolver()
 export class QuestionByNaturalKeyQuery {
-  @Query(() => [Question])
-  questions(
+  @Query(() => Question)
+  questionByNaturalKey(
     @Arg('naturalKey', () => String)
     naturalKey: string,
     @Ctx() context: ResolverContext
