@@ -3,7 +3,7 @@ import { Query, Arg, Ctx, Resolver } from 'type-graphql';
 import { ResolverContext } from '../../context';
 import { PageName } from '../../models/Page';
 @Resolver()
-export class GetPageContentQuery {
+export class PageContentQuery {
   @Query(() => String, { nullable: true })
   pageContent(
     @Arg('id', () => PageName) id: PageName,
