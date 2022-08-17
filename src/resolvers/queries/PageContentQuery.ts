@@ -6,9 +6,9 @@ import { PageName } from '../../models/Page';
 export class PageContentQuery {
   @Query(() => String, { nullable: true })
   pageContent(
-    @Arg('id', () => PageName) id: PageName,
+    @Arg('pageId', () => PageName) pageId: PageName,
     @Ctx() context: ResolverContext
   ) {
-    return context.queries.admin.getPageText(id);
+    return context.queries.admin.getPageText(pageId);
   }
 }
