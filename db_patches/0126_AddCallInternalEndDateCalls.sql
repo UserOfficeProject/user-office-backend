@@ -8,7 +8,7 @@ BEGIN
             ALTER TABLE "call" 
             ADD COLUMN IF NOT EXISTS end_call_internal TIMESTAMPTZ DEFAULT NOW();
 
-            -- update end_call_internal column
+            -- update end_call_internal date with end_call date column
             UPDATE "call"  SET end_call_internal = ( call.end_call );
 
              -- remove Default value from end_call_internal column
