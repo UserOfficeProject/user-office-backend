@@ -1,3 +1,4 @@
+import { OpenIdClient } from '@user-office-software/openid';
 import { container } from 'tsyringe';
 
 import { AdminDataSource } from '../../datasources/AdminDataSource';
@@ -5,7 +6,6 @@ import { FeatureId } from '../../models/Feature';
 import { SettingsId } from '../../models/Settings';
 import { setTimezone, setDateTimeFormats } from '../setTimezoneAndFormat';
 import { Tokens } from '../Tokens';
-import { OpenIdClient } from './../../auth/OpenIdClient';
 
 async function setEssColourTheme() {
   const db = container.resolve<AdminDataSource>(Tokens.AdminDataSource);
@@ -86,26 +86,14 @@ async function enableDefaultEssFeatures() {
   );
   if (OpenIdClient.hasConfiguration()) {
     const client = await OpenIdClient.getInstance();
-    const scopes = OpenIdClient.getScopes().join(' ');
-
-    const authUrl = client.authorizationUrl({ scope: scopes });
-
-    let endSessionUrl;
-    try {
-      endSessionUrl = client.endSessionUrl(); // try obtaining the end session url the standard way
-    } catch (e) {
-      endSessionUrl =
-        (client.issuer.ping_end_session_endpoint as string) ?? '/'; // try using PING ping_end_session_endpoint
-    }
-
     await db.updateSettings({
       settingsId: SettingsId.EXTERNAL_AUTH_LOGIN_URL,
-      settingsValue: authUrl,
+      settingsValue: client.getAuthorizationUrl(),
     });
 
     await db.updateSettings({
       settingsId: SettingsId.EXTERNAL_AUTH_LOGOUT_URL,
-      settingsValue: endSessionUrl,
+      settingsValue: client.getEndSessionUrl(),
     });
   }
   await db.updateSettings({

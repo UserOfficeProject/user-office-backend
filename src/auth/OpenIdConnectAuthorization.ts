@@ -1,19 +1,13 @@
 import { logger } from '@user-office-software/duo-logger';
-import { TokenSet, UserinfoResponse } from 'openid-client';
+import { OpenIdClient } from '@user-office-software/openid';
+import { ValidUserInfo } from '@user-office-software/openid/lib/ValidUserInfo';
+import { UserinfoResponse } from 'openid-client';
 
 import 'reflect-metadata';
 import { rejection, Rejection } from '../models/Rejection';
 import { AuthJwtPayload, User, UserRole } from '../models/User';
-import { RequiredField, NonNullableField } from '../utils/helperFunctions';
-import { OpenIdClient } from './OpenIdClient';
+import { NonNullableField } from '../utils/helperFunctions';
 import { UserAuthorization } from './UserAuthorization';
-
-type ValidUserInfo = RequiredField<
-  UserinfoResponse,
-  'sub' | 'given_name' | 'family_name' | 'email'
->;
-
-type ValidTokenSet = RequiredField<TokenSet, 'access_token'>;
 
 type ValidUser = NonNullableField<
   User,
@@ -23,29 +17,15 @@ type ValidUser = NonNullableField<
 export abstract class OpenIdConnectAuthorization extends UserAuthorization {
   public async externalTokenLogin(code: string): Promise<User | null> {
     try {
-      const { redirectUrl } = OpenIdClient.getConfig(); // URL that the user is redirected back to after login
       const client = await OpenIdClient.getInstance();
-
-      /**
-       * Requesting Authorization server to exchange the code for a tokenset,
-       ** and validating the return value that it has both - access_token and id_token
-       */
-      const params = client.callbackParams('?code=' + code);
-      const tokenSet = this.validateTokenSet(
-        await client.callback(redirectUrl, params)
-      );
-
-      /**
-       * Getting and validating the userProfile from the previously obtained tokenset
-       */
-      const userProfile = this.validateUserProfile(
-        await client.userinfo<UserinfoResponse>(tokenSet)
+      const { idToken, accessToken, refreshToken } = await client.authorize(
+        code
       );
 
       /**
        * If the user profile is valid, then we upsert the user and return it
        */
-      const user = await this.upsertUser(userProfile, tokenSet);
+      const user = await this.upsertUser(idToken, accessToken, refreshToken);
 
       return user;
     } catch (error) {
@@ -100,7 +80,8 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
 
   private async upsertUser(
     userInfo: ValidUserInfo,
-    tokenSet: ValidTokenSet
+    accessToken: string,
+    refreshToken?: string
   ): Promise<User> {
     const institutionId = await this.getUserInstitutionId(userInfo);
     const user = await this.userDataSource.getByOIDCSub(userInfo.sub);
@@ -110,8 +91,8 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
         firstname: userInfo.given_name,
         lastname: userInfo.family_name,
         email: userInfo.email,
-        oidcAccessToken: tokenSet.access_token,
-        oidcRefreshToken: tokenSet.refresh_token ?? '',
+        oidcAccessToken: accessToken,
+        oidcRefreshToken: refreshToken ?? '',
         oidcSub: userInfo.sub,
         department: userInfo.department as string,
         gender: userInfo.gender as string,
@@ -137,8 +118,8 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
         '',
         userInfo.given_name,
         userInfo.sub,
-        tokenSet.access_token,
-        tokenSet.refresh_token ?? '',
+        accessToken,
+        refreshToken ?? '',
         'unspecified',
         1,
         new Date(),
@@ -157,35 +138,6 @@ export abstract class OpenIdConnectAuthorization extends UserAuthorization {
 
       return newUser;
     }
-  }
-
-  private validateUserProfile(userProfile: UserinfoResponse): ValidUserInfo {
-    if (
-      !userProfile.email ||
-      !userProfile.family_name ||
-      !userProfile.given_name ||
-      !userProfile.sub
-    ) {
-      logger.logError('Invalid user profile', {
-        authorizer: this.constructor.name,
-        userProfile,
-      });
-      throw new Error('Invalid user profile');
-    }
-
-    return userProfile as ValidUserInfo;
-  }
-
-  private validateTokenSet(tokenSet: TokenSet): ValidTokenSet {
-    if (!tokenSet.access_token) {
-      logger.logError('Invalid tokenSet', {
-        authorizer: this.constructor.name,
-        tokenSet,
-      });
-      throw new Error('Invalid tokenSet');
-    }
-
-    return tokenSet as ValidTokenSet;
   }
 
   private validateUser(user: User | null): ValidUser {
