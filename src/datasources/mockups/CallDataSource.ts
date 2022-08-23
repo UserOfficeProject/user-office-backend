@@ -14,7 +14,7 @@ export const dummyCallFactory = (values?: Partial<Call>) => {
     values?.shortCode || 'shortCode',
     values?.startCall || new Date(),
     values?.endCall || new Date(),
-    values?.endCallinternal || new Date(),
+    values?.endCallInternal || new Date(),
     values?.startReview || new Date(),
     values?.endReview || new Date(),
     values?.startSEPReview || new Date(),

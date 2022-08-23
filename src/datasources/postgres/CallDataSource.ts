@@ -90,6 +90,7 @@ export default class PostgresCallDataSource implements CallDataSource {
             call_short_code: args.shortCode,
             start_call: args.startCall,
             end_call: args.endCall,
+            end_call_internal: args.endCallInternal || args.endCall,
             start_review: args.startReview,
             end_review: args.endReview,
             start_sep_review: args.startSEPReview,
