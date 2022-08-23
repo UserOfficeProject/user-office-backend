@@ -267,6 +267,7 @@ export interface CallRecord {
   readonly call_short_code: string;
   readonly start_call: Date;
   readonly end_call: Date;
+  readonly end_call_internal: Date;
   readonly start_review: Date;
   readonly end_review: Date;
   readonly start_sep_review: Date;
@@ -824,6 +825,7 @@ export const createCallObject = (call: CallRecord) => {
     call.call_short_code,
     call.start_call,
     call.end_call,
+    call.end_call_internal,
     call.start_review,
     call.end_review,
     call.start_sep_review,

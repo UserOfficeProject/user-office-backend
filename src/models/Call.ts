@@ -4,6 +4,7 @@ export class Call {
     public shortCode: string,
     public startCall: Date,
     public endCall: Date,
+    public endCallinternal: Date,
     public startReview: Date,
     public endReview: Date,
     public startSEPReview: Date,

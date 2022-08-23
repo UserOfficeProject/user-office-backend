@@ -14,6 +14,7 @@ export const dummyCallFactory = (values?: Partial<Call>) => {
     values?.shortCode || 'shortCode',
     values?.startCall || new Date(),
     values?.endCall || new Date(),
+    values?.endCallinternal || new Date(),
     values?.startReview || new Date(),
     values?.endReview || new Date(),
     values?.startSEPReview || new Date(),
@@ -52,6 +53,7 @@ export const dummyCall = new Call(
   new Date('2019-07-17 08:25:12.23043+00'),
   new Date('2019-07-17 08:25:12.23043+00'),
   new Date('2019-07-17 08:25:12.23043+00'),
+  new Date('2019-07-17 08:25:12.23043+00'),
   '',
   '',
   '',
@@ -71,6 +73,7 @@ export const dummyCall = new Call(
 export const anotherDummyCall = new Call(
   2,
   'shortCode2',
+  new Date('2019-07-17 08:25:12.23043+00'),
   new Date('2019-07-17 08:25:12.23043+00'),
   new Date('2019-07-17 08:25:12.23043+00'),
   new Date('2019-07-17 08:25:12.23043+00'),
