@@ -11,7 +11,7 @@ BEGIN
             -- update end_call_internal date with end_call date column
             UPDATE "call"  SET end_call_internal = ( call.end_call );
 
-             -- remove Default value from end_call_internal column
+             -- remove Default value from end_call_internal column making it nullable
             ALTER TABLE "call" ALTER COLUMN end_call_internal DROP DEFAULT;
         END;
 	END IF;

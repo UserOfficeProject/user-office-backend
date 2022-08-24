@@ -41,7 +41,29 @@ export default class PostgresCallDataSource implements CallDataSource {
     }
 
     // if filter is explicitly set to true or false
-    if (filter?.isActive === true) {
+    if (filter?.isActive === true && filter?.isActiveInternal === false) {
+      const currentDate = new Date().toISOString();
+      query
+        .where('start_call', '<=', currentDate)
+        .andWhere(
+          filter?.isActiveInternal ? 'end_call' : 'end_call_internal',
+          '>=',
+          currentDate
+        );
+    } else if (
+      filter?.isActiveInternal === true &&
+      filter?.isActive === false
+    ) {
+      const currentDate = new Date().toISOString();
+      query
+        .where('end_call', '<=', currentDate)
+        .andWhere('end_call_internal', '>=', currentDate);
+    } else if (filter?.isActiveInternal === true && filter?.isActive === true) {
+      const currentDate = new Date().toISOString();
+      query
+        .where('start_call', '<=', currentDate)
+        .andWhere('end_call_internal', '>=', currentDate);
+    } else if (filter?.isActive === true) {
       const currentDate = new Date().toISOString();
       query
         .where('start_call', '<=', currentDate)
@@ -213,6 +235,7 @@ export default class PostgresCallDataSource implements CallDataSource {
               call_short_code: args.shortCode,
               start_call: args.startCall,
               end_call: args.endCall,
+              end_call_internal: args.endCallInternal || args.endCall,
               reference_number_format: args.referenceNumberFormat,
               start_review: args.startReview,
               end_review: args.endReview,

@@ -40,6 +40,19 @@ export abstract class UserAuthorization {
     });
   }
 
+  async hasRoles(
+    agent: UserWithRole | null,
+    userRoles: string[]
+  ): Promise<boolean> {
+    if (!agent) {
+      return false;
+    }
+
+    return this.userDataSource.getUserRoles(agent.id).then((roles) => {
+      return roles.some((role) => userRoles.includes(role.shortCode));
+    });
+  }
+
   isInstrumentScientist(agent: UserWithRole | null) {
     return agent?.currentRole?.shortCode === Roles.INSTRUMENT_SCIENTIST;
   }

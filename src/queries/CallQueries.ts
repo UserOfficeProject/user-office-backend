@@ -24,6 +24,12 @@ export default class CallQueries {
 
   @Authorized()
   async getAll(agent: UserWithRole | null, filter?: CallsFilter) {
+    if (filter?.isActiveInternal) {
+      filter.isActiveInternal = await this.userAuth.hasRoles(agent, [
+        Roles.INSTRUMENT_SCIENTIST,
+        Roles.USER_OFFICER,
+      ]);
+    }
     const calls = await this.dataSource.getCalls(filter);
 
     return calls;

@@ -15,6 +15,9 @@ export class CallsFilter {
   public isActive?: boolean;
 
   @Field(() => Boolean, { nullable: true })
+  public isActiveInternal?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
   public isEnded?: boolean;
 
   @Field(() => Boolean, { nullable: true })
