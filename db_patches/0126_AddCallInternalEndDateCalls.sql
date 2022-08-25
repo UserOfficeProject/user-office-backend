@@ -1,7 +1,7 @@
 DO
 $$
 BEGIN
-	IF register_patch('AddCallInternalEndDateCalls.sql', 'Farai Mutambara', 'Add end_call_internal date to calls', '2022-08-22') THEN
+	IF register_patch('AddCallInternalEndDateCalls.sql', 'Farai Mutambara', 'Add end call internal date field to call table', '2022-08-22') THEN
         BEGIN
 
             -- add end_call_internal column to call table
