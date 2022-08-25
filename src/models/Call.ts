@@ -20,6 +20,7 @@ export class Call {
     public proposalSequence: number,
     public proposalWorkflowId: number,
     public callEnded: boolean,
+    public callEndedInternal: boolean,
     public callReviewEnded: boolean,
     public callSEPReviewEnded: boolean,
     public templateId: number,

@@ -283,6 +283,7 @@ export interface CallRecord {
   readonly proposal_sequence: number;
   readonly proposal_workflow_id: number;
   readonly call_ended: boolean;
+  readonly call_ended_internal: boolean;
   readonly call_review_ended: boolean;
   readonly call_sep_review_ended: boolean;
   readonly template_id: number;
@@ -493,6 +494,7 @@ export interface ProposalEventsRecord {
   readonly proposal_feasible: boolean;
   readonly proposal_unfeasible: boolean;
   readonly call_ended: boolean;
+  readonly call_ended_internal: boolean;
   readonly call_review_ended: boolean;
   readonly proposal_sep_selected: boolean;
   readonly proposal_instrument_selected: boolean;
@@ -841,6 +843,7 @@ export const createCallObject = (call: CallRecord) => {
     call.proposal_sequence,
     call.proposal_workflow_id,
     call.call_ended,
+    call.call_ended_internal,
     call.call_review_ended,
     call.call_sep_review_ended,
     call.template_id,

@@ -21,6 +21,9 @@ export class CallsFilter {
   public isEnded?: boolean;
 
   @Field(() => Boolean, { nullable: true })
+  public isEndedInternal?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
   public isReviewEnded?: boolean;
 
   @Field(() => Boolean, { nullable: true })
