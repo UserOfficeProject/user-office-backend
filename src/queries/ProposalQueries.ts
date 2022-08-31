@@ -42,8 +42,11 @@ export default class ProposalQueries {
       return null;
     }
 
-    // If not a user officer remove excellence, technical and safety score
-    if (!this.userAuth.isUserOfficer(agent)) {
+    // If not a user officer or instrument scientist remove excellence, technical and safety score
+    if (
+      !this.userAuth.isUserOfficer(agent) &&
+      !this.userAuth.isInstrumentScientist(agent)
+    ) {
       proposal = omit(proposal, 'commentForManagement') as Proposal;
     }
 
@@ -181,5 +184,16 @@ export default class ProposalQueries {
       proposalBookingId,
       filter
     );
+  }
+
+  @Authorized()
+  async getProposalById(agent: UserWithRole | null, proposalId: string) {
+    const proposal = await this.dataSource.getProposalById(proposalId);
+
+    if ((await this.hasReadRights(agent, proposal)) === true) {
+      return proposal;
+    } else {
+      return null;
+    }
   }
 }

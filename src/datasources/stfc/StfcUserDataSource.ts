@@ -63,7 +63,8 @@ function toEssBasicUserDetails(
     stfcUser.orgId ?? 1,
     '',
     new Date(),
-    false
+    false,
+    ''
   );
 }
 
@@ -157,7 +158,7 @@ export class StfcUserDataSource implements UserDataSource {
         ?.return;
 
       if (usersFromUows) {
-        this.ensureDummyUsersExist(
+        await this.ensureDummyUsersExist(
           usersFromUows.map((stfcUser) => parseInt(stfcUser.userNumber))
         );
         usersFromUows.map((user) => cache.put(user.userNumber, user));
@@ -190,7 +191,7 @@ export class StfcUserDataSource implements UserDataSource {
       return null;
     }
 
-    this.ensureDummyUserExists(parseInt(stfcUser.userNumber));
+    await this.ensureDummyUserExists(parseInt(stfcUser.userNumber));
     cache.put(email, stfcUser);
 
     return stfcUser;
